@@ -63,7 +63,4 @@
     <Build Include="NoteTypes.sql" />
     <Build Include="Notes.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="UserCruiserDB.refactorlog" />
-  </ItemGroup>
 </Project>

@@ -5,6 +5,15 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SnooNotesDB", "SnooNotesDB\SnooNotesDB.sqlproj", "{EDFD1C5B-ABED-46C1-9A58-62FC21E8D979}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesAPI", "SnooNotesAPI\SnooNotesAPI.csproj", "{554BB3B8-384F-4B82-A7C6-0EFEDF986FFC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{097C3BC3-0EC0-4B80-916D-894A4F1739EA}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesFrontend", "SnooNotesFrontend\SnooNotesFrontend.csproj", "{19BFDE37-F7EA-498A-BEBF-0509B45AEF90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +26,14 @@ Global
 		{EDFD1C5B-ABED-46C1-9A58-62FC21E8D979}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDFD1C5B-ABED-46C1-9A58-62FC21E8D979}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EDFD1C5B-ABED-46C1-9A58-62FC21E8D979}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{554BB3B8-384F-4B82-A7C6-0EFEDF986FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{554BB3B8-384F-4B82-A7C6-0EFEDF986FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{554BB3B8-384F-4B82-A7C6-0EFEDF986FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{554BB3B8-384F-4B82-A7C6-0EFEDF986FFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19BFDE37-F7EA-498A-BEBF-0509B45AEF90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19BFDE37-F7EA-498A-BEBF-0509B45AEF90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19BFDE37-F7EA-498A-BEBF-0509B45AEF90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19BFDE37-F7EA-498A-BEBF-0509B45AEF90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
