@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="285a997f-9eff-46b9-96a7-7d07909b20c8" ChangeDateTime="03/20/2015 03:37:22">
+    <Property Name="ElementName" Value="[dbo].[Subreddits].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subreddits]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SubredditID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f8f4629a-7ef9-41a0-bcd4-86ebad1e0a40" ChangeDateTime="03/20/2015 03:41:16">
+    <Property Name="ElementName" Value="[dbo].[NoteTypes].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[NoteTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="NoteTypeID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ff82cb7a-9637-4505-8b49-c32ddc775459" ChangeDateTime="03/20/2015 03:47:46">
+    <Property Name="ElementName" Value="[dbo].[Notes].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Notes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="NoteID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="32f77f80-2f70-4ca9-b510-9bfd5043b990" ChangeDateTime="03/20/2015 03:48:16">
+    <Property Name="ElementName" Value="[dbo].[Notes].[SubRedditID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Notes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SubredditID" />
+  </Operation>
+</Operations>

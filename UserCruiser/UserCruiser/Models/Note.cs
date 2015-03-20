@@ -6,7 +6,7 @@ using System.Web;
 namespace UserCruiser.Models {
 	public class Note {
 		public string Submitter { get; set; }
-		public string Subreddit { get; set; }
+		public Subreddit Sub { get; set; }
 		public NoteType Type { get; set; }
 		public string Message { get; set; }
 		public string Link { get; set; }
