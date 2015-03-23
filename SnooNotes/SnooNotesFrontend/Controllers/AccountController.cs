@@ -9,6 +9,18 @@ namespace SnooNotesFrontend.Controllers
 {
     public class AccountController : Controller
     {
+        private ApplicationSignInManager _signInManager;
+        private AccountController _userManager;
+
+        public AccountController()
+        {
+        }
+
+        public AccountController(UserManager userManager, ApplicationSignInManager signInManager)
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+        }
         // GET: Account
 		[Authorize]
         public ActionResult Index()

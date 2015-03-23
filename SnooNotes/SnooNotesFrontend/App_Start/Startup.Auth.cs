@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 namespace SnooNotesFrontend {
 	public partial class Startup {
 		public void ConfigureAuth( IAppBuilder app ) {
+            app.CreatePerOwinContext(Models.ApplicationDbContext.Create);
+            app.CreatePerOwinContext<UserManager>(UserManager.Create);
+            app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 			var cookieOptions = new CookieAuthenticationOptions {
 				LoginPath = new PathString( "/Account/Login" )
 			};
