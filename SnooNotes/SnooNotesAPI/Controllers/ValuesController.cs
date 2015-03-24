@@ -4,12 +4,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-
+using System.Security.Claims;
 namespace SnooNotesAPI.Controllers {
+    [Authorize]
 	public class ValuesController : ApiController {
 		// GET api/values
 		public IEnumerable<string> Get() {
-			return new string[] { "value1", "value2" };
+            ClaimsIdentity id = (ClaimsIdentity)User.Identity;
+            return id.Claims.Select(x => x.Type + ":" + x.Value).ToArray();
+			//return new string[] { "value1", "value2" };
 		}
 
 		// GET api/values/5
