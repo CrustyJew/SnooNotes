@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Security.Claims;
-
+using Microsoft.Owin;
 namespace SnooNotesAPI.Controllers
 {
+    [Authorize]
     public class UserInfoController : ApiController
     {
-        public List<string> GetModeratedSubreddits()
-        {
-            RedditSharp.Reddit rd = new RedditSharp.Reddit((User as ClaimsPrincipal).FindFirst("urn:reddit:accesstoken").Value);
-            var subs = rd.User.ModeratorSubreddits;
-
-            return subs.Select(s => s.Name).ToList<string>();
-
-        }
+        
     }
 }
