@@ -41,6 +41,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.39\lib\net45\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ApplicationInsights">
       <HintPath>..\packages\Microsoft.ApplicationInsights.0.13.2-build00132\lib\net40\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
@@ -201,9 +204,11 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SubredditController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
-    <Compile Include="Models\Subreddits.cs" />
+    <Compile Include="Models\SubredditMain.cs" />
+    <Compile Include="Models\Subreddit.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

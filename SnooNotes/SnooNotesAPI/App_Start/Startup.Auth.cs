@@ -28,7 +28,7 @@ namespace SnooNotesAPI
                         if (expired)
                         {
                             GetNewToken(context);
-                            
+                            GetModeratedSubreddits(context);
                             HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, context.Identity);
                         }
                         var newResponseGrant = context.OwinContext.Authentication.AuthenticationResponseGrant;
@@ -79,7 +79,8 @@ namespace SnooNotesAPI
             ClaimsIdentity ident = context.Identity;
             ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accesstoken").First());
             ident.AddClaim(new Claim("urn:reddit:accesstoken", newaccesstoken));
-                        
+            ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
+            context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(45).ToString()));
         }
         public void GetModeratedSubreddits(CookieValidateIdentityContext context)
         {
@@ -90,25 +91,50 @@ namespace SnooNotesAPI
 
             List<string> currentRoles = context.Identity.FindAll(roletype).Select(r => r.Value).ToList<string>();
             
+            Models.SubredditMain sm = new Models.SubredditMain();
+            List<string> activeSubs = sm.GetActiveSubs().Select(s => s.SubName).ToList();
+
             List<string> rolesToAdd = new List<string>();
             List<string> rolesToRemove = new List<string>();
             foreach (string role in currentRoles)
             {
                 var sub = subs.Find(s => s.Name == role);
-                if (sub != null)
-                {
-                    subs.Remove(sub);
-                }
+                if (activeSubs.Contains(role))
+                    {
+                        if (sub != null)
+                        {
+                            //User already has sub as a role and is still a mod
+                            subs.Remove(sub);
+                        }
+                        else
+                        {
+                            rolesToRemove.Add(role);
+                        }
+                    }
                 else
                 {
-                    rolesToRemove.Add(sub.Name);
+                    //sub was deactivated, add it to remove.
+                    rolesToRemove.Add(role);
+                } 
+               
+            }
+            //subs now only contains subs that don't exist as roles
+            foreach (RedditSharp.Things.Subreddit sub in subs)
+            {
+                if (activeSubs.Contains(sub.Name))
+                {
+                    rolesToAdd.Add(sub.Name);
                 }
             }
 
-
-
-            return subnames;
-
+            foreach (string role in rolesToRemove)
+            {
+                context.Identity.RemoveClaim(context.Identity.Claims.First(i => i.Value == role));
+            }
+            foreach (string role in rolesToAdd)
+            {
+                context.Identity.AddClaim(new Claim(roletype, role));
+            }
         }
     }
 }
