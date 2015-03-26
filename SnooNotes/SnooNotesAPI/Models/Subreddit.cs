@@ -9,8 +9,6 @@ namespace SnooNotesAPI.Models
     {
         public int SubredditID { get; set; }
         public string SubName { get; set; }
-        public string AppID { get; set; }
-        public string PrivateKey { get; set; }
 
         public bool Active { get; set; }
     }

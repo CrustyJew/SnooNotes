@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Notes]
 (
-	[NoteID] INT NOT NULL PRIMARY KEY, 
+	[NoteID] INT NOT NULL PRIMARY KEY IDENTITY, 
     [NoteTypeID] INT NOT NULL,
 	[SubredditID] INT NOT NULL,
 	

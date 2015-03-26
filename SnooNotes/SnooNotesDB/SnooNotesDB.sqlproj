@@ -66,4 +66,7 @@
   <ItemGroup>
     <None Include="SnooNotesDB.publish.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="SnooNotesDB.refactorlog" />
+  </ItemGroup>
 </Project>
