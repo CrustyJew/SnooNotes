@@ -12,7 +12,7 @@ namespace SnooNotesAPI.Models
     {
         SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
-        public IEnumerable<Note> GetNotesForUsers(List<string> usernames, string subname)
+        public IEnumerable<Note> GetNotesForUsers(string subname, IEnumerable<string> usernames )
         {
             string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername "
                     + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
@@ -30,10 +30,10 @@ namespace SnooNotesAPI.Models
             return "Success";
         }
 
-        public string DeleteNoteForUser(int id)
+        public string DeleteNoteForUser(Note anote)
         {
-            string query = "delete from Notes where NoteID = @id";
-            con.Execute(query, new { id });
+            string query = "delete n from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID where NoteID = @id and sr.SubName = @subname";
+            con.Execute(query, new { anote.NoteID, anote.SubName });
             return "Success";
         }
     }

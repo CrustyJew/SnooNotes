@@ -10,32 +10,46 @@ namespace SnooNotesAPI.Controllers
     public class NoteController : ApiController
     {
         Models.NoteMain nm = new Models.NoteMain();
-        // GET: api/Note
-        public IEnumerable<Models.Note> Get()
-        {
-            
 
-        }
-
-        // GET: api/Note/5
-        public string Get(int id)
+        // POST: api/Note/GetNotes
+        [HttpPost]
+        public IEnumerable<Models.Note> GetNotes([FromBody]Models.UserNoteRequest req )
         {
-            return "value";
+            if (User.IsInRole(req.SubName))
+            {
+                return nm.GetNotesForUsers(req.SubName, req.Users);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            }
         }
 
         // POST: api/Note
-        public void Post([FromBody]string value)
+        public void Post([FromBody]Models.Note value)
         {
-        }
-
-        // PUT: api/Note/5
-        public void Put(int id, [FromBody]string value)
-        {
+            if (User.IsInRole(value.SubName))
+            {
+                value.Submitter = User.Identity.Name;
+                nm.AddNoteForUser(value);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            }
         }
 
         // DELETE: api/Note/5
-        public void Delete(int id)
+        public void Delete(Models.Note value)
         {
+            if (User.IsInRole(value.SubName))
+            {
+                nm.DeleteNoteForUser(value);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            }
         }
     }
 }

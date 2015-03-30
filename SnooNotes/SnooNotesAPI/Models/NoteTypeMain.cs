@@ -28,8 +28,8 @@ namespace SnooNotesAPI.Models
 
         public string DeleteNoteType(NoteType ntype)
         {
-            string query = "delete from NoteTypes where NoteTypeID = @NoteTypeID";
-            con.Execute(query, new { ntype.NoteTypeID });
+            string query = "delete nt from NoteTypes nt INNER JOIN Subreddits sr on nt.SubredditID = sr.SubredditID where NoteTypeID = @NoteTypeID and sr.SubName = @subname";
+            con.Execute(query, new { ntype.NoteTypeID, ntype.SubName });
             return "Success";
         }
 

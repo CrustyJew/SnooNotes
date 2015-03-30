@@ -12,8 +12,8 @@ namespace SnooNotesAPI {
 			config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute(
                 name: "ControllerAPI",
-                routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                routeTemplate: "api/{controller}/{action}/",
+                defaults: new { }
             );
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
