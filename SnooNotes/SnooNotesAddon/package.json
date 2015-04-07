@@ -1,0 +1,12 @@
+{
+    "name": "new",
+    "title": "new",
+    "id": "jid1-iRRa9MN4XZNmKQ",
+    "description": "a basic add-on",
+    "author": "",
+    "license": "MPL 2.0",
+    "version": "0.1",
+    "permissions": { 
+        "cross-domain-content": ["https://snoonotesapi.azurewebsites.net/","https://snoonotes.azurewebsites.net/"]
+    }
+}

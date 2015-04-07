@@ -13,8 +13,12 @@ namespace SnooNotesAPI.Controllers
         {
             return View();
         }
-        // GET: Account
-        public ActionResult Login(string returnUrl)
+        public ActionResult Login()
+        {
+            ViewBag.loggedIn = User.Identity.IsAuthenticated;
+            return View();
+        }
+        public ActionResult DoLogin(string returnUrl)
         {
             // Request a redirect to the external login provider
             return new ChallengeResult("Reddit",
