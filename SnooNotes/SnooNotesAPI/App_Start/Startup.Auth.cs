@@ -9,7 +9,6 @@ using Microsoft.Owin.Security.Cookies;
 using Owin.Security.Providers.Reddit;
 using System.Security.Claims;
 
-
 namespace SnooNotesAPI
 {
     public partial class Startup
@@ -18,7 +17,7 @@ namespace SnooNotesAPI
         {
             var cookieOptions = new CookieAuthenticationOptions
             {
-                LoginPath = new PathString("/Account/Login"),
+                LoginPath = new PathString("/Auth/Login"),
                 CookieName = "bog", ExpireTimeSpan = new TimeSpan(10000,0,0,0,0),
                 Provider = new CookieAuthenticationProvider
                 {
@@ -28,8 +27,8 @@ namespace SnooNotesAPI
                         if (expired)
                         {
                             GetNewToken(context);
-                            GetModeratedSubreddits(context);
-                            HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, context.Identity);
+                            ClaimsIdentity ident = GetModeratedSubreddits(context.Identity as ClaimsIdentity);
+                            HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, ident);
                         }
                         var newResponseGrant = context.OwinContext.Authentication.AuthenticationResponseGrant;
                         if (newResponseGrant != null)
@@ -55,11 +54,7 @@ namespace SnooNotesAPI
                     {
                         context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:refresh", context.RefreshToken));
                         context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(-15).Add(context.ExpiresIn.Value).ToString()));
-                        RedditSharp.Reddit rd = new RedditSharp.Reddit(context.AccessToken);
-                        rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-                        var subs = rd.User.ModeratorSubreddits;
-                        string roletype = context.Identity.RoleClaimType;
-                        context.Identity.AddClaims(subs.Select(s => new Claim(roletype, s.Name)));
+                        context.Identity = GetModeratedSubreddits(context.Identity as ClaimsIdentity);
                         
                         return System.Threading.Tasks.Task.FromResult(0);
                     }
@@ -82,14 +77,15 @@ namespace SnooNotesAPI
             ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
             context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(45).ToString()));
         }
-        public void GetModeratedSubreddits(CookieValidateIdentityContext context)
+        public ClaimsIdentity GetModeratedSubreddits(ClaimsIdentity ident)
         {
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(context.Identity.FindFirst("urn:reddit:accesstoken").Value);
+            
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.FindFirst("urn:reddit:accesstoken").Value);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
-            string roletype = context.Identity.RoleClaimType;
+            string roletype = ident.RoleClaimType;
 
-            List<string> currentRoles = context.Identity.FindAll(roletype).Select(r => r.Value).ToList<string>();
+            List<string> currentRoles = ident.FindAll(roletype).Select(r => r.Value).ToList<string>();
             
             Models.SubredditMain sm = new Models.SubredditMain();
             List<string> activeSubs = sm.GetActiveSubs().Select(s => s.SubName).ToList();
@@ -129,12 +125,13 @@ namespace SnooNotesAPI
 
             foreach (string role in rolesToRemove)
             {
-                context.Identity.RemoveClaim(context.Identity.Claims.First(i => i.Value == role));
+                ident.RemoveClaim(ident.Claims.First(i => i.Value == role));
             }
             foreach (string role in rolesToAdd)
             {
-                context.Identity.AddClaim(new Claim(roletype, role));
+                ident.AddClaim(new Claim(roletype, role));
             }
+            return ident;
         }
     }
 }
