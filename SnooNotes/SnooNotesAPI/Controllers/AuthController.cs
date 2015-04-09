@@ -9,6 +9,7 @@ namespace SnooNotesAPI.Controllers
 {
     public class AuthController : Controller
     {
+        [Authorize]
         public ActionResult Success()
         {
             return View();

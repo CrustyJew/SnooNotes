@@ -36,6 +36,13 @@ namespace SnooNotesAPI
                             newResponseGrant.Properties.IsPersistent = true;
                         }
                         return System.Threading.Tasks.Task.FromResult(0);
+                    },
+                    OnApplyRedirect = ctx =>
+                    {
+                        if (!IsAjaxRequest(ctx.Request))
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
                     }
                 }
             };
@@ -77,7 +84,7 @@ namespace SnooNotesAPI
             ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
             context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(45).ToString()));
         }
-        public ClaimsIdentity GetModeratedSubreddits(ClaimsIdentity ident)
+        private ClaimsIdentity GetModeratedSubreddits(ClaimsIdentity ident)
         {
             
             RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.FindFirst("urn:reddit:accesstoken").Value);
@@ -132,6 +139,17 @@ namespace SnooNotesAPI
                 ident.AddClaim(new Claim(roletype, role));
             }
             return ident;
+        }
+
+        private static bool IsAjaxRequest(IOwinRequest request)
+        {
+            IReadableStringCollection query = request.Query;
+            if ((query != null) && (query["X-Requested-With"] == "XMLHttpRequest"))
+            {
+                return true;
+            }
+            IHeaderDictionary headers = request.Headers;
+            return ((headers != null) && (headers["X-Requested-With"] == "XMLHttpRequest"));
         }
     }
 }

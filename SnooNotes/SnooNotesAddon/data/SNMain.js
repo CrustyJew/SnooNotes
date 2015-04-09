@@ -11,6 +11,7 @@ function setModdedSubs(){
     $.ajax({
         url: snUtil.ApiBase + "Account/GetModeratedSubreddits",
         method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
             snUtil.moddedSubs = d;
         },
@@ -20,7 +21,7 @@ function setModdedSubs(){
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    if(jqXHR.statusText=="error" && jqXHR.status === 0)
+    if(jqXHR.status === 401)
     {
         showLoginPopup();
     }
