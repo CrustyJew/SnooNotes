@@ -63,11 +63,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="data\jquery-2.1.3.min.js" />
-    <Content Include="data\SnooLoginPopup.js" />
+    <Content Include="data\libs\jquery-2.1.3.min.js" />
+    <Content Include="data\modules\SnooLoginPopup.js" />
+    <Content Include="data\styles\SnooLogin.css" />
     <Content Include="lib\main.js" />
-    <Content Include="data\SNMain.js" />
-    <Content Include="data\SnooNotes.js" />
+    <Content Include="data\modules\SNMain.js" />
+    <Content Include="data\modules\SnooNotes.js" />
     <Content Include="test\test-main.js" />
   </ItemGroup>
   <ItemGroup />

@@ -2,7 +2,9 @@
 @if (! ViewBag.loggedIn) { 
     <h1>You need to authorize SnooNotes to access your Reddit info. Otherwise it's kinda useless...</h1>
     <h2>Click below to open a new window that will take you to the authorization page.</h2>
-    <a href="/Auth/DoLogin" class="doLogin">Click Me!</a>
-}else{
+    <a onclick="window.open('@Url.Action("DoLogin","Auth",null,"https")', 'SnooLogin','height=850px,width=850px').focus(); window.parent.postMessage('Logging in','*');" class="doLogin">Click Me!</a>
+}
+else
+{
     <h1>You are already logged in! Either something went horribly, horribly wrong, or you are being dumb.</h1>
 }
