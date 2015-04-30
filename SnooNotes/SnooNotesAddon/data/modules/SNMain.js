@@ -2,7 +2,21 @@
     (function (snUtil) {
         snUtil.ApiBase = "https://snoonotesapi.azurewebsites.net/api/";
         snUtil.LoginAddress = "https://snoonotesapi.azurewebsites.net/Auth/Login";
-        if (snUtil.moddedSubs === undefined) setModdedSubs();
+        if (snUtil.ModdedSubs === undefined) setModdedSubs();
+        var sub = /reddit\.com\/r\/[a-z0-9]*\/?/i.exec(window.location);
+        snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
+        snUtil.getNotesForUsers = function (sub, users) {
+            $.ajax({
+                url: snUtil.ApiBase + "Note/GetNotes",
+                method: "POST",
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                data: { 'subname': sub, 'Users': users },
+                success: function (d, s, x) {
+                    var x = d;
+                },
+                error: handleAjaxError
+            });
+        };
         return;
     }(snUtil = window.snUtil || {}));
 }
@@ -13,7 +27,7 @@ function setModdedSubs(){
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
-            snUtil.moddedSubs = d;
+            snUtil.ModdedSubs = d;
         },
         error: handleAjaxError
     });

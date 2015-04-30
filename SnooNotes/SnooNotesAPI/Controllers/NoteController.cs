@@ -25,6 +25,23 @@ namespace SnooNotesAPI.Controllers
             }
         }
 
+        public IEnumerable<Models.Note> GetNotesForSub(string sub)
+        {
+            if (User.IsInRole(sub))
+            {
+                var x = nm.GetNotesForSub(sub).ToList<Models.Note>();
+                for (int i = 0; i < 10000; i++ ){
+                    x.Add(x.First());
+                }
+                return x;
+                //return nm.GetNotesForSub(sub);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            }
+        }
+
         // POST: api/Note
         public void Post([FromBody]Models.Note value)
         {

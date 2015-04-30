@@ -5,8 +5,12 @@ pageMod.PageMod({
     exclude: [/.*.reddit.com\/api\/v1\/authorize.*/,/.*.reddit.com\/login.*/],
     contentStyleFile: [data.url("styles/SnooLogin.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
-            data.url("modules/SNMain.js"),
-            data.url("modules/SnooLoginPopup.js")],
+        data.url("libs/jstorage.min.js"),
+         data.url("modules/SNLoad.js"),
+         data.url("modules/SnooLoginPopup.js"),
+         data.url("modules/SNMain.js"),
+            
+         ],
     attachTo: ["existing","frame", "top"],
     onAttach: function (worker) {
         console.log(worker.tab.url);

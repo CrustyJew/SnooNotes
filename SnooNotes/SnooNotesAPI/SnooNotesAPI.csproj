@@ -187,6 +187,7 @@
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteMain.cs" />
+    <Compile Include="Models\NotesResponse.cs" />
     <Compile Include="Models\NoteType.cs" />
     <Compile Include="Models\NoteTypeMain.cs" />
     <Compile Include="Models\SubredditMain.cs" />
