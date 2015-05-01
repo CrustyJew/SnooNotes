@@ -32,17 +32,17 @@ namespace SnooNotesAPI.Models
         {
             string query = "select n.AppliesToUsername "
                    + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
-                   + " where n.AppliesToUsername in @usernames and s.SubName in @subnames";
+                   + " where s.SubName in @subnames";
 
             return con.Query<string>(query, new { subnames });
         }
-        public IEnumerable<Note> GetNotesForSub(string subname)
+        public IEnumerable<Note> GetNotesForSubs(IEnumerable<string> subnames)
         {
             string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername "
                     + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
-                    + " where s.SubName = @subname";
+                    + " where s.SubName in @subnames";
 
-            return con.Query<Note>(query, new {  subname });
+            return con.Query<Note>(query, new {  subnames });
         }
 
         public string AddNoteForUser(Note anote)

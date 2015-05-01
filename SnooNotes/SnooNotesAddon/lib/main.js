@@ -1,5 +1,12 @@
 var data = require("sdk/self").data;
 var pageMod = require("sdk/page-mod");
+var pageWorkers = require("sdk/page-worker");
+var timers = require("sdk/timers");
+var tabs = require("sdk/tabs");
+
+var workerCount = 0;
+var waitingToClose;
+var socketOpen = false;
 pageMod.PageMod({
     include: "*.reddit.com",
     exclude: [/.*.reddit.com\/api\/v1\/authorize.*/,/.*.reddit.com\/login.*/],
@@ -14,7 +21,36 @@ pageMod.PageMod({
     attachTo: ["existing","frame", "top"],
     onAttach: function (worker) {
         console.log(worker.tab.url);
-        //var event = new CustomEvent("snReadyToInit");
-        //window.dispatchEvent(event);
+        if (waitingToClose) {
+            timers.clearTimeout(waitingToClose);
+            waitingToClose = null;
+        }
+        workerCount = workerCount + 1;
+        if (!socketOpen) {
+            openSocket();
+        }
+        worker.on('detach', function () {
+            workerCount = workerCount - 1;
+            checkStillModding();
+        });
+        console.log(workerCount);
     }
 });
+
+function checkStillModding() {
+    console.log("checking if Reddit is still open");
+    if (workerCount <= 0) {
+        waitingToClose = timers.setTimeout(closeSocket, 10000);
+    }
+}
+function closeSocket() {
+    if (workerCount <= 0) {
+        console.log("closing socket");
+        socketOpen = false;
+    }
+}
+function openSocket() {
+    console.log("opening socket");
+    socketOpen = true;
+}
+

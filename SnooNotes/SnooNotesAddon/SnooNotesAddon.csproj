@@ -67,6 +67,7 @@
     <Content Include="data\libs\jstorage.min.js" />
     <Content Include="data\modules\SNLoad.js" />
     <Content Include="data\modules\SnooLoginPopup.js" />
+    <Content Include="data\modules\SNWorker.js" />
     <Content Include="data\styles\SnooLogin.css" />
     <Content Include="lib\main.js" />
     <Content Include="data\modules\SNMain.js" />

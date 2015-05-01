@@ -46,21 +46,25 @@ namespace SnooNotesAPI.Controllers
             return nm.GetUsersWithNotes(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
 
         }
-        public IEnumerable<Models.Note> GetNotesForSub(string sub)
+        [HttpGet]
+        public Dictionary<string, IEnumerable<Models.BasicNote>> InitializeNotes()
         {
-            if (User.IsInRole(sub))
-            {
-                var x = nm.GetNotesForSub(sub).ToList<Models.Note>();
+            var usernames = GetUsernamesWithNotes();
+             ClaimsPrincipal ident = User as ClaimsPrincipal;
+            var x = nm.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value)).ToList();
+
                 for (int i = 0; i < 10000; i++ ){
                     x.Add(x.First());
                 }
-                return x;
+                Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
+                foreach (string user in usernames)
+                {
+                    var notes = x.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName });
+                    toReturn.Add(user, notes);
+                }
+                return toReturn;
                 //return nm.GetNotesForSub(sub);
-            }
-            else
-            {
-                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
-            }
+           
         }
 
         // POST: api/Note
