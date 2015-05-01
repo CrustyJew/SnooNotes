@@ -16,10 +16,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <IISExpressSSLPort>27132</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <NuGetPackageImportStamp>36a760a4</NuGetPackageImportStamp>
     <ApplicationInsightsResourceId>/subscriptions/a9134f1b-6ecd-4ea2-8d57-8317b343b086/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/SnooNotesAPI</ApplicationInsightsResourceId>
   </PropertyGroup>
@@ -185,9 +185,9 @@
     <Compile Include="Controllers\SubredditController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Models\BasicNote.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteMain.cs" />
-    <Compile Include="Models\NotesResponse.cs" />
     <Compile Include="Models\NoteType.cs" />
     <Compile Include="Models\NoteTypeMain.cs" />
     <Compile Include="Models\SubredditMain.cs" />
@@ -290,7 +290,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>27132</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:27132/</IISUrl>
+          <IISUrl>https://localhost:44311/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
