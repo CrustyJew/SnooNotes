@@ -1,7 +1,9 @@
 ﻿function initSnooNotes() {
     (function (snUtil) {
-        snUtil.ApiBase = "https://snoonotesapi.azurewebsites.net/api/";
-        snUtil.LoginAddress = "https://snoonotesapi.azurewebsites.net/Auth/Login";
+        //snUtil.ApiBase = "https://snoonotesapi.azurewebsites.net/api/";
+        snUtil.ApiBase = "https://localhost:44311/api/";
+        //snUtil.LoginAddress = "https://snoonotesapi.azurewebsites.net/Auth/Login";
+        snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
         if (snUtil.ModdedSubs === undefined) setModdedSubs();
         var sub = /reddit\.com\/r\/[a-z0-9]*\/?/i.exec(window.location);
         snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');

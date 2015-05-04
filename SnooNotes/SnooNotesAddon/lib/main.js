@@ -13,6 +13,8 @@ pageMod.PageMod({
     contentStyleFile: [data.url("styles/SnooLogin.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
         data.url("libs/jstorage.min.js"),
+        data.url("libs/jquery.signalR-2.2.0.min.js"),
+        data.url("libs/snUpdatesHub.js"),
          data.url("modules/SNLoad.js"),
          data.url("modules/SnooLoginPopup.js"),
          data.url("modules/SNMain.js"),

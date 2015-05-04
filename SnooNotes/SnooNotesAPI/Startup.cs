@@ -11,7 +11,9 @@ namespace SnooNotesAPI
     {
         public void Configuration(IAppBuilder app)
         {
+            
             ConfigureAuth(app);
+            app.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration { EnableJSONP = true, EnableDetailedErrors = true });
         }
     }
 }

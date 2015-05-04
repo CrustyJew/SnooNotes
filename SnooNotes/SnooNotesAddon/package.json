@@ -7,6 +7,6 @@
     "license": "MPL 2.0",
     "version": "0.1",
     "permissions": { 
-        "cross-domain-content": ["https://snoonotesapi.azurewebsites.net/","https://snoonotes.azurewebsites.net/"]
+        "cross-domain-content": ["https://snoonotesapi.azurewebsites.net/","https://snoonotes.azurewebsites.net/","https://localhost:44311/"]
     }
 }
