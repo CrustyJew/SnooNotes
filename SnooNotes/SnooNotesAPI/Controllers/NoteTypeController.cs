@@ -9,20 +9,20 @@ namespace SnooNotesAPI.Controllers
 {
     public class NoteTypeController : ApiController
     {
-        Models.NoteTypeMain ntm = new Models.NoteTypeMain();
+        
         // GET: api/NoteType
         public IEnumerable<Models.NoteType> Get()
         {
             List<string> roles = new List<string>();
             ClaimsIdentity id = (User.Identity as ClaimsIdentity);
             roles = id.Claims.Where(c => c.Type == id.RoleClaimType).Select(c => c.Value).ToList();
-            return ntm.GetNoteTypesForSubs(roles);
+            return Models.NoteType.GetNoteTypesForSubs(roles);
         }
 
         // GET: api/NoteType/5
         public Models.NoteType Get(int id)
         {
-            Models.NoteType ntype = ntm.GetNoteType(id);
+            Models.NoteType ntype = Models.NoteType.GetNoteType(id);
             if (ntype != null && System.Threading.Thread.CurrentPrincipal.IsInRole(ntype.SubName))
             {
                 return ntype;
@@ -36,7 +36,7 @@ namespace SnooNotesAPI.Controllers
             if (User.IsInRole(value.SubName))
             {
                 
-                ntm.AddNoteType(value);
+                Models.NoteType.AddNoteType(value);
             }
             else
             {
@@ -49,7 +49,7 @@ namespace SnooNotesAPI.Controllers
         {
             if (User.IsInRole(value.SubName))
             {
-                ntm.UpdateNoteType(value);
+                Models.NoteType.UpdateNoteType(value);
             }
             else
             {
@@ -62,7 +62,7 @@ namespace SnooNotesAPI.Controllers
         {
             if (User.IsInRole(value.SubName))
             {
-                ntm.DeleteNoteType(value);
+                Models.NoteType.DeleteNoteType(value);
             }
             else
             {
