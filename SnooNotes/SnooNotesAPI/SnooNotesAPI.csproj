@@ -188,7 +188,6 @@
     <Compile Include="Models\BasicNote.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteType.cs" />
-    <Compile Include="Models\SubredditMain.cs" />
     <Compile Include="Models\Subreddit.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

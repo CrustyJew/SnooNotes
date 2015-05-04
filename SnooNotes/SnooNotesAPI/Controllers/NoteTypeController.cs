@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Security.Claims;
 namespace SnooNotesAPI.Controllers
 {
+    [Authorize]
     public class NoteTypeController : ApiController
     {
         

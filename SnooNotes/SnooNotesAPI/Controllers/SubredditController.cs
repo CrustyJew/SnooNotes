@@ -24,8 +24,8 @@ namespace SnooNotesAPI.Controllers
         // POST: api/Subreddit
         public void Post([FromBody]Models.Subreddit newSub)
         {
-            Models.SubredditMain sm = new Models.SubredditMain();
-            sm.AddSubreddit(newSub);
+
+            Models.Subreddit.AddSubreddit(newSub);
         }
 
         // PUT: api/Subreddit/5

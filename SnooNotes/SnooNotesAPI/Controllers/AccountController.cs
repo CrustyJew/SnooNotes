@@ -35,8 +35,8 @@ namespace SnooNotesAPI.Controllers
 
             List<string> currentRoles = ident.FindAll(roletype).Select(r => r.Value).ToList<string>();
 
-            Models.SubredditMain sm = new Models.SubredditMain();
-            List<string> activeSubs = sm.GetActiveSubs().Select(s => s.SubName).ToList();
+
+            List<string> activeSubs = Models.Subreddit.GetActiveSubs().Select(s => s.SubName).ToList();
 
             List<string> rolesToAdd = new List<string>();
             List<string> rolesToRemove = new List<string>();
