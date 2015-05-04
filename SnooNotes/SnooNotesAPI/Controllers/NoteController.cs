@@ -11,7 +11,7 @@ namespace SnooNotesAPI.Controllers
     [Authorize]
     public class NoteController : ApiController
     {
-        Models.NoteMain nm = new Models.NoteMain();
+        
 
         // POST: api/Note/GetNotes
         [HttpPost]
@@ -19,7 +19,7 @@ namespace SnooNotesAPI.Controllers
         {
             if (User.IsInRole(req.SubName))
             {
-                return nm.GetNotesForUsers(req.SubName, req.Users);
+                return Models.Note.GetNotesForUsers(req.SubName, req.Users);
             }
             else
             {
@@ -30,7 +30,7 @@ namespace SnooNotesAPI.Controllers
         public Dictionary<string, IEnumerable<Models.BasicNote>> GetNotesForUsers(IEnumerable<string> usernames)
         {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
-            var result = nm.GetNotesForUsers(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value), usernames);
+            var result = Models.Note.GetNotesForUsers(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value), usernames);
             Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
             foreach (string user in usernames)
             {
@@ -43,7 +43,7 @@ namespace SnooNotesAPI.Controllers
         public IEnumerable<string> GetUsernamesWithNotes()
         {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
-            return nm.GetUsersWithNotes(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
+            return Models.Note.GetUsersWithNotes(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
 
         }
         [HttpGet]
@@ -51,7 +51,7 @@ namespace SnooNotesAPI.Controllers
         {
             var usernames = GetUsernamesWithNotes();
              ClaimsPrincipal ident = User as ClaimsPrincipal;
-            var x = nm.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value)).ToList();
+            var x = Models.Note.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value)).ToList();
 
                 for (int i = 0; i < 10000; i++ ){
                     x.Add(x.First());
@@ -63,7 +63,7 @@ namespace SnooNotesAPI.Controllers
                     toReturn.Add(user, notes);
                 }
                 return toReturn;
-                //return nm.GetNotesForSub(sub);
+                //return Models.Note.GetNotesForSub(sub);
            
         }
 
@@ -73,7 +73,7 @@ namespace SnooNotesAPI.Controllers
             if (User.IsInRole(value.SubName))
             {
                 value.Submitter = User.Identity.Name;
-                nm.AddNoteForUser(value);
+                Models.Note.AddNoteForUser(value);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace SnooNotesAPI.Controllers
         {
             if (User.IsInRole(value.SubName))
             {
-                nm.DeleteNoteForUser(value);
+                Models.Note.DeleteNoteForUser(value);
             }
             else
             {
