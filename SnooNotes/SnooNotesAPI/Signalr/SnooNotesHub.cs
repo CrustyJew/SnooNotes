@@ -34,7 +34,7 @@ namespace SnooNotesAPI.Signalr
             }
             return base.OnConnected();
         }
-
+        
         public string GetDateTime()
         {
             return DateTime.Now.ToString();
