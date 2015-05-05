@@ -34,12 +34,12 @@ namespace SnooNotesAPI.Controllers
             Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
             foreach (string user in usernames)
             {
-                var notes = result.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote{Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName});
+                var notes = result.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp });
                 toReturn.Add(user,notes);
             }
             return toReturn;
         }
-
+        [HttpGet]
         public IEnumerable<string> GetUsernamesWithNotes()
         {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
@@ -59,7 +59,7 @@ namespace SnooNotesAPI.Controllers
                 Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
                 foreach (string user in usernames)
                 {
-                    var notes = x.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName });
+                    var notes = x.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url=n.Url, Timestamp=n.Timestamp });
                     toReturn.Add(user, notes);
                 }
                 return toReturn;

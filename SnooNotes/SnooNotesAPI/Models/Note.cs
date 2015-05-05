@@ -16,12 +16,15 @@ namespace SnooNotesAPI.Models
         public string Submitter { get; set; }
         public string Message { get; set; }
         public string AppliesToUsername { get; set; }
+        public string Url { get; set; }
+        public DateTime Timestamp { get; set; }
+
 
         private static SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
 
         public static IEnumerable<Note> GetNotesForUsers(string subname, IEnumerable<string> usernames)
         {
-            string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername "
+            string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
                     + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
                     + " where n.AppliesToUsername in @usernames and s.SubName = @subname";
 
@@ -45,7 +48,7 @@ namespace SnooNotesAPI.Models
         }
         public static IEnumerable<Note> GetNotesForSubs(IEnumerable<string> subnames)
         {
-            string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername "
+            string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
                     + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
                     + " where s.SubName in @subnames";
 
@@ -54,9 +57,9 @@ namespace SnooNotesAPI.Models
 
         public static string AddNoteForUser(Note anote)
         {
-            string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername) "
-                + " values (@NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername) ";
-            con.Execute(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername });
+            string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, n.Url, n.Timestamp) "
+                + " values (@NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp) ";
+            con.Execute(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername,anote.Url,anote.Timestamp });
 
             return "Success";
         }

@@ -11,6 +11,11 @@ namespace SnooNotesAPI.Controllers
     [Authorize]
     public class AccountController : ApiController
     {
+        [HttpGet]
+        public bool IsLoggedIn()
+        {
+            return true;
+        }
 
         public List<string> GetModeratedSubreddits()
         {

@@ -71,6 +71,7 @@
     <Content Include="data\modules\SnooLoginPopup.js" />
     <Content Include="data\modules\SNWorker.js" />
     <Content Include="data\styles\SnooLogin.css" />
+    <Content Include="data\WorkerPage.html" />
     <Content Include="lib\main.js" />
     <Content Include="data\modules\SNMain.js" />
     <Content Include="data\modules\SnooNotes.js" />

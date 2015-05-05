@@ -7,6 +7,6 @@
     $('body').append($container);
     $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); initSnooNotes(); });
 
-    window["addEventListener"]("message",function(){ $('#SnooNotesLoginFrame').hide(); $('.SnooNotesDoneLogin').show();  });
+    window["addEventListener"]("message", function () { $('#SnooNotesLoginFrame').hide(); $('.SnooNotesDoneLogin').show(); });
     $container.show();
 }

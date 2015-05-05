@@ -26,7 +26,7 @@ namespace SnooNotesAPI.Signalr
 
         public override Task OnConnected()
         {
-            ClaimsPrincipal ident = Context.User.Identity as ClaimsPrincipal;
+            ClaimsPrincipal ident = Context.User as ClaimsPrincipal;
 
             foreach (string role in ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value))
             {
