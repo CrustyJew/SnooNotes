@@ -47,7 +47,7 @@ pageMod.PageMod({
         });
         worker.port.emit("gotUsersWithNotes", usersWithNotes);
         worker.port.on("requestUserNotes", function (users) {
-            pageWorker.port.emit("requestUserNotes", users, worker);
+            pageWorker.port.emit("requestUserNotes", { "users": users, "worker": activeWorkers.indexOf(worker) });
         });
         console.log(activeWorkers.length);
     }
@@ -68,9 +68,13 @@ pageWorker.port.on("gotUsersWithNotes", function (users) {
         activeWorkers[i].port.emit("gotUsersWithNotes", usersWithNotes);
     }
 });
-
-pageWorker.port.on("sendingUserNotes", function (notes, worker) {
-    worker.port.emit("receiveUserNotes", notes);
+pageWorker.port.on("workerInitialized", function () {
+    for (var i = 0; i < activeWorkers.length; i++) {
+        activeWorkers[i].port.emit("reinitWorker");
+    }
+});
+pageWorker.port.on("sendingUserNotes", function (req) {
+    activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes); //actually a call to port.emit, but haven't refactored names
 });
 
 function checkStillModding() {

@@ -8,18 +8,34 @@ function getEntriesToProcess(){
     
 
     var SNUsers = [];
+    if (!snUtil.UsersWithNotes || snUtil.UsersWithNotes == ",,") return; //fuck on outa here if no users with notes;
     if(snUtil.Subreddit){
-        if($.inArray(snUtil.Subreddit , snUtil.ModdedSubs)){
-            $('.author', $SNEntries).each(function (index, $ent) {
-                if ($('#SnooNote-' + $ent.innerHTML).length == 0 && $.inArray(snUtil.UsersWithNotes, $ent.innerHTML)) {
-                    if ($('#SnooNote-' + $ent.innerHTML).length == 0) {
-                        SNUsers.push($ent.innerHTML);
+        if (new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
+            console.log("Viewing sub that you mod");
+            $('.author', $SNEntries).each(function (index, ent) {
+                var $container = $(ent).closest('div');
+                //console.log("," + ent.innerHTML + "," + " ------ " + snUtil.UsersWithNotes);
+                if (new RegExp("," + ent.innerHTML + ",","i").test(snUtil.UsersWithNotes)) {
+                    if ($container.hasClass('SNFetching') && SNUsers.indexOf(ent.innerHTML) == -1) { //don't add doubles
+                        SNUsers.push(ent.innerHTML);
                     }
-                    $('<a onclick="$(\'#SnooNote-' + $ent.innerHTML + '\').show()">view note</a>').insertAfter($ent);
+                    else {
+                        if ($('#SnooNote-' + ent.innerHTML.toLowerCase()).length == 0) {
+                            if (SNUsers.indexOf(ent.innerHTML) == -1) {
+                                SNUsers.push(ent.innerHTML);
+                            }
+                            $container.addClass('SNFetching');
+                        }
+                        else {
+                            $container.addClass('SNDone');
+                        }
+                        $('<a onclick="$(\'#SnooNote-' + ent.innerHTML.toLowerCase() + '\').show()">view note</a>').insertAfter(ent);
+                    }
+                    
                 }
                 else {
                     //TODO add icon for new note
-                    $ent.closest('div').addClass('SNDone');
+                    $container.addClass('SNDone');
                 }
             });
         }
@@ -31,7 +47,7 @@ function getEntriesToProcess(){
                         if ($('#SnooNote-' + auth.innerHTML).length == 0) {
                             SNUsers.push(auth.innerHTML);
                         }
-                        $('<a onclick="$(\'#SnooNote-'+auth.innerHTML+'\').show()">view note</a>').insertAfter($ent);
+                        $('<a onclick="$(\'#SnooNote-'+auth.innerHTML.toLowerCase()+'\').show()">view note</a>').insertAfter($ent);
                     }
                     else {
                         //TODO add icon for new note
@@ -52,8 +68,11 @@ function getUsersToProcess(){
     $SNUsers = $('')
 
 }
-function processEntries(notes){
+function processEntries(notes) {
     $('body').append($(notes));
+    if (notes) {
+        $('.sitetable .thing .entry.SNFetching').removeClass("SNFetching").addClass("SNDone"); //TODO check this to make sure it won't lose notes / users randomly.s
+    }
 }
 
 (function () {

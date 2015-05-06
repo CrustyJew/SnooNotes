@@ -4,34 +4,37 @@
         snUtil.ApiBase = "https://localhost:44311/api/";
         //snUtil.LoginAddress = "https://snoonotesapi.azurewebsites.net/Auth/Login";
         snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-        if (!snUtil.LoggedIn) snUtil.LoggedIn = checkLoggedIn();
+        
         self.port.on("gotUsersWithNotes", function (users) {
-            snUtil.UsersWithNotes = users;
+            if (!users) {
+                return;
+            }
+            snUtil.UsersWithNotes = "," + users.join(",") + ","; //I hate stupid arrays and not being able to case-insensitive searches!
         });
         //received data from socket to add/remove a user
-        self.port.on("updateUsersWithNotes", function (user) {
-            var ind = snUtil.UsersWithNotes.indexOf(user);
-            if (ind != -1 && user.remove) {
+        self.port.on("updateUsersWithNotes", function (req) {
+            var user = req.user;
+            if (req.remove) {
                 console.log("removed user");
-                snUtil.UsersWithNotes.splice(ind, 1);
+                snUtil.UsersWithNotes = snUtil.UsersWithNotes.replace(","+user+",",","); //E-i-E-i-ooooooo
             }
-            else if (ind === -1 && user.add) {
+            else if (req.add) {
                 console.log("Added user");
-                snUtil.UsersWithNotes.push(user);
+                snUtil.UsersWithNotes = snUtil.UsersWithNotes + ","+user+",";
             }
         });
-        //if it's logged in, go ahead and set up things that depend on a login.
-        if (snUtil.LoggedIn) {
-            if (!snUtil.ModdedSubs) setModdedSubs();
-        }
-        var sub = /reddit\.com\/r\/[a-z0-9]*\/?/i.exec(window.location);
-        snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
         snUtil.GetNotesForUsers = function (users) {
             self.port.emit("requestUserNotes", users);
         };
         self.port.on("receiveUserNotes", function (notes) {
             processEntries(notes); //SNLoad.js
         });
+
+        //do this lateish so we get all the listeners hooked up first
+        if (!snUtil.LoggedIn) checkLoggedIn();
+        var sub = /reddit\.com\/r\/[a-z0-9]*\/?/i.exec(window.location);
+        snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
+        
         window.snUtil = snUtil;
         return;
     }(snUtil = window.snUtil || {}));
@@ -43,8 +46,9 @@ function setModdedSubs(){
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
-            snUtil.ModdedSubs = d;
-            
+            snUtil.ModdedSubs = "," + d.join(",") + ",";
+            var event = new CustomEvent("snUtilDone");
+            window.dispatchEvent(event);
         },
         error: handleAjaxError
     });
@@ -54,11 +58,11 @@ function checkLoggedIn() {
     $.ajax({
         url: snUtil.ApiBase + "Account/IsLoggedIn",
         method: "GET",
-        async: false,
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
             snUtil.LoggedIn = true;
-            self.port.emit("loggedIn")
+            self.port.emit("loggedIn");
+            if (!snUtil.ModdedSubs) setModdedSubs();
         },
         error: handleAjaxError
     });
@@ -72,9 +76,12 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
 
 (function () {
     //window.addEventListener("snReadyToInit", function () {
-    
+    self.port.on("reinitWorker", function () {
+        //initSnooNotes();
+        var event = new CustomEvent("snUtilDone");
+        window.dispatchEvent(event);
+    });
     initSnooNotes();
-    var event = new CustomEvent("snUtilDone");
-    window.dispatchEvent(event);
+    
     //});
 })();

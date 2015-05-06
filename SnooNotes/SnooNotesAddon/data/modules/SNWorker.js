@@ -1,4 +1,5 @@
-﻿function initSocket() {
+﻿
+function initSocket() {
     console.log("connecting socket");
     var snUpdate = $.connection.SnooNoteUpdates;
     snUpdate.client.receiveUpdate = function (note) { console.log(note.toString()); }
@@ -12,8 +13,10 @@
     snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
     window.snUtil = snUtil;
     self.port.on("initWorker", initWorker);
+    self.port.on("requestUserNotes",requestUserNotes)
     return;
 }(snUtil = window.snUtil || {}));
+
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     if (jqXHR.status === 401) {
         //do nothing on worker page, wait for user to login
@@ -23,13 +26,17 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
 }
 function initWorker() {
     console.log("initWorker");
+    getUsersWithNotes();
     $.ajax({
         url: snUtil.ApiBase + "Note/InitializeNotes",
         method: "GET",
+        async:false,
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
             initNoteData(d);
-            initSocket(); 
+            initSocket();
+            console.log("pageWorker: initialized")
+            self.port.emit("workerInitialized", {});
         },
         error: handleAjaxError
     });
@@ -44,10 +51,13 @@ function initNoteData(data) {
 
         for (var i = 0; i < udata.length; i++) {
             var note = udata[i];
-            unoterows += '<tr id="'+note.NoteID + '" class="' + note.SubName + note.NoteTypeID + '"><td><span>' + note.Submitter + '</span><a href="' + note.Url + '">' + note.Timestamp + '</a></td><td><p>' + note.Message + '</p></td></tr>';
+            unoterows += '<tr id="' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
+                '<td><a href="//r//'+note.SubName+'">' + note.SubName + '</span>' +
+                '<td><span>' + note.Submitter + '</span><a href="' + note.Url + '">' + note.Timestamp + '</a></td>' +
+                '<td><p>' + note.Message + '</p></td></tr>';
         }
         var $user = $('' +
-       '<div id="' + key + '">' +
+       '<div id="SnooNote-' + key.toLowerCase() + '" style="display:none;">' +
        '<table>' + unoterows + '</table>' +
        '</div>');
         $('body').append($user);
@@ -68,16 +78,18 @@ function getUsersWithNotes() {
     });
 }
 
-function requestUserNotes(users, worker) {
-    console.log("Fetching notes for " + users.length + " users");
-    if (users.length <= 0) {
+function requestUserNotes(req) {
+    console.log("Fetching notes for " + req.users.length + " users");
+    if (req.users.length <= 0) {
         return;
     }
-    var usersIDs = users.join(',#');
-    usersIDs = "#" + usersIDs;
+    var usersIDs = req.users.join('|').toLowerCase();
+    usersIDs = usersIDs.replace('|', ',#SnooNote-');
+    usersIDs = "#SnooNote-" + usersIDs;
     var usersHTML = "";
     $(usersIDs).each(function (index, $ent) {
-        usersHTML += $ent.prop("outerHTML");
+        usersHTML += $ent.outerHTML;
     });
-    self.port.emit("sendingUserNotes", usersHTML, worker);
+   
+    self.port.emit("sendingUserNotes", { "notes": usersHTML, "worker": req.worker });
 }
