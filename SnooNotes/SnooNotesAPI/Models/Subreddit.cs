@@ -14,21 +14,27 @@ namespace SnooNotesAPI.Models
 
         public bool Active { get; set; }
 
-        private static SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+        private static string constring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
 
         public static string AddSubreddit(Subreddit sub)
         {
-            string query = "insert into Subreddits (SubName,Active) values (@SubName,@Active)";
-            con.Execute(query, new { sub.SubName, sub.Active });
-            string result = "Success";
-            return result;
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "insert into Subreddits (SubName,Active) values (@SubName,@Active)";
+                con.Execute(query, new { sub.SubName, sub.Active });
+                string result = "Success";
+                return result;
+            }
         }
 
         public static List<Subreddit> GetActiveSubs()
         {
-            string query = "select * from Subreddits where active = 1";
-            var result = con.Query<Subreddit>(query).ToList<Subreddit>();
-            return result;
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "select * from Subreddits where active = 1";
+                var result = con.Query<Subreddit>(query).ToList<Subreddit>();
+                return result;
+            }
         }
     }
 }
