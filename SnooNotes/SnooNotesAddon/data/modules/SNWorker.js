@@ -3,6 +3,24 @@ function initSocket() {
     console.log("connecting socket");
     var snUpdate = $.connection.SnooNoteUpdates;
     snUpdate.client.receiveUpdate = function (note) { console.log(note.toString()); }
+    snUpdate.client.addNewNote = function (note) {
+        
+        var $user = $('#SnooNote-'+note.AppliesToUsername.toLowerCase());
+        if ($user.length == 0) {
+            console.log("Gots a new note for a brand new user");
+            //brand spankin new user
+            var $user = $('' +
+                '<div id="SnooNote-' + key.toLowerCase() + '" style="display:none;">' +
+                '<table>' + generateNoteRow(note) + '</table>' +
+                '</div>');
+            $('body').append($user);
+        }
+        else {
+            console.log("Gots a new note for an existing user");
+            //user exists, shove the new note in there
+            $user.append(generateNoteRow(note));
+        }
+    }
     $.connection.hub.start().done(function () { console.log('Connected socket'); });
 
 }
@@ -51,10 +69,7 @@ function initNoteData(data) {
 
         for (var i = 0; i < udata.length; i++) {
             var note = udata[i];
-            unoterows += '<tr id="' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
-                '<td><a href="//r//'+note.SubName+'">' + note.SubName + '</span>' +
-                '<td><span>' + note.Submitter + '</span><a href="' + note.Url + '">' + note.Timestamp + '</a></td>' +
-                '<td><p>' + note.Message + '</p></td></tr>';
+            unoterows += generateNoteRow(note);
         }
         var $user = $('' +
        '<div id="SnooNote-' + key.toLowerCase() + '" style="display:none;">' +
@@ -62,6 +77,12 @@ function initNoteData(data) {
        '</div>');
         $('body').append($user);
     }
+}
+function generateNoteRow(note) {
+    return '<tr id="' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
+                '<td><a href="//r//'+note.SubName+'">' + note.SubName + '</span>' +
+                '<td><span>' + note.Submitter + '</span><a href="' + note.Url + '">' + note.Timestamp + '</a></td>' +
+                '<td><p>' + note.Message + '</p></td></tr>';
 }
 
 function getUsersWithNotes() {
