@@ -33,6 +33,11 @@ namespace SnooNotesAPI.Signalr
         public void SendNewNote(Models.Note anote){
             Clients.Group(anote.SubName).addNewNote(anote);
         }
+
+        public void DeleteNote(Models.Note anote)
+        {
+            Clients.Group(anote.SubName).deleteNote(anote.NoteID);
+        }
     
     }
     

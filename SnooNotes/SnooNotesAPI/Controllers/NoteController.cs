@@ -60,6 +60,7 @@ namespace SnooNotesAPI.Controllers
             if (User.IsInRole(value.SubName))
             {
                 Models.Note.DeleteNoteForUser(value);
+                Signalr.SnooNoteUpdates.Instance.DeleteNote(value);
             }
             else
             {
