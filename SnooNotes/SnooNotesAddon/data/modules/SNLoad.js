@@ -69,7 +69,8 @@ function getUsersToProcess(){
 
 }
 function processEntries(notes) {
-    $('body').append($(notes));
+   
+    $('#SNContainer').append($(notes));
     if (notes) {
         $('.sitetable .thing .entry.SNFetching').removeClass("SNFetching").addClass("SNDone"); //TODO check this to make sure it won't lose notes / users randomly.s
     }

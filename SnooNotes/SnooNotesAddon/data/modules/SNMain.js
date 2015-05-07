@@ -5,6 +5,10 @@
         //snUtil.LoginAddress = "https://snoonotesapi.azurewebsites.net/Auth/Login";
         snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
         
+        if ($('#SNContainer').length == 0) {
+            $('body').append($('<div id="SNContainer"></div>'));
+        }
+
         self.port.on("gotUsersWithNotes", function (users) {
             if (!users) {
                 return;

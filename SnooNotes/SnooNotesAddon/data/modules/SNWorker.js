@@ -21,6 +21,20 @@ function initSocket() {
             $user.append(generateNoteRow(note));
         }
     }
+
+    snUpdate.client.deleteNote = function (noteID) {
+        console.log("Removing a note!");
+        var $note = $('tr#' + noteID);
+        var $user = $note.closest('div');
+        $note.remove();
+
+        if ($('tr', $user).length == 0) {
+            console.log("User dun run outta notes, so removing it too");
+            $user.remove();
+        }
+
+    }
+
     $.connection.hub.start().done(function () { console.log('Connected socket'); });
 
 }
