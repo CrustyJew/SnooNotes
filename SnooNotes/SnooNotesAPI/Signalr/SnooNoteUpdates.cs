@@ -28,8 +28,11 @@ namespace SnooNotesAPI.Signalr
          private SnooNoteUpdates(IHubConnectionContext<dynamic> clients)
          {
              Clients = clients;
-
          }
+
+        public void SendNewNote(Models.Note anote){
+            Clients.Group(anote.SubName).addNewNote(anote);
+        }
     
     }
     

@@ -13,32 +13,6 @@ namespace SnooNotesAPI.Controllers
     {
         
 
-        // POST: api/Note/GetNotes
-        [HttpPost]
-        public IEnumerable<Models.Note> GetNotes([FromBody]Models.UserNoteRequest req )
-        {
-            if (User.IsInRole(req.SubName))
-            {
-                return Models.Note.GetNotesForUsers(req.SubName, req.Users);
-            }
-            else
-            {
-                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
-            }
-        }
-        [HttpPost]
-        public Dictionary<string, IEnumerable<Models.BasicNote>> GetNotesForUsers(IEnumerable<string> usernames)
-        {
-            ClaimsPrincipal ident = User as ClaimsPrincipal;
-            var result = Models.Note.GetNotesForUsers(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value), usernames);
-            Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
-            foreach (string user in usernames)
-            {
-                var notes = result.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp });
-                toReturn.Add(user,notes);
-            }
-            return toReturn;
-        }
         [HttpGet]
         public IEnumerable<string> GetUsernamesWithNotes()
         {
@@ -53,9 +27,6 @@ namespace SnooNotesAPI.Controllers
              ClaimsPrincipal ident = User as ClaimsPrincipal;
             var x = Models.Note.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value)).ToList();
 
-                for (int i = 0; i < 10000; i++ ){
-                    x.Add(x.First());
-                }
                 Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
                 foreach (string user in usernames)
                 {
@@ -73,7 +44,9 @@ namespace SnooNotesAPI.Controllers
             if (User.IsInRole(value.SubName))
             {
                 value.Submitter = User.Identity.Name;
+                value.Timestamp = DateTime.UtcNow;
                 Models.Note.AddNoteForUser(value);
+                Signalr.SnooNoteUpdates.Instance.SendNewNote(value);
             }
             else
             {
