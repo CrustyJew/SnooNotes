@@ -29,7 +29,7 @@ function getEntriesToProcess(){
                         else {
                             $container.addClass('SNDone');
                         }
-                        $('<a onclick="$(\'#SnooNote-' + ent.innerHTML.toLowerCase() + '\').show()">view note</a>').insertAfter(ent);
+                        $('<a SNUser="'+ent.innerHTML.toLowerCase()+'" class="SNViewNotes">view note</a>').insertAfter(ent);
                     }
                     
                 }

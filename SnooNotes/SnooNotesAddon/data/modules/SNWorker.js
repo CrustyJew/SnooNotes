@@ -9,11 +9,8 @@ function initSocket() {
         if ($user.length == 0) {
             console.log("Gots a new note for a brand new user");
             //brand spankin new user
-            var $user = $('' +
-                '<div id="SnooNote-' + key.toLowerCase() + '" style="display:none;">' +
-                '<table>' + generateNoteRow(note) + '</table>' +
-                '</div>');
-            $('body').append($user);
+            generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
+ 
         }
         else {
             console.log("Gots a new note for an existing user");
@@ -24,7 +21,7 @@ function initSocket() {
 
     snUpdate.client.deleteNote = function (noteID) {
         console.log("Removing a note!");
-        var $note = $('tr#' + noteID);
+        var $note = $('tr#SN' + noteID);
         var $user = $note.closest('div');
         $note.remove();
 
@@ -85,18 +82,22 @@ function initNoteData(data) {
             var note = udata[i];
             unoterows += generateNoteRow(note);
         }
-        var $user = $('' +
-       '<div id="SnooNote-' + key.toLowerCase() + '" style="display:none;">' +
-       '<table>' + unoterows + '</table>' +
-       '</div>');
-        $('body').append($user);
+       generateNoteContainer(key,unoterows)
     }
 }
+function generateNoteContainer(user, notes) {
+    var $usernote = $('' +
+      '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer" style="display:none;">' +
+      '<div class="SNHeader"><a class="SNCloseNote">Close [x]</a></div>' +
+      '<table>' + notes + '</table>' +
+      '</div>');
+    $('body').append($usernote);
+}
 function generateNoteRow(note) {
-    return '<tr id="' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
-                '<td><a href="//r//'+note.SubName+'">' + note.SubName + '</span>' +
-                '<td><span>' + note.Submitter + '</span><a href="' + note.Url + '">' + note.Timestamp + '</a></td>' +
-                '<td><p>' + note.Message + '</p></td></tr>';
+    return '<tr id="SN' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
+                '<td class="SNSubName"><a href="https://reddit.com/r/'+note.SubName+'">' + note.SubName + '</span>' +
+                '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp + "Z").toLocaleString().replace(', ','<br />') + '</a></td>' +
+                '<td class="SNMessage"><p>' + note.Message + '</p></td></tr>';
 }
 
 function getUsersWithNotes() {

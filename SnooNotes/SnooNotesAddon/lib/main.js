@@ -17,6 +17,7 @@ pageMod.PageMod({
         data.url("libs/jstorage.min.js"),
         
          data.url("modules/SNLoad.js"),
+         data.url("modules/SnooNotes.js"),
          data.url("modules/SnooLoginPopup.js"),
          data.url("modules/SNMain.js"),
             
