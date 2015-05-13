@@ -92,6 +92,7 @@ function generateNoteContainer(user, notes) {
       '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer" style="display:none;">' +
       '<div class="SNHeader"><a class="SNCloseNote">Close [x]</a></div>' +
       '<table>' + notes + '</table>' +
+      '<div class="SNNewNote"><input type="textbox" placeholder="Add a new note for user..." class="SNNewMessage" /> </div>' +
       '</div>');
     return $usernote;
 }
