@@ -12,16 +12,15 @@ var usersWithNotes = [];
 pageMod.PageMod({
     include: "*.reddit.com",
     exclude: [/.*.reddit.com\/api\/v1\/authorize.*/,/.*.reddit.com\/login.*/],
-    contentStyleFile: [data.url("styles/SnooLogin.css")],
+    contentStyleFile: [data.url("styles/SnooLogin.css"),
+        data.url("styles/SNContainer.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
         data.url("libs/jstorage.min.js"),
         
-         data.url("modules/SNLoad.js"),
-         data.url("modules/SnooNotes.js"),
-         data.url("modules/SnooLoginPopup.js"),
-         data.url("modules/SNMain.js"),
-            
-         ],
+        data.url("modules/SNLoad.js"),
+        data.url("modules/SnooNotes.js"),
+        data.url("modules/SnooLoginPopup.js"),
+        data.url("modules/SNMain.js")],
     attachTo: ["existing","frame", "top"],
     onAttach: function (worker) {
         console.log(worker.tab.url);
@@ -75,7 +74,12 @@ pageWorker.port.on("workerInitialized", function () {
     }
 });
 pageWorker.port.on("sendingUserNotes", function (req) {
-    activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes); //actually a call to port.emit, but haven't refactored names
+    activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes); 
+});
+pageWorker.port.on("newNoteExistingUser", function (req) {
+    for (var i = 0; i < activeWorkers.length; i++) {
+        activeWorkers[i].port.emit("newNoteExistingUser",req);
+    }
 });
 
 function checkStillModding() {

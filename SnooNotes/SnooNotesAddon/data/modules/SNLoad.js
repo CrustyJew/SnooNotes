@@ -47,7 +47,7 @@ function getEntriesToProcess(){
                         if ($('#SnooNote-' + auth.innerHTML).length == 0) {
                             SNUsers.push(auth.innerHTML);
                         }
-                        $('<a onclick="$(\'#SnooNote-'+auth.innerHTML.toLowerCase()+'\').show()">view note</a>').insertAfter($ent);
+                        $('<a SNUser="'+auth.innerHTML.toLowerCase()+'" class="SNViewNotes">view note</a>').insertAfter($ent);
                     }
                     else {
                         //TODO add icon for new note
@@ -80,4 +80,5 @@ function processEntries(notes) {
     window.addEventListener("snUtilDone", function () {
         processSnooNotes();
     });
+   
 })();

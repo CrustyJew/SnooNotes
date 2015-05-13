@@ -9,13 +9,15 @@ function initSocket() {
         if ($user.length == 0) {
             console.log("Gots a new note for a brand new user");
             //brand spankin new user
-            generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
- 
+            var notecont = generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
+            self.port.emit("newNoteNewUser", notecont.outerHTML);
         }
         else {
             console.log("Gots a new note for an existing user");
             //user exists, shove the new note in there
-            $user.append(generateNoteRow(note));
+            var noterow = generateNoteRow(note);
+            $user.append(noterow);
+            self.port.emit("newNoteExistingUser", { "user": note.AppliesToUsername.toLowerCase(), "note": noterow });
         }
     }
 
@@ -82,7 +84,7 @@ function initNoteData(data) {
             var note = udata[i];
             unoterows += generateNoteRow(note);
         }
-       generateNoteContainer(key,unoterows)
+        $('body').append(generateNoteContainer(key, unoterows));
     }
 }
 function generateNoteContainer(user, notes) {
@@ -91,7 +93,7 @@ function generateNoteContainer(user, notes) {
       '<div class="SNHeader"><a class="SNCloseNote">Close [x]</a></div>' +
       '<table>' + notes + '</table>' +
       '</div>');
-    $('body').append($usernote);
+    return $usernote;
 }
 function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +

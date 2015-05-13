@@ -7,6 +7,19 @@
             closeNote(e);
         });
     });
+    self.port.on("newNoteExistingUser", function (req) {
+        var $user = $('#SnooNote-' + req.user + ' table');
+        if ($user.length > 0) {
+            var $note = $(req.note);
+            if ($user.is(":visible")) {
+                $user.append($note.hide());
+                $note.fadeIn("slow");
+            }
+            else {
+                $user.append($note);
+            }
+        }
+    });
 })();
 
 function showNotes (e){
