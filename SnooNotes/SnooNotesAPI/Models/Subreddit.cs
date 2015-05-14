@@ -18,6 +18,7 @@ namespace SnooNotesAPI.Models
 
         public static string AddSubreddit(Subreddit sub)
         {
+            sub.SubName = sub.SubName.ToLower();
             using (SqlConnection con = new SqlConnection(constring))
             {
                 string query = "insert into Subreddits (SubName,Active) values (@SubName,@Active)";

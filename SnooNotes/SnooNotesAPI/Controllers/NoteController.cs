@@ -41,7 +41,7 @@ namespace SnooNotesAPI.Controllers
         // POST: api/Note
         public void Post([FromBody]Models.Note value)
         {
-            if (User.IsInRole(value.SubName))
+            if (User.IsInRole(value.SubName.ToLower()))
             {
                 value.Submitter = User.Identity.Name;
                 value.Timestamp = DateTime.UtcNow;
@@ -57,7 +57,7 @@ namespace SnooNotesAPI.Controllers
         // DELETE: api/Note/5
         public void Delete(Models.Note value)
         {
-            if (User.IsInRole(value.SubName))
+            if (User.IsInRole(value.SubName.ToLower()))
             {
                 Models.Note.DeleteNoteForUser(value);
                 Signalr.SnooNoteUpdates.Instance.DeleteNote(value);

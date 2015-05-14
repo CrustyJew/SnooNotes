@@ -101,7 +101,7 @@ namespace SnooNotesAPI
             List<string> rolesToRemove = new List<string>();
             foreach (string role in currentRoles)
             {
-                var sub = subs.Find(s => s.Name == role);
+                var sub = subs.Find(s => s.Name.ToLower() == role);
                 if (activeSubs.Contains(role))
                     {
                         if (sub != null)
@@ -124,9 +124,9 @@ namespace SnooNotesAPI
             //subs now only contains subs that don't exist as roles
             foreach (RedditSharp.Things.Subreddit sub in subs)
             {
-                if (activeSubs.Contains(sub.Name))
+                if (activeSubs.Contains(sub.Name.ToLower()))
                 {
-                    rolesToAdd.Add(sub.Name);
+                    rolesToAdd.Add(sub.Name.ToLower());
                 }
             }
 

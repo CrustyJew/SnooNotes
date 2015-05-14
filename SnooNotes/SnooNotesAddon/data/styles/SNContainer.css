@@ -1,7 +1,7 @@
 ﻿
 .SNViewContainer {
-    position:absolute;
-    z-index:25000;
+    position: absolute;
+    z-index: 25000;
     background-color: white;
     border: darkgrey 1px solid;
     min-width: 500px;
@@ -9,51 +9,77 @@
     border-radius: 10px;
     min-height: 150px;
     padding: 10px;
-    overflow:hidden;
+    overflow: hidden;
 }
 
-.SNViewContainer table{
-   background-color:white;
-   width:100%;
-   table-layout:fixed;
+    .SNViewContainer table {
+        background-color: white;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+.SNHeader {
+    height: 15px;
+    margin-right: -15px;
+    margin-left: -15px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    padding-right: 15px;
+    background-color: grey;
+    text-align: right;
 }
 
-.SNHeader{
-    height:15px;
-    margin-right:-15px;
-    margin-left:-15px;
-    margin-top:-10px;
-    margin-bottom:10px;
-    padding-right:15px;
-    background-color:grey;
-    text-align:right;
-}
-
-.SNViewContainer td{
+.SNViewContainer td {
     border: 1px grey solid;
-    padding:5px;
+    padding: 5px;
 }
 
-.SNViewContainer tr{
-    display:table-row;
+.SNViewContainer tr {
+    display: table-row;
 }
 
- .SNSubName, .SNSubmitter{
-    text-align:center;
-    width:135px;
-    word-wrap:break-word;
-}
-.SNSubName{
-    border-radius:10px 0 0 10px;
-}
-.SNMessage{
-    border-radius:0 10px 10px 0;
-}
-.SNCloseNote{
-    color:black;
-    cursor:pointer;
+.SNSubName, .SNSubmitter {
+    text-align: center;
+    width: 135px;
+    word-wrap: break-word;
 }
 
-.SNViewNote{
-    cursor:pointer;
+.SNSubName {
+    border-radius: 10px 0 0 10px;
+}
+
+.SNMessage {
+    border-radius: 0 10px 10px 0;
+}
+
+.SNCloseNote {
+    color: black;
+    cursor: pointer;
+}
+
+.SNViewNote {
+    cursor: pointer;
+}
+
+.SNNewNote {
+    margin-left: -200px;
+    padding-left: 50%;
+    padding-top: 10px;
+    height: 81px;
+}
+
+.SNNewMessage {
+    height: 75px;
+    resize: none;
+    width: 400px;
+}
+
+.SNNewNoteSubmit {
+    width: 65px;
+    padding: 5px;
+    margin-left: 15px;
+    height: 34px;
+    vertical-align: middle;
+    position: relative;
+    top: -36px;
 }

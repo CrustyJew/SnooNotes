@@ -16,17 +16,17 @@ namespace SnooNotesAPI.Controllers
         {
             return true;
         }
-
+        [HttpGet]
         public List<string> GetModeratedSubreddits()
         {
             return (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
         }
-
+        [HttpGet]
         public List<string> UpdateModeratedSubreddits()
         {
             ClaimsIdentity ident = GetModeratedSubreddits(User.Identity as ClaimsIdentity);
-            HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, ident);
-            return (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
+            HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, ident);          
+            return ident.Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
 
         }
 
@@ -47,7 +47,7 @@ namespace SnooNotesAPI.Controllers
             List<string> rolesToRemove = new List<string>();
             foreach (string role in currentRoles)
             {
-                var sub = subs.Find(s => s.Name == role);
+                var sub = subs.Find(s => s.Name.ToLower() == role);
                 if (activeSubs.Contains(role))
                 {
                     if (sub != null)
@@ -70,9 +70,9 @@ namespace SnooNotesAPI.Controllers
             //subs now only contains subs that don't exist as roles
             foreach (RedditSharp.Things.Subreddit sub in subs)
             {
-                if (activeSubs.Contains(sub.Name))
+                if (activeSubs.Contains(sub.Name.ToLower()))
                 {
-                    rolesToAdd.Add(sub.Name);
+                    rolesToAdd.Add(sub.Name.ToLower());
                 }
             }
 

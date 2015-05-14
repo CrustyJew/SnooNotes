@@ -69,6 +69,7 @@ namespace SnooNotesAPI.Models
 
         public static string AddNoteForUser(Note anote)
         {
+            anote.AppliesToUsername = anote.AppliesToUsername.ToLower();
             using (SqlConnection con = new SqlConnection(constring))
             {
                 string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, n.Url, n.Timestamp) "
