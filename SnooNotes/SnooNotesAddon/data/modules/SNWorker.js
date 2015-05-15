@@ -10,7 +10,7 @@ function initSocket() {
             console.log("Gots a new note for a brand new user");
             //brand spankin new user
             var notecont = generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
-            self.port.emit("newNoteNewUser", notecont.outerHTML);
+            self.port.emit("newNoteNewUser", { "user": note.AppliesToUsername.toLowerCase(), "note": notecont.outerHTML });
         }
         else {
             console.log("Gots a new note for an existing user");

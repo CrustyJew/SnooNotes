@@ -1,6 +1,6 @@
 var data = require("sdk/self").data;
 var pageMod = require("sdk/page-mod");
-
+var array = require('sdk/util/array');
 var timers = require("sdk/timers");
 var tabs = require("sdk/tabs");
 
@@ -28,15 +28,18 @@ pageMod.PageMod({
             timers.clearTimeout(waitingToClose);
             waitingToClose = null;
         }
-        activeWorkers.push(worker);
+       
+            array.add(activeWorkers, worker);
+        
         if (!socketOpen && loggedIn) {
             openSocket();
         }
-        worker.on('detach', function () {
-            var index = activeWorkers.indexOf(worker);
-            if (index != -1) {
-                activeWorkers.splice(index, 1);
-            }
+        worker.on('detach', function (worker) {
+            //var index = activeWorkers.indexOf(worker);
+            //if (index != -1) {
+            //    activeWorkers.splice(index, 1);
+            //}
+            array.remove(activeWorkers,this)
             checkStillModding();
         });
         worker.port.on('loggedIn', function () {
@@ -79,6 +82,12 @@ pageWorker.port.on("sendingUserNotes", function (req) {
 pageWorker.port.on("newNoteExistingUser", function (req) {
     for (var i = 0; i < activeWorkers.length; i++) {
         activeWorkers[i].port.emit("newNoteExistingUser",req);
+    }
+});
+pageWorker.port.on("newNoteNewUser", function (req) {
+    for (var i = 0; i < activeWorkers.length; i++) {
+        activeWorkers[i].port.emit("newNoteNewUser", req);
+        activeWorkers[i].port.emit("updateUsersWithNotes", { "add": 1, "user": req.user });
     }
 });
 

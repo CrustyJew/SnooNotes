@@ -85,6 +85,11 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         var event = new CustomEvent("snUtilDone");
         window.dispatchEvent(event);
     });
+    jQuery.expr[":"].Contains = jQuery.expr.createPseudo(function (arg) {
+        return function (elem) {
+            return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
     initSnooNotes();
     
     //});

@@ -4,7 +4,7 @@
 
 function getEntriesToProcess(){
     var $SNEntries = {};
-    $SNEntries = $('.sitetable .thing .entry:not(.SNDone)');
+    $SNEntries = $('.sitetable .thing .entry:not(.SNDone), .commentarea .thing .entry:not(.SNDone)');
     
 
     var SNUsers = [];
@@ -29,34 +29,38 @@ function getEntriesToProcess(){
                         else {
                             $container.addClass('SNDone');
                         }
-                        $('<a SNUser="'+ent.innerHTML.toLowerCase()+'" class="SNViewNotes">view note</a>').insertAfter(ent);
+                        $('<a SNUser="'+ent.innerHTML.toLowerCase()+'" class="SNViewNotes">[view note]</a>').insertAfter(ent);
                     }
                     
                 }
                 else {
                     //TODO add icon for new note
+                    $('<a SNUser="' + ent.innerHTML.toLowerCase() + '" class="SNNoNotes">[add note]</a>').insertAfter(ent);
                     $container.addClass('SNDone');
                 }
             });
         }
         else { //not browsing a /r/ you moderate
-            $SNEntries.each(function (index, $ent) {
-                if ($.inArray($('.tagline a.subreddit',$ent).innerHTML,snUtil.ModdedSubs)) {
-                    var auth = ('.author',$ent);
-                    if ($.inArray(snUtil.UsersWithNotes, auth.innerHTML)) {
-                        if ($('#SnooNote-' + auth.innerHTML).length == 0) {
-                            SNUsers.push(auth.innerHTML);
-                        }
-                        $('<a SNUser="'+auth.innerHTML.toLowerCase()+'" class="SNViewNotes">view note</a>').insertAfter($ent);
-                    }
-                    else {
-                        //TODO add icon for new note
-                        $ent.addClass('SNDone');
-                    }
-                }
-            });
-            
+            console.log("Not a sub you mod");
         }
+    }
+    else { //not browsing a specific subreddit
+        $SNEntries.each(function (index, $ent) {
+            if (new RegExp("," + $('.tagline a.subreddit', $ent).innerHTML + ",", "i").test(snUtil.ModdedSubs)) {
+                var auth = ('.author', $ent);
+                if ($.inArray(snUtil.UsersWithNotes, auth.innerHTML)) {
+                    if ($('#SnooNote-' + auth.innerHTML).length == 0) {
+                        SNUsers.push(auth.innerHTML);
+                    }
+                    $('<a SNUser="' + auth.innerHTML.toLowerCase() + '" class="SNViewNotes">[view note]</a>').insertAfter($ent);
+                }
+                else {
+                    //TODO add icon for new note
+                    $ent.addClass('SNDone');
+                }
+            }
+        });
+
     }
     if (SNUsers.length > 0) {
         snUtil.GetNotesForUsers(SNUsers);

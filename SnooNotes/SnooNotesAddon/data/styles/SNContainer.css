@@ -1,5 +1,5 @@
 ﻿
-.SNViewContainer {
+.SNViewContainer, .SNNew {
     position: absolute;
     z-index: 25000;
     background-color: white;
