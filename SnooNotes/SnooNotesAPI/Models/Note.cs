@@ -17,7 +17,15 @@ namespace SnooNotesAPI.Models
         public string Message { get; set; }
         public string AppliesToUsername { get; set; }
         public string Url { get; set; }
-        public DateTime Timestamp { get; set; }
+        private DateTime _timestamp;
+        public DateTime Timestamp
+        {
+            get { return _timestamp; }
+            set
+            {
+                _timestamp = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+            }
+        }
 
 
         private static string constring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
