@@ -16,7 +16,7 @@ function initSocket() {
             console.log("Gots a new note for an existing user");
             //user exists, shove the new note in there
             var noterow = generateNoteRow(note);
-            $user.append(noterow);
+            $('table',$user).append(noterow);
             self.port.emit("newNoteExistingUser", { "user": note.AppliesToUsername.toLowerCase(), "note": noterow });
         }
     }
@@ -99,7 +99,7 @@ function generateNoteContainer(user, notes) {
 function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
                 '<td class="SNSubName"><a href="https://reddit.com/r/'+note.SubName+'">' + note.SubName + '</span>' +
-                '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp + "Z").toLocaleString().replace(', ','<br />') + '</a></td>' +
+                '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ','<br />') + '</a></td>' +
                 '<td class="SNMessage"><p>' + note.Message + '</p></td></tr>';
 }
 

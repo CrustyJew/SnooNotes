@@ -1,5 +1,5 @@
 ﻿(function () {
-    window.addEventListener("snUtilDone", function () {
+    window.addEventListener("snUtilDone", function (e) {
         $('.sitetable').on('click', '.SNViewNotes', function (e) {
             showNotes(e);
         });
@@ -8,8 +8,9 @@
         });
         $('#SNContainer').on('click', '.SNNewNoteSubmit', function (e) {
             var ot = e.originalEvent.originalTarget;
-            submitNote(ot.attributes["SNUser"].value,ot.attributes["SNSub"].value,ot.attributes["SNLink"].value,$(ot).siblings('.SNNewMessage').val());
+            submitNote(ot.attributes["SNUser"].value,ot.attributes["SNSub"].value,ot.attributes["SNLink"].value,$(ot).siblings('.SNNewMessage').val(),3);
         });
+        e.target.removeEventListener(e.type, arguments.callee);
     });
     self.port.on("newNoteExistingUser", function (req) {
         var $user = $('#SnooNote-' + req.user + ' table');
