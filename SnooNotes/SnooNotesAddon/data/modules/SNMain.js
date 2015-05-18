@@ -36,9 +36,9 @@
 
         //do this lateish so we get all the listeners hooked up first
         if (!snUtil.LoggedIn) checkLoggedIn();
-        var sub = /reddit\.com\/r\/[a-z0-9]*\/?/i.exec(window.location);
+        var sub = /reddit\.com\/r\/[a-z0-9\+]*\/?/i.exec(window.location);
         snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
-        
+        snUtil.Subreddit = snUtil.Subreddit.indexOf('+') != -1  ? "" : snUtil.Subreddit; //if it contains a plus sign, it's a multi reddit, not a mod
         window.snUtil = snUtil;
         return;
     }(snUtil = window.snUtil || {}));

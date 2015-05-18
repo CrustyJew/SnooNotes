@@ -46,17 +46,21 @@ function getEntriesToProcess(){
     }
     else { //not browsing a specific subreddit
         $SNEntries.each(function (index, $ent) {
-            if (new RegExp("," + $('.tagline a.subreddit', $ent).innerHTML + ",", "i").test(snUtil.ModdedSubs)) {
-                var auth = ('.author', $ent);
-                if ($.inArray(snUtil.UsersWithNotes, auth.innerHTML)) {
-                    if ($('#SnooNote-' + auth.innerHTML).length == 0) {
-                        SNUsers.push(auth.innerHTML);
+            if (new RegExp("," + $('.tagline a.subreddit', $ent).html().replace('/r/','') + ",", "i").test(snUtil.ModdedSubs)) {
+                var auth = $('.author', $ent).html().toLowerCase();
+                if (new RegExp("," + auth + ",","i").test(snUtil.UsersWithNotes)) {
+                    if ($('#SnooNote-' + auth).length == 0 && SNUsers.indexOf(auth) == -1) {
+                        SNUsers.push(auth);
                     }
-                    $('<a SNUser="' + auth.innerHTML.toLowerCase() + '" class="SNViewNotes">[view note]</a>').insertAfter($ent);
+                    if ($ent.className.indexOf("SNFetching") == -1) {
+                        $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNViewNotes">[view note]</a>'));
+                        $ent.className = $ent.className + " SNFetching";
+                    }
                 }
                 else {
                     //TODO add icon for new note
-                    $ent.addClass('SNDone');
+                    $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNNoNotes">[add note]</a>'));
+                    $ent.className = $ent.className + " SNDone";
                 }
             }
         });

@@ -74,17 +74,28 @@ namespace SnooNotesAPI.Models
                 return con.Query<Note>(query, new { subnames });
             }
         }
+        public static Note GetNoteByID(int id)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
+                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
+                        + " where n.NoteID = @noteid";
 
-        public static string AddNoteForUser(Note anote)
+                return con.Query<Note>(query, new { noteid=id }).Single();
+            }
+        }
+        public static int AddNoteForUser(Note anote)
         {
             anote.AppliesToUsername = anote.AppliesToUsername.ToLower();
             using (SqlConnection con = new SqlConnection(constring))
             {
                 string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, n.Url, n.Timestamp) "
-                    + " values (@NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp) ";
-                con.Execute(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername, anote.Url, anote.Timestamp });
+                    + " values (@NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp);" 
+                    + " select cast(SCOPE_IDENTITY() as int)";
+                int id = con.Query<int>(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername, anote.Url, anote.Timestamp }).Single();
 
-                return "Success";
+                return id;
             }
         }
 
@@ -92,7 +103,7 @@ namespace SnooNotesAPI.Models
         {
             using (SqlConnection con = new SqlConnection(constring))
             {
-                string query = "delete n from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID where NoteID = @id and sr.SubName = @subname";
+                string query = "delete n from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID where NoteID = @noteid and sr.SubName = @subname";
                 con.Execute(query, new { anote.NoteID, anote.SubName });
                 return "Success";
             }

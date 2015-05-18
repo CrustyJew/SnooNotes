@@ -28,7 +28,12 @@
     background-color: grey;
     text-align: right;
 }
-
+.SNDeleteNote{
+    position:absolute;
+    top:1px;
+    right:5px;
+    cursor:pointer;
+}
 .SNViewContainer td {
     border: 1px grey solid;
     padding: 5px;
@@ -36,6 +41,7 @@
 
 .SNViewContainer tr {
     display: table-row;
+    position:relative;
 }
 
 .SNSubName, .SNSubmitter {
@@ -52,14 +58,19 @@
     border-radius: 0 10px 10px 0;
 }
 
-.SNCloseNote {
+.SNCloseNote, .SNCloseNewNote {
     color: black;
     cursor: pointer;
 }
 
-.SNViewNote {
+.SNViewNotes, .SNNoNotes {
     cursor: pointer;
 }
+
+.SNViewNotes{
+    font-weight:bold;
+}
+
 
 .SNNewNote {
     margin-left: -200px;

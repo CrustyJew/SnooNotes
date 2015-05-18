@@ -1,6 +1,8 @@
 ﻿
+var socketOpen = false;
 function initSocket() {
     console.log("connecting socket");
+    socketOpen = true;
     var snUpdate = $.connection.SnooNoteUpdates;
     snUpdate.client.receiveUpdate = function (note) { console.log(note.toString()); }
     snUpdate.client.addNewNote = function (note) {
@@ -10,7 +12,8 @@ function initSocket() {
             console.log("Gots a new note for a brand new user");
             //brand spankin new user
             var notecont = generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
-            self.port.emit("newNoteNewUser", { "user": note.AppliesToUsername.toLowerCase(), "note": notecont.outerHTML });
+            $('body').append(notecont);
+            self.port.emit("newNoteNewUser", { "user": note.AppliesToUsername.toLowerCase(), "note": notecont[0].outerHTML });
         }
         else {
             console.log("Gots a new note for an existing user");
@@ -21,7 +24,7 @@ function initSocket() {
         }
     }
 
-    snUpdate.client.deleteNote = function (noteID) {
+    snUpdate.client.deleteNote = function (user,noteID) {
         console.log("Removing a note!");
         var $note = $('tr#SN' + noteID);
         var $user = $note.closest('div');
@@ -30,10 +33,20 @@ function initSocket() {
         if ($('tr', $user).length == 0) {
             console.log("User dun run outta notes, so removing it too");
             $user.remove();
+            self.port.emit("deleteNoteAndUser", { "user": user, "noteID": noteID });
+        }
+        else {
+            self.port.emit("deleteNote", { "user": user, "noteID": noteID });
         }
 
     }
-
+    $.connection.hub.disconnected(function () {
+        if (socketOpen) {
+            setTimeout(function () {
+                $.connection.hub.start();
+            }, 5000); // Restart connection after 5 seconds.
+        }
+    });
     $.connection.hub.start().done(function () { console.log('Connected socket'); });
 
 }
@@ -44,7 +57,9 @@ function initSocket() {
     snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
     window.snUtil = snUtil;
     self.port.on("initWorker", initWorker);
-    self.port.on("requestUserNotes",requestUserNotes)
+    self.port.on("requestUserNotes", requestUserNotes);
+    self.port.on("closeSocket", closeSocket);
+    self.port.on("openSocket", initSocket);
     return;
 }(snUtil = window.snUtil || {}));
 
@@ -72,7 +87,10 @@ function initWorker() {
         error: handleAjaxError
     });
 }
-
+function closeSocket() {
+    socketOpen = false;
+    $.connection.hub.stop();
+}
 function initNoteData(data) {
     console.log("Building Note Worker HTML");
     $('body').empty();
@@ -100,7 +118,7 @@ function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
                 '<td class="SNSubName"><a href="https://reddit.com/r/'+note.SubName+'">' + note.SubName + '</span>' +
                 '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ','<br />') + '</a></td>' +
-                '<td class="SNMessage"><p>' + note.Message + '</p></td></tr>';
+                '<td class="SNMessage"><p>' + note.Message + '</p><a class="SNDeleteNote">[x]</a></td></tr>';
 }
 
 function getUsersWithNotes() {

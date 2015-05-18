@@ -36,7 +36,7 @@ namespace SnooNotesAPI.Signalr
 
         public void DeleteNote(Models.Note anote)
         {
-            Clients.Group(anote.SubName).deleteNote(anote.NoteID);
+            Clients.Group(anote.SubName).deleteNote(anote.AppliesToUsername,anote.NoteID);
         }
     
     }

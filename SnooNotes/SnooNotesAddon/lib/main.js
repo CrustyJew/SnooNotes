@@ -11,41 +11,41 @@ var loggedIn = false;
 var usersWithNotes = [];
 pageMod.PageMod({
     include: "*.reddit.com",
-    exclude: [/.*.reddit.com\/api\/v1\/authorize.*/,/.*.reddit.com\/login.*/],
+    exclude: [/.*.reddit.com\/api\/v1\/authorize.*/, /.*.reddit.com\/login.*/],
     contentStyleFile: [data.url("styles/SnooLogin.css"),
         data.url("styles/SNContainer.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
-        data.url("libs/jstorage.min.js"),
-        
         data.url("modules/SNLoad.js"),
         data.url("modules/SnooNotes.js"),
         data.url("modules/SnooLoginPopup.js"),
         data.url("modules/SNMain.js")],
-    attachTo: ["existing","frame", "top"],
+    attachTo: ["existing", "frame", "top"],
     onAttach: function (worker) {
         console.log(worker.tab.url);
         if (waitingToClose) {
             timers.clearTimeout(waitingToClose);
             waitingToClose = null;
         }
-       
-            array.add(activeWorkers, worker);
-        
-        if (!socketOpen && loggedIn) {
+
+        array.add(activeWorkers, worker);
+
+        /*if (!socketOpen && loggedIn) {
             openSocket();
-        }
+        }*/
         worker.on('detach', function (worker) {
             //var index = activeWorkers.indexOf(worker);
             //if (index != -1) {
             //    activeWorkers.splice(index, 1);
             //}
-            array.remove(activeWorkers,this)
+            array.remove(activeWorkers, this)
             checkStillModding();
         });
+        worker.on('pageshow', function () { array.add(activeWorkers, this); });
+        worker.on('pagehide', function () { array.remove(activeWorkers, this); });
         worker.port.on('loggedIn', function () {
             if (!loggedIn) {
                 loggedIn = true;
-                pageWorker.port.emit("initWorker");
+                pageWorker.port.emit("initWorker"); //socket opens here
             }
         });
         worker.port.emit("gotUsersWithNotes", usersWithNotes);
@@ -77,11 +77,11 @@ pageWorker.port.on("workerInitialized", function () {
     }
 });
 pageWorker.port.on("sendingUserNotes", function (req) {
-    activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes); 
+    activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes);
 });
 pageWorker.port.on("newNoteExistingUser", function (req) {
     for (var i = 0; i < activeWorkers.length; i++) {
-        activeWorkers[i].port.emit("newNoteExistingUser",req);
+        activeWorkers[i].port.emit("newNoteExistingUser", req);
     }
 });
 pageWorker.port.on("newNoteNewUser", function (req) {
@@ -90,7 +90,17 @@ pageWorker.port.on("newNoteNewUser", function (req) {
         activeWorkers[i].port.emit("updateUsersWithNotes", { "add": 1, "user": req.user });
     }
 });
-
+pageWorker.port.on("deleteNoteAndUser", function (req) {
+    for (var i = 0; i < activeWorkers.length; i++) {
+        activeWorkers[i].port.emit("deleteNoteAndUser", req);
+        activeWorkers[i].port.emit("updateUsersWithNotes", { "delete": 1, "user": req.user });
+    }
+});
+pageWorker.port.on("deleteNote", function (req) {
+    for (var i = 0; i < activeWorkers.length; i++) {
+        activeWorkers[i].port.emit("deleteNote", req);
+    }
+});
 function checkStillModding() {
     console.log("checking if Reddit is still open");
     if (activeWorkers.length <= 0) {
@@ -101,10 +111,13 @@ function closeSocket() {
     if (activeWorkers.length <= 0) {
         console.log("closing socket");
         socketOpen = false;
+        loggedIn = false;
+        pageWorker.port.emit("closeSocket");
     }
 }
 function openSocket() {
     console.log("opening socket");
     socketOpen = true;
+    pageWorker.port.emit("openSocket");
 }
 
