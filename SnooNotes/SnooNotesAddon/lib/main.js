@@ -15,6 +15,7 @@ pageMod.PageMod({
     contentStyleFile: [data.url("styles/SnooLogin.css"),
         data.url("styles/SNContainer.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
+        data.url("modules/SNFirefox.js"),
         data.url("modules/SNLoad.js"),
         data.url("modules/SnooNotes.js"),
         data.url("modules/SnooLoginPopup.js"),

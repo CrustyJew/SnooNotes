@@ -67,7 +67,7 @@ function getEntriesToProcess(){
 
     }
     if (SNUsers.length > 0) {
-        snUtil.GetNotesForUsers(SNUsers);
+        snUtil.getNotesForUsers(SNUsers);
     }
 
 }

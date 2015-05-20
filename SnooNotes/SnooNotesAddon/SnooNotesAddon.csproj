@@ -67,6 +67,7 @@
     <Content Include="data\libs\jquery.signalR-2.2.0.min.js" />
     <Content Include="data\libs\jstorage.min.js" />
     <Content Include="data\libs\snUpdatesHub.js" />
+    <Content Include="data\modules\SNFirefox.js" />
     <Content Include="data\modules\SNLoad.js" />
     <Content Include="data\modules\SnooLoginPopup.js" />
     <Content Include="data\modules\SNWorker.js" />
