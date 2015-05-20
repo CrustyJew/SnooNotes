@@ -51,10 +51,10 @@ function initSocket() {
 
 }
 (function (snUtil) {
-    //snUtil.ApiBase = "https://snoonotesapi.azurewebsites.net/api/";
-    snUtil.ApiBase = "https://localhost:44311/api/";
-    //snUtil.LoginAddress = "https://snoonotesapi.azurewebsites.net/Auth/Login";
-    snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+    snUtil.ApiBase = "https://snoonotes.com/api/";
+    //snUtil.ApiBase = "https://localhost:44311/api/";
+    snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+    //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
     window.snUtil = snUtil;
     self.port.on("initWorker", initWorker);
     self.port.on("requestUserNotes", requestUserNotes);
@@ -141,7 +141,7 @@ function requestUserNotes(req) {
         return;
     }
     var usersIDs = req.users.join('|').toLowerCase();
-    usersIDs = usersIDs.replace('|', ',#SnooNote-');
+    usersIDs = usersIDs.replace(/\|/g, ',#SnooNote-');
     usersIDs = "#SnooNote-" + usersIDs;
     var usersHTML = "";
     $(usersIDs).each(function (index, $ent) {
