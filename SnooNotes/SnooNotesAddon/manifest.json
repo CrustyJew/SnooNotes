@@ -1,0 +1,43 @@
+﻿{
+    "name": "SnooNotes",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "minimum_chrome_version": "26.0",
+    "description": "Meepster's Mod Management Mangler",
+    "background": {
+        "page": "data/WorkerPageChrome.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://reddit.com/*",
+                "https://reddit.com/*",
+                "http://*.reddit.com/*",
+                "https://*.reddit.com/*"
+            ],
+            "js": [
+                "data/libs/jquery-2.1.3.min.js",
+                "data/modules/SNChrome.js",
+                "data/modules/SNLoad.js",
+                "data/modules/SnooNotes.js",
+                "data/modules/SnooLoginPopup.js",
+                "data/modules/SNMain.js"
+            ],
+            "css": [
+                "data/styles/SNContainer.css",
+                "data/styles/SnooLogin.css"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "permissions": [
+		"cookies",
+		"tabs",
+		"history",
+		"https://snoonotes.com/*",
+		"http://reddit.com/*",
+		"https://reddit.com/*",
+		"http://*.reddit.com/*",
+		"https://*.reddit.com/*"
+	]
+}
