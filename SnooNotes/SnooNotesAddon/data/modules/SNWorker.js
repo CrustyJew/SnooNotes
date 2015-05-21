@@ -13,14 +13,16 @@ function initSocket() {
             //brand spankin new user
             var notecont = generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
             $('body').append(notecont);
-            self.port.emit("newNoteNewUser", { "user": note.AppliesToUsername.toLowerCase(), "note": notecont[0].outerHTML });
+            snBrowser.newNoteNewUser({ "user": note.AppliesToUsername.toLowerCase(), "note": notecont[0].outerHTML });
+            
         }
         else {
             console.log("Gots a new note for an existing user");
             //user exists, shove the new note in there
             var noterow = generateNoteRow(note);
-            $('table',$user).append(noterow);
-            self.port.emit("newNoteExistingUser", { "user": note.AppliesToUsername.toLowerCase(), "note": noterow });
+            $('table', $user).append(noterow);
+            snBrowser.newNoteExistingUser({ "user": note.AppliesToUsername.toLowerCase(), "note": noterow });
+            
         }
     }
 
@@ -33,10 +35,10 @@ function initSocket() {
         if ($('tr', $user).length == 0) {
             console.log("User dun run outta notes, so removing it too");
             $user.remove();
-            self.port.emit("deleteNoteAndUser", { "user": user, "noteID": noteID });
+            snBrowser.deleteNoteAndUser( { "user": user, "noteID": noteID });    
         }
         else {
-            self.port.emit("deleteNote", { "user": user, "noteID": noteID });
+            snBrowser.deleteNote({ "user": user, "noteID": noteID })
         }
 
     }
@@ -51,15 +53,13 @@ function initSocket() {
 
 }
 (function (snUtil) {
+    browserInit();
     snUtil.ApiBase = "https://snoonotes.com/api/";
     //snUtil.ApiBase = "https://localhost:44311/api/";
     snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
     //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-    window.snUtil = snUtil;
-    self.port.on("initWorker", initWorker);
-    self.port.on("requestUserNotes", requestUserNotes);
-    self.port.on("closeSocket", closeSocket);
-    self.port.on("openSocket", initSocket);
+    
+
     return;
 }(snUtil = window.snUtil || {}));
 
@@ -81,8 +81,8 @@ function initWorker() {
         success: function (d, s, x) {
             initNoteData(d);
             initSocket();
-            console.log("pageWorker: initialized")
-            self.port.emit("workerInitialized", {});
+            console.log("pageWorker: initialized");
+            snBrowser.workerInitialized({});
         },
         error: handleAjaxError
     });
@@ -129,7 +129,8 @@ function getUsersWithNotes() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
             snUtil.UsersWithNotes = d;
-            self.port.emit("gotUsersWithNotes", d);
+            snBrowser.gotUsersWithNotes(d);
+            
         },
         error: handleAjaxError
     });
@@ -147,6 +148,6 @@ function requestUserNotes(req) {
     $(usersIDs).each(function (index, $ent) {
         usersHTML += $ent.outerHTML;
     });
-   
-    self.port.emit("sendingUserNotes", { "notes": usersHTML, "worker": req.worker });
+    snBrowser.sendUserNotes({ "notes": usersHTML, "worker": req.worker });
+    
 }

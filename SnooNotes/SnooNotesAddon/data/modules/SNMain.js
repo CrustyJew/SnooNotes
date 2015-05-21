@@ -10,6 +10,10 @@
         if ($('#SNContainer').length == 0) {
             $('body').append($('<div id="SNContainer"></div>'));
         }
+        snUtil.reinitWorker = function () {
+            var event = new CustomEvent("snUtilDone");
+            window.dispatchEvent(event);
+        }
         snUtil.setUsersWithNotes = function(users){
             if (!users) {
                 return;
@@ -67,7 +71,7 @@ function checkLoggedIn() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
             snUtil.LoggedIn = true;
-            self.port.emit("loggedIn");
+            snBrowser.loggedIn();
             if (!snUtil.ModdedSubs) setModdedSubs();
         },
         error: handleAjaxError
@@ -81,18 +85,12 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
 }
 
 (function () {
-    //window.addEventListener("snReadyToInit", function () {
-    self.port.on("reinitWorker", function () {
-        //initSnooNotes();
-        var event = new CustomEvent("snUtilDone");
-        window.dispatchEvent(event);
-    });
+   
     jQuery.expr[":"].Contains = jQuery.expr.createPseudo(function (arg) {
         return function (elem) {
             return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
         };
     });
     initSnooNotes();
-    
-    //});
+
 })();
