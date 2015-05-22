@@ -1,12 +1,13 @@
 {
-    "name": "new",
-    "title": "new",
-    "id": "jid1-iRRa9MN4XZNmKQ",
-    "description": "a basic add-on",
+    "name": "snoonotes",
+    "title": "SnooNotes",
+    "id": "jid1-iRRa9MN4XZNmKQ@jetpack",
+    "description": "Meepster's Mod Mangling Mess",
     "author": "",
     "license": "MPL 2.0",
-    "version": "0.1",
-    "permissions": { 
-        "cross-domain-content": ["https://snoonotesapi.azurewebsites.net/","https://snoonotes.azurewebsites.net/","https://localhost:44311/"]
+    "version": "0.0.1",
+    "main": "lib/main.js",
+    "permissions": {
+        "cross-domain-content": [ "https://snoonotesapi.azurewebsites.net/", "https://snoonotes.com/", "https://localhost:44311/" ]
     }
 }

@@ -67,12 +67,18 @@
     <Content Include="data\libs\jquery.signalR-2.2.0.min.js" />
     <Content Include="data\libs\jstorage.min.js" />
     <Content Include="data\libs\snUpdatesHub.js" />
+    <Content Include="data\modules\SNChrome.js" />
+    <Content Include="data\modules\SNFirefox.js" />
     <Content Include="data\modules\SNLoad.js" />
     <Content Include="data\modules\SnooLoginPopup.js" />
     <Content Include="data\modules\SNWorker.js" />
+    <Content Include="data\modules\SNWorkerChrome.js" />
+    <Content Include="data\modules\SNWorkerFirefox.js" />
     <Content Include="data\styles\SNContainer.css" />
     <Content Include="data\styles\SnooLogin.css" />
+    <Content Include="data\WorkerPageChrome.html" />
     <Content Include="data\WorkerPage.html" />
+    <Content Include="lib\background.js" />
     <Content Include="lib\main.js" />
     <Content Include="data\modules\SNMain.js" />
     <Content Include="data\modules\SnooNotes.js" />
@@ -85,6 +91,7 @@
     <Content Include="package.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="manifest.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

@@ -15,6 +15,7 @@ pageMod.PageMod({
     contentStyleFile: [data.url("styles/SnooLogin.css"),
         data.url("styles/SNContainer.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
+        data.url("modules/SNFirefox.js"),
         data.url("modules/SNLoad.js"),
         data.url("modules/SnooNotes.js"),
         data.url("modules/SnooLoginPopup.js"),
@@ -61,6 +62,7 @@ var pageWorker = require("sdk/page-worker").Page({
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
         data.url("libs/jquery.signalR-2.2.0.min.js"),
         data.url("libs/snUpdatesHub.js"),
+        data.url("modules/SNWorkerFirefox.js"),
         data.url("modules/SNWorker.js")],
     contentURL: data.url("WorkerPage.html")
 });
@@ -76,7 +78,7 @@ pageWorker.port.on("workerInitialized", function () {
         activeWorkers[i].port.emit("reinitWorker");
     }
 });
-pageWorker.port.on("sendingUserNotes", function (req) {
+pageWorker.port.on("sendUserNotes", function (req) {
     activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes);
 });
 pageWorker.port.on("newNoteExistingUser", function (req) {
@@ -85,12 +87,21 @@ pageWorker.port.on("newNoteExistingUser", function (req) {
     }
 });
 pageWorker.port.on("newNoteNewUser", function (req) {
+    var x = usersWithNotes.indexOf(req.user);
+    if (x == -1)
+    {
+        usersWithNotes.push(req.user);
+    }
     for (var i = 0; i < activeWorkers.length; i++) {
         activeWorkers[i].port.emit("newNoteNewUser", req);
         activeWorkers[i].port.emit("updateUsersWithNotes", { "add": 1, "user": req.user });
     }
 });
 pageWorker.port.on("deleteNoteAndUser", function (req) {
+    var x = usersWithNotes.indexOf(req.user);
+    if (x > -1) {
+        usersWithNotes.splice(x,1);
+    }
     for (var i = 0; i < activeWorkers.length; i++) {
         activeWorkers[i].port.emit("deleteNoteAndUser", req);
         activeWorkers[i].port.emit("updateUsersWithNotes", { "delete": 1, "user": req.user });
