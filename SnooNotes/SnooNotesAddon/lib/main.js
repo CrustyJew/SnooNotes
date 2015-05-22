@@ -49,7 +49,7 @@ pageMod.PageMod({
                 pageWorker.port.emit("initWorker"); //socket opens here
             }
         });
-        worker.port.emit("gotUsersWithNotes", usersWithNotes);
+        if (loggedIn) { worker.port.emit("gotUsersWithNotes", usersWithNotes); }
         worker.port.on("requestUserNotes", function (users) {
             pageWorker.port.emit("requestUserNotes", { "users": users, "worker": activeWorkers.indexOf(worker) });
         });
@@ -74,9 +74,9 @@ pageWorker.port.on("gotUsersWithNotes", function (users) {
     }
 });
 pageWorker.port.on("workerInitialized", function () {
-    for (var i = 0; i < activeWorkers.length; i++) {
+    /*for (var i = 0; i < activeWorkers.length; i++) {
         activeWorkers[i].port.emit("reinitWorker");
-    }
+    }*/
 });
 pageWorker.port.on("sendUserNotes", function (req) {
     activeWorkers[req.worker].port.emit("receiveUserNotes", req.notes);

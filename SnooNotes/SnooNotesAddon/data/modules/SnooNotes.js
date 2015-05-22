@@ -7,15 +7,15 @@
             closeNote(e);
         });
         $('#SNContainer').on('click', '.SNCloseNewNote', function (e) {
-            var $newnote = $(e.originalEvent.originalTarget).closest('.SNNew');
+            var $newnote = $(e.target).closest('.SNNew');
             $newnote.hide();
         });
         $('#SNContainer').on('click', '.SNNewNoteSubmit', function (e) {
-            var ot = e.originalEvent.originalTarget;
+            var ot = e.target;
             submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $(ot).siblings('.SNNewMessage').val(), 3);
         });
         $('#SNContainer').on('click', '.SNDeleteNote', function (e) {
-            var ot = e.originalEvent.originalTarget;
+            var ot = e.target;
             var id = $(ot).closest('tr').attr("id").replace("SN", "");
             $.ajax({
                 url: window.snUtil.ApiBase + "note/Delete?id=" + id,
@@ -25,10 +25,7 @@
             });
         });
         $('#siteTable,.commentarea').on('click', '.SNNoNotes', function (e) {
-            var $ot = {};
-
-            if (e.originalEvent) $ot = $(e.originalEvent.originalTarget);
-            else $ot = $(e.target);
+            var $ot = $(e.target);
 
             var user = $ot.siblings('a.author:first')[0].innerHTML.toLowerCase();
             var $newNote = $('#SnooNote-' + user);
@@ -124,16 +121,16 @@ function deleteNote(req) {
 
 
 function showNotes(e) {
-    var $sn = $('#SnooNote-' + e.originalEvent.originalTarget.attributes["SNUser"].value);
+    var $sn = $('#SnooNote-' + e.target.attributes["SNUser"].value);
     $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
     var $submit = $('.SNNewNoteSubmit', $sn);
-    var $ot = $(e.originalEvent.originalTarget);
+    var $ot = $(e.target);
     $submit.attr("SNSub", window.snUtil.Subreddit ? window.snUtil.Subreddit : $ot.siblings("a.subreddit:first")[0].innerHTML);
     $submit.attr("SNLink", $('ul li.first a', $ot.closest('div.entry')).attr('href'));
 }
 
 function closeNote(e) {
-    $(e.originalEvent.originalTarget).closest('.SNViewContainer').hide();
+    $(e.target).closest('.SNViewContainer').hide();
 }
 
 function submitNote(user, sub, link, message, type) {

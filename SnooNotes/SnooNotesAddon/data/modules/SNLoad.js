@@ -1,14 +1,23 @@
 ﻿function processSnooNotes(){
     getEntriesToProcess();
 }
-
+var retrynum = 0;
 function getEntriesToProcess(){
     var $SNEntries = {};
     $SNEntries = $('.sitetable .thing .entry:not(.SNDone), .commentarea .thing .entry:not(.SNDone)');
     
 
     var SNUsers = [];
-    if (!snUtil.UsersWithNotes) return; //fuck on outa here if no users with notes;
+    if (!snUtil.UsersWithNotes) {
+        if (retrynum > 20) return;//fuck on outa here if something is wrong with user;
+        else {
+            retrynum += 1;
+            console.log("Users was undefined " + retrynum + " times!");
+            setTimeout(getEntriesToProcess, retrynum * 5 + 20 );
+            return;
+        }
+    }
+    retrynum = 0;
     if(snUtil.Subreddit){
         if (new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
             console.log("Viewing sub that you mod");

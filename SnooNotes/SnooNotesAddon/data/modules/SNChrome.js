@@ -1,4 +1,5 @@
 ﻿function browserInit() {
+    
     (function (snBrowser) {
         snBrowser.requstUserNotes = function(users){
             chrome.runtime.sendMessage({"method":"requestUserNotes","users": users});
@@ -6,6 +7,7 @@
         snBrowser.loggedIn = function () {
             chrome.runtime.sendMessage({ "method": "loggedIn" });
         }
+
         //Listeners
         chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
             switch (request.method){
@@ -19,7 +21,7 @@
                     snUtil.updateUsersWithNotes(request.req);
                     break;
                 case "reinitWorker" :
-                    snUtil.reinitWorker();
+                    //snUtil.reinitWorker();
                     break;
                 case "newNoteExistingUser":
                     newNoteExistingUser(request.req); //snoonotes.js
@@ -35,6 +37,12 @@
                     break;
                 default:
                     break;
+            }
+        });
+
+        chrome.runtime.sendMessage({ "method": "getUsersWithNotes" }, function (users) {
+            if (users) {
+                snUtil.setUsersWithNotes(users);
             }
         });
         

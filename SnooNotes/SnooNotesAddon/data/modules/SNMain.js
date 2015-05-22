@@ -1,6 +1,6 @@
 ﻿function initSnooNotes() {
     (function (snUtil) {
-        browserInit(); //init browser first to attach listeners etc
+        
 
         snUtil.ApiBase = "https://snoonotes.com/api/";
         //snUtil.ApiBase = "https://localhost:44311/api/";
@@ -38,8 +38,8 @@
         snUtil.getNotesForUsers = function (users) {
             snBrowser.requstUserNotes(users);
         };
-        
-
+        //have to have the snUtil functions ready >.<
+        browserInit(); //init browser first to attach listeners etc
         //do this lateish so we get all the listeners hooked up first
         if (!snUtil.LoggedIn) checkLoggedIn();
         var sub = /reddit\.com\/r\/[a-z0-9\+]*\/?/i.exec(window.location);

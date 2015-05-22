@@ -41,7 +41,6 @@
 
 .SNViewContainer tr {
     display: table-row;
-    position:relative;
 }
 
 .SNSubName, .SNSubmitter {
@@ -55,7 +54,8 @@
 }
 
 .SNMessage {
-    border-radius: 0 10px 10px 0;
+    border-radius: 0 10px 10px 0; 
+    position:relative;
 }
 
 .SNCloseNote, .SNCloseNewNote {
