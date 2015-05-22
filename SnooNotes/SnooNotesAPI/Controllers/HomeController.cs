@@ -7,9 +7,14 @@ using System.Web.Mvc;
 namespace SnooNotesAPI.Controllers {
 	public class HomeController : Controller {
 		public ActionResult Index() {
-			ViewBag.Title = "Home Page";
+			ViewBag.Title = "SnooNotes";
 
 			return View();
 		}
+        public ActionResult GetTheAwesome()
+        {
+
+            return File("/Addon/snoonotes.xpi", "application/x-xpinstall");
+        }
 	}
 }
