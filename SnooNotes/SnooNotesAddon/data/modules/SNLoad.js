@@ -8,7 +8,7 @@ function getEntriesToProcess(){
     
 
     var SNUsers = [];
-    if (!snUtil.UsersWithNotes || snUtil.UsersWithNotes == ",,") return; //fuck on outa here if no users with notes;
+    if (!snUtil.UsersWithNotes) return; //fuck on outa here if no users with notes;
     if(snUtil.Subreddit){
         if (new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
             console.log("Viewing sub that you mod");
