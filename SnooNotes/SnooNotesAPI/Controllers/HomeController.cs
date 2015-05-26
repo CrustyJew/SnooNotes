@@ -13,8 +13,18 @@ namespace SnooNotesAPI.Controllers {
 		}
         public ActionResult GetTheAwesome()
         {
-
-            return File("/Addon/snoonotes.xpi", "application/x-xpinstall");
+            if (Request.Browser.Browser == "Chrome")
+            {
+                return Redirect("https://chrome.google.com/webstore/detail/snoonotes/lfoenkalfeojpdlgiccblfbjcjpanneg");
+            }
+            else if (Request.Browser.Browser == "Firefox")
+            {
+                return File("/Addon/snoonotes.xpi", "application/x-xpinstall");
+            }
+            else
+            {
+                return View("UnrecognizedBrowser");
+            }
         }
 	}
 }

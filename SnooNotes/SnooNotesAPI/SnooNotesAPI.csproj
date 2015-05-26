@@ -213,6 +213,8 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Addon\snoonotes-0.0.1.xpi" />
+    <Content Include="Addon\snoonotes.xpi" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -251,7 +253,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Addon\snoonotes.xpi" />
+    <Content Include="Addon\snoonotes-0.0.2.xpi" />
+    <None Include="Addon\updates.rdf" />
     <None Include="Properties\PublishProfiles\adsf.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi %283%29.pubxml" />
@@ -285,6 +288,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Auth\Success.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
+    <Content Include="Views\Home\UnrecognizedBrowser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RedditSharp\RedditSharp.csproj">

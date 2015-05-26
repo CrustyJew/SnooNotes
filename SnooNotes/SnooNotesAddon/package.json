@@ -1,12 +1,14 @@
 {
     "name": "snoonotes",
     "title": "SnooNotes",
-    "id": "jid1-iRRa9MN4XZNmKQ@jetpack",
+    "id": "SnooNotes@snoonotes.com",
     "description": "Meepster's Mod Mangling Mess",
     "author": "",
     "license": "MPL 2.0",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "lib/main.js",
+    "updateURL": "https://snoonotes.com/Addon/updates.rdf", 
+    "updateLink": "https://snoonotes.com/Addon/snoonotes.xpi",
     "permissions": {
         "cross-domain-content": [ "https://snoonotesapi.azurewebsites.net/", "https://snoonotes.com/", "https://localhost:44311/" ]
     }
