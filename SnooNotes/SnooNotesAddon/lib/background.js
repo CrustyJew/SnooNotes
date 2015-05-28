@@ -1,7 +1,7 @@
 ﻿var waitingToClose;
 var loggedIn = false;
 var usersWithNotes = [];
-
+var cssReady = false;
 (function () {
     initBrowser();
 });
@@ -63,7 +63,29 @@ function gotUsersWithNotes(users) {
 function sendUserNotes(req) {
     chrome.tabs.sendMessage(req.worker, { "method": "receiveUserNotes", "notes": req.notes });
 }
-
+function sendNoteTypeCSS(css) {
+    cssReady = true;
+    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            chrome.tabs.sendMessage(tabs[i].id, { "method": "setNoteTypeCSS", "css": css });
+        }
+    });
+}
+function getNoteTypeCSS(sendResponse, attempts) {
+    attempts = attempts ? attempts + 1 : 1;
+    if (attempts > 100) { return;} //this aint happening
+    if (loggedIn) {
+        if (cssReady) {
+            sendResponse(snUtil.NoteStyles.innerHTML)
+        }
+        else {
+            setTimeout(getNoteTypeCSS(sendResponse, attempts),250);
+        }
+    }
+    else {
+        setTimeout(getNoteTypeCSS(sendResponse, attempts), 500);
+    }
+}
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.method) {
         case 'loggedIn':
@@ -83,6 +105,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'getUsersWithNotes':
             sendResponse(loggedIn?usersWithNotes:undefined);
+            break;
+        case 'getNoteTypeCSS':
+            getNoteTypeCSS(sendResponse, 0);
             break;
         default:
             break;

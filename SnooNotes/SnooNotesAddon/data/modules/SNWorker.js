@@ -54,11 +54,13 @@ function initSocket() {
 }
 (function (snUtil) {
     browserInit();
-    snUtil.ApiBase = "https://snoonotes.com/api/";
-    //snUtil.ApiBase = "https://localhost:44311/api/";
-    snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-    //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+    //snUtil.ApiBase = "https://snoonotes.com/api/";
+    //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+    snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+    snUtil.ApiBase = "https://localhost:44311/api/";
     
+    snUtil.NoteStyles = document.createElement('style');
+    document.head.appendChild(snUtil.NoteStyles);
 
     return;
 }(snUtil = window.snUtil || {}));
@@ -73,6 +75,7 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
 function initWorker() {
     console.log("initWorker");
     getUsersWithNotes();
+    getNoteTypes();
     $.ajax({
         url: snUtil.ApiBase + "Note/InitializeNotes",
         method: "GET",
@@ -115,7 +118,7 @@ function generateNoteContainer(user, notes) {
     return $usernote;
 }
 function generateNoteRow(note) {
-    return '<tr id="SN' + note.NoteID + '" class="' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
+    return '<tr id="SN' + note.NoteID + '" class="SN' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
                 '<td class="SNSubName"><a href="https://reddit.com/r/'+note.SubName+'">' + note.SubName + '</span>' +
                 '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ','<br />') + '</a></td>' +
                 '<td class="SNMessage"><p>' + note.Message + '</p><a class="SNDeleteNote">[x]</a></td></tr>';
@@ -150,4 +153,38 @@ function requestUserNotes(req) {
     });
     snBrowser.sendUserNotes({ "notes": usersHTML, "worker": req.worker });
     
+}
+
+function getNoteTypes() {
+    console.log("Getting purdy things..");
+    $.ajax({
+        url: snUtil.ApiBase + "NoteType/Get",
+        method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function(d,s,x) {
+            initNoteTypeData(d);
+        },
+        error: handleAjaxError
+    });
+}
+
+function initNoteTypeData(data) {
+    var cssString = '';
+    for (var key in data) {
+        var subCSSString = '/***start ' + key + '***/';
+        var subData = data[key];
+        for (var i = 0; i < subData.length; i++) {
+            var noteType = subData[i];
+            subCSSString += '#SNContainer .SN' + key + noteType.NoteTypeID +
+                '{' +
+                'color: #' + noteType.ColorCode + ';';
+            subCSSString += noteType.Bold ? 'font-weight: bold;' : '';
+            subCSSString += noteType.Italic ? 'font-style: italic;' : '';
+            subCSSString += '}';
+        }
+        subCSSString += '/***end ' + key + '***/';
+        cssString += subCSSString
+    }
+    snUtil.NoteStyles.innerHTML = cssString;
+    snBrowser.sendNoteTypeCSS(cssString);
 }

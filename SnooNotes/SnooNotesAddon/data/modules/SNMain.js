@@ -2,14 +2,16 @@
     (function (snUtil) {
         
 
-        snUtil.ApiBase = "https://snoonotes.com/api/";
-        //snUtil.ApiBase = "https://localhost:44311/api/";
-        snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-        //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+        //snUtil.ApiBase = "https://snoonotes.com/api/";
+        //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+        snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+        snUtil.ApiBase = "https://localhost:44311/api/";
         
         if ($('#SNContainer').length == 0) {
             $('body').append($('<div id="SNContainer"></div>'));
         }
+        snUtil.NoteStyles = document.createElement('style');
+        $('#SNContainer').append(snUtil.NoteStyles);
         snUtil.reinitWorker = function () {
             var event = new CustomEvent("snUtilDone");
             window.dispatchEvent(event);

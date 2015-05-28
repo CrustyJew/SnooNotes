@@ -12,12 +12,18 @@ namespace SnooNotesAPI.Controllers
     {
         
         // GET: api/NoteType
-        public IEnumerable<Models.NoteType> Get()
+        public Dictionary<string, IEnumerable<Models.BasicNoteType>> Get()
         {
             List<string> roles = new List<string>();
             ClaimsIdentity id = (User.Identity as ClaimsIdentity);
             roles = id.Claims.Where(c => c.Type == id.RoleClaimType).Select(c => c.Value).ToList();
-            return Models.NoteType.GetNoteTypesForSubs(roles);
+            var notetypes = Models.NoteType.GetNoteTypesForSubs(roles);
+            Dictionary<string, IEnumerable<Models.BasicNoteType>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNoteType>>();
+            foreach(string sub in roles){
+                var basicNoteTypesForSub = notetypes.Where(t => t.SubName == sub).Select(t => new Models.BasicNoteType(){ Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder= t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID}).OrderBy(bt => bt.DisplayOrder);
+                toReturn.Add(sub,basicNoteTypesForSub);
+            }
+            return toReturn;
         }
 
         // GET: api/NoteType/5

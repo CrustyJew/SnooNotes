@@ -35,6 +35,8 @@
                 case "deleteNote" :
                     deleteNote(request.req); //snoonotes.js
                     break;
+                case "setNoteTypeCSS":
+                    snUtil.NoteStyles.innerHTML = request.css;
                 default:
                     break;
             }
@@ -44,6 +46,9 @@
             if (users) {
                 snUtil.setUsersWithNotes(users);
             }
+        });
+        chrome.runtime.sendMessage({ "method": "getNoteTypeCSS" }, function (css) {
+            snUtil.NoteStyles.innerHTML = css;
         });
         
     }(snBrowser = window.snUtil || {}));

@@ -16,11 +16,13 @@ namespace SnooNotesAPI
         private void ConfigureAuth(IAppBuilder app)
         {
             var cookieOptions = new CookieAuthenticationOptions
-            {
+            {  
                 LoginPath = new PathString("/Auth/Login"),
                 CookieName = "bog", ExpireTimeSpan = new TimeSpan(10000,0,0,0,0),
                 Provider = new CookieAuthenticationProvider
-                {
+                { OnException = context =>{
+                    var x = context;
+                },
                     OnValidateIdentity =  context =>
                     {
                         bool expired = DateTime.Parse(context.Identity.FindFirst("urn:reddit:accessexpires").Value) < DateTime.UtcNow;

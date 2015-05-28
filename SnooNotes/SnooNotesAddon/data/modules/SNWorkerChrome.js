@@ -21,6 +21,9 @@
         snBrowser.sendUserNotes = function (req) {
             sendUserNotes(req);
         }
+        snBrowser.sendNoteTypeCSS = function (css) {
+            sendNoteTypeCSS(css);
+        }
         //listeners
         
 

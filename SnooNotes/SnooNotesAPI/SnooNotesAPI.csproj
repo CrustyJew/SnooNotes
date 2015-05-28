@@ -200,6 +200,7 @@
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Models\BasicNote.cs" />
+    <Compile Include="Models\BasicNoteType.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteType.cs" />
     <Compile Include="Models\Subreddit.cs" />
@@ -270,12 +271,6 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\Site.css" />
