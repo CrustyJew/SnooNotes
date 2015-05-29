@@ -32,6 +32,9 @@
         self.port.on("deleteNote", function (req) {
             deleteNote(req); //snoonotes.js
         });
+        self.port.on("setNoteTypeCSS", function (css) {
+            snUtil.NoteStyles.innerHTML = css;
+        });
     }(snBrowser = window.snUtil || {}));
    
 }

@@ -175,7 +175,7 @@ function initNoteTypeData(data) {
         var subData = data[key];
         for (var i = 0; i < subData.length; i++) {
             var noteType = subData[i];
-            subCSSString += '#SNContainer .SN' + key + noteType.NoteTypeID +
+            subCSSString += '#SNContainer .SN' + key + noteType.NoteTypeID + ' .SNMessage' +
                 '{' +
                 'color: #' + noteType.ColorCode + ';';
             subCSSString += noteType.Bold ? 'font-weight: bold;' : '';
