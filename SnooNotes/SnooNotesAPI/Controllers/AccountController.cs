@@ -32,7 +32,19 @@ namespace SnooNotesAPI.Controllers
 
         private ClaimsIdentity GetModeratedSubreddits(ClaimsIdentity ident)
         {
-
+            bool expired = DateTime.Parse(ident.FindFirst("urn:reddit:accessexpires").Value) < DateTime.UtcNow;
+            if (expired)
+            {
+                string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
+                string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
+                string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
+                RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
+                string newaccesstoken = ap.GetOAuthToken(ident.FindFirst("urn:reddit:refresh").Value, true);
+                ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accesstoken").First());
+                ident.AddClaim(new Claim("urn:reddit:accesstoken", newaccesstoken));
+                ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
+                ident.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(45).ToString()));
+            }
             RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.FindFirst("urn:reddit:accesstoken").Value);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();

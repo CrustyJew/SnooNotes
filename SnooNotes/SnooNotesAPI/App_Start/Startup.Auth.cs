@@ -25,13 +25,7 @@ namespace SnooNotesAPI
                 },
                     OnValidateIdentity =  context =>
                     {
-                        bool expired = DateTime.Parse(context.Identity.FindFirst("urn:reddit:accessexpires").Value) < DateTime.UtcNow;
-                        if (expired)
-                        {
-                            GetNewToken(context);
-                            ClaimsIdentity ident = GetModeratedSubreddits(context.Identity as ClaimsIdentity);
-                            HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, ident);
-                        }
+                        
                         var newResponseGrant = context.OwinContext.Authentication.AuthenticationResponseGrant;
                         if (newResponseGrant != null)
                         {
