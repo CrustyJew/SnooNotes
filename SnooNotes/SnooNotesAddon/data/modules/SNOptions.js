@@ -61,3 +61,12 @@ function unsquashLink(subreddit, permalink) {
 
     return link;
 }
+
+var insert = "";
+$.each(notes, function (username, user) {
+    $.each(user.notes, function (i, note) {
+        insert += "('" + note.type + "',2,'" + note.mod + "','" + note.note.replace(/'/g, "''") + "','" + username + "','https://reddit.com" + note.link + "','" + note.time + "'),";
+    })
+})
+
+insert;

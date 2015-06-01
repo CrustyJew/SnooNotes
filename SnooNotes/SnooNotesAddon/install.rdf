@@ -5,7 +5,7 @@
           <em:type>2</em:type>
           <em:bootstrap>true</em:bootstrap>
           <em:unpack>false</em:unpack>
-          <em:version>0.0.2</em:version>
+          <em:version>0.0.3</em:version>
           <em:name>SnooNotes</em:name>
           <em:description>Meepster&apos;s Mod Mangling Mess</em:description>
           <em:creator/>
@@ -15,10 +15,7 @@
               <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
               <em:minVersion>38.0a1</em:minVersion>
               <em:maxVersion>39.0</em:maxVersion>
-</Description>
-</em:targetApplication>
-
-
+            </Description>
+          </em:targetApplication>
     </Description>
-
 </RDF>

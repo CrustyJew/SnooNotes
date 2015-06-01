@@ -255,10 +255,8 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Addon\snoonotes-0.0.2.xpi" />
+    <Content Include="Addon\snoonotes-0.0.3.xpi" />
     <None Include="Addon\updates.rdf" />
-    <None Include="Properties\PublishProfiles\adsf.pubxml" />
-    <None Include="Properties\PublishProfiles\SnooNotesApi %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\SnooNotesApi %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
