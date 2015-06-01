@@ -29,6 +29,16 @@
 
             var user = $ot.siblings('a.author:first')[0].innerHTML.toLowerCase();
             var $newNote = $('#SnooNote-' + user);
+            var sub = window.snUtil.Subreddit;
+            if (!sub) {
+                //not a comment or browsing a sub you mod
+                if (window.snUtil.Modmail) {
+                    sub = $ot.closest('.thing').find('span.correspondent a')[0].innerHTML.substring(3).replace(/\//g, '');
+                }
+                else {
+                    sub = $ot.siblings("a.subreddit:first")[0].innerHTML;
+                }
+            }
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
                 $newNote = $('<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
                     '<div class="SNHeader"><a class="SNCloseNewNote">Cancel [x]</a></div>' +
@@ -36,7 +46,7 @@
                     '<textarea placeholder="Add a new note for user..." class="SNNewMessage" />' +
                     '<button type="button" class="SNNewNoteSubmit" ' +
                         'SNUser="' + user + '" ' +
-                        'SNSub="' + window.snUtil.Subreddit + '" ' + //only needs snUtil.Subreddit because if it's a comment then it has to be on a subreddit page
+                        'SNSub="' + sub  + '" ' + 
                         'SNLink="' + $('ul li.first a', $ot.closest('div.entry')).attr('href') + '" ' +
                     '>Submit</button>  ' +
                     '</div></div>');
@@ -97,11 +107,12 @@ function deleteNoteAndUser(req) {
     if ($user.length > 0) {
         if ($user.is(":visible")) {
             var link = $('.SNNewNoteSubmit', $user).attr('SNLink');
-            link = /\/r\/.*/.exec(link)[0]; //trim out some of the prefix garbage that might cause issues if browsing with https etc.
-            var $entry = $('#siteTable .entry a[href$="' + link + '"], .commentarea .entry a[href$="' + link + '"]').closest('div.entry');
+            //displaying add new note again doesn't work quite right so axing it for now.
+            //link = /\/r\/.*/.exec(link)[0]; //trim out some of the prefix garbage that might cause issues if browsing with https etc.
+            //var $entry = $('#siteTable .entry a[href$="' + link + '"], .commentarea .entry a[href$="' + link + '"]').closest('div.entry');
 
             $user.remove();
-            //$('.SNNoNotes', $entry).trigger('click'); this doesn't work quite right so axing it for now.
+            //$('.SNNoNotes', $entry).trigger('click'); 
         }
         else {
             $user.remove();
@@ -125,7 +136,17 @@ function showNotes(e) {
     $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
     var $submit = $('.SNNewNoteSubmit', $sn);
     var $ot = $(e.target);
-    $submit.attr("SNSub", window.snUtil.Subreddit ? window.snUtil.Subreddit : $ot.siblings("a.subreddit:first")[0].innerHTML);
+    var sub = window.snUtil.Subreddit;
+    if (!sub) {
+        //not a comment or browsing a sub you mod
+        if (window.snUtil.Modmail) {
+            sub = $ot.closest('.thing').find('span.correspondent a')[0].innerHTML.substring(3).replace(/\//g, '');
+        }
+        else {
+            sub = $ot.siblings("a.subreddit:first")[0].innerHTML;
+        }
+    }
+    $submit.attr("SNSub", sub );
     $submit.attr("SNLink", $('ul li.first a', $ot.closest('div.entry')).attr('href'));
 }
 

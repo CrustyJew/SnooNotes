@@ -18,10 +18,10 @@ function getEntriesToProcess(){
         }
     }
     retrynum = 0;
-    if(snUtil.Subreddit){
-        if (new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
-            console.log("Viewing sub that you mod");
-            $('.author', $SNEntries).each(function (index, ent) {
+    if(snUtil.Subreddit || snUtil.Modmail){
+        if (snUtil.Modmail || new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
+            console.log("Viewing sub that you mod or modmail");
+            $('.author:not(".moderator")', $SNEntries).each(function (index, ent) {
                 var $container = $(ent).closest('div');
                 //console.log("," + ent.innerHTML + "," + " ------ " + snUtil.UsersWithNotes);
                 if (new RegExp("," + ent.innerHTML + ",","i").test(snUtil.UsersWithNotes)) {

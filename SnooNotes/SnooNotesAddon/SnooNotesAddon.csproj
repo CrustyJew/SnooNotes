@@ -71,6 +71,7 @@
     <Content Include="data\modules\SNFirefox.js" />
     <Content Include="data\modules\SNLoad.js" />
     <Content Include="data\modules\SnooLoginPopup.js" />
+    <Content Include="data\modules\SNOptions.js" />
     <Content Include="data\modules\SNWorker.js" />
     <Content Include="data\modules\SNWorkerChrome.js" />
     <Content Include="data\modules\SNWorkerFirefox.js" />
