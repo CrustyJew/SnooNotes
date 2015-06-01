@@ -12,7 +12,7 @@
         });
         $('#SNContainer').on('click', '.SNNewNoteSubmit', function (e) {
             var ot = e.target;
-            submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $(ot).siblings('.SNNewMessage').val(), 3);
+            submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $(ot).siblings('.SNNewMessage').val(), $(ot).closest('.SNNewNoteContainer').find('input:radio[name=SNType]:checked').val());
         });
         $('#SNContainer').on('click', '.SNDeleteNote', function (e) {
             var ot = e.target;
@@ -42,15 +42,23 @@
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
                 $newNote = $('<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
                     '<div class="SNHeader"><a class="SNCloseNewNote">Cancel [x]</a></div>' +
-                    '<div class="SNNewNote">' +
+                    '<div class="SNNewNoteContainer"><div class="SNNewNote">' +
                     '<textarea placeholder="Add a new note for user..." class="SNNewMessage" />' +
+                     
                     '<button type="button" class="SNNewNoteSubmit" ' +
                         'SNUser="' + user + '" ' +
                         'SNSub="' + sub  + '" ' + 
                         'SNLink="' + $('ul li.first a', $ot.closest('div.entry')).attr('href') + '" ' +
                     '>Submit</button>  ' +
-                    '</div></div>');
-
+                    '</div>' +
+                    '<div class="SNNoteType"></div></div>' +
+                    '</div>');
+                var subNoteTypes = snUtil.NoteTypes[sub];
+                var $SNNoteType = $('.SNNoteType',$newNote);
+                for (var i = 0; i < subNoteTypes.length;i++){
+                    var noteType = subNoteTypes[i];
+                    $SNNoteType.append($('<label class="SNTypeRadio SN'+sub+noteType.NoteTypeID+'"><input type="radio" name="SNType" value="'+noteType.NoteTypeID+'">'+noteType.DisplayName+'</label>'));
+                }
                 $('#SNContainer').append($newNote);
             }
 
@@ -133,7 +141,7 @@ function deleteNote(req) {
 
 function showNotes(e) {
     var $sn = $('#SnooNote-' + e.target.attributes["SNUser"].value);
-    $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+    
     var $submit = $('.SNNewNoteSubmit', $sn);
     var $ot = $(e.target);
     var sub = window.snUtil.Subreddit;
@@ -143,11 +151,20 @@ function showNotes(e) {
             sub = $ot.closest('.thing').find('span.correspondent a')[0].innerHTML.substring(3).replace(/\//g, '');
         }
         else {
-            sub = $ot.siblings("a.subreddit:first")[0].innerHTML;
+            sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');
         }
     }
+
+    var subNoteTypes = snUtil.NoteTypes[sub];
+    var $SNNoteType = $('.SNNoteType', $sn);
+    for (var i = 0; i < subNoteTypes.length; i++) {
+        var noteType = subNoteTypes[i];
+        $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
+    }
+
     $submit.attr("SNSub", sub );
     $submit.attr("SNLink", $('ul li.first a', $ot.closest('div.entry')).attr('href'));
+    $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
 }
 
 function closeNote(e) {

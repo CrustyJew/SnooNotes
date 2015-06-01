@@ -113,7 +113,8 @@ function generateNoteContainer(user, notes) {
       '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer" style="display:none;">' +
       '<div class="SNHeader"><a class="SNCloseNote">Close [x]</a></div>' +
       '<table>' + notes + '</table>' +
-      '<div class="SNNewNote"><textarea placeholder="Add a new note for user..." class="SNNewMessage" /><button type="button" class="SNNewNoteSubmit" SNUser="'+user.toLowerCase()+'">Submit</button>  </div>' +
+      '<div class="SNNewNoteContainer"><div class="SNNewNote"><textarea placeholder="Add a new note for user..." class="SNNewMessage" /><button type="button" class="SNNewNoteSubmit" SNUser="' + user.toLowerCase() + '">Submit</button>  </div>' +
+      '<div class="SNNoteType"></div></div>' +
       '</div>');
     return $usernote;
 }
@@ -177,7 +178,7 @@ function initNoteTypeData(data) {
         var subData = data[key];
         for (var i = 0; i < subData.length; i++) {
             var noteType = subData[i];
-            subCSSString += '#SNContainer .SN' + key + noteType.NoteTypeID + ' .SNMessage' +
+            subCSSString += '#SNContainer .SN' + key + noteType.NoteTypeID + ' .SNMessage, #SNContainer .SNNoteType .SN' + key + noteType.NoteTypeID +
                 '{' +
                 'color: #' + noteType.ColorCode + ';';
             subCSSString += noteType.Bold ? 'font-weight: bold;' : '';

@@ -94,3 +94,14 @@
     position: relative;
     top: -36px;
 }
+
+.SNNoteType{
+    text-align:center;
+    margin-top:10px;
+}
+.SNNoteType input[type="radio"]{
+    vertical-align:top;
+}
+.SNNoteType label{
+    display:inline-block;
+}
