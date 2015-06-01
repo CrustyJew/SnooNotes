@@ -97,5 +97,7 @@ function processEntries(notes) {
     window.addEventListener("snUtilDone", function () {
         processSnooNotes();
     });
-   
+    window.addEventListener("snGotNewThings", function () {
+        processSnooNotes();
+    });
 })();

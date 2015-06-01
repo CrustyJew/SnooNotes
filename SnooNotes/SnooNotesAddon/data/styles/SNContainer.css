@@ -107,6 +107,7 @@
 }
 .SNNoteType label{
     display:inline-block;
+    margin-right:10px;
 }
 
 .SNNewError{

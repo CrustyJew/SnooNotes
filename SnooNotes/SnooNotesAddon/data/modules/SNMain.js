@@ -96,5 +96,17 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         };
     });
     initSnooNotes();
+    $('div.content').on('DOMNodeInserted', function (e) {
+        //copied from mod toolbox in the hopes it will make it compatible with their stuff too.
+        var $target = $(e.target), $parentNode = $(e.target.parentNode);
+        if (!($target.hasClass("sitetable") && ($target.hasClass("listing") || $target.hasClass("linklisting") ||
+            $target.hasClass("modactionlisting"))) && !$parentNode.hasClass('morecomments') && !$target.hasClass('flowwit')) return;
 
+        console.log('snGotNewThings firing from: ' + $target.attr('class'));
+
+        setTimeout(function () {
+            var event = new CustomEvent("snGotNewThings");
+            window.dispatchEvent(event);
+        }, 1750);
+    });
 })();
