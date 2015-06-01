@@ -36,7 +36,7 @@
                     sub = $ot.closest('.thing').find('span.correspondent a')[0].innerHTML.substring(3).replace(/\//g, '');
                 }
                 else {
-                    sub = $ot.siblings("a.subreddit:first")[0].innerHTML;
+                    sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');
                 }
             }
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
