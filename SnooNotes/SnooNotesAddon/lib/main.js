@@ -10,6 +10,7 @@ var socketOpen = false;
 var loggedIn = false;
 var usersWithNotes = [];
 var noteTypeCSS = undefined;
+var noteTypeJSON = undefined;
 pageMod.PageMod({
     include: "*.reddit.com",
     exclude: [/.*.reddit.com\/api\/v1\/authorize.*/, /.*.reddit.com\/login.*/],
@@ -51,7 +52,8 @@ pageMod.PageMod({
             }
         });
         if (loggedIn) { worker.port.emit("gotUsersWithNotes", usersWithNotes); }
-        if (noteTypeCSS) { worker.port.emit("setNoteTypeCSS", noteTypeCSS);}
+        if (noteTypeCSS) { worker.port.emit("setNoteTypeCSS", noteTypeCSS); }
+        if (noteTypeJSON) { worker.port.emit("setNoteTypeJSON", noteTypeJSON);}
         worker.port.on("requestUserNotes", function (users) {
             pageWorker.port.emit("requestUserNotes", { "users": users, "worker": activeWorkers.indexOf(worker) });
         });
@@ -118,6 +120,12 @@ pageWorker.port.on("sendNoteTypeCSS", function (css) {
     noteTypeCSS = css;
     for (var i = 0; i < activeWorkers.length; i++) {
         activeWorkers[i].port.emit("setNoteTypeCSS", css);
+    }
+});
+pageWorker.port.on("sendNoteTypeJSON", function (json) {
+    noteTypeJSON = json;
+    for (var i = 0; i < activeWorkers.length; i++) {
+        activeWorkers[i].port.emit("setNoteTypeJSON", json);
     }
 });
 function checkStillModding() {

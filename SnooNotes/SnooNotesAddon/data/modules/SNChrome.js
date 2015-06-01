@@ -37,6 +37,10 @@
                     break;
                 case "setNoteTypeCSS":
                     snUtil.NoteStyles.innerHTML = request.css;
+                    break;
+                case "setNoteTypeJSON":
+                    snUtil.NoteTypes = request.json;
+                    break;
                 default:
                     break;
             }
@@ -49,6 +53,9 @@
         });
         chrome.runtime.sendMessage({ "method": "getNoteTypeCSS" }, function (css) {
             snUtil.NoteStyles.innerHTML = css;
+        });
+        chrome.runtime.sendMessage({ "method": "getNoteTypeJSON" }, function (json) {
+            snUtil.NoteTypes = json;
         });
         
     }(snBrowser = window.snUtil || {}));

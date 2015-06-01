@@ -24,6 +24,9 @@
         snBrowser.sendNoteTypeCSS = function (css) {
             sendNoteTypeCSS(css);
         }
+        snBrowser.sendNoteTypeJSON = function (json) {
+            sendNoteTypeJSON(json);
+        }
         //listeners
         
 

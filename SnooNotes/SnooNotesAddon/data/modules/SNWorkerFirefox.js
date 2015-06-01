@@ -24,6 +24,9 @@
         snBrowser.sendNoteTypeCSS = function (css) {
             self.port.emit("sendNoteTypeCSS",css);
         }
+        snBrowser.sendNoteTypeJSON = function (json) {
+            self.port.emit("sendNoteTypeJSON", json);
+        }
         //listeners
         self.port.on("initWorker", initWorker);
         self.port.on("requestUserNotes", requestUserNotes);

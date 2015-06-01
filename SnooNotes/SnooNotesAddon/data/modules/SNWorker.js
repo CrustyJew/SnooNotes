@@ -169,6 +169,8 @@ function getNoteTypes() {
 }
 
 function initNoteTypeData(data) {
+    snUtil.NoteTypes = data;
+    snBrowser.sendNoteTypeJSON(data);
     var cssString = '';
     for (var key in data) {
         var subCSSString = '/***start ' + key + '***/';

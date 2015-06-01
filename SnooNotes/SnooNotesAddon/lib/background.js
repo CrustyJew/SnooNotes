@@ -71,6 +71,14 @@ function sendNoteTypeCSS(css) {
         }
     });
 }
+function sendNoteTypeJSON(json) {
+    cssReady = true;
+    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            chrome.tabs.sendMessage(tabs[i].id, { "method": "setNoteTypeJSON", "json": json });
+        }
+    });
+}
 function getNoteTypeCSS(sendResponse, attempts) {
     attempts = attempts ? attempts + 1 : 1;
     if (attempts > 100) { return;} //this aint happening
@@ -84,6 +92,21 @@ function getNoteTypeCSS(sendResponse, attempts) {
     }
     else {
         setTimeout(getNoteTypeCSS(sendResponse, attempts), 500);
+    }
+}
+function getNoteTypeJSON(sendResponse, attempts) {
+    attempts = attempts ? attempts + 1 : 1;
+    if (attempts > 100) { return; } //this aint happening
+    if (loggedIn) {
+        if (cssReady) {
+            sendResponse(snUtil.NoteTypes)
+        }
+        else {
+            setTimeout(getNoteTypeJSON(sendResponse, attempts), 250);
+        }
+    }
+    else {
+        setTimeout(getNoteTypeJSON(sendResponse, attempts), 500);
     }
 }
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -108,6 +131,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'getNoteTypeCSS':
             getNoteTypeCSS(sendResponse, 0);
+            break;
+        case 'getNoteTypeJSON':
+            getNoteTypeJSON(sendResponse, 0);
             break;
         default:
             break;
