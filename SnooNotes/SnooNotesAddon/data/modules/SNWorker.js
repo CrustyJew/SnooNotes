@@ -111,10 +111,13 @@ function initNoteData(data) {
 function generateNoteContainer(user, notes) {
     var $usernote = $('' +
       '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer" style="display:none;">' +
-      '<div class="SNHeader"><a class="SNCloseNote">Close [x]</a></div>' +
-      '<table>' + notes + '</table>' +
-      '<div class="SNNewNoteContainer"><div class="SNNewNote"><textarea placeholder="Add a new note for user..." class="SNNewMessage" /><button type="button" class="SNNewNoteSubmit" SNUser="' + user.toLowerCase() + '">Submit</button>  </div>' +
-      '<div class="SNNoteType"></div></div>' +
+        '<div class="SNHeader"><a class="SNCloseNote">Close [x]</a></div>' +
+        '<table>' + notes + '</table>' +
+        '<div class="SNNewNoteContainer">' +
+            '<div class="SNNewNote"><textarea placeholder="Add a new note for user..." class="SNNewMessage" /><button type="button" class="SNNewNoteSubmit" SNUser="' + user.toLowerCase() + '">Submit</button>  </div>' +
+            '<div class="SNNoteType"></div>' +
+            '<div class="SNNewError"></div>' +
+        '</div>' +
       '</div>');
     return $usernote;
 }

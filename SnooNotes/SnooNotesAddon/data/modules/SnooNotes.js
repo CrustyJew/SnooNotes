@@ -12,7 +12,28 @@
         });
         $('#SNContainer').on('click', '.SNNewNoteSubmit', function (e) {
             var ot = e.target;
-            submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $(ot).siblings('.SNNewMessage').val(), $(ot).closest('.SNNewNoteContainer').find('input:radio[name=SNType]:checked').val());
+            var $message = $(ot).siblings('.SNNewMessage');
+            var notetype = $(ot).closest('.SNNewNoteContainer').find('input:radio[name=SNType]:checked').val();
+            var valid = true;
+            var $err = $(ot).closest('.SNNewNoteContainer').find('.SNNewError');
+            var $ntContainer = $(ot).closest('.SNNewNoteContainer').find('.SNNoteType');
+            //clean up previous errors if there were any
+            $message.removeClass("SNError");
+            $ntContainer.removeClass("SNError");
+            $err.empty();
+            if (!$message.val()) {
+                valid = false;
+                $err.append($("<p>Looks like you forgot the note text there...</p>"));
+                $message.addClass("SNError");
+            }
+            if (!notetype) {
+                valid = false;
+                $err.append($("<p>Shucks! You forgot the note type...</p>"));
+                $ntContainer.addClass("SNError");
+            }
+            if (valid) {
+                submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $message.val(), notetype);
+            }
         });
         $('#SNContainer').on('click', '.SNDeleteNote', function (e) {
             var ot = e.target;
@@ -40,18 +61,21 @@
                 }
             }
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
-                $newNote = $('<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
-                    '<div class="SNHeader"><a class="SNCloseNewNote">Cancel [x]</a></div>' +
-                    '<div class="SNNewNoteContainer"><div class="SNNewNote">' +
-                    '<textarea placeholder="Add a new note for user..." class="SNNewMessage" />' +
-                     
-                    '<button type="button" class="SNNewNoteSubmit" ' +
-                        'SNUser="' + user + '" ' +
-                        'SNSub="' + sub  + '" ' + 
-                        'SNLink="' + $('ul li.first a', $ot.closest('div.entry')).attr('href') + '" ' +
-                    '>Submit</button>  ' +
-                    '</div>' +
-                    '<div class="SNNoteType"></div></div>' +
+                $newNote = $('' +
+                    '<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
+                        '<div class="SNHeader"><a class="SNCloseNewNote">Cancel [x]</a></div>' +
+                        '<div class="SNNewNoteContainer">' +
+                            '<div class="SNNewNote">' +
+                                '<textarea placeholder="Add a new note for user..." class="SNNewMessage" />' +
+                                '<button type="button" class="SNNewNoteSubmit" ' +
+                                    'SNUser="' + user + '" ' +
+                                    'SNSub="' + sub  + '" ' + 
+                                    'SNLink="' + $('ul li.first a', $ot.closest('div.entry')).attr('href') + '" ' +
+                                '>Submit</button>  ' +
+                            '</div>' +
+                            '<div class="SNNoteType"></div>' +
+                            '<div class="SNNewError"></div>' +
+                        '</div>' +
                     '</div>');
                 var subNoteTypes = snUtil.NoteTypes[sub];
                 var $SNNoteType = $('.SNNoteType',$newNote);
@@ -101,6 +125,13 @@ function newNoteNewUser(req) {
         $user.removeClass("SNNew").addClass("SNViewContainer");
         var $submit = $('.SNNewNoteSubmit', $user);
         $('.SNNewNoteSubmit', $notecont).replaceWith($submit);
+        var sub = $submit.attr("SNSub");
+        var subNoteTypes = snUtil.NoteTypes[sub];
+        var $SNNoteType = $('.SNNoteType', $notecont);
+        for (var i = 0; i < subNoteTypes.length; i++) {
+            var noteType = subNoteTypes[i];
+            $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
+        }
         $user.empty();
         $user.append($notecont.children().hide().fadeIn("fast"));
     }
@@ -157,6 +188,7 @@ function showNotes(e) {
 
     var subNoteTypes = snUtil.NoteTypes[sub];
     var $SNNoteType = $('.SNNoteType', $sn);
+    $SNNoteType.empty();
     for (var i = 0; i < subNoteTypes.length; i++) {
         var noteType = subNoteTypes[i];
         $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));

@@ -4,7 +4,7 @@
     z-index: 25000;
     background-color: white;
     border: darkgrey 1px solid;
-    min-width: 572px;
+    min-width: 580px;
     max-width: 750px;
     border-radius: 10px;
     min-height: 150px;
@@ -83,6 +83,7 @@
     height: 75px;
     resize: none;
     width: 400px;
+    box-sizing:border-box;
 }
 
 .SNNewNoteSubmit {
@@ -97,11 +98,24 @@
 
 .SNNoteType{
     text-align:center;
-    margin-top:10px;
+    margin-top:5px;
+    padding:5px;
+    border-radius:10px;
 }
 .SNNoteType input[type="radio"]{
     vertical-align:top;
 }
 .SNNoteType label{
     display:inline-block;
+}
+
+.SNNewError{
+    margin-top:10px;
+    font-weight:bold;
+    font-size:1.2em;
+    color:red;
+}
+
+.SNError{
+    border:3px solid red;
 }
