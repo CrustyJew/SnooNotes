@@ -54,7 +54,12 @@
             if (!sub) {
                 //not a comment or browsing a sub you mod
                 if (window.snUtil.Modmail) {
-                    sub = $ot.closest('.thing').find('span.correspondent a')[0].innerHTML.substring(3).replace(/\//g, '');
+                    var $sub = $ot.closest('.thing').find('span.correspondent.reddit a');
+                    if ($sub.length > 1) {
+                        //multiple results here means RES / Mod toolbox is present which messes things up
+                        $sub = $sub.filter('.subreddit-name');
+                    }
+                    sub = $sub[0].innerHTML.substring(3).replace(/\//g, '');
                 }
                 else {
                     sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');

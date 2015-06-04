@@ -1,7 +1,7 @@
 ﻿
 .SNViewContainer, .SNNew {
     position: absolute;
-    z-index: 25000;
+    z-index: 2147483647;
     background-color: white;
     border: darkgrey 1px solid;
     min-width: 580px;
