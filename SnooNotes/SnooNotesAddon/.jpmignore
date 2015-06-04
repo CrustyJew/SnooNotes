@@ -5,3 +5,9 @@ snooo2
 test
 manifest.json
 web.config
+*.zip
+*.xpi
+.jpmignore
+*.csproj
+web*config
+Properties
