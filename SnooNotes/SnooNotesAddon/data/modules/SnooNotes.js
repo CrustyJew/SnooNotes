@@ -50,21 +50,7 @@
 
             var user = $ot.siblings('a.author:first')[0].innerHTML.toLowerCase();
             var $newNote = $('#SnooNote-' + user);
-            var sub = window.snUtil.Subreddit;
-            if (!sub) {
-                //not a comment or browsing a sub you mod
-                if (window.snUtil.Modmail) {
-                    var $sub = $ot.closest('.thing').find('span.correspondent.reddit a');
-                    if ($sub.length > 1) {
-                        //multiple results here means RES / Mod toolbox is present which messes things up
-                        $sub = $sub.filter('.subreddit-name');
-                    }
-                    sub = $sub[0].innerHTML.substring(3).replace(/\//g, '');
-                }
-                else {
-                    sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');
-                }
-            }
+            var sub = getSubName(e);
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
                 $newNote = $('' +
                     '<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
@@ -96,6 +82,28 @@
         e.target.removeEventListener(e.type, arguments.callee);
     });
 })();
+
+function getSubName(e) {
+
+    var sub = window.snUtil.Subreddit;
+    if (!sub) {
+        var $ot = $(e.target);
+        //not a comment or browsing a sub you mod
+        if (window.snUtil.Modmail) {
+            var $sub = $ot.closest('.thing').find('span.correspondent.reddit a');
+            if ($sub.length > 1) {
+                //multiple results here means RES / Mod toolbox is present which messes things up
+                $sub = $sub.filter('.subreddit-name');
+            }
+            sub = $sub[0].innerHTML.substring(3).replace(/\//g, '');
+        }
+        else {
+            sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');
+        }
+    }
+    return sub;
+}
+
 
 function newNoteExistingUser(req) {
     var $user = $('#SnooNote-' + req.user + ' table');
@@ -180,16 +188,7 @@ function showNotes(e) {
     
     var $submit = $('.SNNewNoteSubmit', $sn);
     var $ot = $(e.target);
-    var sub = window.snUtil.Subreddit;
-    if (!sub) {
-        //not a comment or browsing a sub you mod
-        if (window.snUtil.Modmail) {
-            sub = $ot.closest('.thing').find('span.correspondent a')[0].innerHTML.substring(3).replace(/\//g, '');
-        }
-        else {
-            sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');
-        }
-    }
+    var sub = getSubName(e);
 
     var subNoteTypes = snUtil.NoteTypes[sub];
     var $SNNoteType = $('.SNNoteType', $sn);

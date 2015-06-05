@@ -8,6 +8,6 @@ web.config
 *.zip
 *.xpi
 .jpmignore
-*.csproj
+*.csproj*
 web*config
 Properties
