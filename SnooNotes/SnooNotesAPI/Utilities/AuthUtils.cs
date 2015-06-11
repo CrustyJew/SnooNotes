@@ -6,48 +6,40 @@ using Microsoft.Owin.Security;
 using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.Owin;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Threading.Tasks;
 
 namespace SnooNotesAPI.Utilities
 {
     public static class AuthUtils
     {
-        public static ClaimsIdentity GetNewToken(ClaimsIdentity ident)
-        {
-            GetNewToken(ref ident);
-            
-            return ident;
-        }
-        public static void GetNewToken(ref ClaimsIdentity ident)
+        public static readonly string roleType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+        public static void GetNewToken(Models.ApplicationUser ident)
         {
             string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
             string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
             RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
-            string newaccesstoken = ap.GetOAuthToken(ident.FindFirst("urn:reddit:refresh").Value, true);
-
-            ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accesstoken").First());
-            ident.AddClaim(new Claim("urn:reddit:accesstoken", newaccesstoken));
-            ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
-            ident.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(45).ToString()));
-
+            string newaccesstoken = ap.GetOAuthToken(ident.RefreshToken, true);
+            ident.AccessToken = newaccesstoken;
+            ident.TokenExpires = DateTime.UtcNow.AddMinutes(50);
         }
-        public static ClaimsIdentity GetModeratedSubreddits(ClaimsIdentity ident)
+        
+        public static async Task<int> UpdateModeratedSubreddits(Models.ApplicationUser ident)
         {
-            GetModeratedSubreddits(ref ident);
-            return ident;
-        }
-        public static void GetModeratedSubreddits(ref ClaimsIdentity ident)
-        {
-
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.FindFirst("urn:reddit:accesstoken").Value);
+            if (ident.TokenExpires < DateTime.UtcNow)
+            {
+                GetNewToken(ident);
+            }
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
-            string roletype = ident.RoleClaimType;
+            
 
-            List<string> currentRoles = ident.FindAll(roletype).Select(r => r.Value).ToList<string>();
+            List<string> currentRoles = ident.Claims.Where(x => x.ClaimType == roleType).Select(r => r.ClaimValue).ToList<string>();
 
-            Models.SubredditMain sm = new Models.SubredditMain();
-            List<string> activeSubs = sm.GetActiveSubs().Select(s => s.SubName).ToList();
+           
+            List<string> activeSubs = Models.Subreddit.GetActiveSubs().Select(s => s.SubName).ToList();
 
             List<string> rolesToAdd = new List<string>();
             List<string> rolesToRemove = new List<string>();
@@ -84,12 +76,14 @@ namespace SnooNotesAPI.Utilities
 
             foreach (string role in rolesToRemove)
             {
-                ident.RemoveClaim(ident.Claims.First(i => i.Value == role));
+                ident.Claims.Remove(ident.Claims.First(i => i.ClaimValue == role));
             }
             foreach (string role in rolesToAdd)
             {
-                ident.AddClaim(new Claim(roletype, role));
+                ident.Claims.Add(new IdentityUserClaim() { ClaimType = roleType, ClaimValue = role, UserId=ident.Id });
             }
+
+            return 0;
         }
     }
 }

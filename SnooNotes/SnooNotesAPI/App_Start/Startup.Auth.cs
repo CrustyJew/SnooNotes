@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +10,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Owin.Security.Providers.Reddit;
 using System.Security.Claims;
+using SnooNotesAPI.Models;
 
 namespace SnooNotesAPI
 {
@@ -15,24 +18,36 @@ namespace SnooNotesAPI
     {
         private void ConfigureAuth(IAppBuilder app)
         {
+            app.CreatePerOwinContext(ApplicationDbContext.Create);
+            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+            app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+
             var cookieOptions = new CookieAuthenticationOptions
-            {  
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Auth/Login"),
                 CookieName = "bog", ExpireTimeSpan = new TimeSpan(10000,0,0,0,0),
                 Provider = new CookieAuthenticationProvider
                 { OnException = context =>{
                     var x = context;
                 },
-                    OnValidateIdentity =  context =>
+                    OnValidateIdentity =  SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
+                        validateInterval: TimeSpan.FromMinutes(1),
+                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager)),/*context =>
                     {
-                        
+                        if (DateTime.Parse(context.Identity.FindFirst(c => c.Type == "urn:reddit:accessexpires").Value) < DateTime.UtcNow)
+                        {
+                            context.Identity.RemoveClaim(context.Identity.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
+                            context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(5).ToString()));
+                            //GetNewToken(context);
+                        }
                         var newResponseGrant = context.OwinContext.Authentication.AuthenticationResponseGrant;
                         if (newResponseGrant != null)
                         {
                             newResponseGrant.Properties.IsPersistent = true;
                         }
                         return System.Threading.Tasks.Task.FromResult(0);
-                    },
+                    },*/
                     OnApplyRedirect = ctx =>
                     {
                         if (!IsAjaxRequest(ctx.Request))
@@ -44,8 +59,7 @@ namespace SnooNotesAPI
             };
 
             app.UseCookieAuthentication(cookieOptions);
-          
-            app.SetDefaultSignInAsAuthenticationType(cookieOptions.AuthenticationType);
+            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             RedditAuthenticationOptions opts = new RedditAuthenticationOptions
             {
@@ -57,7 +71,7 @@ namespace SnooNotesAPI
                     {
                         context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:refresh", context.RefreshToken));
                         context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(-15).Add(context.ExpiresIn.Value).ToString()));
-                        context.Identity = GetModeratedSubreddits(context.Identity as ClaimsIdentity);
+                        //context.Identity = GetModeratedSubreddits(context.Identity as ClaimsIdentity);
                         
                         return System.Threading.Tasks.Task.FromResult(0);
                     }
@@ -73,6 +87,7 @@ namespace SnooNotesAPI
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
             string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
             RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
+            
             string newaccesstoken = ap.GetOAuthToken(context.Identity.FindFirst("urn:reddit:refresh").Value, true);
             ClaimsIdentity ident = context.Identity;
             ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accesstoken").First());

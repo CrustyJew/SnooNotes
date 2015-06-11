@@ -8,6 +8,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 
 namespace SnooNotesAPI {
+    
 	public class WebApiApplication : System.Web.HttpApplication {
 		protected void Application_Start() {
 			AreaRegistration.RegisterAllAreas();
@@ -16,5 +17,9 @@ namespace SnooNotesAPI {
 			RouteConfig.RegisterRoutes( RouteTable.Routes );
 			BundleConfig.RegisterBundles( BundleTable.Bundles );
 		}
+        protected void BeginRequest(EventArgs e)
+        {
+            var x = 0;
+        }
 	}
 }

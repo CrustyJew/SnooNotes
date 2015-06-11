@@ -4,11 +4,57 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.Owin.Security;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace SnooNotesAPI.Controllers
 {
     public class AuthController : Controller
     {
+        private ApplicationSignInManager _signInManager;
+        private ApplicationUserManager _userManager;
+
+        public AuthController()
+        {
+        }
+        public AuthController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+        }
+
+        public ApplicationSignInManager SignInManager
+        {
+            get
+            {
+                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+            }
+            private set 
+            { 
+                _signInManager = value; 
+            }
+        }
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+        private IAuthenticationManager AuthenticationManager
+        {
+            get
+            {
+                return HttpContext.GetOwinContext().Authentication;
+            }
+        }
         [Authorize]
         public ActionResult Success()
         {
@@ -45,11 +91,53 @@ namespace SnooNotesAPI.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
-
-        public ActionResult ExternalLoginCallback(string returnUrl)
+        
+        [AllowAnonymous]
+        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
             returnUrl = String.IsNullOrEmpty(returnUrl) ? "/Auth/Success" : returnUrl;
-            return new RedirectResult(returnUrl);
+            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
+            if (loginInfo == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Sign in the user with this external login provider if the user already has a login
+            var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: true);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    var theuser = UserManager.FindByName(loginInfo.Login.ProviderKey);
+                    theuser.AccessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value;
+                    theuser.RefreshToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:refresh").Value;
+                    theuser.TokenExpires = DateTime.UtcNow.AddMinutes(50);
+                    UserManager.Update(theuser);
+                    return new RedirectResult(returnUrl);
+                case SignInStatus.LockedOut:
+                    return View("Lockout");
+                case SignInStatus.RequiresVerification:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
+                case SignInStatus.Failure:
+                default:
+                    // If the user does not have an account, then prompt the user to create an account
+                    string accessToken  = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value ;
+                    var user = new Models.ApplicationUser() { UserName = loginInfo.Login.ProviderKey, RefreshToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:refresh").Value, AccessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value,TokenExpires=DateTime.UtcNow.AddMinutes(50), LastUpdatedRoles=DateTime.UtcNow };
+                    await Utilities.AuthUtils.UpdateModeratedSubreddits(user);
+                    var createuser = await UserManager.CreateAsync(user);
+                    if (createuser.Succeeded)
+                    {
+                        var addLogin = await UserManager.AddLoginAsync(user.Id, loginInfo.Login);
+                        if (addLogin.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: false);
+                            return new RedirectResult(returnUrl);
+                        }
+                    }
+                    return View("Error");
+            }
+           
+            
         }
+
     }
 }

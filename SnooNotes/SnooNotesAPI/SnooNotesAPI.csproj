@@ -47,6 +47,21 @@
     <Reference Include="Dapper">
       <HintPath>..\packages\Dapper.1.39\lib\net45\Dapper.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
@@ -68,6 +83,9 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Cookies">
       <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -154,12 +172,12 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="DataAccess\" />
-    <Folder Include="Utilities\" />
     <Folder Include="Views\Account\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -199,8 +217,22 @@
     <Compile Include="Controllers\SubredditController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Migrations\201506091908448_Initial.cs" />
+    <Compile Include="Migrations\201506091908448_Initial.Designer.cs">
+      <DependentUpon>201506091908448_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506111357439_Initial1.cs" />
+    <Compile Include="Migrations\201506111357439_Initial1.Designer.cs">
+      <DependentUpon>201506111357439_Initial1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506111358302_Initial2.cs" />
+    <Compile Include="Migrations\201506111358302_Initial2.Designer.cs">
+      <DependentUpon>201506111358302_Initial2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BasicNote.cs" />
     <Compile Include="Models\BasicNoteType.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteType.cs" />
     <Compile Include="Models\Subreddit.cs" />
@@ -212,6 +244,7 @@
     <Compile Include="Signalr\SnooNotesHub.cs" />
     <Compile Include="Signalr\SnooNoteUpdates.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\AuthUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Addon\snoonotes.xpi" />
@@ -289,6 +322,17 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201506091908448_Initial.resx">
+      <DependentUpon>201506091908448_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506111357439_Initial1.resx">
+      <DependentUpon>201506111357439_Initial1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506111358302_Initial2.resx">
+      <DependentUpon>201506111358302_Initial2.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
