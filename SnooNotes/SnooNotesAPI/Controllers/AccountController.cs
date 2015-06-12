@@ -6,6 +6,11 @@ using Microsoft.Owin.Security;
 using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.Owin;
+using System.Web;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using System.Threading.Tasks;
+using System.Threading;
 namespace SnooNotesAPI.Controllers
 {
     [Authorize]
@@ -22,81 +27,15 @@ namespace SnooNotesAPI.Controllers
             return (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
         }
         [HttpGet]
-        public List<string> UpdateModeratedSubreddits()
+        public async Task<List<string>> UpdateModeratedSubreddits()
         {
-            ClaimsIdentity ident = GetModeratedSubreddits(User.Identity as ClaimsIdentity);
-            HttpContext.Current.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(10000) }, ident);          
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var user = userManager.FindByName(User.Identity.Name);
+            await Utilities.AuthUtils.UpdateModeratedSubreddits(user);
+            userManager.Update(user);
+            var ident = await user.GenerateUserIdentityAsync(userManager);
             return ident.Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
 
-        }
-
-        private ClaimsIdentity GetModeratedSubreddits(ClaimsIdentity ident)
-        {
-            bool expired = DateTime.Parse(ident.FindFirst("urn:reddit:accessexpires").Value) < DateTime.UtcNow;
-            if (expired)
-            {
-                string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
-                string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
-                string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
-                RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
-                string newaccesstoken = ap.GetOAuthToken(ident.FindFirst("urn:reddit:refresh").Value, true);
-                ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accesstoken").First());
-                ident.AddClaim(new Claim("urn:reddit:accesstoken", newaccesstoken));
-                ident.RemoveClaim(ident.Claims.Where(c => c.Type == "urn:reddit:accessexpires").First());
-                ident.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(45).ToString()));
-            }
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.FindFirst("urn:reddit:accesstoken").Value);
-            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-            var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
-            string roletype = ident.RoleClaimType;
-
-            List<string> currentRoles = ident.FindAll(roletype).Select(r => r.Value).ToList<string>();
-
-
-            List<string> activeSubs = Models.Subreddit.GetActiveSubs().Select(s => s.SubName).ToList();
-
-            List<string> rolesToAdd = new List<string>();
-            List<string> rolesToRemove = new List<string>();
-            foreach (string role in currentRoles)
-            {
-                var sub = subs.Find(s => s.Name.ToLower() == role);
-                if (activeSubs.Contains(role))
-                {
-                    if (sub != null)
-                    {
-                        //User already has sub as a role and is still a mod
-                        subs.Remove(sub);
-                    }
-                    else
-                    {
-                        rolesToRemove.Add(role);
-                    }
-                }
-                else
-                {
-                    //sub was deactivated, add it to remove.
-                    rolesToRemove.Add(role);
-                }
-
-            }
-            //subs now only contains subs that don't exist as roles
-            foreach (RedditSharp.Things.Subreddit sub in subs)
-            {
-                if (activeSubs.Contains(sub.Name.ToLower()))
-                {
-                    rolesToAdd.Add(sub.Name.ToLower());
-                }
-            }
-
-            foreach (string role in rolesToRemove)
-            {
-                ident.RemoveClaim(ident.Claims.First(i => i.Value == role));
-            }
-            foreach (string role in rolesToAdd)
-            {
-                ident.AddClaim(new Claim(roletype, role));
-            }
-            return ident;
         }
 
     }

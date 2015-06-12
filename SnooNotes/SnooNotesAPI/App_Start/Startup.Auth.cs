@@ -62,7 +62,7 @@ namespace SnooNotesAPI
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             RedditAuthenticationOptions opts = new RedditAuthenticationOptions
-            {
+            {   Scope = new List<string>{"identity","mysubreddits"},
                 ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"],
                 ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"], 
                 Provider = new Owin.Security.Providers.Reddit.Provider.RedditAuthenticationProvider()
