@@ -1,4 +1,37 @@
-﻿
+﻿function renderOptionsButton(msg) {
+    var $optBtn = $('#SNOptionsBtn');
+    if ($optBtn.length < 1) {
+        //option button hasn't been created yet
+        $optBtn = $('<input type="button" id="SNOptionsBtn" class="SNOptionsBtn" />');
+        $('#modmail').after([$('<span class="separator">|</span>'), $optBtn]);
+        bindOptionClick();
+    }
+    if (!msg) {
+        $optBtn.attr("class","SNOptionsBtn");
+    }
+    else if (msg = "LoggedOut") {
+        $optBtn.attr("class", "SNOptionsBtn SNLoggedOut");
+    }
+}
+
+
+    window.addEventListener("snUtilDone", function (e) {
+        renderOptionsButton("init");
+    });
+    window.addEventListener("snLoggedOut", function (e) {
+        renderOptionsButton("LoggedOut");
+    });
+
+    function bindOptionClick() {
+        $('#SNOptionsBtn').click(function (e) {
+            renderOptionsContainer();
+        });
+    }
+
+    function renderOptionsContainer() {
+        $('<div id="SNModalBackground"></div>').insertAfter('body');
+    }
+/*
 function loadModToolboxNotesHTML() {
     var html = '' +
         '<div style="width:100%;min-height:600px">' +
@@ -69,4 +102,4 @@ $.each(notes, function (username, user) {
     })
 })
 
-insert;
+insert;*/

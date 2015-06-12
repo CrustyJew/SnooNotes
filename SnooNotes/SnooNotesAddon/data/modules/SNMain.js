@@ -84,7 +84,8 @@ function checkLoggedIn() {
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     if(jqXHR.status === 401)
     {
-        showLoginPopup();
+        window.dispatchEvent(new CustomEvent("snLoggedOut"));
+        //showLoginPopup();
     }
 }
 

@@ -19,6 +19,7 @@
                 "data/modules/SNLoad.js",
                 "data/modules/SnooNotes.js",
                 "data/modules/SnooLoginPopup.js",
+                "data/modules/SNOptions.js",
                 "data/modules/SNMain.js"
             ],
             "css": [
