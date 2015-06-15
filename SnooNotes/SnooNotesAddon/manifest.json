@@ -24,7 +24,8 @@
             ],
             "css": [
                 "data/styles/SNContainer.css",
-                "data/styles/SnooLogin.css"
+                "data/styles/SnooLogin.css",
+                "data/styles/SNOptions.css"
             ],
             "run_at": "document_end"
         }

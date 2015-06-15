@@ -29,7 +29,7 @@
     }
 
     function renderOptionsContainer() {
-        $('<div id="SNModalBackground"></div>').insertAfter('body');
+        snUtil.ShowModal('<div style="background-color:yellow;width:200px;height:400px;"></div>');
     }
 /*
 function loadModToolboxNotesHTML() {

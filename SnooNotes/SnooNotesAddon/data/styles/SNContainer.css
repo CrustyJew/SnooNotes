@@ -58,7 +58,7 @@
     position:relative;
 }
 
-.SNCloseNote, .SNCloseNewNote {
+.SNClose {
     color: black;
     cursor: pointer;
 }
@@ -120,16 +120,3 @@
     border:3px solid red;
 }
 
-.SNOptionsBtn{
-    height:15px;
-    width:15px;
-}
-
-.SNOptionsBtn.SNLoggedOut{
-    background-color:red;
-}
-
-#SNModalBackground{
-    background: rgba(200,200,200,0.9)none repeat scroll 0 0;
-    z-index:
-}

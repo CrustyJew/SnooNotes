@@ -1,0 +1,36 @@
+﻿.SNOptionsBtn{
+    height:15px;
+    width:15px;
+}
+
+.SNOptionsBtn.SNLoggedOut{
+    background-color:red;
+}
+
+#SNModalBackground{
+    background: rgba(200,200,200,0.9)none repeat scroll 0 0;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+
+    position:absolute;
+    z-index:2147483646;
+}
+
+#SNModal{
+    position:absolute;
+    width:800px;
+    height:600px;
+    top:50%;
+    left:50%;
+    margin-top:-300px;
+    margin-left:-400px;
+    padding:10px;
+    border-radius:10px;
+    z-index:2147483647!important;
+    background-color:white;
+    border:1px solid black;
+    overflow-x: hidden;
+    overflow-y:auto;
+}

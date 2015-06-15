@@ -77,6 +77,7 @@
     <Content Include="data\modules\SNWorkerFirefox.js" />
     <Content Include="data\styles\SNContainer.css" />
     <Content Include="data\styles\SnooLogin.css" />
+    <Content Include="data\styles\SNOptions.css" />
     <Content Include="data\WorkerPageChrome.html" />
     <Content Include="data\WorkerPage.html" />
     <Content Include="lib\background.js" />

@@ -54,7 +54,7 @@
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
                 $newNote = $('' +
                     '<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
-                        '<div class="SNHeader"><a class="SNCloseNewNote">Cancel [x]</a></div>' +
+                        '<div class="SNHeader"><a class="SNCloseNewNote SNClose">Cancel [x]</a></div>' +
                         '<div class="SNNewNoteContainer">' +
                             '<div class="SNNewNote">' +
                                 '<textarea placeholder="Add a new note for user..." class="SNNewMessage" />' +
