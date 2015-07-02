@@ -90,7 +90,7 @@ function getSubName(e) {
         var $ot = $(e.target);
         //not a comment or browsing a sub you mod
         if (window.snUtil.Modmail) {
-            var $sub = $ot.closest('.thing').find('span.correspondent.reddit a');
+            var $sub = $ot.closest('.thing.message-parent').find('span.correspondent.reddit a');
             if ($sub.length > 1) {
                 //multiple results here means RES / Mod toolbox is present which messes things up
                 $sub = $sub.filter('.subreddit-name');
