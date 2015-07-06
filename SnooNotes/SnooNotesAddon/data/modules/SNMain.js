@@ -99,6 +99,7 @@ function checkLoggedIn() {
         success: function (d, s, x) {
             snUtil.LoggedIn = true;
             snBrowser.loggedIn();
+            window.dispatchEvent(new CustomEvent("snLoggedIn"));
             if (!snUtil.ModdedSubs) setModdedSubs();
         },
         error: handleAjaxError

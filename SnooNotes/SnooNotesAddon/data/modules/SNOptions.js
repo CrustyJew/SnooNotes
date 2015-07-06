@@ -9,8 +9,11 @@
     if (!msg) {
         $optBtn.attr("class","SNOptionsBtn");
     }
-    else if (msg = "LoggedOut") {
+    else if (msg == "LoggedOut") {
         $optBtn.attr("class", "SNOptionsBtn SNLoggedOut");
+    }
+    else if (msg == "LoggedIn") {
+        $optBtn.attr("class", "SNOptionsBtn SNLoggedIn");
     }
 }
 
@@ -21,6 +24,9 @@
     window.addEventListener("snLoggedOut", function (e) {
         renderOptionsButton("LoggedOut");
     });
+    window.addEventListener("snLoggedIn", function (e) {
+        renderOptionsButton("LoggedIn");
+    })
 
     function bindOptionClick() {
         $('#SNOptionsBtn').click(function (e) {
@@ -29,7 +35,13 @@
     }
 
     function renderOptionsContainer() {
-        snUtil.ShowModal('<div style="background-color:yellow;width:200px;height:400px;"></div>');
+        var modal = "";
+        if (!snUtil.LoggedIn) {
+            modal = '<div class="SnooNotesLoginContainer">' +
+            '<div class="SnooNotesDoneLogin" style="display:none;"><h1>All logged in?</h1><button id="SnooNotesConfirmLoggedIn">Click here!</button></div>' +
+            '<iframe id="SnooNotesLoginFrame" frameborder="0" scrolling="no" src="' + snUtil.LoginAddress + '"></iframe></div>';
+        }
+        snUtil.ShowModal(modal);
     }
 /*
 function loadModToolboxNotesHTML() {

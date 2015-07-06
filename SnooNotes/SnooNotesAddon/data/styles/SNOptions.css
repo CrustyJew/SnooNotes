@@ -7,6 +7,10 @@
     background-color:red;
 }
 
+.SNOptionsBtn.SNLoggedIn{
+    background-color:green;
+}
+
 #SNModalBackground{
     background: rgba(200,200,200,0.9)none repeat scroll 0 0;
     top:0;
