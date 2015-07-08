@@ -12,11 +12,12 @@
         });
         $('#SNContainer').on('click', '.SNNewNoteSubmit', function (e) {
             var ot = e.target;
+            var $newNoteContainer = $(ot).closest('.SNNewNoteContainer');
             var $message = $(ot).siblings('.SNNewMessage');
-            var notetype = $(ot).closest('.SNNewNoteContainer').find('input:radio[name=SNType]:checked').val();
+            var notetype = $newNoteContainer.find('input:radio[name=SNType]:checked').val();
             var valid = true;
-            var $err = $(ot).closest('.SNNewNoteContainer').find('.SNNewError');
-            var $ntContainer = $(ot).closest('.SNNewNoteContainer').find('.SNNoteType');
+            var $err = $newNoteContainer.find('.SNNewError');
+            var $ntContainer = $newNoteContainer.find('.SNNoteType');
             //clean up previous errors if there were any
             $message.removeClass("SNError");
             $ntContainer.removeClass("SNError");
@@ -32,7 +33,7 @@
                 $ntContainer.addClass("SNError");
             }
             if (valid) {
-                submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $message.val(), notetype);
+                submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $message.val(), notetype, $newNoteContainer);
             }
         });
         $('#SNContainer').on('click', '.SNDeleteNote', function (e) {
@@ -217,7 +218,9 @@ function closeNote(e) {
     $(e.target).closest('.SNViewContainer').hide();
 }
 
-function submitNote(user, sub, link, message, type) {
+function submitNote(user, sub, link, message, type, $noteCont) {
+    $('.SNNewNoteSubmit, .SNNewMessage', $noteCont).attr('disabled', 'disabled');
+    $noteCont.find('.SNNewError').empty();
     $.ajax({
         url: window.snUtil.ApiBase + "note",
         method: "POST",
@@ -225,6 +228,11 @@ function submitNote(user, sub, link, message, type) {
         data: { "NoteTypeID": type, "SubName": sub, "Message": message, "AppliesToUsername": user, "Url": link },
         success: function (d, status, jqXHR) {
             $('#SnooNote-' + user.toLowerCase() + ' .SNNewMessage').val('');
+            $('#SnooNote-' +user.toLowerCase() + ' .SNNewNoteSubmit, #SnooNote-' + user.toLowerCase() + ' .SNNewMessage').removeAttr('disabled');
+        },
+        error: function () {
+            $('#SnooNote-' +user.toLowerCase() + ' .SNNewNoteSubmit, #SnooNote-' +user.toLowerCase() + ' .SNNewMessage').removeAttr('disabled');
+            $('#SnooNote-' +user.toLowerCase() + ' .SNNewError').append($("<p>Something goofed. You can try resubmitting the note, but I'm not promising anything...</p>"));
         }
     });
 }

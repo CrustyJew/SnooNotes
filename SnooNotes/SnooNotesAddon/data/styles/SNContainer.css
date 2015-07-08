@@ -84,7 +84,10 @@
     width: 400px;
     box-sizing:border-box;
 }
-
+.SNNewMessage:disabled {
+    background: rgba(200,200,200,0.9)none repeat scroll 0 0;
+    color:whitesmoke;
+}
 .SNNewNoteSubmit {
     width: 65px;
     padding: 5px;
@@ -93,6 +96,10 @@
     vertical-align: middle;
     position: relative;
     top: -36px;
+}
+
+.SNNewNoteSubmit:disabled{
+
 }
 
 .SNNoteType{
