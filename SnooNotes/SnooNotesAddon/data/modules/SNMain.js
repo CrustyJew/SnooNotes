@@ -62,7 +62,7 @@
             $('#tb-bottombar').style('z-index', 'auto', 'important');
             $('body').style('overflow', 'hidden', 'important');
             var $modalContainer = $('#SNModalContainer');
-            
+            $modalContainer.empty();
             $modalContainer.append($('<div id="SNModalBackground" style="display:none"></div>').show("fast"));
             $modalContainer.append($('<div id="SNModal"><div class="SNHeader"><a class="SNCloseModal SNClose">[x]</a></div>' + modalHTML + '</div>').show("fast"));
         }

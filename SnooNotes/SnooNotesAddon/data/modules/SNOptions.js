@@ -25,6 +25,9 @@
         renderOptionsButton("LoggedOut");
     });
     window.addEventListener("snLoggedIn", function (e) {
+        if ($('#SNModal').is(":visible")) {
+            renderOptionsContainer();
+        }
         renderOptionsButton("LoggedIn");
     })
 
@@ -40,8 +43,19 @@
             modal = '<div class="SnooNotesLoginContainer">' +
             '<div class="SnooNotesDoneLogin" style="display:none;"><h1>All logged in?</h1><button id="SnooNotesConfirmLoggedIn">Click here!</button></div>' +
             '<iframe id="SnooNotesLoginFrame" frameborder="0" scrolling="no" src="' + snUtil.LoginAddress + '"></iframe></div>';
+            window.addEventListener("message", LoggingInEvent, false);
+        }
+        else {
+            modal = '<div class="SNOptionsMain"><h1>Options will be here.... Eventually.. I swear..</h1></div>';
         }
         snUtil.ShowModal(modal);
+    }
+    function LoggingInEvent(msg){
+        if(msg.data.LoggingIn){
+            $('#SnooNotesLoginFrame').hide(); 
+            $('.SnooNotesDoneLogin').show();
+            $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); checkLoggedIn(); });
+        }
     }
 /*
 function loadModToolboxNotesHTML() {
