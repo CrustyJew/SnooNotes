@@ -86,7 +86,7 @@
 function getSubName(e) {
 
     var sub = window.snUtil.Subreddit;
-    if (!sub) {
+    if (!sub || snUtil.ModQueue) {
         var $ot = $(e.target);
         //not a comment or browsing a sub you mod
         if (window.snUtil.Modmail) {
@@ -96,6 +96,16 @@ function getSubName(e) {
                 $sub = $sub.filter('.subreddit-name');
             }
             sub = $sub[0].innerHTML.substring(3).replace(/\//g, '');
+        }
+        else if (snUtil.ModQueue) {
+            var $sub = $ot.closest('.thing.reported').find('a.subreddit');
+            var subinner = $sub[0].innerHTML;
+            if (subinner.match(/\/r\//i)) {
+                sub = subinner.substring(3).replace(/\//g, '');
+            }
+            else {
+                sub = subinner;
+            }
         }
         else {
             sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');

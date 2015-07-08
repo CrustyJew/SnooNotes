@@ -51,7 +51,7 @@
         snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
         snUtil.Subreddit = snUtil.Subreddit.indexOf('+') != -1  ? "" : snUtil.Subreddit; //if it contains a plus sign, it's a multi reddit, not a mod
         
-        snUtil.Modmail = window.location.pathname.match(/\/message\/(?:moderator)\/?/);
+        
 
         $('#SNModalContainer').on('click', '.SNCloseModal,#SNModalBackground', function (e) {
             snUtil.CloseModal();
@@ -73,6 +73,8 @@
             $('#SNModalContainer').empty();
         }
 
+        snUtil.Modmail = window.location.pathname.match(/\/message\/(?:moderator)\/?/i);
+        snUtil.ModQueue = window.location.pathname.match(/\/r\/mod\/about\/modqueue/i);
         return;
     }(snUtil = window.snUtil || {}));
 }

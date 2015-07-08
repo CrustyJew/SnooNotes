@@ -19,7 +19,7 @@ function getEntriesToProcess(){
     }
     retrynum = 0;
     if(snUtil.Subreddit || snUtil.Modmail){
-        if (snUtil.Modmail || new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
+        if (snUtil.Modmail ||snUtil.ModQueue || new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
             console.log("Viewing sub that you mod or modmail");
             $('.author:not(".moderator")', $SNEntries).filter(function(){return $(this).parent('.recipient').length < 1}).each(function (index, ent) {
                 var $container = $(ent).closest('div');
