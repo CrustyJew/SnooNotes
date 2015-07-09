@@ -54,10 +54,10 @@ function initSocket() {
 }
 (function (snUtil) {
     browserInit();
-    //snUtil.ApiBase = "https://snoonotes.com/api/";
-    //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-    snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-    snUtil.ApiBase = "https://localhost:44311/api/";
+    snUtil.ApiBase = "https://snoonotes.com/api/";
+    snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+    //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+    //snUtil.ApiBase = "https://localhost:44311/api/";
     
     snUtil.NoteStyles = document.createElement('style');
     document.head.appendChild(snUtil.NoteStyles);

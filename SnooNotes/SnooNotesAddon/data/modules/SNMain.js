@@ -2,10 +2,10 @@
     (function (snUtil) {
         
 
-        //snUtil.ApiBase = "https://snoonotes.com/api/";
-        //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-        snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-        snUtil.ApiBase = "https://localhost:44311/api/";
+        snUtil.ApiBase = "https://snoonotes.com/api/";
+        snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+        //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+        //snUtil.ApiBase = "https://localhost:44311/api/";
         
         if ($('#SNContainer').length == 0) {
             $('body').append($('<div id="SNContainer"></div>'));
