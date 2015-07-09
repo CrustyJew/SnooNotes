@@ -4,11 +4,11 @@
 }
 
 .SNOptionsBtn.SNLoggedOut{
-    background-color:red;
+    color:red;
 }
 
 .SNOptionsBtn.SNLoggedIn{
-    background-color:green;
+    color:green;
 }
 
 #SNModalBackground{

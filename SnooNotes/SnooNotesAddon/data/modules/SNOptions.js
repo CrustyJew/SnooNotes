@@ -2,7 +2,9 @@
     var $optBtn = $('#SNOptionsBtn');
     if ($optBtn.length < 1) {
         //option button hasn't been created yet
-        $optBtn = $('<input type="button" id="SNOptionsBtn" class="SNOptionsBtn" />');
+        //commented until I get icons up in hur
+        //$optBtn = $('<input type="button" id="SNOptionsBtn" class="SNOptionsBtn" />');
+        $optBtn = $('<a href="#" id="SNOptionsBtn" class="SNOptionsBtn"></a>')
         $('#modmail').after([$('<span class="separator">|</span>'), $optBtn]);
         bindOptionClick();
     }
@@ -11,9 +13,11 @@
     }
     else if (msg == "LoggedOut") {
         $optBtn.attr("class", "SNOptionsBtn SNLoggedOut");
+        $optBtn.text("[SN Login!]");
     }
     else if (msg == "LoggedIn") {
         $optBtn.attr("class", "SNOptionsBtn SNLoggedIn");
+        $optBtn.text("[SN Options]");
     }
 }
 
