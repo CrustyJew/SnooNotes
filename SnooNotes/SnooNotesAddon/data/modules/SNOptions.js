@@ -4,7 +4,7 @@
         //option button hasn't been created yet
         //commented until I get icons up in hur
         //$optBtn = $('<input type="button" id="SNOptionsBtn" class="SNOptionsBtn" />');
-        $optBtn = $('<a href="#" id="SNOptionsBtn" class="SNOptionsBtn"></a>')
+        $optBtn = $('<a id="SNOptionsBtn" class="SNOptionsBtn"></a>')
         $('#modmail').after([$('<span class="separator">|</span>'), $optBtn]);
         bindOptionClick();
     }
@@ -50,7 +50,13 @@
             window.addEventListener("message", LoggingInEvent, false);
         }
         else {
-            modal = '<div class="SNOptionsMain"><h1>Options will be here.... Eventually.. I swear..</h1></div>';
+            modal = '<div id="SNOptionsContainer">'+
+                        '<div id="SNOptionsSidebar">' +
+                            '<div id="SNOptionsSubOpts" class="SNOptionsCategory active">Subreddits</div>' +
+                            '<div id="SNOptionsPlaceholder1" class="SNOptionsCategory">Placeholder 1</div>' +
+                            '<div id="SNOptionsPlaceholder2" class="SNOptionsCategory">Placeholder 2</div>' +
+                        '</div>' +
+                    '</div>';
         }
         snUtil.ShowModal(modal);
     }

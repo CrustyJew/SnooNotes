@@ -89,8 +89,8 @@
         return proxies;
     };
 
-    signalR.hub = $.hubConnection("https://snoonotes.com/signalr", { useDefaultPath: false });
-    //signalR.hub = $.hubConnection("https://localhost:44311/signalr", { useDefaultPath: false });
+    //signalR.hub = $.hubConnection("https://snoonotes.com/signalr", { useDefaultPath: false });
+    signalR.hub = $.hubConnection("https://localhost:44311/signalr", { useDefaultPath: false });
     $.extend(signalR, signalR.hub.createHubProxies());
 
 }(window.jQuery, window));
