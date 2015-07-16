@@ -70,6 +70,7 @@
     border-radius:5px 0 0 5px;
     border:1px solid darkgrey;
     border-right:none;
+    margin-right:25px;
 }
 
 .SNOptionsCategory.active{
@@ -80,9 +81,9 @@
         background-color:#2884ED;
         height:25px;
         width:25px;
-        margin-right:-25px;
-        margin-bottom:-25px;
+        margin-left:-25px;
+        margin-top:-25px;
         position:relative;
         right:-55px;
-        display:block;
+        display:inline-block;
     }
