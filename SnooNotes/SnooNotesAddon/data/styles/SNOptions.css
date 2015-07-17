@@ -55,10 +55,11 @@
     height:100%;
     box-sizing:border-box;
     position:relative;
+    border-right:1px solid darkgrey;
 }
 
 .SNOptionsCategory{
-    width:88px;
+    width:113px;
     height:25px;
     background-color:#A1C5ED;
     padding:5px;
@@ -70,20 +71,23 @@
     border-radius:5px 0 0 5px;
     border:1px solid darkgrey;
     border-right:none;
-    margin-right:25px;
+    position:relative;
 }
 
 .SNOptionsCategory.active{
     background-color:#2884ED;
 }
-    .SNOptionsCategory.active:after {
-        content:"";
-        background-color:#2884ED;
-        height:25px;
-        width:25px;
-        margin-left:-25px;
-        margin-top:-25px;
-        position:relative;
-        right:-55px;
-        display:inline-block;
-    }
+
+.SNOptionsCategory.active:after {
+    content: ' ';
+	height: 0;
+	position: absolute;
+	width: 0;
+
+	border: 10px solid transparent;
+    border-right-width:25px;
+	border-right-color: white;
+    right: -1px;
+	top: 50%;
+    margin-top:-10px;
+}
