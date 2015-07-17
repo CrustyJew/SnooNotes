@@ -20,7 +20,7 @@ namespace SnooNotesAPI.Controllers
             var notetypes = Models.NoteType.GetNoteTypesForSubs(roles);
             Dictionary<string, IEnumerable<Models.BasicNoteType>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNoteType>>();
             foreach(string sub in roles){
-                var basicNoteTypesForSub = notetypes.Where(t => t.SubName == sub).Select(t => new Models.BasicNoteType(){ Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder= t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID}).OrderBy(bt => bt.DisplayOrder);
+                var basicNoteTypesForSub = notetypes.Where(t => t.SubName.ToLower() == sub).Select(t => new Models.BasicNoteType(){ Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder= t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID}).OrderBy(bt => bt.DisplayOrder);
                 toReturn.Add(sub,basicNoteTypesForSub);
             }
             return toReturn;
@@ -40,7 +40,7 @@ namespace SnooNotesAPI.Controllers
         // POST: api/NoteType
         public void Post([FromBody]Models.NoteType value)
         {
-            if (User.IsInRole(value.SubName))
+            if (User.IsInRole(value.SubName.ToLower()))
             {
                 
                 Models.NoteType.AddNoteType(value);
@@ -54,7 +54,7 @@ namespace SnooNotesAPI.Controllers
         // PUT: api/NoteType/5
         public void Put([FromBody]Models.NoteType value)
         {
-            if (User.IsInRole(value.SubName))
+            if (User.IsInRole(value.SubName.ToLower()))
             {
                 Models.NoteType.UpdateNoteType(value);
             }
@@ -67,7 +67,7 @@ namespace SnooNotesAPI.Controllers
         // DELETE: api/NoteType/5
         public void Delete([FromBody]Models.NoteType value)
         {
-            if (User.IsInRole(value.SubName))
+            if (User.IsInRole(value.SubName.ToLower()))
             {
                 Models.NoteType.DeleteNoteType(value);
             }

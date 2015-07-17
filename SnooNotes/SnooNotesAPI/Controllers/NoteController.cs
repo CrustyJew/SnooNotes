@@ -41,14 +41,13 @@ namespace SnooNotesAPI.Controllers
         // POST: api/Note
         public void Post([FromBody]Models.Note value)
         {
-            value.SubName = value.SubName.ToLower();
-            if (value.SubName == null || User.IsInRole(value.SubName))
+            if (User.IsInRole(value.SubName.ToLower()))
             {
                 value.Submitter = User.Identity.Name;
                 value.Timestamp = DateTime.UtcNow;
-                int id = Models.Note.AddNoteForUser(value);
-                value.NoteID = id;
-                Signalr.SnooNoteUpdates.Instance.SendNewNote(value);
+                Models.Note insertedNote = Models.Note.AddNoteForUser(value);
+
+                Signalr.SnooNoteUpdates.Instance.SendNewNote(insertedNote);
             }
             else
             {

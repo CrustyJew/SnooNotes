@@ -85,17 +85,19 @@ namespace SnooNotesAPI.Models
                 return con.Query<Note>(query, new { noteid=id }).Single();
             }
         }
-        public static int AddNoteForUser(Note anote)
+        public static Note AddNoteForUser(Note anote)
         {
             anote.AppliesToUsername = anote.AppliesToUsername.ToLower();
             using (SqlConnection con = new SqlConnection(constring))
             {
                 string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, n.Url, n.Timestamp) "
                     + " values (@NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp);" 
-                    + " select cast(SCOPE_IDENTITY() as int)";
-                int id = con.Query<int>(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername, anote.Url, anote.Timestamp }).Single();
+                    + " select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
+                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID " 
+                        + " where n.NoteID = cast(SCOPE_IDENTITY() as int) ";
+                Note insertedNote = con.Query<Note>(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername, anote.Url, anote.Timestamp }).Single();
 
-                return id;
+                return insertedNote;
             }
         }
 

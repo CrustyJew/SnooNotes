@@ -43,11 +43,11 @@ function initSocket() {
 
     }
     $.connection.hub.disconnected(function () {
-        //if (socketOpen) {
-        //    setTimeout(function () {
-        //        $.connection.hub.start();
-        //    }, 5000); // Restart connection after 5 seconds.
-        //}
+        if (socketOpen) {
+            setTimeout(function () {
+                $.connection.hub.start();
+            }, 5000); // Restart connection after 5 seconds.
+        }
     });
     $.connection.hub.start().done(function () { console.log('Connected socket'); });
 
