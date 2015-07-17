@@ -65,6 +65,7 @@ namespace SnooNotesAPI
             {   
                 ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"],
                 ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"], 
+                UserAgent = "SnooNotes (by /u/meepster23)",
                 Provider = new Owin.Security.Providers.Reddit.Provider.RedditAuthenticationProvider()
                 {
                     OnAuthenticated = context =>

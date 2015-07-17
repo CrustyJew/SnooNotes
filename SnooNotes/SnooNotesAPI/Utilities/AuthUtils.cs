@@ -33,6 +33,7 @@ namespace SnooNotesAPI.Utilities
             }
             RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
             
 

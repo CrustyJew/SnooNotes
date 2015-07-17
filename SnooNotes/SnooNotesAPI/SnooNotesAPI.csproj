@@ -96,7 +96,7 @@
     </Reference>
     <Reference Include="Owin.Security.Providers, Version=1.21.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Owin.Security.Providers.1.21\lib\net45\Owin.Security.Providers.dll</HintPath>
+      <HintPath>.\Owin.Security.Providers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -260,6 +260,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Icon.png" />
+    <None Include="Owin.Security.Providers.dll" />
+    <None Include="Owin.Security.Providers.pdb" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
