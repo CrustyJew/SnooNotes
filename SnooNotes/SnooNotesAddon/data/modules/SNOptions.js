@@ -22,51 +22,70 @@
 }
 
 
-    window.addEventListener("snUtilDone", function (e) {
-        renderOptionsButton("init");
-    });
-    window.addEventListener("snLoggedOut", function (e) {
-        renderOptionsButton("LoggedOut");
-    });
-    window.addEventListener("snLoggedIn", function (e) {
-        if ($('#SNModal').is(":visible")) {
-            renderOptionsContainer();
-        }
-        renderOptionsButton("LoggedIn");
-    })
+window.addEventListener("snUtilDone", function (e) {
+    renderOptionsButton("init");
+});
+window.addEventListener("snLoggedOut", function (e) {
+    renderOptionsButton("LoggedOut");
+});
+window.addEventListener("snLoggedIn", function (e) {
+    if ($('#SNModal').is(":visible")) {
+        renderOptionsContainer();
+    }
+    renderOptionsButton("LoggedIn");
+})
 
-    function bindOptionClick() {
-        $('#SNOptionsBtn').click(function (e) {
-            renderOptionsContainer();
-        });
-    }
+function bindOptionClick() {
+    $('#SNOptionsBtn').click(function (e) {
+        renderOptionsContainer();
+    });
+}
 
-    function renderOptionsContainer() {
-        var modal = "";
-        if (!snUtil.LoggedIn) {
-            modal = '<div class="SnooNotesLoginContainer">' +
-            '<div class="SnooNotesDoneLogin" style="display:none;"><h1>All logged in?</h1><button id="SnooNotesConfirmLoggedIn">Click here!</button></div>' +
-            '<iframe id="SnooNotesLoginFrame" frameborder="0" scrolling="no" src="' + snUtil.LoginAddress + '"></iframe></div>';
-            window.addEventListener("message", LoggingInEvent, false);
-        }
-        else {
-            modal = '<div id="SNOptionsContainer">'+
-                        '<div id="SNOptionsSidebar">' +
-                            '<div id="SNOptionsSubOpts" class="SNOptionsCategory active">Subreddits</div>' +
-                            '<div id="SNOptionsPlaceholder1" class="SNOptionsCategory">Placeholder 1</div>' +
-                            '<div id="SNOptionsPlaceholder2" class="SNOptionsCategory">Placeholder 2</div>' +
-                        '</div>' +
-                    '</div>';
-        }
-        snUtil.ShowModal(modal);
+function renderOptionsContainer() {
+    var modal = "";
+    if (!snUtil.LoggedIn) {
+        modal = '<div class="SnooNotesLoginContainer">' +
+        '<div class="SnooNotesDoneLogin" style="display:none;"><h1>All logged in?</h1><button id="SnooNotesConfirmLoggedIn">Click here!</button></div>' +
+        '<iframe id="SnooNotesLoginFrame" frameborder="0" scrolling="no" src="' + snUtil.LoginAddress + '"></iframe></div>';
+        window.addEventListener("message", LoggingInEvent, false);
     }
-    function LoggingInEvent(msg){
-        if(msg.data.LoggingIn){
-            $('#SnooNotesLoginFrame').hide(); 
-            $('.SnooNotesDoneLogin').show();
-            $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); checkLoggedIn(); });
+    else {
+        modal = '<div id="SNOptionsContainer">'+
+                    '<div id="SNOptionsSidebar">' +
+                        '<div id="SNOptionsSubOpts" class="SNOptionsCategory active">Subreddits</div>' +
+                        '<div id="SNOptionsPlaceholder1" class="SNOptionsCategory">Placeholder 1</div>' +
+                        '<div id="SNOptionsPlaceholder2" class="SNOptionsCategory">Placeholder 2</div>' +
+                    '</div>' +
+                    '<div id="SNOptionsPanel">' +
+                            snSubredditOptions() + 
+                    '</div>' +
+                '</div>';
+    }
+    snUtil.ShowModal(modal);
+}
+function LoggingInEvent(msg){
+    if(msg.data.LoggingIn){
+        $('#SnooNotesLoginFrame').hide(); 
+        $('.SnooNotesDoneLogin').show();
+        $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); checkLoggedIn(); });
+    }
+}
+
+function snSubredditOptions() {
+    var subOpts = "";
+    var activeSubs = snUtil.ModdedSubs.split(',');
+    subOpts = '<div style="display:inline-block;";><h1 style="float:left;">Has something gone rogue? <br />Change subreddits you moderate?<br />Activate a new sub?</h1><button type="button" id="SNRestart" class="SNBtnWarn" style="margin-top:20px;margin-left:15px;">Refresh SnooNotes</button>' +
+                '<br style="clear:both;"/><div id="SNSubredditsContainer">';
+                    
+    for (var i = 0; i < activeSubs.length; i++) {
+        var sub = activeSubs[i];
+        if (sub) {
+            subOpts += '<div class="SNSubreddit"><button type="button" class="SNBtnSettings" snsub="' + sub + '">' + sub + '</button></div>';
         }
     }
+    subOpts += '</div>';
+    return subOpts;
+}
 /*
 function loadModToolboxNotesHTML() {
     var html = '' +

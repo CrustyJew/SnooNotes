@@ -56,6 +56,7 @@
     box-sizing:border-box;
     position:relative;
     border-right:1px solid darkgrey;
+    float:left;
 }
 
 .SNOptionsCategory{
@@ -90,4 +91,42 @@
     right: -1px;
 	top: 50%;
     margin-top:-10px;
+}
+
+#SNOptionsPanel{
+    margin: 0 auto;
+    max-width:600px;
+    padding-left:150px;
+}
+
+#SNSubredditsContainer{
+
+}
+
+.SNSubreddit{
+    width:250px;
+    padding:20px 20px 0px 20px;
+    margin:0 auto;
+    display:inline-block;
+    text-align:center;
+}
+/*** Buttons ***/
+
+.SNBtnWarn{
+    background-image: linear-gradient(to bottom, #e2f745, #c8de24);
+    border: 1px solid darkgrey;
+    border-radius:5px;
+    padding:10px;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.SNBtnSettings
+{
+    background-image: linear-gradient(to bottom, #448bf5, #2569de);
+    border: 1px solid darkgrey;
+    border-radius:5px;
+    padding:10px;
+    font-size:15px;
+    font-weight:bold;
 }
