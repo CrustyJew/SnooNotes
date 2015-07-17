@@ -31,12 +31,12 @@ namespace SnooNotesAPI.Signalr
          }
 
         public void SendNewNote(Models.Note anote){
-            Clients.Group(anote.SubName).addNewNote(anote);
+            Clients.Group(anote.SubName.ToLower()).addNewNote(anote);
         }
 
         public void DeleteNote(Models.Note anote)
         {
-            Clients.Group(anote.SubName).deleteNote(anote.AppliesToUsername,anote.NoteID);
+            Clients.Group(anote.SubName.ToLower()).deleteNote(anote.AppliesToUsername,anote.NoteID);
         }
     
     }

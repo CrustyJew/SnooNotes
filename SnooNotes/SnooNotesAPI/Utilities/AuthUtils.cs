@@ -33,19 +33,20 @@ namespace SnooNotesAPI.Utilities
             }
             RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
             
 
             List<string> currentRoles = ident.Claims.Where(x => x.ClaimType == roleType).Select(r => r.ClaimValue).ToList<string>();
 
            
-            List<string> activeSubs = Models.Subreddit.GetActiveSubs().Select(s => s.SubName).ToList();
+            List<string> activeSubs = Models.Subreddit.GetActiveSubs().Select(s => s.SubName.ToLower()).ToList();
 
             List<string> rolesToAdd = new List<string>();
             List<string> rolesToRemove = new List<string>();
             foreach (string role in currentRoles)
             {
-                var sub = subs.Find(s => s.Name == role);
+                var sub = subs.Find(s => s.Name.ToLower() == role);
                 if (activeSubs.Contains(role))
                 {
                     if (sub != null)
@@ -68,9 +69,9 @@ namespace SnooNotesAPI.Utilities
             //subs now only contains subs that don't exist as roles
             foreach (RedditSharp.Things.Subreddit sub in subs)
             {
-                if (activeSubs.Contains(sub.Name))
+                if (activeSubs.Contains(sub.Name.ToLower()))
                 {
-                    rolesToAdd.Add(sub.Name);
+                    rolesToAdd.Add(sub.Name.ToLower());
                 }
             }
 

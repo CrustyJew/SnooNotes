@@ -17,9 +17,9 @@ namespace SnooNotesAPI {
 			RouteConfig.RegisterRoutes( RouteTable.Routes );
 			BundleConfig.RegisterBundles( BundleTable.Bundles );
 		}
-        protected void BeginRequest(EventArgs e)
-        {
-            var x = 0;
-        }
+        //protected void Application_BeginRequest(object sender, EventArgs e)
+        //{
+        //    var x = 0;
+        //}
 	}
 }
