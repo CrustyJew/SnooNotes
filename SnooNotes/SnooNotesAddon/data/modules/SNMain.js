@@ -4,9 +4,20 @@
 
         //snUtil.ApiBase = "https://snoonotes.com/api/";
         //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+        //snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
         snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
         snUtil.ApiBase = "https://localhost:44311/api/";
-        
+        snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+        snUtil.Permissions = {};
+        snUtil.Permissions.None = 0x00;
+        snUtil.Permissions.Access = 0x01;
+        snUtil.Permissions.Config = 0x02;
+        snUtil.Permissions.Flair = 0x04;
+        snUtil.Permissions.Mail = 0x08;
+        snUtil.Permissions.Posts = 0x10;
+        snUtil.Permissions.Wiki = 0x20;
+        snUtil.Permissions.All = 0x40 | snUtil.Permissions.Access | snUtil.Permissions.Config | snUtil.Permissions.Flair | snUtil.Permissions.Mail | snUtil.Permissions.Posts | snUtil.Permissions.Wiki;
+
         if ($('#SNContainer').length == 0) {
             $('body').append($('<div id="SNContainer"></div>'));
         }
@@ -57,7 +68,7 @@
             snUtil.CloseModal();
         });
 
-        snUtil.ShowModal = function (modalHTML) {
+        snUtil.ShowModal = function (modalHTML, bindEvents) {
             $('body.res .side .titlebox div[data-res-css]:first').style('z-index', 'auto', 'important').children().style('z-index', 'auto', 'important');
             $('#tb-bottombar').style('z-index', 'auto', 'important');
             $('body').style('overflow', 'hidden', 'important');
@@ -65,6 +76,9 @@
             $modalContainer.empty();
             $modalContainer.append($('<div id="SNModalBackground" style="display:none"></div>').show("fast"));
             $modalContainer.append($('<div id="SNModal"><div class="SNHeader"><a class="SNCloseModal SNClose">[x]</a></div>' + modalHTML + '</div>').show("fast"));
+            if (bindEvents) {
+                bindEvents();
+            }
         }
         snUtil.CloseModal = function () {
             $('body.res .side .titlebox div[data-res-css]:first').style('z-index', '2147483646', 'important').children().style('z-index', '2147483646', 'important');
