@@ -36,7 +36,6 @@ namespace SnooNotesAPI.Utilities
             RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
             
-
             List<string> currentRoles = ident.Claims.Where(x => x.ClaimType == roleType).Select(r => r.ClaimValue).ToList<string>();
 
            

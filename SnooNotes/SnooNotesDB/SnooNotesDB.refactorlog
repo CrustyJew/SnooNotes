@@ -7,4 +7,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="DisplayOrder" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ca6931c3-ff0d-4098-9379-fefb2a24c18d" ChangeDateTime="07/20/2015 17:35:04">
+    <Property Name="ElementName" Value="[dbo].[SubredditSettings].[SubredditID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SubredditSettings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SubRedditID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f8f7b7a-196a-4d8e-bebc-a003b4dc8278" ChangeDateTime="07/20/2015 17:35:50">
+    <Property Name="ElementName" Value="[dbo].[SubredditSettings].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SubredditSettings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SettingId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0247ba9a-b997-409a-a8e0-a0fe915fece1" ChangeDateTime="07/20/2015 17:35:55">
+    <Property Name="ElementName" Value="[dbo].[SubredditSettings].[SettingId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SubredditSettings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SubRedditID" />
+  </Operation>
 </Operations>

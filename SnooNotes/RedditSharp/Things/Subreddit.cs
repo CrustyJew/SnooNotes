@@ -85,6 +85,10 @@ namespace RedditSharp.Things
         [JsonConverter(typeof(UrlParser))]
         public Uri Url { get; set; }
 
+        [JsonProperty("mod_permissions")]
+        [JsonConverter(typeof(ModeratorPermissionConverter))]
+        public ModeratorPermission ModPermissions { get; set; }
+
         [JsonIgnore]
         public string Name { get; set; }
 

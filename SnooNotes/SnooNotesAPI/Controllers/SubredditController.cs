@@ -4,21 +4,30 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Security.Claims;
 
 namespace SnooNotesAPI.Controllers
 {
     public class SubredditController : ApiController
     {
         // GET: api/Subreddit
-        public IEnumerable<string> Get()
+        public IEnumerable<Models.Subreddit> Get()
         {
-            return new string[] { "value1", "value2" };
+            var subs = (ClaimsPrincipal.Current.Identity as ClaimsIdentity).Claims.Where(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Select(c => c.Value);
+            return Models.Subreddit.GetSubreddits(subs);
         }
 
-        // GET: api/Subreddit/5
-        public string Get(int id)
+        // GET: api/Subreddit/videos
+        public Models.Subreddit Get(string id)
         {
-            return "value";
+            if (ClaimsPrincipal.Current.IsInRole(id.ToLower()))
+            {
+                return Models.Subreddit.GetSubreddits(new string[]{id}).First();
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            };
         }
 
         // POST: api/Subreddit

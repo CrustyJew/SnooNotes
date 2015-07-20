@@ -37,6 +37,19 @@ namespace SnooNotesAPI.Controllers
             return ident.Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
 
         }
+        [HttpGet]
+        public string TestMethod()
+        {
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var user = userManager.FindByName(User.Identity.Name);
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(user.AccessToken);
+            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+
+            var subs = rd.User.ModeratorSubreddits;
+
+            return subs.First().DisplayName;
+        }
 
     }
 }
