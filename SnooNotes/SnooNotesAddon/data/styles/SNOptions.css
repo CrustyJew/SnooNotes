@@ -41,6 +41,9 @@
     margin-top:-15px;
     padding-top:5px;
     min-height:100px;
+    max-height:600px;
+    min-width:650px;
+    overflow:auto;
     width:100%;
     height:100%;
     box-sizing:border-box;
@@ -92,11 +95,20 @@
 	top: 50%;
     margin-top:-10px;
 }
-
 #SNOptionsPanel{
+    height:100%;
+    display:block;
+    margin-left:125px;
+    padding-left:20px;
+    overflow:auto;
+}
+#SNOptionsContents{
     margin: 0 auto;
-    max-width:600px;
-    padding-left:150px;
+    max-width:1000px;
+    min-width:580px;
+    padding-bottom:20px;
+    padding-right:20px;
+
 }
 
 #SNSubredditsContainer{
@@ -109,6 +121,53 @@
     margin:0 auto;
     display:inline-block;
     text-align:center;
+}
+
+#SNSubRedditSettings{
+    border:1px solid darkgrey;
+    border-radius:10px;
+    padding:10px;
+    margin:0 auto;
+}
+#SNSubRedditSettings .SNSubOptsHeader{
+    float:left;
+    color:#2884ED;
+    font-weight:bold;
+    margin:0px;
+}
+#SNSubRedditSettings .SNOptsHeader{
+    margin-bottom:10px;
+}
+#SNSubRedditSettings .SNContainer{
+    clear:both;
+}
+#SNBtnSubOptsCancel{
+    float:right;
+}
+#SNSubOptSave{
+    margin:0 auto;
+    margin-top:20px;
+    display:block;
+}
+.SNAccessMask{
+    width:200px;
+    border:1px solid transparent;
+    border-radius:5px;
+    background-color:lightgrey;
+    padding:5px;
+}
+.SNAccessMaskOptions {
+    width:100px;
+}
+.SNAccessMaskOptions label{
+    display:block;
+}
+.SNAccessMaskOptions input[type=checkbox]{
+    vertical-align:middle;
+}
+#SNAccessMaskDesc{
+    font-weight:bold;
+    margin-bottom:5px;
 }
 /*** Buttons ***/
 
@@ -124,6 +183,15 @@
 .SNBtnSettings
 {
     background-image: linear-gradient(to bottom, #448bf5, #2569de);
+    border: 1px solid darkgrey;
+    border-radius:5px;
+    padding:10px;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.SNBtnSubmit{
+    background-image: linear-gradient(to bottom, #BBD877, #73CA4B);
     border: 1px solid darkgrey;
     border-radius:5px;
     padding:10px;
