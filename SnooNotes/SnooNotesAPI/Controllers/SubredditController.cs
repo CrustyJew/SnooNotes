@@ -38,8 +38,21 @@ namespace SnooNotesAPI.Controllers
         }
 
         // PUT: api/Subreddit/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(string id,[FromBody]Models.Subreddit sub)
         {
+            if(sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128 )
+            {
+                throw new HttpResponseException(new HttpResponseMessage() { ReasonPhrase = "Invalid AccessMask", StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent( "Access Mask was invalid" )});
+            }
+            else if (ClaimsPrincipal.Current.IsInRole(id.ToLower()))
+            {
+                sub.SubName = id;
+                Models.Subreddit.UpdateSubredditSettings(sub);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            };
         }
 
         // DELETE: api/Subreddit/5

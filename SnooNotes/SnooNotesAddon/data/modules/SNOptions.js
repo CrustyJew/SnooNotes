@@ -75,7 +75,7 @@ function snSubredditOptions() {
     var subOpts = "";
     var activeSubs = snUtil.ModdedSubs.split(',');
     subOpts = '<div style="display:inline-block;width:100%;"><h1 style="float:left;">Has something gone rogue? <br />Change subreddits you moderate?<br />Activate a new sub?</h1><button type="button" id="SNRestart" class="SNBtnWarn" style="margin-top:20px;margin-left:15px;">Refresh SnooNotes</button>' +
-                '<br style="clear:both;"/><div id="SNSubredditsContainer">'+snSubOptDescriptions()+'</div><div id="SNSubRedditSettings" style="display:none;"><div class="SNOptsHeader"><h1 class="SNSubOptsHeader"></h1><button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel">Cancel</button><br style="clear:both;"></div><div class="SNContainer"></div><button class="SNBtnSubmit" id="SNSubOptSave">Save</button></div>';
+                '<br style="clear:both;"/><div id="SNSubredditsContainer">'+snSubOptDescriptions()+'</div><div id="SNSubRedditSettings" style="display:none;"><div class="SNOptsHeader"><h1 class="SNSubOptsHeader"></h1><button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel">Cancel</button><br style="clear:both;"></div><div class="SNContainer"></div><button class="SNBtnSubmit" id="SNBtnSubOptsSave">Save</button></div>';
     snGetSubSettings();
     return subOpts;
 }
@@ -99,8 +99,26 @@ function snBindOptionEvents() {
         $('#SNSubRedditSettings').hide();
         $('#SNSubredditsContainer').show();
     });
-}
+    $('#SNBtnSubOptsSave').on('click', function () {
+        $('.SNSubreddit:visible').each(function (i, o) {
+            var data = {};
+            data.SubName = o.attributes['snsub'].value;
+            data.Settings = {};
+            data.Settings.AccessMask = 64;
+            $('.SNAccessMaskOptions input:checked', o).each(function (ii, chkb) {
+                data.Settings.AccessMask += parseInt(chkb.value);
+            });
+            $.ajax({
+                url: snUtil.RESTApiBase + "Subreddit/" + data.SubName,
+                method: "PUT",
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                data: data,
+                datatype: "Application/JSON"
+            });
+        });
 
+    });
+}
 function snGetSubSettings() {
     $.ajax({
         url: snUtil.RESTApiBase + "Subreddit/",
@@ -116,12 +134,12 @@ function snGetSubSettings() {
                     subOpts += '<div class="SNSubredditBtn"><button type="button" class="SNBtnSettings" snsub="' + sub.SubName + '">/r/' + sub.SubName + '</button></div>';
                     subOptsPanel += '<div class="SNSubreddit" snsub="'+sub.SubName+'" style="display:none;">'+
                                         '<div class="SNAccessMask"><div class="SNAccessMaskOptions">' +
-                                            '<label><input type="checkbox" value="access" '+(sub.Settings.AccessMask & snUtil.Permissions.Access ? 'checked="checked"' : '') +'>access</label>' +
-                                            '<label><input type="checkbox" value="config" ' + (sub.Settings.AccessMask & snUtil.Permissions.Config ? 'checked="checked"' : '') + '>config</label>' +
-                                            '<label><input type="checkbox" value="flair" ' + (sub.Settings.AccessMask & snUtil.Permissions.Flair ? 'checked="checked"' : '') + '>flair</label>' +
-                                            '<label><input type="checkbox" value="mail" ' + (sub.Settings.AccessMask & snUtil.Permissions.Mail ? 'checked="checked"' : '') + '>mail</label>' +
-                                            '<label><input type="checkbox" value="posts" ' + (sub.Settings.AccessMask & snUtil.Permissions.Posts ? 'checked="checked"' : '') + '>posts</label>' +
-                                            '<label><input type="checkbox" value="wiki" ' + (sub.Settings.AccessMask & snUtil.Permissions.Wiki ? 'checked="checked"' : '') + '>wiki</label>' +
+                                            '<label><input type="checkbox" value="1" '+(sub.Settings.AccessMask & snUtil.Permissions.Access ? 'checked="checked"' : '') +'>access</label>' +
+                                            '<label><input type="checkbox" value="2" ' + (sub.Settings.AccessMask & snUtil.Permissions.Config ? 'checked="checked"' : '') + '>config</label>' +
+                                            '<label><input type="checkbox" value="4" ' + (sub.Settings.AccessMask & snUtil.Permissions.Flair ? 'checked="checked"' : '') + '>flair</label>' +
+                                            '<label><input type="checkbox" value="8" ' + (sub.Settings.AccessMask & snUtil.Permissions.Mail ? 'checked="checked"' : '') + '>mail</label>' +
+                                            '<label><input type="checkbox" value="16" ' + (sub.Settings.AccessMask & snUtil.Permissions.Posts ? 'checked="checked"' : '') + '>posts</label>' +
+                                            '<label><input type="checkbox" value="32" ' + (sub.Settings.AccessMask & snUtil.Permissions.Wiki ? 'checked="checked"' : '') + '>wiki</label>' +
                                         '</div></div>' +
                                     '</div>';
                 }

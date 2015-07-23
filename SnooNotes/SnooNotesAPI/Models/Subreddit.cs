@@ -67,5 +67,18 @@ namespace SnooNotesAPI.Models
                 return result;
             }
         }
+
+        public static bool UpdateSubredditSettings(Subreddit sub)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "update ss " +
+                                "set ss.AccessMask = @AccessMask " +
+                                "from SubredditSettings ss inner join Subreddits s on s.SubRedditID = ss.SubRedditID " +
+                                "where s.subname = @SubName";
+                con.Execute(query, new { sub.Settings.AccessMask, sub.SubName });
+            }
+            return true;
+        }
     }
 }
