@@ -38,49 +38,63 @@ namespace SnooNotesAPI.Utilities
             
             List<string> currentRoles = ident.Claims.Where(x => x.ClaimType == roleType).Select(r => r.ClaimValue).ToList<string>();
 
-           
-            List<string> activeSubs = Models.Subreddit.GetActiveSubs().Select(s => s.SubName.ToLower()).ToList();
+            List<Models.Subreddit> activeSubs = Models.Subreddit.GetActiveSubs();
+            List<string> activeSubNames = activeSubs.Select(s => s.SubName.ToLower()).ToList();
 
-            List<string> rolesToAdd = new List<string>();
-            List<string> rolesToRemove = new List<string>();
+
+            List<Claim> rolesToAdd = new List<Claim>();
+            List<Claim> rolesToRemove = new List<Claim>();
             foreach (string role in currentRoles)
             {
                 var sub = subs.Find(s => s.Name.ToLower() == role);
-                if (activeSubs.Contains(role))
+                if (activeSubNames.Contains(role))
                 {
-                    if (sub != null)
+                    //if they already have the role and they still have the correct access
+                    if (sub != null && ((int)sub.ModPermissions & activeSubs.Where(s => s.SubName.ToLower() == role).Select(s=>s.Settings.AccessMask).First()) > 0)
                     {
+                        //Check if "full" permissions
+                        if (sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && !ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true"))
+                        {
+                            //has admin permissions but doesn't have role, so add it
+                            rolesToAdd.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));   
+                        }
+                        else if (!sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true")){
+                            //doesn't have admin permission, but does have role, so remove it
+                            rolesToRemove.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));
+                        }
+                        
+                        
                         //User already has sub as a role and is still a mod
                         subs.Remove(sub);
                     }
                     else
                     {
-                        rolesToRemove.Add(role);
+                        rolesToRemove.Add(new Claim(roleType,role));
                     }
                 }
                 else
                 {
                     //sub was deactivated, add it to remove.
-                    rolesToRemove.Add(role);
+                    rolesToRemove.Add(new Claim(roleType,role));
                 }
 
             }
             //subs now only contains subs that don't exist as roles
             foreach (RedditSharp.Things.Subreddit sub in subs)
             {
-                if (activeSubs.Contains(sub.Name.ToLower()))
+                if (activeSubNames.Contains(sub.Name.ToLower()))
                 {
-                    rolesToAdd.Add(sub.Name.ToLower());
+                    rolesToAdd.Add(new Claim(roleType,sub.Name.ToLower()));
                 }
             }
 
-            foreach (string role in rolesToRemove)
+            foreach (Claim c in rolesToRemove)
             {
-                ident.Claims.Remove(ident.Claims.First(i => i.ClaimValue == role));
+                ident.Claims.Remove(ident.Claims.First(i => i.ClaimType == c.Type && i.ClaimValue == c.Value));
             }
-            foreach (string role in rolesToAdd)
+            foreach (Claim c in rolesToAdd)
             {
-                ident.Claims.Add(new IdentityUserClaim() { ClaimType = roleType, ClaimValue = role, UserId=ident.Id });
+                ident.Claims.Add(new IdentityUserClaim() { ClaimType = c.Type, ClaimValue = c.Value, UserId=ident.Id });
             }
 
             return 0;
