@@ -116,7 +116,40 @@ function snBindOptionEvents() {
                 datatype: "Application/JSON"
             });
         });
-
+    });
+    $('#SNRestart').on('click', function () {
+        $('#SNModal').block({ message: '<h1>Attempting to shoo gremlins...</h1>' });
+        $.ajax({
+            url: snUtil.ApiBase + "account/UpdateModeratedSubreddits",
+            method: "GET",
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function (d, s, x) {
+                snUtil.reinitAll();
+                $.unblockUI();
+                $('#SNModal').block({
+                    message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Gremlins have flame throwered.</h2></div>',
+                    fadeIn: 500,
+                    fadeOut: 700,
+                    timeout: 2000,
+                    centerY: !0,
+                    centerX: !0,
+                    showOverlay: !1,
+                    css: $.blockUI.defaults.growlCSS
+                });
+            },
+            error: function () {
+                $('#SNModal').block({
+                    message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Gremlins have won, blame the admins.</h2></div>',
+                    fadeIn: 500,
+                    fadeOut: 700,
+                    timeout: 2000,
+                    centerY: !0,
+                    centerX: !0,
+                    showOverlay: !1,
+                    css: $.blockUI.defaults.growlCSS
+                });
+            }
+        });
     });
 }
 function snGetSubSettings() {

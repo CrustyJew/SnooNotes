@@ -7,6 +7,9 @@
         snBrowser.loggedIn = function () {
             chrome.runtime.sendMessage({ "method": "loggedIn" });
         }
+        snBrowser.reinitAll = function () {
+            chrome.runtime.sendMessage({ "method": "reinitAll" });
+        }
 
         //Listeners
         chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){

@@ -1,4 +1,4 @@
-﻿function initSnooNotes() {
+function initSnooNotes() {
     (function (snUtil) {
         
 
@@ -53,6 +53,9 @@
         
         snUtil.getNotesForUsers = function (users) {
             snBrowser.requstUserNotes(users);
+        };
+        snUtil.reinitAll = function () {
+            snBrowser.reinitAll();
         };
         //have to have the snUtil functions ready >.<
         browserInit(); //init browser first to attach listeners etc
@@ -153,6 +156,37 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
 })();
 
 (function ($) {
+    //BlockUI defaults
+    $.blockUI.defaults.growlCSS = {
+        "width": "350px",
+        "top": "10px",
+        "left": "",
+        "right": "10px",
+        "border": "none",
+        "padding": "5px",
+        "opacity": 1,
+        "cursor": "default",
+        "color": "#fff",
+        "backgroundColor": "#000",
+        "-webkit-border-radius": "10px",
+        "-moz-border-radius": "10px",
+        "border-radius": "10px"
+    };
+    $.blockUI.defaults.css= { 
+        padding:        0, 
+        margin:         0, 
+        width:          '30%', 
+        top:            '40%', 
+        left:           '35%', 
+        textAlign:      'center', 
+        color:          '#000', 
+        border:         '1px solid #darkgrey', 
+        backgroundColor:'#fff', 
+        cursor:         'wait' 
+    }
+
+
+
     if ($.fn.style) {
         return;
     }

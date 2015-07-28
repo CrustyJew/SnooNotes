@@ -9,11 +9,11 @@ function getEntriesToProcess(){
 
     var SNUsers = [];
     if (!snUtil.UsersWithNotes) {
-        if (retrynum > 20) return;//fuck on outa here if something is wrong with user;
+        if (retrynum > 50) return;//fuck on outa here if something is wrong with user;
         else {
             retrynum += 1;
             console.log("Users was undefined " + retrynum + " times!");
-            setTimeout(getEntriesToProcess, retrynum * 5 + 20 );
+            setTimeout(getEntriesToProcess, retrynum * 5 + 50 );
             return;
         }
     }

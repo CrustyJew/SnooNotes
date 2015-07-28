@@ -135,6 +135,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         case 'getNoteTypeJSON':
             getNoteTypeJSON(sendResponse, 0);
             break;
+        case 'reinitAll':
+            initWorker();
+            break;
         default:
             break;
     }

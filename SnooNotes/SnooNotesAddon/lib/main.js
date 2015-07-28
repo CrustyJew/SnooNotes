@@ -18,6 +18,7 @@ pageMod.PageMod({
         data.url("styles/SNContainer.css"),
         data.url("styles/SNOptions.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
+        data.url("libs/jquery.blockUI.min.js"),
         data.url("modules/SNFirefox.js"),
         data.url("modules/SNLoad.js"),
         data.url("modules/SnooNotes.js"),
@@ -52,6 +53,9 @@ pageMod.PageMod({
                 loggedIn = true;
                 pageWorker.port.emit("initWorker"); //socket opens here
             }
+        });
+        worker.port.on('reinitAll',function(){
+            pageWorker.port.emit("initWorker");
         });
         if (loggedIn) { worker.port.emit("gotUsersWithNotes", usersWithNotes); }
         if (noteTypeCSS) { worker.port.emit("setNoteTypeCSS", noteTypeCSS); }

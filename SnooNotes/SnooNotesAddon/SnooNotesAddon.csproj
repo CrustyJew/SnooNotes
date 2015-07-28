@@ -21,6 +21,7 @@
     <IISExpressUseClassicPipelineMode />
     <NuGetPackageImportStamp>b01ca788</NuGetPackageImportStamp>
     <ApplicationInsightsResourceId>/subscriptions/a9134f1b-6ecd-4ea2-8d57-8317b343b086/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/SnooNotesAddon</ApplicationInsightsResourceId>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\libs\jquery-2.1.3.min.js" />
+    <Content Include="data\libs\jquery.blockUI.min.js" />
     <Content Include="data\libs\jquery.signalR-2.2.0.min.js" />
     <Content Include="data\libs\jstorage.min.js" />
     <Content Include="data\libs\snUpdatesHub.js" />

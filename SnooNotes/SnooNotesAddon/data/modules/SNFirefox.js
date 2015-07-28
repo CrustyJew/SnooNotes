@@ -6,6 +6,9 @@
         snBrowser.loggedIn = function () {
             self.port.emit("loggedIn");
         }
+        snBrowser.reinitAll = function () {
+            self.port.emit("reinitAll");
+        }
         //Listeners
 
         self.port.on("gotUsersWithNotes", function (users) {
