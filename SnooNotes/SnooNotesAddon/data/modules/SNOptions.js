@@ -75,7 +75,13 @@ function snSubredditOptions() {
     var subOpts = "";
     var activeSubs = snUtil.ModdedSubs.split(',');
     subOpts = '<div style="display:inline-block;width:100%;"><h1 style="float:left;">Has something gone rogue? <br />Change subreddits you moderate?<br />Activate a new sub?</h1><button type="button" id="SNRestart" class="SNBtnWarn" style="margin-top:20px;margin-left:15px;">Refresh SnooNotes</button>' +
-                '<br style="clear:both;"/><div id="SNSubredditsContainer">'+snSubOptDescriptions()+'</div><div id="SNSubRedditSettings" style="display:none;"><div class="SNOptsHeader"><h1 class="SNSubOptsHeader"></h1><button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel">Cancel</button><br style="clear:both;"></div><div class="SNContainer"></div><button class="SNBtnSubmit" id="SNBtnSubOptsSave">Save</button></div>';
+                '<br style="clear:both;"/><div id="SNSubredditsContainer">' + snSubOptDescriptions() + '</div>' +
+                '<div id="SNSubRedditSettings" style="display:none;">' +
+                    '<div class="SNOptsHeader"><h1 class="SNSubOptsHeader"></h1><button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel">Cancel</button><br style="clear:both;"></div>' +
+                    '<form id="SNSubOptsForm">' +
+                        '<div class="SNContainer"></div>' +
+                        '<button type="button" class="SNBtnSubmit" id="SNBtnSubOptsSave">Save</button></div>'+
+                    '</form>';
     snGetSubSettings();
     return subOpts;
 }
@@ -86,6 +92,7 @@ function snSubOptDescriptions() {
 }
 function snBindOptionEvents() {
     $('#SNSubredditsContainer').on('click', '.SNBtnSettings', function (e) {
+        
         var sub = e.target.attributes["snsub"].value;
         $('#SNSubredditsContainer').hide();
         $('#SNSubRedditSettings').show();
@@ -97,9 +104,11 @@ function snBindOptionEvents() {
     });
     $('#SNBtnSubOptsCancel').on('click', function () {
         $('#SNSubRedditSettings').hide();
+        $('#SNSubOptsForm')[0].reset();
         $('#SNSubredditsContainer').show();
     });
     $('#SNBtnSubOptsSave').on('click', function () {
+        $('#SNModal').block({ message: '<h1>Charging AMEX card for changes made...</h1>' });
         $('.SNSubreddit:visible').each(function (i, o) {
             var data = {};
             data.SubName = o.attributes['snsub'].value;
@@ -113,7 +122,23 @@ function snBindOptionEvents() {
                 method: "PUT",
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 data: data,
-                datatype: "Application/JSON"
+                datatype: "Application/JSON",
+                success: function () {
+                    $.unblockUI();
+                    $('#SNModal').block({
+                        message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Settings have been altered.<br />Pray I do not alter them further....</h2></div>',
+                        fadeIn: 500,
+                        fadeOut: 700,
+                        timeout: 2000,
+                        centerY: !0,
+                        centerX: !0,
+                        showOverlay: !1,
+                        css: $.blockUI.defaults.growlCSS
+                    });
+                    $('.SNSubreddit:visible .SNAccessMaskOptions input:checked').attr('checked', 'checked');
+                    $('#SNSubRedditSettings').hide();
+                    $('#SNSubredditsContainer').show();
+                }
             });
         });
     });
@@ -153,6 +178,8 @@ function snBindOptionEvents() {
     });
 }
 function snGetSubSettings() {
+
+    $('#SNSubredditsContainer').block({message:"<h1>Fetching things for master</h1>",fadeIn:0});
     $.ajax({
         url: snUtil.RESTApiBase + "Subreddit/",
         method: "GET",
@@ -180,7 +207,12 @@ function snGetSubSettings() {
             $(function () {
                 $('#SNSubredditsContainer').remove('.SNSubredditBtn').append($(subOpts));
                 $('#SNSubRedditSettings .SNContainer').remove('.SNSubreddit').append($(subOptsPanel));
+                $('#SNSubredditsContainer').unblock();
             });
+        },
+        error: function () {
+            $('#SNSubredditsContainer').unblock();
+            $('#SNSubredditsContainer').append($('<h1 style="color:red;">Something went horribly wrong, try and reload the options window to fix it</h1>'));
         }
     });
 }
