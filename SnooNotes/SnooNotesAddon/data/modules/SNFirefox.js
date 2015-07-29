@@ -41,6 +41,6 @@
         self.port.on("setNoteTypeJSON", function (json) {
             snUtil.NoteTypes = json;
         });
-    }(snBrowser = window.snUtil || {}));
+    }(snBrowser = window.snBrowser || {}));
    
 }

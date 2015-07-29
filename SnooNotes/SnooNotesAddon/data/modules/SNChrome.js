@@ -61,6 +61,6 @@
             snUtil.NoteTypes = json;
         });
         
-    }(snBrowser = window.snUtil || {}));
+    }(snBrowser = window.snBrowser || {}));
    
 }

@@ -55,7 +55,13 @@ function initSnooNotes() {
             snBrowser.requstUserNotes(users);
         };
         snUtil.reinitAll = function () {
+            $('.SNNoNotes,.SNViewNotes').remove();
+            $('.SNDone').removeClass('SNDone');
+            $('#SNContainer').empty();
             snBrowser.reinitAll();
+            checkLoggedIn();
+            setModdedSubs();
+            
         };
         //have to have the snUtil functions ready >.<
         browserInit(); //init browser first to attach listeners etc
