@@ -75,14 +75,18 @@ function snSubredditOptions() {
     var subOpts = "";
     var activeSubs = snUtil.ModdedSubs.split(',');
     subOpts = '<div style="display:inline-block;width:100%;"><h1 style="float:left;">Has something gone rogue? <br />Change subreddits you moderate?<br />Activate a new sub?</h1><button type="button" id="SNRestart" class="SNBtnWarn" style="margin-top:20px;margin-left:15px;">Refresh SnooNotes</button>' +
-                '<br style="clear:both;"/><div id="SNSubredditsContainer">' + snSubOptDescriptions() + '</div>' +
+                '<br style="clear:both;"/>' +
+                '<div style="margin:0px auto;width:300px;margin-bottom:15px;"><select id="SNActivateSub"><option value="-1">---Activate a new Subreddit---</option></select><button type="button" id="SNBtnActivateSub" class="SNBtnSubmit">Activate</button></div>' +
+                '<div id="SNSubredditsContainer"></div>' +
                 '<div id="SNSubRedditSettings" style="display:none;">' +
+                    snSubOptDescriptions() + 
                     '<div class="SNOptsHeader"><h1 class="SNSubOptsHeader"></h1><button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel">Cancel</button><br style="clear:both;"></div>' +
                     '<form id="SNSubOptsForm">' +
                         '<div class="SNContainer"></div>' +
                         '<button type="button" class="SNBtnSubmit" id="SNBtnSubOptsSave">Save</button></div>'+
                     '</form>';
     snGetSubSettings();
+    snGetInactiveSubs();
     return subOpts;
 }
 function snSubOptDescriptions() {
@@ -153,28 +157,43 @@ function snBindOptionEvents() {
                 $.unblockUI();
                 $('#SNModal').block({
                     message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Gremlins have flame throwered.</h2></div>',
-                    fadeIn: 500,
-                    fadeOut: 700,
-                    timeout: 2000,
-                    centerY: !0,
-                    centerX: !0,
-                    showOverlay: !1,
-                    css: $.blockUI.defaults.growlCSS
+                    fadeIn: 500,fadeOut: 700,timeout: 2000,centerY: !0,centerX: !0,showOverlay: !1,css: $.blockUI.defaults.growlCSS
                 });
             },
             error: function () {
                 $('#SNModal').block({
                     message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Gremlins have won, blame the admins.</h2></div>',
-                    fadeIn: 500,
-                    fadeOut: 700,
-                    timeout: 2000,
-                    centerY: !0,
-                    centerX: !0,
-                    showOverlay: !1,
-                    css: $.blockUI.defaults.growlCSS
+                    fadeIn: 500,fadeOut: 700,timeout: 2000,centerY: !0,centerX: !0,showOverlay: !1,css: $.blockUI.defaults.growlCSS
                 });
             }
         });
+    });
+    $('#SNBtnActivateSub').on('click', function () {
+        var sub = $('#SNActivateSub').val();
+        if (sub == "-1") {
+            $('#SNActivateSub').css("border:2px solid red;");
+        } else {
+            $('#SNModal').block({ message: '<h1>Waking up the Balrog, err, fluffy bunny.. yeah..</h1>' });
+            $.ajax({
+                url: snUtil.RESTApiBase + "subreddit",
+                method: 'POST',
+                data: { SubName: sub },
+                success: function () {
+                    $('#SNModal').unblock();
+                    $('#SNModal').block({
+                        message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Summoning ritual has been completed.</h2></div>',
+                        fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1, css: $.blockUI.defaults.growlCSS
+                    });
+                    snUtil.reinitAll();
+                },
+                error: function () {
+                    $('#SNModal').block({
+                        message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Rolled a natural 0. If this persists, contact /u/snoonotes.</h2></div>',
+                        fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1, css: $.blockUI.defaults.growlCSS
+                    });
+                }
+            });
+        }
     });
 }
 function snGetSubSettings() {
@@ -213,6 +232,22 @@ function snGetSubSettings() {
         error: function () {
             $('#SNSubredditsContainer').unblock();
             $('#SNSubredditsContainer').append($('<h1 style="color:red;">Something went horribly wrong, try and reload the options window to fix it</h1>'));
+        }
+    });
+}
+function snGetInactiveSubs() {
+    $.ajax({
+        url: snUtil.ApiBase + "Account/GetInactiveModeratedSubreddits/",
+        method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function (d, s, x) {
+            var $opts = $('#SNActivateSub');
+            if (d.length == 0) {
+                $opts.closest('div').hide();
+            }
+            for (var i = 0; i < d.length; i++) {
+                $opts.append($('<option value="' + d[i] + '">' + d[i] + '</option>'));
+            }
         }
     });
 }

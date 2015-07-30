@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Security.Claims;
 namespace SnooNotesAPI.Controllers
@@ -30,7 +28,7 @@ namespace SnooNotesAPI.Controllers
         public Models.NoteType Get(int id)
         {
             Models.NoteType ntype = Models.NoteType.GetNoteType(id);
-            if (ntype != null && System.Threading.Thread.CurrentPrincipal.IsInRole(ntype.SubName))
+            if (ntype != null && ClaimsPrincipal.Current.IsInRole(ntype.SubName))
             {
                 return ntype;
             }
@@ -52,17 +50,38 @@ namespace SnooNotesAPI.Controllers
         }
 
         // PUT: api/NoteType/5
-        public void Put([FromBody]Models.NoteType value)
+        public void Put([FromBody]Models.NoteType[] values)
         {
-            if (User.IsInRole(value.SubName.ToLower()))
+            List<Models.NoteType> toAdd = new List<Models.NoteType>();
+            List<Models.NoteType> toUpdate = new List<Models.NoteType>();
+            foreach (Models.NoteType nt in values)
             {
-                Models.NoteType.UpdateNoteType(value);
+                if(ValidateNoteType(nt))
+                {
+                    if (nt.NoteTypeID == -1)
+                    {
+                        toAdd.Add(nt);
+                    }
+                    else
+                    {
+                        toUpdate.Add(nt);
+                    }
+                }
+                else
+                {
+                    BadRequest();
+                }
             }
-            else
-            {
-                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
-            }
-        }
+            
+        //if (User.IsInRole(value.SubName.ToLower()))
+        //{
+        //    Models.NoteType.UpdateNoteType(value);
+        //}
+        //else
+        //{
+        //    throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+        //}
+    }
 
         // DELETE: api/NoteType/5
         public void Delete([FromBody]Models.NoteType value)
@@ -75,6 +94,52 @@ namespace SnooNotesAPI.Controllers
             {
                 throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
             }
+        }
+
+
+        private bool ValidateNoteType(Models.NoteType ntype)
+        {
+            
+            if (String.IsNullOrEmpty(ntype.SubName) || !ClaimsPrincipal.Current.IsInRole(ntype.SubName.ToLower()))
+            {
+                return false; //doesn't mod sub or empty/null sub, insta FAIL
+            }
+            if (ntype.NoteTypeID == -1)
+            {
+                //adding new note
+            }
+            else
+            {
+                var toModNT = Models.NoteType.GetNoteType(ntype.NoteTypeID);
+                if(toModNT == null)
+                {
+                    return false; //NoteTypeID doesn't exist, FAIL
+                }
+                if(toModNT.SubName.ToLower() != ntype.SubName.ToLower())
+                {
+                    return false; //Subreddit name changed, FAIL
+                }
+                
+            }
+            if (String.IsNullOrEmpty(ntype.ColorCode))
+            {
+                return false; //No color code, FAIL
+            }
+            else if (ntype.ColorCode.Length != 3 && ntype.ColorCode.Length != 6)
+            {
+                return false; //Color code wrong length, FAIL
+            }
+            else if(!System.Text.RegularExpressions.Regex.IsMatch(ntype.ColorCode, @"\A\b[0-9a-fA-F]+\b\Z"))
+            {
+                return false; //Color code not valid hex, FAIL
+            }
+            if (String.IsNullOrEmpty(ntype.DisplayName))
+            {
+                return false; //Null or empty display name, FAIL
+            }
+            
+
+            return true;
         }
     }
 }

@@ -18,6 +18,10 @@ namespace SnooNotesAPI.Models
         public bool Bold { get; set; }
         public bool Italic { get; set; }
 
+        public NoteType()
+        {
+            NoteTypeID = -1;
+        }
         private static string constring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
         public static string AddNoteType(NoteType ntype)
         {
@@ -75,5 +79,25 @@ namespace SnooNotesAPI.Models
                 return con.Query<NoteType>(query, new { subs = subredditNames });
             }
         }
+
+        public static void AddMultipleNoteTypes(List<NoteType> ntypes)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "insert into NoteTypes (SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic) " +
+                        " values ( (select SubredditID from Subreddits where SubName = @SubName), @DisplayName, @ColorCode, @DisplayOrder, @Bold, @Italic)";
+                con.Execute(query, ntypes);
+            }
+        }
+        public static void UpdateMultipleNoteTypes(List<NoteType> ntypes)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "update NoteTypes set DisplayName = @DisplayName , ColorCode = @ColorCode , DisplayOrder = @DisplayOrder , Bold = @Bold , Italic = @Italic " +
+                        " where NoteTypeID = @NoteTypeID";
+                con.Execute(query, ntypes);
+            }
+        }
+
     }
 }
