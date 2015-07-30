@@ -84,7 +84,7 @@ namespace SnooNotesAPI
             opts.Scope.Add("mysubreddits");
             app.UseRedditAuthentication(opts);
         }
-        private void GetNewToken(CookieValidateIdentityContext context)
+        /*private void GetNewToken(CookieValidateIdentityContext context)
         {
             string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
@@ -153,7 +153,7 @@ namespace SnooNotesAPI
                 ident.AddClaim(new Claim(roletype, role));
             }
             return ident;
-        }
+        }*/
 
         private static bool IsAjaxRequest(IOwinRequest request)
         {

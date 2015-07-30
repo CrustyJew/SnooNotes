@@ -8,6 +8,8 @@ using System.Web.Http;
 using Microsoft.Owin;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace SnooNotesAPI.Utilities
 {
@@ -31,9 +33,10 @@ namespace SnooNotesAPI.Utilities
             {
                 GetNewToken(ident);
             }
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
             RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+            
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
             
             List<string> currentRoles = ident.Claims.Where(x => x.ClaimType == roleType).Select(r => r.ClaimValue).ToList<string>();
@@ -50,19 +53,27 @@ namespace SnooNotesAPI.Utilities
                 if (activeSubNames.Contains(role))
                 {
                     //if they already have the role and they still have the correct access
-                    if (sub != null && ((int)sub.ModPermissions & activeSubs.Where(s => s.SubName.ToLower() == role).Select(s=>s.Settings.AccessMask).First()) > 0)
+                    if (sub != null)
                     {
-                        //Check if "full" permissions
-                        if (sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && !ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true"))
+                        if (((int)sub.ModPermissions & activeSubs.Where(s => s.SubName.ToLower() == role).Select(s => s.Settings.AccessMask).First()) > 0)
                         {
-                            //has admin permissions but doesn't have role, so add it
-                            rolesToAdd.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));   
+                            //Check if "full" permissions
+                            if (sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && !ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true"))
+                            {
+                                //has admin permissions but doesn't have role, so add it
+                                rolesToAdd.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));
+                            }
+                            else if (!sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true"))
+                            {
+                                //doesn't have admin permission, but does have role, so remove it
+                                rolesToRemove.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));
+                            }
                         }
-                        else if (!sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true")){
-                            //doesn't have admin permission, but does have role, so remove it
-                            rolesToRemove.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));
+                        else
+                        {
+                            //lost da permissions
+                            rolesToRemove.Add(new Claim(roleType, role));
                         }
-                        
                         
                         //User already has sub as a role and is still a mod
                         subs.Remove(sub);
@@ -88,9 +99,11 @@ namespace SnooNotesAPI.Utilities
                 }
             }
 
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             foreach (Claim c in rolesToRemove)
             {
-                ident.Claims.Remove(ident.Claims.First(i => i.ClaimType == c.Type && i.ClaimValue == c.Value));
+                userManager.RemoveClaim(ident.Id, c);
+                
             }
             foreach (Claim c in rolesToAdd)
             {

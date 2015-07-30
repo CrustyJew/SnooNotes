@@ -26,30 +26,46 @@ namespace SnooNotesAPI.Controllers
         {
             return (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
         }
+
+        [HttpGet]
+        public IEnumerable<string> GetInactiveModeratedSubreddits()
+        {
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var ident = userManager.FindByName(User.Identity.Name);
+            if (ident.TokenExpires < DateTime.UtcNow)
+            {
+                Utilities.AuthUtils.GetNewToken(ident);
+                userManager.Update(ident);
+            }
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
+            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            List<Models.Subreddit> activeSubs = Models.Subreddit.GetActiveSubs();
+            List<string> activeSubNames = activeSubs.Select(s => s.SubName.ToLower()).ToList();
+
+            var subs = rd.User.ModeratorSubreddits.Where(s => s.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All)&& !activeSubNames.Contains(s.Name.ToLower())).Select(s => s.Name);
+            return subs.OrderBy(s => s);
+        }
         [HttpGet]
         public async Task<List<string>> UpdateModeratedSubreddits()
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = userManager.FindByName(User.Identity.Name);
             await Utilities.AuthUtils.UpdateModeratedSubreddits(user);
-            userManager.Update(user);
+            try
+            {
+                userManager.Update(user);
+            }
+            catch (Exception e)
+            {
+
+            }
             var ident = await user.GenerateUserIdentityAsync(userManager);
+            HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties { IsPersistent = true }, ident);
             return ident.Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
 
         }
-        [HttpGet]
-        public string TestMethod()
-        {
-            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var user = userManager.FindByName(User.Identity.Name);
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(user.AccessToken);
-            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
 
-            var subs = rd.User.ModeratorSubreddits;
-
-            return subs.First().DisplayName;
-        }
 
     }
 }
