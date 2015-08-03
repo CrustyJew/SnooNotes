@@ -32,18 +32,40 @@ namespace SnooNotesAPI.Models
         public static IEnumerable<Subreddit> GetSubreddits(IEnumerable<string> subnames){
             using (SqlConnection con = new SqlConnection(constring))
             {
-                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask from Subreddits s left join " +
-                               "SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
+                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, " +
+                               "nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic " + 
+                               "from Subreddits s " +
+                               "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
+                               "left join NoteTypes nt on nt.SubredditID = s.SubredditID " +
                                "where s.SubName in @subnames";
-                var result = con.Query<Subreddit,SubredditSettings,Subreddit>(query,(s,ss)=>{
-                    if (ss == null)
+
+                var lookup = new Dictionary<int, Subreddit>();
+                var result = con.Query<Subreddit, SubredditSettings,NoteType, Subreddit>(query, (s, ss, nt) => {
+                    Subreddit sub;
+                    if(!lookup.TryGetValue(s.SubredditID,out sub))
+                    {
+                        lookup.Add(s.SubredditID, sub = s);
+                    }
+                    if (ss == null && sub.Settings == null)
                     {
                         ss = new SubredditSettings();
+                        sub.Settings = ss;
                     }
-                    s.Settings = ss;
-                    return s;
-                }, splitOn:"AccessMask", param:new {subnames});
-                return result;
+                    else if(sub.Settings == null)
+                    {
+                        sub.Settings = ss;
+                    }
+                    sub.Settings.NoteTypes.Add(nt);
+
+                    return sub;
+                }, splitOn: "AccessMask,NoteTypeID", param: new { subnames });
+                //string noteTypeQuery = "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt "
+                //        + " inner join Subreddits s on s.SubredditID = nt.SubredditID"
+                //        + " where s.SubName in @subnames";
+                //var noteTypes = con.Query<NoteType>(noteTypeQuery, new { subnames });
+
+                 
+                return lookup.Values.AsEnumerable();
             }
 
         }

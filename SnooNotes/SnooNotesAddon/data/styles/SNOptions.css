@@ -167,6 +167,7 @@
 }
 .SNAccessMaskOptions input[type=checkbox]{
     vertical-align:middle;
+    margin:0px 5px 0px 0px;
 }
 #SNAccessMaskDesc{
     font-weight:bold;
@@ -190,6 +191,22 @@ div.growlUI h2 {
 #SNActivateSub option:first-of-type{
     color:darkgrey;
 }
+
+.SNNoteTypeColor{
+  width:50px;
+  }
+  
+  .SNNoteTypes li{
+  	display:inline-block;
+  	border: 1px solid darkgrey;
+  	border-radius:3px;
+	padding: 2px;
+  }
+  .SNNoteTypes input[type=checkbox]{
+  	vertical-align:middle;
+  	margin:0px 5px 0px 0px;
+height:20px;
+  }
 /*** Buttons ***/
 
 #SNBtnActivateSub{

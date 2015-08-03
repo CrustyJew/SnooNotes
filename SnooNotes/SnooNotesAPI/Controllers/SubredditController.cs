@@ -59,8 +59,16 @@ namespace SnooNotesAPI.Controllers
             {
                 throw new Exception("You are doing that too much! Limited to created 5 subreddits per 24 hours, sorry!");
             }
-            try {
+            if (Models.Subreddit.GetActiveSubs().Select(s => s.SubName.ToLower()).Contains(newSub.SubName.ToLower()))
+            {
+                throw new Exception("Subreddit already exists!");
+            }
+            try { 
+                //loads default note types, currently same types as Toolbox
+                newSub.Settings.NoteTypes = Models.SubredditSettings.DefaultNoteTypes(newSub.SubName);
+                
                 Models.Subreddit.AddSubreddit(newSub);
+                Models.NoteType.AddMultipleNoteTypes(newSub.Settings.NoteTypes);
 
                 ucache.Value += 1;
                 icache.Value += 1;

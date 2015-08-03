@@ -210,14 +210,30 @@ function snGetSubSettings() {
                 var sub = activeSubs[i];
                 if (sub) {
                     subOpts += '<div class="SNSubredditBtn"><button type="button" class="SNBtnSettings" snsub="' + sub.SubName + '">/r/' + sub.SubName + '</button></div>';
-                    subOptsPanel += '<div class="SNSubreddit" snsub="'+sub.SubName+'" style="display:none;">'+
+                    subOptsPanel += '<div class="SNSubreddit" snsub="' + sub.SubName + '" style="display:none;">' +
                                         '<div class="SNAccessMask"><div class="SNAccessMaskOptions">' +
-                                            '<label><input type="checkbox" value="1" '+(sub.Settings.AccessMask & snUtil.Permissions.Access ? 'checked="checked"' : '') +'>access</label>' +
+                                            '<label><input type="checkbox" value="1" ' + (sub.Settings.AccessMask & snUtil.Permissions.Access ? 'checked="checked"' : '') + '>access</label>' +
                                             '<label><input type="checkbox" value="2" ' + (sub.Settings.AccessMask & snUtil.Permissions.Config ? 'checked="checked"' : '') + '>config</label>' +
                                             '<label><input type="checkbox" value="4" ' + (sub.Settings.AccessMask & snUtil.Permissions.Flair ? 'checked="checked"' : '') + '>flair</label>' +
                                             '<label><input type="checkbox" value="8" ' + (sub.Settings.AccessMask & snUtil.Permissions.Mail ? 'checked="checked"' : '') + '>mail</label>' +
                                             '<label><input type="checkbox" value="16" ' + (sub.Settings.AccessMask & snUtil.Permissions.Posts ? 'checked="checked"' : '') + '>posts</label>' +
                                             '<label><input type="checkbox" value="32" ' + (sub.Settings.AccessMask & snUtil.Permissions.Wiki ? 'checked="checked"' : '') + '>wiki</label>' +
+                                        '</div></div>' +
+                                        '<div class="SNNoteTypes"><div class="SNNoteTypeOptions">' +
+                                            '<ol>';
+                                                for(var n = 0; n < sub.Settings.NoteTypes.length; n++){
+                                                    var nt = sub.Settings.NoteTypes[n];
+                                                    if (nt) {
+                                subOptsPanel += '<li SNNoteTypeID="' + nt.NoteTypeID + '">' +
+                                                    '<input class="SNNoteTypeDisp" type="text" maxlength="25" value="' + nt.DisplayName + '">' +
+                                                    'Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
+                                                    '<label><input type="checkbox" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
+                                                    '<label><input type="checkbox" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Bold</label>' +
+                                                '</li>';
+                                                        
+                                                    }
+                                                }
+                    subOptsPanel +=         '</ol>' +
                                         '</div></div>' +
                                     '</div>';
                 }
