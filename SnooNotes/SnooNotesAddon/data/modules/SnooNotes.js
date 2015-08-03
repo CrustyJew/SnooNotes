@@ -79,6 +79,7 @@
             }
 
             $newNote.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+            $newNote.draggable({ handle: "div.SNHeader" });
         });
         e.target.removeEventListener(e.type, arguments.callee);
     });
@@ -212,6 +213,7 @@ function showNotes(e) {
     $submit.attr("SNSub", sub );
     $submit.attr("SNLink", $('ul li.first a', $ot.closest('div.entry')).attr('href'));
     $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+    $sn.draggable({ handle: "div.SNHeader" });
 }
 
 function closeNote(e) {

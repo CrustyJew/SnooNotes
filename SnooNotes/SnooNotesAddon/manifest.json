@@ -16,6 +16,7 @@
             "js": [
                 "data/libs/jquery-2.1.3.min.js",
                 "data/libs/jquery.blockUI.min.js",
+                "data/libs/jquery-ui.js",
                 "data/modules/SNChrome.js",
                 "data/modules/SNLoad.js",
                 "data/modules/SnooNotes.js",
@@ -26,7 +27,8 @@
             "css": [
                 "data/styles/SNContainer.css",
                 "data/styles/SnooLogin.css",
-                "data/styles/SNOptions.css"
+                "data/styles/SNOptions.css",
+                "data/styles/jquery-ui.css"
             ],
             "run_at": "document_end"
         }

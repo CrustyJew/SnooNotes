@@ -1,8 +1,9 @@
 ﻿function processSnooNotes(){
     getEntriesToProcess();
 }
-var retrynum = 0;
-function getEntriesToProcess(){
+var retrynum = 0; //this is bad and probably should get changed to a passed param.
+function getEntriesToProcess() {
+
     var $SNEntries = {};
     $SNEntries = $('.sitetable .thing .entry:not(.SNDone), .commentarea .thing .entry:not(.SNDone)');
     

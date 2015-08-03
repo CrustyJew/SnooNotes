@@ -27,6 +27,7 @@
     padding-right: 15px;
     background-color: grey;
     text-align: right;
+    cursor:move;
 }
 .SNDeleteNote{
     position:absolute;

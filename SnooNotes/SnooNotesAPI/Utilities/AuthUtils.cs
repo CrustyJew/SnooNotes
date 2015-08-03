@@ -21,6 +21,7 @@ namespace SnooNotesAPI.Utilities
             string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
             string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
             RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
             string newaccesstoken = ap.GetOAuthToken(ident.RefreshToken, true);
             ident.AccessToken = newaccesstoken;
