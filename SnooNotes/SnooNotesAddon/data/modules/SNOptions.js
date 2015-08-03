@@ -170,7 +170,7 @@ function snBindOptionEvents() {
     $('#SNBtnActivateSub').on('click', function () {
         var sub = $('#SNActivateSub').val();
         if (sub == "-1") {
-            $('#SNActivateSub').css("border:2px solid red;");
+            $('#SNActivateSub').attr("style","border:2px solid red;");
         } else {
             $('#SNModal').block({ message: '<h1>Waking up the Balrog, err, fluffy bunny.. yeah..</h1>' });
             $.ajax({

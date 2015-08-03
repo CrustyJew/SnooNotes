@@ -145,10 +145,16 @@ namespace RedditSharp
                 case RateLimitMode.Burst:
                     if (_requestsThisBurst == 0)//this is first request
                         _burstStart = DateTime.UtcNow;
-                    if (_requestsThisBurst >= 30) //limit has been reached
+                    if (_requestsThisBurst >= 55) //limit has been reached
                     {
                         while ((DateTime.UtcNow - _burstStart).TotalSeconds < 60)
                             Thread.Sleep(250);
+                        _burstStart = DateTime.UtcNow;
+                        _requestsThisBurst = 0;
+                    }
+                    if((DateTime.UtcNow - _burstStart).TotalSeconds >= 60)
+                    {
+                        _requestsThisBurst = 0;
                         _burstStart = DateTime.UtcNow;
                     }
                     _requestsThisBurst++;

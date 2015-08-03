@@ -183,6 +183,13 @@ div.growlUI h2 {
     padding: 0px 20px 20px 20px;
     text-align: left;
 }
+#SNActivateSub{
+    height:32px;
+    border-radius:5px;
+}
+#SNActivateSub option:first-of-type{
+    color:darkgrey;
+}
 /*** Buttons ***/
 
 #SNBtnActivateSub{
@@ -190,41 +197,33 @@ div.growlUI h2 {
     margin:0px 0px 0px 20px;
 }
 
+.SNBtnCancel,.SNBtnSettings,.SNBtnSubmit,.SNBtnWarn{
+    border: 1px solid darkgrey;
+    font-family: Verdana,Arial,sans-serif;
+    margin: 4px 16px 4px 0;
+    padding: 2px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.24);
+    color:#fff;
+    text-transform:none;
+    height:32px;
+    font-size:12px;
+    font-weight:bold;
+    border-radius:2px;
+}
+
 .SNBtnWarn{
     background-image: linear-gradient(to bottom, #e2f745, #c8de24);
-    border: 1px solid darkgrey;
     color:#1a1a1a !important;
-    font-family: Verdana,Arial,sans-serif;
-    /*border-radius:5px;
-    padding:10px;
-    font-size:15px;
-    font-weight:bold;*/
 }
 
-.SNBtnSettings
-{
+.SNBtnSettings{
     background-image: linear-gradient(to bottom, #448bf5, #2569de);
-    border: 1px solid darkgrey;
-    font-family: Verdana,Arial,sans-serif;
-    /*border-radius:5px;
-    padding:10px;
-    font-size:15px;
-    font-weight:bold;*/
 }
 
-.SNBtnSubmit{
-    /*background-image: linear-gradient(to bottom, #BBD877, #73CA4B);*/
+.SNBtnSubmit,.SNNewNoteSubmit{
     background: linear-gradient(to bottom, #74c429, #4ca20b );
-    border: 1px solid darkgrey;
-    font-family: Verdana,Arial,sans-serif;
-    /*border-radius:5px;
-    padding:10px;
-    font-size:15px;
-    font-weight:bold;*/
 }
 
 .SNBtnCancel{
     background: linear-gradient(to bottom, #a8a8a8,#878787 );
-    border:1px solid darkgrey;
-    font-family: Verdana,Arial,sans-serif;
 }

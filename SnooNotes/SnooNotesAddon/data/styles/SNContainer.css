@@ -94,10 +94,16 @@
     width: 65px;
     padding: 5px;
     margin-left: 15px;
-    height: 34px;
+    height: 32px;
     vertical-align: middle;
     position: relative;
     top: -36px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.24);
+    color:#fff;
+    border: 1px solid darkgrey;
+    font-family: Verdana,Arial,sans-serif;
+    text-transform:none;
+    border-radius:2px;
 }
 
 .SNNewNoteSubmit:disabled{
