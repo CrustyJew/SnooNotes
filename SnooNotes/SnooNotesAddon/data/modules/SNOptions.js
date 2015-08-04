@@ -109,6 +109,7 @@ function snBindOptionEvents() {
         $('#SNSubRedditSettings').hide();
         $('#SNSubOptsForm')[0].reset();
         $('#SNSubredditsContainer').show();
+        sortNoteTypes();
     });
     $('#SNBtnSubOptsSave').on('click', function () {
         $('#SNModal').block({ message: '<h1>Charging AMEX card for changes made...</h1>' });
@@ -224,11 +225,13 @@ function snGetSubSettings() {
                                                 for(var n = 0; n < sub.Settings.NoteTypes.length; n++){
                                                     var nt = sub.Settings.NoteTypes[n];
                                                     if (nt) {
-                                subOptsPanel += '<li SNNoteTypeID="' + nt.NoteTypeID + '">' +
+                                subOptsPanel += '<li SNNoteTypeID="' + nt.NoteTypeID + '" SNNoteTypeDisplayOrder="'+nt.DisplayOrder+'">' +
+                                                    '<a>drag me</a>' +
                                                     '<input class="SNNoteTypeDisp" type="text" maxlength="25" value="' + nt.DisplayName + '">' +
                                                     'Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
                                                     '<label><input type="checkbox" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
-                                                    '<label><input type="checkbox" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Bold</label>' +
+                                                    '<label><input type="checkbox" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Italic</label>' +
+                                                    '<span></span>' +
                                                 '</li>';
                                                         
                                                     }
@@ -241,6 +244,9 @@ function snGetSubSettings() {
             $(function () {
                 $('#SNSubredditsContainer').remove('.SNSubredditBtn').append($(subOpts));
                 $('#SNSubRedditSettings .SNContainer').remove('.SNSubreddit').append($(subOptsPanel));
+                sortNoteTypes();
+                $('.SNNoteTypeOptions ol').sortable({ axis: "y", containment: "parent", tolerance:'pointer' }).disableSelection();
+                
                 $('#SNSubredditsContainer').unblock();
             });
         },
@@ -249,6 +255,15 @@ function snGetSubSettings() {
             $('#SNSubredditsContainer').append($('<h1 style="color:red;">Something went horribly wrong, try and reload the options window to fix it</h1>'));
         }
     });
+}
+function sortNoteTypes() {
+    $('.SNSubreddit .SNNoteTypes ol').each(function (i, nt) {
+        $('li', nt).sort(ntSort).appendTo($(nt));
+    });
+    
+}
+function ntSort(a, b) {
+    return ($(b).attr("SNNoteTYpeDisplayOrder")) < ($(a).attr("SNNoteTYpeDisplayOrder")) ? 1 : -1;
 }
 function snGetInactiveSubs() {
     $.ajax({
