@@ -195,6 +195,9 @@ function snBindOptionEvents() {
             });
         }
     });
+    $('#SNSubRedditSettings').on("keyup change", ".SNSubreddit .SNNoteTypes li", function (e) {
+        ntUpdatePreview(this);
+    });
 }
 function snGetSubSettings() {
 
@@ -226,12 +229,13 @@ function snGetSubSettings() {
                                                     var nt = sub.Settings.NoteTypes[n];
                                                     if (nt) {
                                 subOptsPanel += '<li SNNoteTypeID="' + nt.NoteTypeID + '" SNNoteTypeDisplayOrder="'+nt.DisplayOrder+'">' +
-                                                    '<a>drag me</a>' +
-                                                    '<input class="SNNoteTypeDisp" type="text" maxlength="25" value="' + nt.DisplayName + '">' +
-                                                    'Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
-                                                    '<label><input type="checkbox" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
-                                                    '<label><input type="checkbox" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Italic</label>' +
-                                                    '<span></span>' +
+                                                    '<a class="SNSort"></a>' +
+                                                    '<input class="SNNoteTypeDisp" type="text" maxlength="20" value="' + nt.DisplayName + '">' +
+                                                    '&nbsp;Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
+                                                    '<label><input type="checkbox" class="SNntBold" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
+                                                    '<label><input type="checkbox" class="SNntItalic" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Italic</label>' +
+                                                    '&nbsp;<span class="SNPreview"></span>' +
+                                                    '<a class="SNRemove">x</a>' +
                                                 '</li>';
                                                         
                                                     }
@@ -245,6 +249,7 @@ function snGetSubSettings() {
                 $('#SNSubredditsContainer').remove('.SNSubredditBtn').append($(subOpts));
                 $('#SNSubRedditSettings .SNContainer').remove('.SNSubreddit').append($(subOptsPanel));
                 sortNoteTypes();
+               
                 $('.SNNoteTypeOptions ol').sortable({ axis: "y", containment: "parent", tolerance:'pointer' }).disableSelection();
                 
                 $('#SNSubredditsContainer').unblock();
@@ -258,12 +263,24 @@ function snGetSubSettings() {
 }
 function sortNoteTypes() {
     $('.SNSubreddit .SNNoteTypes ol').each(function (i, nt) {
+        //put this here since it's only called on init and reset, and the display needs updated always then
+        $('li',nt).each(function (i, ntli) {
+            ntUpdatePreview(ntli);
+        });  
         $('li', nt).sort(ntSort).appendTo($(nt));
     });
     
 }
 function ntSort(a, b) {
     return ($(b).attr("SNNoteTYpeDisplayOrder")) < ($(a).attr("SNNoteTYpeDisplayOrder")) ? 1 : -1;
+}
+function ntUpdatePreview(ntLI) {
+    var $li = $(ntLI);
+    var newCSS = "";
+    newCSS += "color:#" + $('.SNNoteTypeColor', $li).val() + ";" +
+        ($('.SNntBold:checked', $li).length > 0 ? "font-weight:bold;" : "") +
+        ($('.SNntItalic:checked', $li).length > 0 ? "font-style:italic;" : "");
+    $('span.SNPreview', $li).text($('.SNNoteTypeDisp', $li).val()).attr("style",newCSS);
 }
 function snGetInactiveSubs() {
     $.ajax({

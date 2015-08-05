@@ -28,4 +28,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="SubRedditID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="99b2555c-27d3-4193-8de7-6bf0c3ace633" ChangeDateTime="08/05/2015 18:26:44">
+    <Property Name="ElementName" Value="[dbo].[NoteTypes].[Enabled]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[NoteTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Disabled" />
+  </Operation>
 </Operations>

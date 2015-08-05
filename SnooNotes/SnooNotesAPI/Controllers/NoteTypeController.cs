@@ -137,6 +137,10 @@ namespace SnooNotesAPI.Controllers
             {
                 return false; //Null or empty display name, FAIL
             }
+            else if(ntype.DisplayName.Length > 20)
+            {
+                return false; //Displayname too long, FAIL
+            }
             
 
             return true;

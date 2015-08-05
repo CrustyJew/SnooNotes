@@ -74,7 +74,7 @@ namespace SnooNotesAPI.Models
             {
                 string query = "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt "
                         + " inner join Subreddits s on s.SubredditID = nt.SubredditID"
-                        + " where s.SubName in @subs";
+                        + " where s.SubName in @subs and nt.Disabled = 0";
 
                 return con.Query<NoteType>(query, new { subs = subredditNames });
             }
