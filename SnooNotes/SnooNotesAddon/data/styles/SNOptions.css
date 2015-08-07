@@ -333,7 +333,7 @@ div.growlUI h2 {
     height: 16px;
     width: 16px;
     font-size:12px;
-    line-height:12px;
+    line-height:14px;
     font-weight:bold;
     font-family:verdana;
     color:white;
@@ -343,4 +343,23 @@ div.growlUI h2 {
     position: relative;
     border-radius:50%;
     border:1px solid darkgrey;
+    cursor:pointer;
+}
+.SNAdd {
+    display:inline-block;
+    vertical-align:middle;
+    height: 16px;
+    width: 16px;
+    font-size:12px;
+    line-height:15px;
+    font-weight:bold;
+    font-family:verdana;
+    color:white;
+    text-align:center;
+    margin-left:8px;
+    background: linear-gradient(to bottom, #74c429, #4ca20b );
+    position: relative;
+    border-radius:50%;
+    border:1px solid darkgrey;
+    cursor:pointer;
 }

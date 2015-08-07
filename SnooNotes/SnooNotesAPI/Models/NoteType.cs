@@ -56,6 +56,16 @@ namespace SnooNotesAPI.Models
             }
         }
 
+        public static bool DeleteMultipleNoteTypes(IEnumerable<NoteType> ntypes)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "delete nt from NoteTypes nt INNER JOIN Subreddits sr on nt.SubredditID = sr.SubredditID where NoteTypeID = @NoteTypeID and sr.SubName = @subname";
+                con.Execute(query, ntypes);
+                return true;
+            }
+        }
+
         public static NoteType GetNoteType(int id)
         {
             using (SqlConnection con = new SqlConnection(constring))
@@ -80,16 +90,24 @@ namespace SnooNotesAPI.Models
             }
         }
 
-        public static void AddMultipleNoteTypes(List<NoteType> ntypes)
+        public static IEnumerable<NoteType> AddMultipleNoteTypes(IEnumerable<NoteType> ntypes)
         {
             using (SqlConnection con = new SqlConnection(constring))
             {
                 string query = "insert into NoteTypes (SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic) " +
-                        " values ( (select SubredditID from Subreddits where SubName = @SubName), @DisplayName, @ColorCode, @DisplayOrder, @Bold, @Italic)";
-                con.Execute(query, ntypes);
+                        "values ( (select SubredditID from Subreddits where SubName = @SubName), @DisplayName, @ColorCode, @DisplayOrder, @Bold, @Italic) " +
+                        "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt "
+                        + " inner join Subreddits s on s.SubredditID = nt.SubredditID"
+                        + " where NoteTypeID = cast(SCOPE_IDENTITY() as int)";
+                List<NoteType> ret = new List<NoteType>();
+                foreach (NoteType nt in ntypes)
+                {
+                    ret.Add(con.Query<NoteType>(query, new { nt.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic}).First());
+                }
+                return ret;
             }
         }
-        public static void UpdateMultipleNoteTypes(List<NoteType> ntypes)
+        public static void UpdateMultipleNoteTypes(NoteType[] ntypes)
         {
             using (SqlConnection con = new SqlConnection(constring))
             {
@@ -98,6 +116,23 @@ namespace SnooNotesAPI.Models
                 con.Execute(query, ntypes);
             }
         }
+
+        public static bool ValidateNoteTypesInSubs(IEnumerable<NoteType> ntypes)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "select count(*) from "+ 
+                    "NoteTypes nt inner join Subreddits s on s.SubredditID = nt.SubredditID "+
+                    "where nt.NoteTypeID = @NoteTypeID and s.SubName = @SubName";
+                int count = 0;
+                foreach (NoteType nt in ntypes)
+                {
+                    count += con.Query<int>(query, new {nt.NoteTypeID,nt.SubName }).First();
+                }
+                return count == ntypes.Count();
+            }
+        }
+        
 
     }
 }

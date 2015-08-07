@@ -9,7 +9,7 @@
         bindOptionClick();
     }
     if (!msg) {
-        $optBtn.attr("class","SNOptionsBtn");
+        $optBtn.attr("class", "SNOptionsBtn");
     }
     else if (msg == "LoggedOut") {
         $optBtn.attr("class", "SNOptionsBtn SNLoggedOut");
@@ -50,22 +50,22 @@ function renderOptionsContainer() {
         window.addEventListener("message", LoggingInEvent, false);
     }
     else {
-        modal = '<div id="SNOptionsContainer">'+
+        modal = '<div id="SNOptionsContainer">' +
                     '<div id="SNOptionsSidebar">' +
                         '<div id="SNOptionsSubOpts" class="SNOptionsCategory active">Subreddits</div>' +
                         '<div id="SNOptionsPlaceholder1" class="SNOptionsCategory">Placeholder 1</div>' +
                         '<div id="SNOptionsPlaceholder2" class="SNOptionsCategory">Placeholder 2</div>' +
                     '</div>' +
                     '<div id="SNOptionsPanel"><div id="SNOptionsContents">' +
-                            snSubredditOptions() + 
+                            snSubredditOptions() +
                     '</div></div>' +
                 '</div>';
     }
-    snUtil.ShowModal(modal,snBindOptionEvents);
+    snUtil.ShowModal(modal, snBindOptionEvents);
 }
-function LoggingInEvent(msg){
-    if(msg.data.LoggingIn){
-        $('#SnooNotesLoginFrame').hide(); 
+function LoggingInEvent(msg) {
+    if (msg.data.LoggingIn) {
+        $('#SnooNotesLoginFrame').hide();
         $('.SnooNotesDoneLogin').show();
         $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); checkLoggedIn(); });
     }
@@ -78,11 +78,11 @@ function snSubredditOptions() {
                 '<div style="margin:0px auto;width:300px;margin-bottom:15px;"><select id="SNActivateSub"><option value="-1">---Activate a new Subreddit---</option></select><button type="button" id="SNBtnActivateSub" class="SNBtnSubmit">Activate</button></div>' +
                 '<div id="SNSubredditsContainer"></div>' +
                 '<div id="SNSubRedditSettings" style="display:none;">' +
-                    snSubOptDescriptions() + 
+                    snSubOptDescriptions() +
                     '<div class="SNOptsHeader"><h1 class="SNSubOptsHeader"></h1><button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel">Cancel</button><br style="clear:both;"></div>' +
                     '<form id="SNSubOptsForm">' +
                         '<div class="SNContainer"></div>' +
-                        '<button type="button" class="SNBtnSubmit" id="SNBtnSubOptsSave">Save</button></div>'+
+                        '<button type="button" class="SNBtnSubmit" id="SNBtnSubOptsSave">Save</button></div>' +
                     '</form>';
     snGetSubSettings();
     snGetInactiveSubs();
@@ -95,7 +95,7 @@ function snSubOptDescriptions() {
 }
 function snBindOptionEvents() {
     $('#SNSubredditsContainer').on('click', '.SNBtnSettings', function (e) {
-        
+
         var sub = e.target.attributes["snsub"].value;
         $('#SNSubredditsContainer').hide();
         $('#SNSubRedditSettings').show();
@@ -109,42 +109,126 @@ function snBindOptionEvents() {
         $('#SNSubRedditSettings').hide();
         $('#SNSubOptsForm')[0].reset();
         $('#SNSubredditsContainer').show();
-        sortNoteTypes();
+        resetNoteTypes();
     });
     $('#SNBtnSubOptsSave').on('click', function () {
         $('#SNModal').block({ message: '<h1>Charging AMEX card for changes made...</h1>' });
-        $('.SNSubreddit:visible').each(function (i, o) {
-            var data = {};
-            data.SubName = o.attributes['snsub'].value;
-            data.Settings = {};
-            data.Settings.AccessMask = 64;
-            $('.SNAccessMaskOptions input:checked', o).each(function (ii, chkb) {
-                data.Settings.AccessMask += parseInt(chkb.value);
-            });
-            $.ajax({
-                url: snUtil.RESTApiBase + "Subreddit/" + data.SubName,
-                method: "PUT",
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                data: data,
-                datatype: "Application/JSON",
-                success: function () {
-                    $.unblockUI();
-                    $('#SNModal').block({
-                        message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Settings have been altered.<br />Pray I do not alter them further....</h2></div>',
-                        fadeIn: 500,
-                        fadeOut: 700,
-                        timeout: 2000,
-                        centerY: !0,
-                        centerX: !0,
-                        showOverlay: !1,
-                        css: $.blockUI.defaults.growlCSS
-                    });
-                    $('.SNSubreddit:visible .SNAccessMaskOptions input:checked').attr('checked', 'checked');
-                    $('#SNSubRedditSettings').hide();
-                    $('#SNSubredditsContainer').show();
-                }
-            });
+        var o = $('.SNSubreddit:visible')[0];
+        var subname = o.attributes['snsub'].value;
+        var subdata = {};
+        subdata.SubName = subname;
+        subdata.Settings = {};
+        subdata.Settings.AccessMask = 64;
+        $('.SNAccessMaskOptions input:checked', o).each(function (ii, chkb) {
+            subdata.Settings.AccessMask += parseInt(chkb.value);
         });
+        var dSub = $.ajax({
+            url: snUtil.RESTApiBase + "Subreddit/" + subdata.SubName,
+            method: "PUT",
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            data: subdata,
+            datatype: "Application/JSON",
+            success: function () {
+
+                $('.SNSubreddit:visible .SNAccessMaskOptions input:checked').attr('checked', 'checked');
+
+            }
+        });
+        var ntAddData = [];
+        var ntDelData = [];
+        var ntUpdData = [];
+        var dispOrderCounter = 0;
+        $('.SNNoteTypes li', o).each(function (i, ntli) {
+            var $ntli = $(ntli);
+            var nt = {};
+            nt.SubName = subname;
+            nt.NoteTypeID = $ntli.attr('SNNoteTypeID');
+            //notetype add or update
+            if ($ntli.is(':visible')) {
+                nt.DisplayOrder = dispOrderCounter;
+                dispOrderCounter++;
+                nt.DisplayName = $ntli.children('.SNNoteTypeDisp').val();
+                nt.ColorCode = $ntli.children('.SNNoteTypeColor').val();
+                nt.Bold = $('.SNntBold:checked',$ntli).length > 0 ? true : false;
+                nt.Italic = $('.SNntItalic:checked',$ntli).length > 0 ? true : false;
+                //new notetype
+                if (nt.NoteTypeID == "-1") {
+
+                    ntAddData.push(nt);
+                }
+                    //update notetype
+                else {
+                    ntUpdData.push(nt);
+                }
+            }
+                //NoteType delete
+            else {
+                ntDelData.push(nt);
+            }
+        });
+        var dNtAdd = !(ntAddData.length) ? {} : $.ajax({
+            url: snUtil.RESTApiBase + "NoteType",
+            method: "POST",
+            data: JSON.stringify(ntAddData),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (d, ts, x) {
+                $('.SNNoteTypes li:visible[SNNoteTypeID="-1"]').remove();
+                for (var i = 0; i < d.length; i++) {
+                    $('.SNSubreddit[snsub="'+d[i].SubName+'"').children('ol').append(genNoteTypeLI(d[i]));
+                }
+            }
+        });
+        var dNtUpd = !(ntUpdData.length) ? {} : $.ajax({
+            url: snUtil.RESTApiBase + "NoteType",
+            method: "PUT",
+            data: JSON.stringify(ntUpdData ),
+            dataType: "json",
+            contentType: "application/json",
+            //traditional: true,
+            success: function (d, ts, x) {
+                for (var i = 0; i < d.length; i++) {
+                    $('.SNSubreddit .SNNoteTypes li[SNNoteTypeID="' + d[i].NoteTypeID + '"]').replaceWith(genNoteTypeLI(d[i]));
+                }
+            }
+        });
+        var dNtDel = !(ntDelData.length) ? {} : $.ajax({
+            url: snUtil.RESTApiBase + "NoteType",
+            method: "DELETE",
+            data: JSON.stringify(ntDelData),
+            dataType: "json",
+            contentType: "application/json",
+            //traditional:true,
+            success: function (d, ts, x) {
+                for (var i = 0; i < d.length; i++) {
+                    $('.SNSubreddit .SNNoteTypes li[SNNoteTypeID="' + d[i] + '"]').remove();
+                }
+            }
+        });
+        $.when(dSub, dNtAdd,dNtUpd,dNtDel).then(
+            //success
+            function () {
+                resetNoteTypes();
+                $.unblockUI();
+                $('#SNModal').block({
+                    message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Settings have been altered.<br />Pray I do not alter them further....</h2></div>',
+                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1,
+                    css: $.blockUI.defaults.growlCSS
+                });
+                $('#SNSubRedditSettings').hide();
+                $('#SNSubredditsContainer').show();
+            },
+        //failure
+           function (dSub, dNtAdd, dNtUpd, dNtDel) {
+               $.unblockUI();
+               $('#SNModal').block({
+                   message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Possible partial success, recommend re-opening options window</h2></div>',
+                   fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1,
+                   css: $.blockUI.defaults.growlCSS
+               });
+           }
+        ); //end when/then
+
     });
     $('#SNRestart').on('click', function () {
         $('#SNModal').block({ message: '<h1>Attempting to shoo gremlins...</h1>' });
@@ -157,13 +241,13 @@ function snBindOptionEvents() {
                 $.unblockUI();
                 $('#SNModal').block({
                     message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>Gremlins have flame throwered.</h2></div>',
-                    fadeIn: 500,fadeOut: 700,timeout: 2000,centerY: !0,centerX: !0,showOverlay: !1,css: $.blockUI.defaults.growlCSS
+                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1, css: $.blockUI.defaults.growlCSS
                 });
             },
             error: function () {
                 $('#SNModal').block({
                     message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Gremlins have won, blame the admins.</h2></div>',
-                    fadeIn: 500,fadeOut: 700,timeout: 2000,centerY: !0,centerX: !0,showOverlay: !1,css: $.blockUI.defaults.growlCSS
+                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1, css: $.blockUI.defaults.growlCSS
                 });
             }
         });
@@ -171,7 +255,7 @@ function snBindOptionEvents() {
     $('#SNBtnActivateSub').on('click', function () {
         var sub = $('#SNActivateSub').val();
         if (sub == "-1") {
-            $('#SNActivateSub').attr("style","border:2px solid red;");
+            $('#SNActivateSub').attr("style", "border:2px solid red;");
         } else {
             $('#SNModal').block({ message: '<h1>Waking up the Balrog, err, fluffy bunny.. yeah..</h1>' });
             $.ajax({
@@ -195,13 +279,31 @@ function snBindOptionEvents() {
             });
         }
     });
+    //update preview for notetype
     $('#SNSubRedditSettings').on("keyup change", ".SNSubreddit .SNNoteTypes li", function (e) {
         ntUpdatePreview(this);
+    });
+    //remove note type (will preserve in DB)
+    $('#SNSubRedditSettings').on("click", ".SNSubreddit .SNNoteTypes .SNRemove", function (e) {
+        var $ntli = $(this).closest('li');
+        if ($ntli.attr('SNNoteTypeID') == "-1") {
+            $ntli.remove();
+        }
+        else {
+            $ntli.hide();
+        }
+    });
+    //Add new notetype LI
+    $('#SNSubRedditSettings').on("click", ".SNSubreddit .SNNoteTypes .SNAdd", function (e) {
+        var $ntlo = $(this).parent().siblings('ol'); //have to get parent because it's wrapped in a div
+        var $newLI = $(genNoteTypeLI({ NoteTypeID: -1, DisplayOrder: -1, Bold: false, Italic: false, ColorCode: "000", DisplayName: "New" }));
+        $ntlo.append($newLI);
+        ntUpdatePreview($newLI);
     });
 }
 function snGetSubSettings() {
 
-    $('#SNSubredditsContainer').block({message:"<h1>Fetching things for master</h1>",fadeIn:0});
+    $('#SNSubredditsContainer').block({ message: "<h1>Fetching things for master</h1>", fadeIn: 0 });
     $.ajax({
         url: snUtil.RESTApiBase + "Subreddit/",
         method: "GET",
@@ -225,33 +327,25 @@ function snGetSubSettings() {
                                         '</div></div>' +
                                         '<div class="SNNoteTypes"><div class="SNNoteTypeOptions">' +
                                             '<ol>';
-                                                for(var n = 0; n < sub.Settings.NoteTypes.length; n++){
-                                                    var nt = sub.Settings.NoteTypes[n];
-                                                    if (nt) {
-                                subOptsPanel += '<li SNNoteTypeID="' + nt.NoteTypeID + '" SNNoteTypeDisplayOrder="'+nt.DisplayOrder+'">' +
-                                                    '<a class="SNSort"></a>' +
-                                                    '<input class="SNNoteTypeDisp" type="text" maxlength="20" value="' + nt.DisplayName + '">' +
-                                                    '&nbsp;Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
-                                                    '<label><input type="checkbox" class="SNntBold" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
-                                                    '<label><input type="checkbox" class="SNntItalic" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Italic</label>' +
-                                                    '&nbsp;<span class="SNPreview"></span>' +
-                                                    '<a class="SNRemove">x</a>' +
-                                                '</li>';
-                                                        
-                                                    }
-                                                }
-                    subOptsPanel +=         '</ol>' +
+                    for (var n = 0; n < sub.Settings.NoteTypes.length; n++) {
+                        var nt = sub.Settings.NoteTypes[n];
+                        if (nt) {
+                            subOptsPanel += genNoteTypeLI(nt);
+                        }
+                    }
+                            subOptsPanel += '</ol>' +
+                                            '<div style="text-align:center;" ><a class="SNAdd">+</a></div>' +
                                         '</div></div>' +
-                                    '</div>';
+                '</div>';
                 }
             }
             $(function () {
                 $('#SNSubredditsContainer').remove('.SNSubredditBtn').append($(subOpts));
                 $('#SNSubRedditSettings .SNContainer').remove('.SNSubreddit').append($(subOptsPanel));
-                sortNoteTypes();
-               
-                $('.SNNoteTypeOptions ol').sortable({ axis: "y", containment: "parent", tolerance:'pointer' }).disableSelection();
-                
+                resetNoteTypes();
+
+                $('.SNNoteTypeOptions ol').sortable({ axis: "y", containment: "parent", tolerance: 'pointer' }).disableSelection();
+
                 $('#SNSubredditsContainer').unblock();
             });
         },
@@ -261,15 +355,33 @@ function snGetSubSettings() {
         }
     });
 }
-function sortNoteTypes() {
+function genNoteTypeLI(nt) {
+    var ntLI = '<li SNNoteTypeID="' + nt.NoteTypeID + '" SNNoteTypeDisplayOrder="' + nt.DisplayOrder + '">' +
+                                                    '<a class="SNSort"></a>' +
+                                                    '<input class="SNNoteTypeDisp" type="text" maxlength="20" value="' + nt.DisplayName + '">' +
+                                                    '&nbsp;Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
+                                                    '<label><input type="checkbox" class="SNntBold" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
+                                                    '<label><input type="checkbox" class="SNntItalic" value="italic" ' + (nt.Italic ? 'checked="checked"' : '') + '>Italic</label>' +
+                                                    '&nbsp;<span class="SNPreview"></span>' +
+                                                    '<a class="SNRemove">x</a>' +
+                                                '</li>';
+    return ntLI;
+}
+function resetNoteTypes() {
     $('.SNSubreddit .SNNoteTypes ol').each(function (i, nt) {
         //put this here since it's only called on init and reset, and the display needs updated always then
-        $('li',nt).each(function (i, ntli) {
+        $('li', nt).each(function (i, ntli) {
             ntUpdatePreview(ntli);
-        });  
+            var $ntli = $(ntli);
+            if ($ntli.attr('SNNoteTypeID') == "-1") {
+                $ntli.remove();
+            } else {
+                $(ntli).show();
+            }
+        });
         $('li', nt).sort(ntSort).appendTo($(nt));
     });
-    
+
 }
 function ntSort(a, b) {
     return ($(b).attr("SNNoteTYpeDisplayOrder")) < ($(a).attr("SNNoteTYpeDisplayOrder")) ? 1 : -1;
@@ -280,7 +392,7 @@ function ntUpdatePreview(ntLI) {
     newCSS += "color:#" + $('.SNNoteTypeColor', $li).val() + ";" +
         ($('.SNntBold:checked', $li).length > 0 ? "font-weight:bold;" : "") +
         ($('.SNntItalic:checked', $li).length > 0 ? "font-style:italic;" : "");
-    $('span.SNPreview', $li).text($('.SNNoteTypeDisp', $li).val()).attr("style",newCSS);
+    $('span.SNPreview', $li).text($('.SNNoteTypeDisp', $li).val()).attr("style", newCSS);
 }
 function snGetInactiveSubs() {
     $.ajax({

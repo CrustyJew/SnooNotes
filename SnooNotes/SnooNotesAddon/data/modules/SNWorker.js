@@ -42,6 +42,9 @@ function initSocket() {
         }
 
     }
+    snUpdate.client.reinitAll = function () {
+        initWorker();
+    }
     $.connection.hub.disconnected(function () {
         if (socketOpen) {
             setTimeout(function () {
