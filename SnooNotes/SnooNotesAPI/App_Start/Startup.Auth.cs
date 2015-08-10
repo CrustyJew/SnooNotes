@@ -8,10 +8,11 @@ using Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Host.SystemWeb;
 using Owin.Security.Providers.Reddit;
 using System.Security.Claims;
 using SnooNotesAPI.Models;
-
+using System.Web.Http;
 namespace SnooNotesAPI
 {
     public partial class Startup
@@ -28,12 +29,26 @@ namespace SnooNotesAPI
                 LoginPath = new PathString("/Auth/Login"),
                 CookieName = "bog", ExpireTimeSpan = new TimeSpan(10000,0,0,0,0),
                 Provider = new CookieAuthenticationProvider
-                { OnException = context =>{
+                { OnException = context => {
                     var x = context;
                 },
-                    OnValidateIdentity =  SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(1),
-                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager)),/*context =>
+                    OnValidateIdentity = async context=> {
+                        var invalidateBySecurityStamp = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
+                        validateInterval: TimeSpan.FromMinutes(30),
+                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager));
+                        await invalidateBySecurityStamp.Invoke(context);
+
+                        if (context.Identity == null || !context.Identity.IsAuthenticated)
+                        {
+                            return;
+                        }
+                        var newResponseGrant = context.OwinContext.Authentication.AuthenticationResponseGrant;
+                        if (newResponseGrant != null)
+                        {
+                            newResponseGrant.Properties.IsPersistent = true;
+                        }
+
+                    },/*context =>
                     {
                         if (DateTime.Parse(context.Identity.FindFirst(c => c.Type == "urn:reddit:accessexpires").Value) < DateTime.UtcNow)
                         {

@@ -63,7 +63,6 @@ namespace SnooNotesAPI.Controllers
                 }
 
             }
-        
             Models.NoteType.UpdateMultipleNoteTypes(values);
             Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
             return values;

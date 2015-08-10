@@ -7,7 +7,10 @@ using System.Web.Http;
 using System.Security.Claims;
 using System.Runtime.Caching;
 using Microsoft.Owin;
+using Microsoft.AspNet.Identity.Owin;
 using System.Web;
+using Microsoft.AspNet.Identity;
+
 namespace SnooNotesAPI.Controllers
 {
     [Authorize]
@@ -24,12 +27,12 @@ namespace SnooNotesAPI.Controllers
         // GET: api/Subreddit/videos
         public Models.Subreddit Get(string id)
         {
-            
-                
-            
-            if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:"+ id+":admin","true"))
+
+
+
+            if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id + ":admin", "true"))
             {
-                return Models.Subreddit.GetSubreddits(new string[]{id}).First();
+                return Models.Subreddit.GetSubreddits(new string[] { id }).First();
             }
             else
             {
@@ -45,7 +48,7 @@ namespace SnooNotesAPI.Controllers
             newSub.Settings.AccessMask = 64;
 
             var cache = MemoryCache.Default;
-            var ucacheitem = cache.GetCacheItem(ClaimsPrincipal.Current.Identity.Name) ;
+            var ucacheitem = cache.GetCacheItem(ClaimsPrincipal.Current.Identity.Name);
             var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
             var icacheitem = cache.GetCacheItem(ip);
 
@@ -55,7 +58,7 @@ namespace SnooNotesAPI.Controllers
             int ureqs = ucache.Value;
             int ireqs = icache.Value;
 
-            if (Math.Max(ureqs,ireqs) > 5)
+            if (Math.Max(ureqs, ireqs) > 5)
             {
                 throw new Exception("You are doing that too much! Limited to created 5 subreddits per 24 hours, sorry!");
             }
@@ -63,16 +66,17 @@ namespace SnooNotesAPI.Controllers
             {
                 throw new Exception("Subreddit already exists!");
             }
-            try { 
+            try
+            {
                 //loads default note types, currently same types as Toolbox
                 newSub.Settings.NoteTypes = Models.SubredditSettings.DefaultNoteTypes(newSub.SubName);
-                
+
                 Models.Subreddit.AddSubreddit(newSub);
                 Models.NoteType.AddMultipleNoteTypes(newSub.Settings.NoteTypes);
 
                 ucache.Value += 1;
                 icache.Value += 1;
-                cache.Set(new CacheItem(ucache.Key,ucache), new CacheItemPolicy() { AbsoluteExpiration = ucache.ExpirationDate });
+                cache.Set(new CacheItem(ucache.Key, ucache), new CacheItemPolicy() { AbsoluteExpiration = ucache.ExpirationDate });
                 cache.Set(new CacheItem(icache.Key, icache), new CacheItemPolicy() { AbsoluteExpiration = icache.ExpirationDate });
             }
             catch
@@ -82,16 +86,67 @@ namespace SnooNotesAPI.Controllers
         }
 
         // PUT: api/Subreddit/5
-        public void Put(string id,[FromBody]Models.Subreddit sub)
+        public void Put(string id, [FromBody]Models.Subreddit sub)
         {
-            if(sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128 )
+            if (sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128)
             {
-                throw new HttpResponseException(new HttpResponseMessage() { ReasonPhrase = "Invalid AccessMask", StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent( "Access Mask was invalid" )});
+                throw new HttpResponseException(new HttpResponseMessage() { ReasonPhrase = "Invalid AccessMask", StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent("Access Mask was invalid") });
             }
             else if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id + ":admin", "true"))
             {
                 sub.SubName = id;
                 Models.Subreddit.UpdateSubredditSettings(sub);
+                var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var usersWithAccess = userManager.Users.Where(u =>
+                    u.Claims.Where(c =>
+                        c.ClaimType == ClaimTypes.Role && c.ClaimValue == sub.SubName.ToLower()).Count() > 0);
+                var ident = userManager.FindByName(User.Identity.Name);
+
+                if (ident.TokenExpires < DateTime.UtcNow)
+                {
+                    Utilities.AuthUtils.GetNewToken(ident);
+                    userManager.Update(ident);
+                }
+                RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+                RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
+                rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+                var subinfo = rd.GetSubreddit(sub.SubName);
+                var modsWithAccess = subinfo.Moderators.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0);
+                // get list of users to remove perms from
+                var usersToRemove = usersWithAccess.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower()));
+                foreach (var user in usersWithAccess)
+                {
+                    userManager.RemoveClaimAsync(user.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
+                    if(user.Claims.Where(c=> c.ClaimType == "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin").Count() > 0)
+                    {
+                        userManager.RemoveClaimAsync(user.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
+
+                    }
+                }
+
+                var usersToAdd = modsWithAccess.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0 && !usersWithAccess.Select(u => u.UserName.ToLower()).Contains(m.Name.ToLower()));
+
+                foreach (var user in usersToAdd)
+                {
+                    try
+                    {
+                        var u = userManager.FindByName(user.Name);
+                        if(u != null)
+                        {
+                            userManager.AddClaim(u.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
+                            //assume it won't be adding a duplicate *holds breath*
+                            if(user.Permissions.HasFlag(RedditSharp.ModeratorPermission.All))
+                            {
+                                userManager.AddClaimAsync(u.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        //TODO something, mighta caught a non registered user?
+                    }
+                }
+
             }
             else
             {
