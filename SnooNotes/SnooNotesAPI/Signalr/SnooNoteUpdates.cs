@@ -38,6 +38,14 @@ namespace SnooNotesAPI.Signalr
         {
             Clients.Group(anote.SubName.ToLower()).deleteNote(anote.AppliesToUsername,anote.NoteID);
         }
+
+        public void RefreshNoteTypes(IEnumerable<string> SubNames)
+        {
+            foreach (string SubName in SubNames)
+            {
+                Clients.Group(SubName.ToLower()).refreshNoteTypes();
+            }
+        }
     
     }
     

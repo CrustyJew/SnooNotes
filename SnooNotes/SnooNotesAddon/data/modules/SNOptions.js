@@ -145,20 +145,23 @@ function snBindOptionEvents() {
             nt.NoteTypeID = $ntli.attr('SNNoteTypeID');
             //notetype add or update
             if ($ntli.is(':visible')) {
+
                 nt.DisplayOrder = dispOrderCounter;
                 dispOrderCounter++;
-                nt.DisplayName = $ntli.children('.SNNoteTypeDisp').val();
-                nt.ColorCode = $ntli.children('.SNNoteTypeColor').val();
-                nt.Bold = $('.SNntBold:checked',$ntli).length > 0 ? true : false;
-                nt.Italic = $('.SNntItalic:checked',$ntli).length > 0 ? true : false;
-                //new notetype
-                if (nt.NoteTypeID == "-1") {
+                if ($ntli.is('[SNChanged="true"]') || nt.DisplayOrder != $ntli.attr("SNNoteTypeDisplayOrder")) {
+                    nt.DisplayName = $ntli.children('.SNNoteTypeDisp').val();
+                    nt.ColorCode = $ntli.children('.SNNoteTypeColor').val();
+                    nt.Bold = $('.SNntBold:checked', $ntli).length > 0 ? true : false;
+                    nt.Italic = $('.SNntItalic:checked', $ntli).length > 0 ? true : false;
+                    //new notetype
+                    if (nt.NoteTypeID == "-1") {
 
-                    ntAddData.push(nt);
-                }
-                    //update notetype
-                else {
-                    ntUpdData.push(nt);
+                        ntAddData.push(nt);
+                    }
+                        //update notetype
+                    else {
+                        ntUpdData.push(nt);
+                    }
                 }
             }
                 //NoteType delete
@@ -175,14 +178,14 @@ function snBindOptionEvents() {
             success: function (d, ts, x) {
                 $('.SNNoteTypes li:visible[SNNoteTypeID="-1"]').remove();
                 for (var i = 0; i < d.length; i++) {
-                    $('.SNSubreddit[snsub="'+d[i].SubName+'"').children('ol').append(genNoteTypeLI(d[i]));
+                    $('.SNSubreddit[snsub="' + d[i].SubName + '"').children('ol').append(genNoteTypeLI(d[i]));
                 }
             }
         });
         var dNtUpd = !(ntUpdData.length) ? {} : $.ajax({
             url: snUtil.RESTApiBase + "NoteType",
             method: "PUT",
-            data: JSON.stringify(ntUpdData ),
+            data: JSON.stringify(ntUpdData),
             dataType: "json",
             contentType: "application/json",
             //traditional: true,
@@ -205,7 +208,7 @@ function snBindOptionEvents() {
                 }
             }
         });
-        $.when(dSub, dNtAdd,dNtUpd,dNtDel).then(
+        $.when(dSub, dNtAdd, dNtUpd, dNtDel).then(
             //success
             function () {
                 resetNoteTypes();
@@ -282,6 +285,7 @@ function snBindOptionEvents() {
     //update preview for notetype
     $('#SNSubRedditSettings').on("keyup change", ".SNSubreddit .SNNoteTypes li", function (e) {
         ntUpdatePreview(this);
+        $(this).attr('SNChanged', 'true');
     });
     //remove note type (will preserve in DB)
     $('#SNSubRedditSettings').on("click", ".SNSubreddit .SNNoteTypes .SNRemove", function (e) {
@@ -297,6 +301,7 @@ function snBindOptionEvents() {
     $('#SNSubRedditSettings').on("click", ".SNSubreddit .SNNoteTypes .SNAdd", function (e) {
         var $ntlo = $(this).parent().siblings('ol'); //have to get parent because it's wrapped in a div
         var $newLI = $(genNoteTypeLI({ NoteTypeID: -1, DisplayOrder: -1, Bold: false, Italic: false, ColorCode: "000", DisplayName: "New" }));
+        $newLI.attr('SNChanged', 'true');
         $ntlo.append($newLI);
         ntUpdatePreview($newLI);
     });
@@ -333,10 +338,10 @@ function snGetSubSettings() {
                             subOptsPanel += genNoteTypeLI(nt);
                         }
                     }
-                            subOptsPanel += '</ol>' +
-                                            '<div style="text-align:center;" ><a class="SNAdd">+</a></div>' +
-                                        '</div></div>' +
-                '</div>';
+                    subOptsPanel += '</ol>' +
+                                    '<div style="text-align:center;" ><a class="SNAdd">+</a></div>' +
+                                '</div></div>' +
+        '</div>';
                 }
             }
             $(function () {

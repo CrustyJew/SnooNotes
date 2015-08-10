@@ -45,6 +45,9 @@ function initSocket() {
     snUpdate.client.reinitAll = function () {
         initWorker();
     }
+    snUpdate.client.refreshNoteTypes = function () {
+        getNoteTypes();
+    }
     $.connection.hub.disconnected(function () {
         if (socketOpen) {
             setTimeout(function () {

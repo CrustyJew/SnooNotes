@@ -46,7 +46,10 @@ namespace SnooNotesAPI.Controllers
                     throw new HttpResponseException(System.Net.HttpStatusCode.BadRequest);
                 }
             }
-            return Models.NoteType.AddMultipleNoteTypes(values);
+            
+            var ret =  Models.NoteType.AddMultipleNoteTypes(values);
+            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
+            return ret;
         }
 
         // PUT: api/NoteType/5
@@ -60,8 +63,9 @@ namespace SnooNotesAPI.Controllers
                 }
 
             }
-
+        
             Models.NoteType.UpdateMultipleNoteTypes(values);
+            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
             return values;
         }
 
@@ -79,7 +83,7 @@ namespace SnooNotesAPI.Controllers
                 }
             }
             Models.NoteType.DeleteMultipleNoteTypes(values);
-
+            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
             return values.Select(nt => nt.NoteTypeID);
         }
 
