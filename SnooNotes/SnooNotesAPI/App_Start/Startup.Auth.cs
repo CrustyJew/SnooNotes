@@ -34,7 +34,7 @@ namespace SnooNotesAPI
                 },
                     OnValidateIdentity = async context=> {
                         var invalidateBySecurityStamp = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(30),
+                        validateInterval: TimeSpan.FromMinutes(2),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager));
                         await invalidateBySecurityStamp.Invoke(context);
 
@@ -97,6 +97,7 @@ namespace SnooNotesAPI
             opts.Scope.Clear();
             opts.Scope.Add("identity");
             opts.Scope.Add("mysubreddits");
+            opts.Scope.Add("read");
             app.UseRedditAuthentication(opts);
         }
         /*private void GetNewToken(CookieValidateIdentityContext context)

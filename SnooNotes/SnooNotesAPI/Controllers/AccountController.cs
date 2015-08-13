@@ -43,7 +43,7 @@ namespace SnooNotesAPI.Controllers
             List<Models.Subreddit> activeSubs = Models.Subreddit.GetActiveSubs();
             List<string> activeSubNames = activeSubs.Select(s => s.SubName.ToLower()).ToList();
 
-            var subs = rd.User.ModeratorSubreddits.Where(s => s.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All)&& !activeSubNames.Contains(s.Name.ToLower())).Select(s => s.Name);
+            var subs = rd.User.ModeratorSubreddits.Where(s => s.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && !activeSubNames.Contains(s.Name.ToLower())).Select(s => s.Name);
             return subs.OrderBy(s => s);
         }
         [HttpGet]
@@ -66,6 +66,19 @@ namespace SnooNotesAPI.Controllers
 
         }
 
+        [HttpPost]
+        public void UpdateSubredditMods([FromBody]string subname)
+        {
+            if (ClaimsPrincipal.Current.IsInRole(subname.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + subname.ToLower() + ":admin", "true"))
+            {
+                var sub = Models.Subreddit.GetSubreddits(new List<string>() { subname }).First();
+                Utilities.AuthUtils.UpdateModsForSub(sub);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit, or you don't have full permissions!");
+            }
 
+        }
     }
 }

@@ -92,66 +92,17 @@ namespace SnooNotesAPI.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage() { ReasonPhrase = "Invalid AccessMask", StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent("Access Mask was invalid") });
             }
-            else if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id + ":admin", "true"))
+            else if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
             {
                 sub.SubName = id;
                 Models.Subreddit.UpdateSubredditSettings(sub);
-                var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var usersWithAccess = userManager.Users.Where(u =>
-                    u.Claims.Where(c =>
-                        c.ClaimType == ClaimTypes.Role && c.ClaimValue == sub.SubName.ToLower()).Count() > 0);
-                var ident = userManager.FindByName(User.Identity.Name);
-
-                if (ident.TokenExpires < DateTime.UtcNow)
-                {
-                    Utilities.AuthUtils.GetNewToken(ident);
-                    userManager.Update(ident);
-                }
-                RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
-                RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
-                rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-                var subinfo = rd.GetSubreddit(sub.SubName);
-                var modsWithAccess = subinfo.Moderators.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0);
-                // get list of users to remove perms from
-                var usersToRemove = usersWithAccess.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower()));
-                foreach (var user in usersWithAccess)
-                {
-                    userManager.RemoveClaimAsync(user.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
-                    if(user.Claims.Where(c=> c.ClaimType == "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin").Count() > 0)
-                    {
-                        userManager.RemoveClaimAsync(user.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
-
-                    }
-                }
-
-                var usersToAdd = modsWithAccess.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0 && !usersWithAccess.Select(u => u.UserName.ToLower()).Contains(m.Name.ToLower()));
-
-                foreach (var user in usersToAdd)
-                {
-                    try
-                    {
-                        var u = userManager.FindByName(user.Name);
-                        if(u != null)
-                        {
-                            userManager.AddClaim(u.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
-                            //assume it won't be adding a duplicate *holds breath*
-                            if(user.Permissions.HasFlag(RedditSharp.ModeratorPermission.All))
-                            {
-                                userManager.AddClaimAsync(u.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        //TODO something, mighta caught a non registered user?
-                    }
-                }
+                Utilities.AuthUtils.UpdateModsForSub(sub);
 
             }
             else
             {
                 throw new UnauthorizedAccessException("You are not a moderator of that subreddit, or you don't have full permissions!");
-            };
+            }
         }
 
         // DELETE: api/Subreddit/5

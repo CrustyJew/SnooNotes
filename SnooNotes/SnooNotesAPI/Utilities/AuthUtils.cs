@@ -113,5 +113,63 @@ namespace SnooNotesAPI.Utilities
 
             return 0;
         }
+
+        public static void UpdateModsForSub(Models.Subreddit sub)
+        {
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            //var usersWithAccess = userManager.Users.Where(u =>
+            //    u.Claims.Where(c =>
+            //        c.ClaimType == ClaimTypes.Role && c.ClaimValue == sub.SubName.ToLower()).Count() > 0).ToList();
+            var usersWithAccess = userManager.Users.Where(u => u.Claims.Select(c => c.ClaimValue).Contains(sub.SubName.ToLower())).ToList();
+
+            //var x = userManager.Users.Where(u=>u.Claims.Select(c => c.ClaimValue).Contains("videos")).ToList();
+            //var y = userManager.Users.Select(u => u.Claims);
+            var ident = userManager.FindByName(ClaimsPrincipal.Current.Identity.Name);
+
+            if (ident.TokenExpires < DateTime.UtcNow)
+            {
+                Utilities.AuthUtils.GetNewToken(ident);
+                userManager.Update(ident);
+            }
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
+            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            var subinfo = rd.GetSubreddit(sub.SubName);
+            var modsWithAccess = subinfo.Moderators.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0);
+            // get list of users to remove perms from
+            var usersToRemove = usersWithAccess.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower())).ToList();
+            foreach (var user in usersToRemove)
+            {
+                userManager.RemoveClaim(user.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
+                if (user.Claims.Where(c => c.ClaimType == "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin").Count() > 0)
+                {
+                    userManager.RemoveClaim(user.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
+
+                }
+            }
+
+            var usersToAdd = modsWithAccess.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0 && !usersWithAccess.Select(u => u.UserName.ToLower()).Contains(m.Name.ToLower()));
+
+            foreach (var user in usersToAdd)
+            {
+                try
+                {
+                    var u = userManager.FindByName(user.Name);
+                    if (u != null)
+                    {
+                        userManager.AddClaim(u.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
+                        //assume it won't be adding a duplicate *holds breath*
+                        if (user.Permissions.HasFlag(RedditSharp.ModeratorPermission.All))
+                        {
+                            userManager.AddClaim(u.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
+                        }
+                    }
+                }
+                catch
+                {
+                    //TODO something, mighta caught a non registered user?
+                }
+            }
+        }
     }
 }
