@@ -87,11 +87,11 @@ function getNoteTypeCSS(sendResponse, attempts) {
             sendResponse(snUtil.NoteStyles.innerHTML)
         }
         else {
-            setTimeout(getNoteTypeCSS(sendResponse, attempts),250);
+            setTimeout(function () { getNoteTypeCSS(sendResponse, attempts) },250);
         }
     }
     else {
-        setTimeout(getNoteTypeCSS(sendResponse, attempts), 500);
+        setTimeout(function () { getNoteTypeCSS(sendResponse, attempts) }, 500);
     }
 }
 function getNoteTypeJSON(sendResponse, attempts) {
@@ -106,7 +106,7 @@ function getNoteTypeJSON(sendResponse, attempts) {
         }
     }
     else {
-        setTimeout(getNoteTypeJSON(sendResponse, attempts), 500);
+        setTimeout(function () { getNoteTypeJSON(sendResponse, attempts) }, 500);
     }
 }
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
