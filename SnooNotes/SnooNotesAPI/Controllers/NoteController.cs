@@ -61,7 +61,7 @@ namespace SnooNotesAPI.Controllers
             Models.Note note = Models.Note.GetNoteByID(id);
             if ( User.IsInRole(note.SubName.ToLower()))
             {
-                Models.Note.DeleteNoteForUser(note);
+                Models.Note.DeleteNoteForUser(note,User.Identity.Name);
                 Signalr.SnooNoteUpdates.Instance.DeleteNote(note);
             }
             else

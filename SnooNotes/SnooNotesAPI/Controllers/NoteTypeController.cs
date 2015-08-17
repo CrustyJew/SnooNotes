@@ -47,8 +47,8 @@ namespace SnooNotesAPI.Controllers
                 }
             }
             
-            var ret =  Models.NoteType.AddMultipleNoteTypes(values);
-            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
+            var ret =  Models.NoteType.AddMultipleNoteTypes(values,User.Identity.Name);
+            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName).Distinct());
             return ret;
         }
 
@@ -63,8 +63,8 @@ namespace SnooNotesAPI.Controllers
                 }
 
             }
-            Models.NoteType.UpdateMultipleNoteTypes(values);
-            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
+            Models.NoteType.UpdateMultipleNoteTypes(values,User.Identity.Name);
+            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName).Distinct());
             return values;
         }
 
@@ -81,8 +81,8 @@ namespace SnooNotesAPI.Controllers
                     throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
                 }
             }
-            Models.NoteType.DeleteMultipleNoteTypes(values);
-            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName));
+            Models.NoteType.DeleteMultipleNoteTypes(values,User.Identity.Name);
+            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes(values.Select(nt => nt.SubName).Distinct());
             return values.Select(nt => nt.NoteTypeID);
         }
 

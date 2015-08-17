@@ -72,7 +72,7 @@ namespace SnooNotesAPI.Controllers
                 newSub.Settings.NoteTypes = Models.SubredditSettings.DefaultNoteTypes(newSub.SubName);
 
                 Models.Subreddit.AddSubreddit(newSub);
-                Models.NoteType.AddMultipleNoteTypes(newSub.Settings.NoteTypes);
+                Models.NoteType.AddMultipleNoteTypes(newSub.Settings.NoteTypes,User.Identity.Name);
 
                 ucache.Value += 1;
                 icache.Value += 1;

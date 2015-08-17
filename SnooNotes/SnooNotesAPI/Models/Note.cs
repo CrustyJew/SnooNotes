@@ -101,12 +101,15 @@ namespace SnooNotesAPI.Models
             }
         }
 
-        public static string DeleteNoteForUser(Note anote)
+        public static string DeleteNoteForUser(Note anote, string uname)
         {
             using (SqlConnection con = new SqlConnection(constring))
             {
-                string query = "delete n from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID where NoteID = @noteid and sr.SubName = @subname";
-                con.Execute(query, new { anote.NoteID, anote.SubName });
+                string query = "delete n " +
+                    "OUTPUT GETUTCDATE() as 'HistTimestamp','D' as 'HistAction',@uname as 'HistUser', DELETED.NoteID, DELETED.NoteTypeID, DELETED.SubRedditID,DELETED.Submitter,DELETED.Message,DELETED.AppliesToUsername,DELETED.URL,DELETED.TimeStamp into Notes_History " +
+                    "from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID "+ 
+                    "where NoteID = @noteid and sr.SubName = @subname";
+                con.Execute(query, new { anote.NoteID, anote.SubName, uname });
                 return "Success";
             }
         }

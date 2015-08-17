@@ -64,6 +64,8 @@
     <Build Include="NoteTypes.sql" />
     <Build Include="Notes.sql" />
     <Build Include="SubredditSettings.sql" />
+    <Build Include="Notes_History.sql" />
+    <Build Include="NoteTypes_History.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SnooNotesDB.publish.xml" />
