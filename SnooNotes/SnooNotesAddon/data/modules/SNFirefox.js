@@ -36,7 +36,7 @@
             deleteNote(req); //snoonotes.js
         });
         self.port.on("setNoteTypeCSS", function (css) {
-            snUtil.NoteStyles.innerHTML = css;
+            snUtil.NoteStyles.textContent = css;
         });
         self.port.on("setNoteTypeJSON", function (json) {
             snUtil.NoteTypes = json;

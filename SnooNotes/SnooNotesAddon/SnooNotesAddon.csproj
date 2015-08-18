@@ -68,7 +68,6 @@
     <Content Include="data\libs\jquery-ui.js" />
     <Content Include="data\libs\jquery.blockUI.min.js" />
     <Content Include="data\libs\jquery.signalR-2.2.0.min.js" />
-    <Content Include="data\libs\jstorage.min.js" />
     <Content Include="data\libs\snUpdatesHub.js" />
     <Content Include="data\modules\SNChrome.js" />
     <Content Include="data\modules\SNFirefox.js" />

@@ -14,3 +14,4 @@ Properties
 manifest.json
 SNWorkerChrome.js
 SNChrome.js
+lib/background.js
