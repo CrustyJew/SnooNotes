@@ -75,7 +75,7 @@ function snSubredditOptions() {
     var subOpts = "";
     subOpts = '<div style="display:inline-block;width:100%;"><h1 style="float:left;">Has something gone rogue? <br />Change subreddits you moderate?<br />Activate a new sub?</h1><button type="button" id="SNRestart" class="SNBtnWarn" style="margin-top:20px;margin-left:15px;">Refresh SnooNotes</button>' +
                 '<br style="clear:both;"/>' +
-                '<div style="margin:0px auto;width:300px;margin-bottom:15px;"><select id="SNActivateSub"><option value="-1">---Activate a new Subreddit---</option></select><button type="button" id="SNBtnActivateSub" class="SNBtnSubmit">Activate</button></div>' +
+                '<div style="margin:0px auto;width:310px;margin-bottom:15px;"><select id="SNActivateSub"><option value="-1">---Activate a new Subreddit---</option></select><button type="button" id="SNBtnActivateSub" class="SNBtnSubmit">Activate</button></div>' +
                 '<div id="SNSubredditsContainer"></div>' +
                 '<div id="SNSubRedditSettings" style="display:none;">' +
                     snSubOptDescriptions() +

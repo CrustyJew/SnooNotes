@@ -321,6 +321,7 @@ div.growlUI h2 {
 
 .SNBtnSubmit, .SNNewNoteSubmit {
     background: linear-gradient(to bottom, #74c429, #4ca20b );
+    font-weight:bold;
 }
 
 .SNBtnCancel {
