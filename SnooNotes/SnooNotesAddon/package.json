@@ -8,6 +8,6 @@
     "version": "0.0.6.0",
     "main": "lib/main.js",
     "permissions": {
-        "cross-domain-content": [ "https://snoonotesapi.azurewebsites.net/", "https://snoonotes.com/", "https://localhost:44311/" ]
+        "cross-domain-content": [ "https://snoonotesapi.azurewebsites.net/", "https://snoonotes.com/" ]
     }
 }

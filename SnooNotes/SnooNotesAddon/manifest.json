@@ -41,7 +41,6 @@
 		"http://reddit.com/*",
 		"https://reddit.com/*",
 		"http://*.reddit.com/*",
-        "https://*.reddit.com/*",
-        "https://localhost:44311/*"
+        "https://*.reddit.com/*"
 	]
 }
