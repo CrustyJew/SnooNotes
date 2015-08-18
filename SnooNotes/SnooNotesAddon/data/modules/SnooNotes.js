@@ -113,7 +113,7 @@ function getSubName(e) {
             sub = $ot.siblings("a.subreddit:first")[0].innerHTML.substring(3).replace(/\//g, '');
         }
     }
-    return sub;
+    return sub ? sub.toLowerCase() : "";
 }
 
 

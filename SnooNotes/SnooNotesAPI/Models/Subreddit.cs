@@ -37,7 +37,7 @@ namespace SnooNotesAPI.Models
                                "from Subreddits s " +
                                "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
                                "left join NoteTypes nt on nt.SubredditID = s.SubredditID " +
-                               "where s.SubName in @subnames";
+                               "where s.SubName in @subnames and nt.Disabled = 0";
 
                 var lookup = new Dictionary<int, Subreddit>();
                 var result = con.Query<Subreddit, SubredditSettings,NoteType, Subreddit>(query, (s, ss, nt) => {

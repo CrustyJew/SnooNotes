@@ -390,7 +390,7 @@ function snGetSubSettings() {
                 $('#SNSubRedditSettings .SNContainer').remove('.SNSubreddit').append($(subOptsPanel));
                 resetNoteTypes();
 
-                $('.SNNoteTypeOptions ol').sortable({ axis: "y", containment: "parent", tolerance: 'pointer' }).disableSelection();
+                $('.SNNoteTypeOptions ol').sortable({ axis: "y", containment: "parent", tolerance: 'pointer' });
 
                 $('#SNSubredditsContainer').unblock();
             });

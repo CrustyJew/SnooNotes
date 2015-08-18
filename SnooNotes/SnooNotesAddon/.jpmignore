@@ -11,3 +11,6 @@ web.config
 *.csproj*
 web*config
 Properties
+manifest.json
+SNWorkerChrome.js
+SNChrome.js

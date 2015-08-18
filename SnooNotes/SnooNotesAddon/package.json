@@ -7,8 +7,6 @@
     "license": "MPL 2.0",
     "version": "0.0.6.0",
     "main": "lib/main.js",
-    "updateURL": "https://snoonotes.com/Addon/updates.rdf", 
-    "updateLink": "https://snoonotes.com/Addon/snoonotes.xpi",
     "permissions": {
         "cross-domain-content": [ "https://snoonotesapi.azurewebsites.net/", "https://snoonotes.com/", "https://localhost:44311/" ]
     }
