@@ -228,6 +228,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Addon\snoonotes.xpi" />
+    <Content Include="app\app.js" />
+    <Content Include="app\home.js" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -240,6 +242,12 @@
     <Content Include="Icon.png" />
     <None Include="Owin.Security.Providers.dll" />
     <None Include="Owin.Security.Providers.pdb" />
+    <Content Include="index.html" />
+    <Content Include="Scripts\angular-mocks.js" />
+    <Content Include="Scripts\angular-route.js" />
+    <Content Include="Scripts\angular-route.min.js" />
+    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -250,15 +258,18 @@
     <Content Include="Content\bootstrap.css.map" />
     <None Include="Addon\updates.rdf" />
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
-    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
-    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\angular-route.min.js.map" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\npm.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Views\home.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -269,10 +280,10 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Auth\Success.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Home\UnrecognizedBrowser.cshtml" />
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RedditSharp\RedditSharp.csproj">
