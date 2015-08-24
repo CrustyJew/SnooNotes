@@ -229,7 +229,8 @@
   <ItemGroup>
     <Content Include="Addon\snoonotes.xpi" />
     <Content Include="app\app.js" />
-    <Content Include="app\home.js" />
+    <Content Include="app\controllers\home.js" />
+    <Content Include="app\factories\AuthFactory.js" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -246,6 +247,8 @@
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-route.js" />
     <Content Include="Scripts\angular-route.min.js" />
+    <Content Include="Scripts\angular-ui-router.js" />
+    <Content Include="Scripts\angular-ui-router.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
