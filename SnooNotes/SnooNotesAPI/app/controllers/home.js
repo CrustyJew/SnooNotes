@@ -1,7 +1,4 @@
-﻿
-    'use strict';
-
-    angular
+﻿    angular
         .module('SnooNotes')
         .controller('HomeCtrl', HomeCtrl);
 

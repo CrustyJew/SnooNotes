@@ -65,10 +65,10 @@ namespace SnooNotesAPI
                     },*/
                     OnApplyRedirect = ctx =>
                     {
-                        if (!IsAjaxRequest(ctx.Request))
-                        {
-                            ctx.Response.Redirect(ctx.RedirectUri);
-                        }
+                        //if (!IsAjaxRequest(ctx.Request))
+                        //{
+                        //    ctx.Response.Redirect(ctx.RedirectUri);
+                        //}
                     }
                 }
             };

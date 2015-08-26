@@ -1,27 +1,50 @@
 ﻿<!DOCTYPE html>
 <html ng-app="SnooNotes">
 <head>
-    <title></title>
-	<meta charset="utf-8" />
+    <title>SnooNotes!</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link href="Content/Site.css" rel="stylesheet" />
-    <link href="Content/bootstrap.css" rel="stylesheet" />
-    <link href="Content/bootstrap-theme.css" rel="stylesheet" />
 </head>
 <body>
-
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">SnooNotes!</a>
+                </div>
+                <div class="navbar-collapse collapse" data-ng-controller="AuthCtrl">
+                    <ul class="nav navbar-nav navbar-right" >
+                        <li >Welcome<span ng-hide="!currentUser.isAuth">&nbsp;{{currentUser.userName}}</span>!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
     <div class="container body-content">
-       <main role="main">
-           <div ui-view></div>
-       </main>
+        <main role="main">
+            <div ui-view></div>
+        </main>
     </div>
 
-    <script src="Scripts/jquery-2.1.4.js"></script>
+
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="Scripts/angular.js"></script>
     <script src="Scripts/angular-ui-router.js"></script>
+    <script src="Scripts/angular-cookies.js"></script>
+    <script src="Scripts/angular-local-storage.min.js"></script>
+
 
     <script src="app/app.js"></script>
 
     <script src="app/factories/AuthFactory.js"></script>
     <script src="app/controllers/home.js"></script>
+    <script src="app/controllers/auth.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color:#46b2b2;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -14,4 +15,26 @@ input,
 select,
 textarea {
     max-width: 280px;
+}
+
+.navbar-default{
+    background-color:#222;
+    color:#007C00;
+    border-color:darkgray;
+}
+
+.navbar-default .navbar-brand{
+    color:#00CC00;
+    font-size:3em;
+}
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover {
+    background-color: transparent;
+    color: #009E00;
+}
+
+.navbar-default .container-fluid .container{
+    padding:0px 10px;
+    border: solid darkgrey;
+    border-width:0px 1px;
+    border-radius:10px;
 }
