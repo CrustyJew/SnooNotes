@@ -28,6 +28,12 @@ namespace SnooNotesAPI.Controllers
         }
 
         [HttpGet]
+        public string GetCurrentUser()
+        {
+            return User.Identity.Name;
+        }
+
+        [HttpGet]
         public IEnumerable<string> GetInactiveModeratedSubreddits()
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();

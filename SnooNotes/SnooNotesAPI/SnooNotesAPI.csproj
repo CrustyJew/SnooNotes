@@ -229,6 +229,7 @@
   <ItemGroup>
     <Content Include="Addon\snoonotes.xpi" />
     <Content Include="app\app.js" />
+    <Content Include="app\controllers\auth.js" />
     <Content Include="app\controllers\home.js" />
     <Content Include="app\factories\AuthFactory.js" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -244,6 +245,9 @@
     <None Include="Owin.Security.Providers.dll" />
     <None Include="Owin.Security.Providers.pdb" />
     <Content Include="index.html" />
+    <Content Include="Scripts\angular-cookies.js" />
+    <Content Include="Scripts\angular-cookies.min.js" />
+    <Content Include="Scripts\angular-local-storage.min.js" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-route.js" />
     <Content Include="Scripts\angular-route.min.js" />
@@ -263,6 +267,7 @@
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
+    <Content Include="Scripts\angular-cookies.min.js.map" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

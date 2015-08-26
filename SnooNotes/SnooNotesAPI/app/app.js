@@ -1,7 +1,9 @@
 ﻿
 angular.module('SnooNotes', [
-    'ui.router'
-]).config(function ($stateProvider,$urlRouterProvider) {
+    'ui.router',
+    'ngCookies',
+    'LocalStorageModule'
+]).config(function ($stateProvider,$urlRouterProvider, $httpProvider) {
     //'use strict';
     $urlRouterProvider
         .otherwise('/');
@@ -15,10 +17,11 @@ angular.module('SnooNotes', [
                 requireLogin: false
             }
         });
-
+    $httpProvider.defaults.withCredentials = true;
     
 })
-.run(function($rootScope){
+.run(function ($rootScope,AuthFactory) {
+    AuthFactory.getCurrentUser();
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
         var requireLogin = toState.data.requireLogin;
 
