@@ -39,17 +39,25 @@
                                 deferred.resolve(exports.currentUser);
                             },
                             function () {
-                                exports.logOut();
+                                exports.logout();
                                 deferred.reject('Not logged in');
                             });
                 }
             }
             return deferred.promise;
         }
-        exports.logOut = function () {
-            localStorageService.remove('currentUser');
-            exports.currentUser.userName = "";
-            exports.currentUser.isAuth = false;
+        exports.logout = function () {
+            $http.post('Auth/Logout').then(
+            function(){
+                localStorageService.remove('currentUser');
+                exports.currentUser.userName = "";
+                exports.currentUser.isAuth = false;
+            },
+            function () {
+                //todo catch dat error
+            })
+            
+           
             //$cookies.remove('bog');
         }
         exports.currentUser = {isAuth:false,userName:""};

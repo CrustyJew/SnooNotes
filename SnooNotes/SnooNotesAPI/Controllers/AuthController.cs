@@ -65,11 +65,17 @@ namespace SnooNotesAPI.Controllers
             ViewBag.loggedIn = User.Identity.IsAuthenticated;
             return View();
         }
+
+        [Authorize]
+        public void Logout()
+        {
+            AuthenticationManager.SignOut();
+        }
         public ActionResult DoLogin(string returnUrl)
         {
             // Request a redirect to the external login provider
             return new ChallengeResult("Reddit",
-              Url.Action("ExternalLoginCallback", "Auth", new { ReturnUrl = returnUrl }));
+              Url.Action("ExternalLoginCallbackRedirect", "Auth", new { ReturnUrl = returnUrl }));
         }
         // Implementation copied from a standard MVC Project, with some stuff
         // that relates to linking a new external login to an existing identity
@@ -90,6 +96,12 @@ namespace SnooNotesAPI.Controllers
                 var properties = new AuthenticationProperties() { RedirectUri = RedirectUri, IsPersistent = true };
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
+        }
+        [AllowAnonymous]
+        public ActionResult ExternalLoginCallbackRedirect(string returnUrl)
+        {
+            ViewBag.returnUrl = returnUrl;
+            return View("LoginRedirect");
         }
         
         [AllowAnonymous]
@@ -112,6 +124,7 @@ namespace SnooNotesAPI.Controllers
                     theuser.RefreshToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:refresh").Value;
                     theuser.TokenExpires = DateTime.UtcNow.AddMinutes(50);
                     UserManager.Update(theuser);
+                    SignInManager.SignIn(theuser, isPersistent: true, rememberBrowser: false);
                     return new RedirectResult(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");

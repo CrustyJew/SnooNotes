@@ -2,7 +2,8 @@
 angular.module('SnooNotes', [
     'ui.router',
     'ngCookies',
-    'LocalStorageModule'
+    'LocalStorageModule',
+    'ui.bootstrap'
 ]).config(function ($stateProvider,$urlRouterProvider, $httpProvider) {
     //'use strict';
     $urlRouterProvider
