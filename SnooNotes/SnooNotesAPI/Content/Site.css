@@ -17,12 +17,14 @@ textarea {
     max-width: 280px;
 }
 
-.navbar-default{
+.navbar-default,.navbar-login{
     background-color:#222;
     color:#007C00;
     border-color:darkgray;
 }
-
+.navbar-login {
+    border:none;
+}
 .navbar-default .navbar-brand{
     color:#00CC00;
     font-size:3em;
@@ -37,4 +39,39 @@ textarea {
     border: solid darkgrey;
     border-width:0px 1px;
     border-radius:10px;
+}
+.navbar-default .navbar-toggle:focus {
+    background-color: transparent;
+}
+.navbar-default .navbar-toggle:hover{
+    background-color:#ddd;
+}
+
+a:hover, a:focus {
+    color: #008000;
+    text-decoration: underline;
+}
+a:active, a:hover {
+    outline: 0 none;
+}
+a {
+    color: #00cc00;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+.navbar-nav{
+    margin:7.5px 0px;
+}
+
+#SnooNotesLoginFrame{
+    width:100%;
+    height:100%;
+}
+.loginModal{
+    height:410px;
+}
+
+.loginModalContent{
+    padding: 0px 15px 10px 15px;
 }

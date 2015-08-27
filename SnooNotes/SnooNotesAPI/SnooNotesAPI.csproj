@@ -231,11 +231,13 @@
     <Content Include="app\app.js" />
     <Content Include="app\controllers\auth.js" />
     <Content Include="app\controllers\home.js" />
+    <Content Include="app\controllers\nav.js" />
     <Content Include="app\factories\AuthFactory.js" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\ui-bootstrap-csp.css" />
     <Content Include="favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -253,6 +255,10 @@
     <Content Include="Scripts\angular-route.min.js" />
     <Content Include="Scripts\angular-ui-router.js" />
     <Content Include="Scripts\angular-ui-router.min.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -292,6 +298,7 @@
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Home\UnrecognizedBrowser.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <Content Include="Views\Auth\LoginRedirect.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RedditSharp\RedditSharp.csproj">
