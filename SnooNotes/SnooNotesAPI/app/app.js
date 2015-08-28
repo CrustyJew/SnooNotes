@@ -17,16 +17,31 @@ angular.module('SnooNotes', [
             data: {
                 requireLogin: false
             }
-        });
+        })
+        .state('subreddit',{
+            url: '/subreddit/:subName',
+            templateUrl: "/Views/subreddit.html",
+            controller: 'SubredditCtrl',
+            data: {
+                requireLogin: true
+            },
+            resolve: {
+                SubFactoryInit: function (SubFactory) {
+                    return SubFactory.initialized;
+                }
+            }
+        })
+    ;
     $httpProvider.defaults.withCredentials = true;
     
 })
-.run(function ($rootScope,AuthFactory) {
+.run(function ($rootScope,AuthFactory,SubFactory) {
     AuthFactory.getCurrentUser();
+    SubFactory.getSubsWithAdmin();
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
         var requireLogin = toState.data.requireLogin;
 
-        if (requireLogin && typeof $rootScope.currentUser === 'undefined') {
+        if (requireLogin && !AuthFactory.currentUser.isAuth) {
             event.preventDefault();
         }
     });
