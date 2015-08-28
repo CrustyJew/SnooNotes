@@ -19,7 +19,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">SnooNotes!</a>
+                    <a class="navbar-brand" href="#/">SnooNotes!</a>
                 </div>
                 <div class="navbar-collapse collapse" ng-class="!navCollapsed && 'in'" ng-click="navCollapsed=true" data-ng-controller="NavCtrl">
                     <ul class="nav navbar-nav navbar-right">
@@ -28,6 +28,18 @@
                             <br />
                             <span ng-hide="!currentUser.isAuth"><a ng-click="logout()" class="logout">Logout</a></span>
                             <span ng-hide="currentUser.isAuth"><a ng-click="login()" class="login">Login / Signup</a></span>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-left">
+                        <li class="dropdown">
+                            <div class="btn-group subredditNavMenu" dropdown is-open="status.isopen">
+                                <span class="currentSubNav" dropdown-toggle>
+                                    {{curSub}} <b class="caret"></b>
+                                </span>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="subName in adminSubs" role="menu"><a ui-sref="subreddit({'subName':subName})">{{subName}}</a></li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -43,11 +55,11 @@
     <script type="text/ng-template" id="loginModal.html">
         <div class="loginModal">
             <div class="navbar navbar-login">
-                
-                    <div class="navbar-header">
-                        <a class="navbar-brand" ng-click="cancel()">SnooNotes!</a>
-                    </div>
-                
+
+                <div class="navbar-header">
+                    <a class="navbar-brand" ng-click="cancel()">SnooNotes!</a>
+                </div>
+
             </div>
             <div class="loginModalContent">
                 <p style="padding-top:5px;">You need to authorize SnooNotes to access your Reddit info. Otherwise it's kinda useless...</p>
@@ -77,8 +89,10 @@
     <script src="app/app.js"></script>
 
     <script src="app/factories/AuthFactory.js"></script>
+    <script src="app/factories/SubFactory.js"></script>
     <script src="app/controllers/home.js"></script>
     <script src="app/controllers/auth.js"></script>
     <script src="app/controllers/nav.js"></script>
+    <script src="app/controllers/subreddit.js"></script>
 </body>
 </html>
