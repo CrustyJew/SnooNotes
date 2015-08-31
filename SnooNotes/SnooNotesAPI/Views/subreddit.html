@@ -1,1 +1,100 @@
 ﻿<h1>{{sub.SubName}}</h1>
+
+<p>This is where you'll be able to manage all aspects of your subreddit outside of the addon's "Options" page on Reddit itself.</p>
+<p>More features will be coming including the ability to search all notes you have etc! But right now, this is where you can import all your notes from Mod Toolbox into SnooNotes.</p>
+<div class="importTBNotes">
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <span class="tbNone tbType">None</span>
+                </td>
+                <td>
+                    <select name="tbNoneMapping" ng-model="import.tbNone" required onchange="this.setAttribute('style',this.options[this.selectedIndex].attributes['style'].value)">
+                        <option value="">--Select Note Type--</option>
+                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'none'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbGoodContributor tbType" >Good Contributor</span>
+                </td>
+                <td>
+                    <select name="tbGoodContributorMapping" ng-model="import.tbGoodContributor" required onloaded="$(function () { this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value) });">
+                        <option value="">--Select Note Type--</option>
+                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'good contributor'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbSpamWatch tbType">Spam Watch</span>
+                </td>
+                <td>
+                    <select name="tbSpamWatchMapping" ng-model="import.tbSpamWatch" required use-selected-style>
+                        <option value="">--Select Note Type--</option>
+                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'spam watch'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbSpamWarning tbType">Spam Warning</span>
+                </td>
+                <td>
+                    <select name="tbSpamWarningMapping" ng-model="import.tbSpamWarning" required >
+                        <option value="">--Select Note Type--</option>
+                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'spam warning'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbAbuseWarning tbType">Abuse Warning</span>
+                </td>
+                <td>
+                    <select name="tbAbuseWarningMapping" ng-model="import.tbAbuseWarning" required ng-style="{'color':'#'+import.tbAbuseWarning.ColorCode}">
+                        <option value="" style="color:black;font-weight:normal;font-style:normal;">--Select Note Type--</option>
+                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt}}" ng-selected="nt.DisplayName.toLowerCase() == 'abuse warning'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbBan tbType">Ban</span>
+                </td>
+                <td>
+                    <select name="tbBanMapping" ng-model="import.tbBan" required>
+                        <option value="">--Select Note Type--</option>
+                        <option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'ban'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbPermaBan tbType">Perma Ban</span>
+                </td>
+                <td>
+                    <select name="tbPermaBanMapping" ng-model="import.tbPermaBan" required>
+                        <option value="">--Select Note Type--</option>
+                        <option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'perma ban'">{{nt.DisplayName}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="tbBotBan tbType">Bot Ban</span>
+                </td>
+                <td>
+                    <select styled-dropdown name="tbBotBanMapping" ng-model="import.tbBotBan" ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode}" options-class="{'asf':ColorCode}">
+                        <!--<option value="">--Select Note Type--</option>-->
+                        <!--<option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'bot ban'">{{nt.DisplayName}}</option>-->
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{{sub.Settings.NoteTypes}}
