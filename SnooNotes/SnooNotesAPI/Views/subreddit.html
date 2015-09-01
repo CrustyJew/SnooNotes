@@ -10,9 +10,8 @@
                     <span class="tbNone tbType">None</span>
                 </td>
                 <td>
-                    <select name="tbNoneMapping" ng-model="import.tbNone" required onchange="this.setAttribute('style',this.options[this.selectedIndex].attributes['style'].value)">
-                        <option value="">--Select Note Type--</option>
-                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'none'">{{nt.DisplayName}}</option>
+                    <select name="tbNoneMapping" ng-model="import.tbNone" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
                     </select>
                 </td>
             </tr>
@@ -21,9 +20,8 @@
                     <span class="tbGoodContributor tbType" >Good Contributor</span>
                 </td>
                 <td>
-                    <select name="tbGoodContributorMapping" ng-model="import.tbGoodContributor" required onloaded="$(function () { this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value) });">
-                        <option value="">--Select Note Type--</option>
-                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'good contributor'">{{nt.DisplayName}}</option>
+                    <select name="tbGoodContributorMapping" ng-model="import.tbGoodContributor" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
                     </select>
                 </td>
             </tr>
@@ -32,9 +30,8 @@
                     <span class="tbSpamWatch tbType">Spam Watch</span>
                 </td>
                 <td>
-                    <select name="tbSpamWatchMapping" ng-model="import.tbSpamWatch" required use-selected-style>
-                        <option value="">--Select Note Type--</option>
-                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'spam watch'">{{nt.DisplayName}}</option>
+                    <select name="tbSpamWatchMapping" ng-model="import.tbSpamWatch" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
                     </select>
                 </td>
             </tr>
@@ -43,9 +40,8 @@
                     <span class="tbSpamWarning tbType">Spam Warning</span>
                 </td>
                 <td>
-                    <select name="tbSpamWarningMapping" ng-model="import.tbSpamWarning" required >
-                        <option value="">--Select Note Type--</option>
-                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'spam warning'">{{nt.DisplayName}}</option>
+                    <select name="tbSpamWarningMapping" ng-model="import.tbSpamWarning" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}" >
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
                     </select>
                 </td>
             </tr>
@@ -54,9 +50,8 @@
                     <span class="tbAbuseWarning tbType">Abuse Warning</span>
                 </td>
                 <td>
-                    <select name="tbAbuseWarningMapping" ng-model="import.tbAbuseWarning" required ng-style="{'color':'#'+import.tbAbuseWarning.ColorCode}">
-                        <option value="" style="color:black;font-weight:normal;font-style:normal;">--Select Note Type--</option>
-                        <option ng-style="{'color':'#'+nt.ColorCode}" ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt}}" ng-selected="nt.DisplayName.toLowerCase() == 'abuse warning'">{{nt.DisplayName}}</option>
+                    <select name="tbAbuseWarningMapping" ng-model="import.tbAbuseWarning" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
                     </select>
                 </td>
             </tr>
@@ -65,10 +60,9 @@
                     <span class="tbBan tbType">Ban</span>
                 </td>
                 <td>
-                    <select name="tbBanMapping" ng-model="import.tbBan" required>
-                        <option value="">--Select Note Type--</option>
-                        <option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'ban'">{{nt.DisplayName}}</option>
-                    </select>
+                    <select name="tbBanMapping" ng-model="import.tbBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                                            </select>
                 </td>
             </tr>
             <tr>
@@ -76,10 +70,9 @@
                     <span class="tbPermaBan tbType">Perma Ban</span>
                 </td>
                 <td>
-                    <select name="tbPermaBanMapping" ng-model="import.tbPermaBan" required>
-                        <option value="">--Select Note Type--</option>
-                        <option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'perma ban'">{{nt.DisplayName}}</option>
-                    </select>
+                    <select name="tbPermaBanMapping" ng-model="import.tbPermaBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                   </select>
                 </td>
             </tr>
             <tr>
@@ -87,8 +80,8 @@
                     <span class="tbBotBan tbType">Bot Ban</span>
                 </td>
                 <td>
-                    <select styled-dropdown name="tbBotBanMapping" ng-model="import.tbBotBan" ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode}" options-class="{'asf':ColorCode}">
-                        <!--<option value="">--Select Note Type--</option>-->
+                    <select name="tbBotBanMapping" ng-model="import.tbBotBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
                         <!--<option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'bot ban'">{{nt.DisplayName}}</option>-->
                     </select>
                 </td>
