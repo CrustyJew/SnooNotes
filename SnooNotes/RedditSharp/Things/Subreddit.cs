@@ -162,6 +162,14 @@ namespace RedditSharp.Things
             return new Listing<Post>(Reddit, string.Format(SearchUrl, Name, Uri.EscapeUriString(terms), "relevance", "all"), WebAgent);
         }
 
+        public IEnumerable<tbUserNote> UserNotes
+        {
+            get
+            {
+                return ToolBoxUserNotes.GetUserNotes(Reddit, WebAgent, this);
+            }
+        }
+
         public SubredditSettings Settings
         {
             get

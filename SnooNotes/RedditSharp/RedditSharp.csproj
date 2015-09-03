@@ -86,7 +86,10 @@
     <Compile Include="SubredditSettings.cs" />
     <Compile Include="SubredditStyle.cs" />
     <Compile Include="TextData.cs" />
+    <Compile Include="Things\tbUserNote.cs" />
     <Compile Include="Things\Thing.cs" />
+    <Compile Include="ToolBoxUserNotes.cs" />
+    <Compile Include="ToolBoxUserNotesException.cs" />
     <Compile Include="UnixTimeStamp.cs" />
     <Compile Include="UnixTimestampConverter.cs" />
     <Compile Include="UrlParser.cs" />
