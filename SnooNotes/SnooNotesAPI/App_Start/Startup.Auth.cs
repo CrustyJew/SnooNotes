@@ -98,6 +98,7 @@ namespace SnooNotesAPI
             opts.Scope.Add("identity");
             opts.Scope.Add("mysubreddits");
             opts.Scope.Add("read");
+            opts.Scope.Add("wikiread");
             app.UseRedditAuthentication(opts);
         }
         /*private void GetNewToken(CookieValidateIdentityContext context)

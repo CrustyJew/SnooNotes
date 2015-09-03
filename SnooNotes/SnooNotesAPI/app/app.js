@@ -65,7 +65,11 @@ angular
             });
 
             scope.$watch(attrs.ngModel, function (item) {
-                elem.css (getOptionsStyle(item));
+                if (!item) {
+                    elem.attr('style', elem.find('option[value=""]').attr('style'));
+                } else {
+                    elem.css(getOptionsStyle(item));
+                }
             });
         }
     }
