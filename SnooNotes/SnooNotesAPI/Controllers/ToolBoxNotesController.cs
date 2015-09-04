@@ -19,7 +19,7 @@ namespace SnooNotesAPI.Controllers
         }
 
         // GET: api/ToolBoxNotes/5
-        public string Get(string id)
+        public IEnumerable<RedditSharp.Things.tbUserNote> Get(string id)
         {
             var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = userManager.FindByName(User.Identity.Name);
@@ -31,7 +31,7 @@ namespace SnooNotesAPI.Controllers
             RedditSharp.Reddit r = new RedditSharp.Reddit(user.AccessToken);
             var sub = r.GetSubreddit(id);
             var notes = sub.UserNotes;
-            return "value";
+            return notes;
         }
 
         // POST: api/ToolBoxNotes

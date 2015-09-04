@@ -229,10 +229,12 @@
     <Compile Include="Models\SubredditSettings.cs" />
     <Compile Include="Models\UserNoteRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestObjects\TBImportMapping.cs" />
     <Compile Include="Signalr\SnooNotesHub.cs" />
     <Compile Include="Signalr\SnooNoteUpdates.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\AuthUtils.cs" />
+    <Compile Include="Utilities\TBNoteUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Addon\snoonotes.xpi" />
