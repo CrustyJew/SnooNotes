@@ -53,10 +53,43 @@ namespace RedditSharp
                 foreach(JToken note in x["ns"].Children())
                 {
                     //TODO
+                    Things.tbUserNote uNote = new Things.tbUserNote();
+                    uNote.AppliesToUsername = user.Key;
+                    uNote.SubName = sub.Name;
+                    uNote.SubmitterIndex = note["m"].Value<int>();
+                    uNote.Submitter = mods[uNote.SubmitterIndex];
+                    uNote.NoteTypeIndex = note["w"].Value<int>();
+                    uNote.NoteType = warnings[uNote.NoteTypeIndex];
+                    uNote.Message = note["n"].Value<string>();
+                    uNote.Timestamp = UnixTimeStamp.UnixTimeStampToDateTime(note["t"].Value<long>());
+                    uNote.Url = UnsquashLink(sub.Name, note["l"].ValueOrDefault<string>());
+
+                    toReturn.Add(uNote);
                 }
             }
-            throw new NotImplementedException();
+            return toReturn;
         }
+        public static string UnsquashLink(string subreddit,string permalink)
+        {
 
+            var link = "https://reddit.com/r/" + subreddit + "/";
+            if (string.IsNullOrEmpty(permalink)) {
+                return link;
+            }
+            var linkParams = permalink.Split(',');
+
+            if (linkParams[0] == "l")
+            {
+                link += "comments/" + linkParams[1] + "/";
+                if (linkParams.Length > 2)
+                    link += "-/" + linkParams[2] + "/";
+            }
+            else if (linkParams[0] == "m")
+            {
+                link += "message/messages/" + linkParams[1];
+            }
+
+            return link;
+        }
     }
 }
