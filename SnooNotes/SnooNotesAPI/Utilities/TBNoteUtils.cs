@@ -9,12 +9,8 @@ namespace SnooNotesAPI.Utilities
     {
         public static List<Models.Note> ConvertTBNotesToSnooNotes(string subName, Dictionary<string,int> tbToSNMapping, List<RedditSharp.Things.tbUserNote> tbNotes)
         {
-            var toReturn = tbNotes.Select(tb => new Models.Note { AppliesToUsername = tb.AppliesToUsername, Message = tb.Message, NoteTypeID = tbToSNMapping[tb.NoteType], Submitter = tb.Submitter, SubName = subName, Timestamp = tb.Timestamp, Url=tb.Url });
+            var toReturn = tbNotes.Select(tb => new Models.Note { AppliesToUsername = tb.AppliesToUsername.ToLower(), Message = tb.Message, NoteTypeID = tbToSNMapping[tb.NoteType], Submitter = tb.Submitter, SubName = subName, Timestamp = tb.Timestamp, Url=tb.Url });
             return toReturn.ToList();
-        }
-        public static List<Models.Note> GetNotesToAdd(List<Models.Note> tbNotes)
-        {
-            throw new NotImplementedException();
         }
     }
 }

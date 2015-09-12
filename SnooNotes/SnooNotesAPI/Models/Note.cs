@@ -113,5 +113,20 @@ namespace SnooNotesAPI.Models
                 return "Success";
             }
         }
+
+        public static int AddNewToolBoxNotes(List<Note> tbNotes)
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, Url, Timestamp) "
+                    + "select @NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp "
+                    + "where not exists(select * from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID where s.SubName = @SubName and n.AppliesToUsername = @AppliesToUsername and HASHBYTES('SHA2_256',Lower(s.SubName + n.Submitter + n.AppliesToUsername + CONVERT(VARCHAR,n.Timestamp,120) + n.Url)) = HASHBYTES('SHA2_256',Lower(@SubName + @Submitter + @AppliesToUsername + CONVERT(VARCHAR,@TimeStamp,120) + @Url)))";
+
+                int rowsEffected = con.Execute(query, tbNotes );
+                return rowsEffected;    
+                
+                //HASHBYTES('SHA2_256',Lower(s.SubName + n.Submitter + n.AppliesToUsername + CONVERT(VARCHAR,n.Timestamp,120) + n.Url))
+            }
+        }
     }
 }
