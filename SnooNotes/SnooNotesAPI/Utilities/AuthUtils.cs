@@ -22,10 +22,22 @@ namespace SnooNotesAPI.Utilities
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
             string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
             RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+            RedditSharp.WebAgent.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
             RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
+            
             string newaccesstoken = ap.GetOAuthToken(ident.RefreshToken, true);
             ident.AccessToken = newaccesstoken;
             ident.TokenExpires = DateTime.UtcNow.AddMinutes(50);
+        }
+
+        public static void CheckTokenExpiration(ClaimsPrincipal user)
+        {
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var ident = userManager.FindByName(user.Identity.Name);
+            if (ident.TokenExpires < DateTime.UtcNow)
+            {
+                GetNewToken(ident);
+            }
         }
         
         public static async Task<int> UpdateModeratedSubreddits(Models.ApplicationUser ident)
