@@ -231,7 +231,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\SubredditSettings.cs" />
-    <Compile Include="Models\UserNoteRequest.cs" />
+    <Compile Include="RequestObjects\UserNoteRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestObjects\TBImportMapping.cs" />
     <Compile Include="Signalr\SnooNotesHub.cs" />
