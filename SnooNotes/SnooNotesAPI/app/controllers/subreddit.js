@@ -15,28 +15,28 @@ function SubredditCtrl($scope, $stateParams, SubFactory) {
         var nt = $scope.sub.Settings.NoteTypes[i];
         switch (nt.DisplayName.toLowerCase()) {
             case "none":
-                $scope.import.tbNone = nt;
+                $scope.import.snNone = nt;
                 break;
             case "good contributor":
-                $scope.import.tbGoodContributor = nt;
+                $scope.import.snGoodUser = nt;
                 break;
             case "spam watch":
-                $scope.import.tbSpamWatch = nt;
+                $scope.import.snSpamWatch = nt;
                 break;
             case "spam warning":
-                $scope.import.tbSpamWarning = nt;
+                $scope.import.snSpamWarn = nt;
                 break;
             case "abuse warning":
-                $scope.import.tbAbuseWarning = nt;
+                $scope.import.snAbuseWarn = nt;
                 break;
             case "ban":
-                $scope.import.tbBan = nt;
+                $scope.import.snBan = nt;
                 break;
             case "perma ban":
-                $scope.import.tbPermaBan = nt;
+                $scope.import.snPermBan = nt;
                 break;
             case "bot ban":
-                $scope.import.tbBotBan = nt;
+                $scope.import.snBotBan = nt;
                 break;
 
         }

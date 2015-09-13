@@ -28,13 +28,13 @@ namespace SnooNotesAPI.RequestObjects
         public int snGoodUser { get; set; }
         [Required]
         [DataAnnotationsExtensions.Min(0)]
-        public int snAbuseWarn { get; set; }
-        [Required]
-        [DataAnnotationsExtensions.Min(0)]
         public int snSpamWatch { get; set; }
         [Required]
         [DataAnnotationsExtensions.Min(0)]
         public int snSpamWarn { get; set; }
+        [Required]
+        [DataAnnotationsExtensions.Min(0)]
+        public int snAbuseWarn { get; set; }
         [Required]
         [DataAnnotationsExtensions.Min(0)]
         public int snBan { get; set; }
