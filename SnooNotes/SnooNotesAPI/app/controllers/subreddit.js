@@ -7,7 +7,7 @@ function SubredditCtrl($scope, $stateParams, SubFactory) {
     var subSettings = SubFactory.getByName($stateParams.subName);
     if (!subSettings) {
         //TODO ERROR
-        $scope.sub = { subName: "ERROR" };
+        $scope.sub = { SubName: "ERROR" };
     } else {
         $scope.sub = subSettings;
     }
@@ -41,7 +41,16 @@ function SubredditCtrl($scope, $stateParams, SubFactory) {
 
         }
     }
-    $scope.selChange = function () {
-        this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value);
+
+    $scope.importNotes = function () {
+        var noteMapping = {};
+        noteMapping.subName = $scope.sub.SubName;
+        for (var propertyName in $scope.import) {
+            noteMapping[propertyName] = $scope.import[propertyName].NoteTypeID;
+        }
+        SubFactory.importTBNotes(noteMapping);
     }
+    //$scope.selChange = function () {
+    //    this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value);
+    //}
 }

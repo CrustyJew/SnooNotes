@@ -38,5 +38,19 @@
         exports.adminSubDetails = function () { return _adminSubs };
 
         exports.initialized = _initialized.promise;
+
+        exports.importTBNotes = function (noteMapping) {
+
+            var deferred = $q.defer();
+
+            $http.post('restapi/ToolBoxNotes', JSON.stringify(noteMapping)).
+                then(function (response) {
+                    deferred.resolve(response.data);
+                }, function (response) {
+                    deferred.reject(response);
+                });
+
+            return deferred.promise;
+        }
         return exports;
     });
