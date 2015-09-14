@@ -89,3 +89,28 @@ a {
 .loginModalContent{
     padding: 0px 15px 10px 15px;
 }
+
+.importTBNotes table{
+    display:inline-table;
+    margin:10px;
+    vertical-align:middle;
+}
+.importTBNotes td{
+    padding:5px 10px 0px 0px;
+}
+
+.importTBNotes input[type=submit]{
+    vertical-align:middle;
+}
+
+.snSubmit{
+    background: linear-gradient(to bottom, #74c429, #4ca20b ); 
+    font-weight:bold;
+    padding: 2px 18px;
+    color:#fff; 
+    height:32px; 
+    font-size:16px; 
+    font-weight:bold;
+    border-radius:2px;
+    border:1px solid darkgrey;
+}

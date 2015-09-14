@@ -2,92 +2,96 @@
 
 <p>This is where you'll be able to manage all aspects of your subreddit outside of the addon's "Options" page on Reddit itself.</p>
 <p>More features will be coming including the ability to search all notes you have etc! But right now, this is where you can import all your notes from Mod Toolbox into SnooNotes.</p>
-<div class="importTBNotes" ng-form name="">
-    <div>
-        <table>
-            <tr>
-                <td>
-                    <span class="tbNone tbType">None</span>
-                </td>
-                <td>
-                    <select name="tbNoneMapping" ng-model="import.snNone" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbGoodContributor tbType" >Good Contributor</span>
-                </td>
-                <td>
-                    <select name="tbGoodContributorMapping" ng-model="import.snGoodUser" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbSpamWatch tbType">Spam Watch</span>
-                </td>
-                <td>
-                    <select name="tbSpamWatchMapping" ng-model="import.snSpamWatch" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbSpamWarning tbType">Spam Warning</span>
-                </td>
-                <td>
-                    <select name="tbSpamWarningMapping" ng-model="import.snSpamWarn" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbAbuseWarning tbType">Abuse Warning</span>
-                </td>
-                <td>
-                    <select name="tbAbuseWarningMapping" ng-model="import.snAbuseWarn" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbBan tbType">Ban</span>
-                </td>
-                <td>
-                    <select name="tbBanMapping" ng-model="import.snBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbPermaBan tbType">Perma Ban</span>
-                </td>
-                <td>
-                    <select name="tbPermaBanMapping" ng-model="import.snPermBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="tbBotBan tbType">Bot Ban</span>
-                </td>
-                <td>
-                    <select name="tbBotBanMapping" ng-model="import.snBotBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
-                        <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
-                        <!--<option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'bot ban'">{{nt.DisplayName}}</option>-->
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </div>
+<div class="importTBNotes">
+    <form name="frmImportTBNotes" ng-submit="importNotes()">
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <span class="tbNone tbType">None</span>
+                    </td>
+                    <td>
+                        <select name="tbNoneMapping" ng-model="import.snNone" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbGoodContributor tbType">Good Contributor</span>
+                    </td>
+                    <td>
+                        <select name="tbGoodContributorMapping" ng-model="import.snGoodUser" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbSpamWatch tbType">Spam Watch</span>
+                    </td>
+                    <td>
+                        <select name="tbSpamWatchMapping" ng-model="import.snSpamWatch" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbSpamWarning tbType">Spam Warning</span>
+                    </td>
+                    <td>
+                        <select name="tbSpamWarningMapping" ng-model="import.snSpamWarn" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbAbuseWarning tbType">Abuse Warning</span>
+                    </td>
+                    <td>
+                        <select name="tbAbuseWarningMapping" ng-model="import.snAbuseWarn" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbBan tbType">Ban</span>
+                    </td>
+                    <td>
+                        <select name="tbBanMapping" ng-model="import.snBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbPermaBan tbType">Perma Ban</span>
+                    </td>
+                    <td>
+                        <select name="tbPermaBanMapping" ng-model="import.snPermBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="tbBotBan tbType">Bot Ban</span>
+                    </td>
+                    <td>
+                        <select name="tbBotBanMapping" ng-model="import.snBotBan" styled-dropdown ng-options="nt.DisplayName for nt in sub.Settings.NoteTypes" required options-style="{'color':'#'+ColorCode,'font-weight':Bold ? 'bold' : 'normal','font-style':Italic?'italic':'normal'}">
+                            <option value="" style="color:#000;font-weight:bold;font-style:normal;">--Select Note Type--</option>
+                            <!--<option ng-repeat="nt in sub.Settings.NoteTypes" value="{{nt.NoteTypeID}}" ng-selected="nt.DisplayName.toLowerCase() == 'bot ban'">{{nt.DisplayName}}</option>-->
+                        </select>
+
+                    </td>
+                </tr>
+            </table>
+            <input type="submit" class="snSubmit" value="Import Notes" />
+        </div>
+    </form>
 </div>
 
 {{sub.Settings.NoteTypes}}
