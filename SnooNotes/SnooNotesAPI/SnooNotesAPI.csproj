@@ -220,6 +220,10 @@
     <Compile Include="Migrations\201506111358302_Initial2.Designer.cs">
       <DependentUpon>201506111358302_Initial2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509152058586_AddScopeToUser.cs" />
+    <Compile Include="Migrations\201509152058586_AddScopeToUser.Designer.cs">
+      <DependentUpon>201509152058586_AddScopeToUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BasicNote.cs" />
     <Compile Include="Models\BasicNoteType.cs" />
@@ -260,9 +264,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Icon.png" />
-    <None Include="Owin.Security.Providers.dll" />
-    <None Include="Owin.Security.Providers.pdb" />
     <Content Include="index.html" />
+    <Content Include="Owin.Security.Providers.dll" />
+    <Content Include="Owin.Security.Providers.pdb" />
+    <Content Include="Owin.Security.Providers.XML" />
     <Content Include="Scripts\angular-cookies.js" />
     <Content Include="Scripts\angular-cookies.min.js" />
     <Content Include="Scripts\angular-local-storage.min.js" />
@@ -338,6 +343,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506111358302_Initial2.resx">
       <DependentUpon>201506111358302_Initial2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509152058586_AddScopeToUser.resx">
+      <DependentUpon>201509152058586_AddScopeToUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

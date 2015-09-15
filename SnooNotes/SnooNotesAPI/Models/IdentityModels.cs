@@ -18,6 +18,7 @@ namespace SnooNotesAPI.Models
         public bool HasWikiRead { get; set; }
         public bool HasRead { get; set; }
 
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
 

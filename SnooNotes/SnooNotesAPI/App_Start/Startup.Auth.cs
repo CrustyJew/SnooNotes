@@ -85,8 +85,9 @@ namespace SnooNotesAPI
                 {
                     OnAuthenticated = context =>
                     {
-                        context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:refresh", context.RefreshToken));
-                        context.Identity.AddClaim(new System.Security.Claims.Claim("urn:reddit:accessexpires", DateTime.UtcNow.AddMinutes(-15).Add(context.ExpiresIn.Value).ToString()));
+                        context.Identity.AddClaim(new Claim("urn:reddit:refresh", context.RefreshToken));
+                        context.Identity.AddClaim(new Claim("urn:reddit:accessexpires", DateTime.UtcNow.Add(context.ExpiresIn.HasValue ? context.ExpiresIn.Value : new TimeSpan(0, 50, 0)).ToString()));
+                        context.Identity.AddClaim(new Claim("urn:reddit:scope",string.Join(",", context.Scope)));
                         //context.Identity = GetModeratedSubreddits(context.Identity as ClaimsIdentity);
                         
                         return System.Threading.Tasks.Task.FromResult(0);
@@ -97,8 +98,6 @@ namespace SnooNotesAPI
             opts.Scope.Clear();
             opts.Scope.Add("identity");
             opts.Scope.Add("mysubreddits");
-            opts.Scope.Add("read");
-            opts.Scope.Add("wikiread");
             app.UseRedditAuthentication(opts);
         }
         /*private void GetNewToken(CookieValidateIdentityContext context)
