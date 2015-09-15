@@ -15,6 +15,8 @@ namespace SnooNotesAPI.Models
         public DateTime LastUpdatedRoles { get; set; }
         public string AccessToken { get; set; }
         public DateTime TokenExpires { get; set; }
+        public bool HasWikiRead { get; set; }
+        public bool HasRead { get; set; }
 
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)

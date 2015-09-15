@@ -2,13 +2,15 @@
        .module('SnooNotes')
        .controller('AuthCtrl', AuthCtrl);
 
-function AuthCtrl($scope, AuthFactory, $modalInstance) {
+function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     }
+    $scope.prefs = $cookies.getObject('snPrefs') || {};
     $scope.openLoginWindow = function () {
-        var oauthwin = window.open('/Auth/DoLogin', 'SnooLogin', 'height=850px,width=850px');
+        $cookies.putObject('snPrefs', $scope.prefs);
+        var oauthwin = window.open('/Auth/DoLogin?' + $.param($scope.prefs), 'SnooLogin', 'height=850px,width=850px');
         oauthwin.focus();
         setTimeout(function () { CheckLogin(oauthwin) }, 1500);
     }

@@ -31,7 +31,7 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-left">
-                        <li class="dropdown">
+                        <li class="dropdown" ng-hide="!currentUser.isAuth">
                             <div class="btn-group subredditNavMenu" dropdown is-open="status.isopen">
                                 <span class="currentSubNav" dropdown-toggle>
                                     {{curSub}} <b class="caret"></b>
@@ -73,7 +73,7 @@
                 </ul>
 
                 <p>These are the reasons that SnooNotes requests these permission, to see the full list of actions these permissions give SnooNotes, please visit <a href="https://www.reddit.com/dev/api/oauth" target="_blank">Reddit's API Documentation</a> and look them up by the scopes listed above. </p>
-                <button type="button" ng-click="openLoginWindow()" class="doLogin" style="background: linear-gradient(to bottom, #74c429, #4ca20b ); font-weight:bold;margin:0px auto;padding: 2px 18px; color:#fff; height:32px; font-size:16px; font-weight:bold;border-radius:2px;border:1px solid darkgrey;display:block;">Login!</button>
+                <label><input type="checkbox" ng-model="prefs.read" />Read Access</label><label><input type="checkbox" ng-model="prefs.wiki" />Wiki Access</label><button type="button" ng-click="openLoginWindow()" class="doLogin" style="background: linear-gradient(to bottom, #74c429, #4ca20b ); font-weight:bold;margin:0px auto;padding: 2px 18px; color:#fff; height:32px; font-size:16px; font-weight:bold;border-radius:2px;border:1px solid darkgrey;display:block;">Login!</button>
             </div>
         </div>
     </script>

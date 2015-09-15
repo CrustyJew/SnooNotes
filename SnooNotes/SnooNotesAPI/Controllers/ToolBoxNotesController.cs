@@ -43,7 +43,7 @@ namespace SnooNotesAPI.Controllers
 
         // POST: api/ToolBoxNotes
         [ValidateModel]
-        public void Post([FromBody]RequestObjects.TBImportMapping value)
+        public int Post([FromBody]RequestObjects.TBImportMapping value)
         {
             if (!(User as ClaimsPrincipal).HasClaim("urn:snoonotes:subreddits:" + value.subName.ToLower() + ":admin", "true"))
             {
@@ -65,7 +65,7 @@ namespace SnooNotesAPI.Controllers
             List<Models.Note> convertedNotes = Utilities.TBNoteUtils.ConvertTBNotesToSnooNotes(value.subName, value.GetNoteTypeMapping(), notes.ToList());
 
             //List<Models.Note> notesToAdd = Utilities.TBNoteUtils.GetNotesToAdd(convertedNotes);
-            Models.Note.AddNewToolBoxNotes(convertedNotes);
+            return Models.Note.AddNewToolBoxNotes(convertedNotes);
         }
 
         // PUT: api/ToolBoxNotes/5
