@@ -7,8 +7,10 @@ function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies) {
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     }
-    $scope.prefs = $cookies.getObject('snPrefs') || {};
+    $scope.prefs = $cookies.getObject('snPrefs') || {wiki:false,read:false};
     $scope.openLoginWindow = function () {
+        if ($scope.prefs.wiki == undefined) $scope.prefs.wiki = false;
+        if ($scope.prefs.read == undefined) $scope.prefs.read = false;
         $cookies.putObject('snPrefs', $scope.prefs);
         var oauthwin = window.open('/Auth/DoLogin?' + $.param($scope.prefs), 'SnooLogin', 'height=850px,width=850px');
         oauthwin.focus();

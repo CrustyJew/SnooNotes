@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using System.Security.Claims;
 
 namespace SnooNotesAPI {
 	public static class WebApiConfig {
@@ -43,11 +44,24 @@ namespace SnooNotesAPI {
             }
         }
     }
-    public class WikiReadAttribute : System.Web.Http.Filters.ActionFilterAttribute
+    public class WikiRead : AuthorizeAttribute
     {
-        public override void OnActionExecuting(HttpActionContext actionContext)
+        protected override bool IsAuthorized(HttpActionContext actionContext)
         {
-            //
+
+            bool isAuth = base.IsAuthorized(actionContext);
+            if (!isAuth) return false;
+
+            ClaimsIdentity user = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+
+            if (user.HasClaim("urn:snoonotes:scope", "wikiread"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Security.Claims;
 namespace SnooNotesAPI.Controllers
 {
     [Authorize]
+    [WikiRead]
     public class ToolBoxNotesController : ApiController
     {
         // GET: api/ToolBoxNotes
@@ -21,6 +22,7 @@ namespace SnooNotesAPI.Controllers
         }
 
         // GET: api/ToolBoxNotes/5
+        
         public IEnumerable<RedditSharp.Things.tbUserNote> Get(string id)
         {
             var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();

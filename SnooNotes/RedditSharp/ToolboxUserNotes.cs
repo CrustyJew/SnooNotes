@@ -8,7 +8,7 @@ using System.IO.Compression;
 
 namespace RedditSharp
 {
-    static class ToolBoxUserNotes
+    public static class ToolBoxUserNotes
     {
         private const string ToolBoxUserNotesWiki = "/r/{0}/wiki/usernotes";
         public static IEnumerable<Things.tbUserNote> GetUserNotes(Reddit reddit, IWebAgent webAgent, Things.Subreddit sub)
