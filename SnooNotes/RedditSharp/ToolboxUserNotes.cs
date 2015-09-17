@@ -26,48 +26,54 @@ namespace RedditSharp
             {
                 throw new ToolBoxUserNotesException("Unsupported ToolBox version");
             }
+            try {
+                var data = Convert.FromBase64String(response["blob"].Value<string>());
 
-            var data = Convert.FromBase64String(response["blob"].Value<string>());
-
-            string uncompressed;
-            using (System.IO.MemoryStream compressedStream = new System.IO.MemoryStream(data))
-            {
-                compressedStream.ReadByte();
-                compressedStream.ReadByte(); //skips first to bytes to fix zlib block size
-                using (DeflateStream blobStream = new DeflateStream(compressedStream, CompressionMode.Decompress))
+                string uncompressed;
+                using (System.IO.MemoryStream compressedStream = new System.IO.MemoryStream(data))
                 {
-                    using (var decompressedReader = new System.IO.StreamReader(blobStream))
+                    compressedStream.ReadByte();
+                    compressedStream.ReadByte(); //skips first to bytes to fix zlib block size
+                    using (DeflateStream blobStream = new DeflateStream(compressedStream, CompressionMode.Decompress))
                     {
-                        uncompressed = decompressedReader.ReadToEnd();
+                        using (var decompressedReader = new System.IO.StreamReader(blobStream))
+                        {
+                            uncompressed = decompressedReader.ReadToEnd();
+                        }
+
                     }
-
                 }
-            }
 
-            JObject users = JObject.Parse(uncompressed);
+                JObject users = JObject.Parse(uncompressed);
 
-            List<tbUserNote> toReturn = new List<tbUserNote>();
-            foreach(KeyValuePair<string, JToken> user in users)
-            {
-                var x = user.Value;
-                foreach(JToken note in x["ns"].Children())
+                List<tbUserNote> toReturn = new List<tbUserNote>();
+                foreach (KeyValuePair<string, JToken> user in users)
                 {
-                    
-                    tbUserNote uNote = new tbUserNote();
-                    uNote.AppliesToUsername = user.Key;
-                    uNote.SubName = subName;
-                    uNote.SubmitterIndex = note["m"].Value<int>();
-                    uNote.Submitter = mods[uNote.SubmitterIndex];
-                    uNote.NoteTypeIndex = note["w"].Value<int>();
-                    uNote.NoteType = warnings[uNote.NoteTypeIndex];
-                    uNote.Message = note["n"].Value<string>();
-                    uNote.Timestamp = UnixTimeStamp.UnixTimeStampToDateTime(note["t"].Value<long>());
-                    uNote.Url = UnsquashLink(subName, note["l"].ValueOrDefault<string>());
+                    var x = user.Value;
+                    foreach (JToken note in x["ns"].Children())
+                    {
 
-                    toReturn.Add(uNote);
+                        tbUserNote uNote = new tbUserNote();
+                        uNote.AppliesToUsername = user.Key;
+                        uNote.SubName = subName;
+                        uNote.SubmitterIndex = note["m"].Value<int>();
+                        uNote.Submitter = mods[uNote.SubmitterIndex];
+                        uNote.NoteTypeIndex = note["w"].Value<int>();
+                        uNote.NoteType = warnings[uNote.NoteTypeIndex];
+                        uNote.Message = note["n"].Value<string>();
+                        uNote.Timestamp = UnixTimeStamp.UnixTimeStampToDateTime(note["t"].Value<long>());
+                        uNote.Url = UnsquashLink(subName, note["l"].ValueOrDefault<string>());
+
+                        toReturn.Add(uNote);
+                    }
                 }
+                return toReturn;
             }
-            return toReturn;
+            catch(Exception e)
+            {
+                throw new ToolBoxUserNotesException("An error occured while processing Usernotes wiki. See inner exception for details", e);
+            }
+            
         }
         public static string UnsquashLink(string subreddit,string permalink)
         {
