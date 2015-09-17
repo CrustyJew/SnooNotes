@@ -37,7 +37,7 @@
                                     {{curSub}} <b class="caret"></b>
                                 </span>
                                 <ul class="dropdown-menu">
-                                    <li ng-repeat="subName in adminSubs" role="menu"><a ui-sref="subreddit({'subName':subName})">{{subName}}</a></li>
+                                    <li ng-repeat="subName in adminSubs.subNames" role="menu"><a ui-sref="subreddit({'subName':subName})">{{subName}}</a></li>
                                 </ul>
                             </div>
                         </li>

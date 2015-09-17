@@ -1,19 +1,22 @@
-using System;
-using System.Dynamic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using System.Web;
 using Newtonsoft.Json.Linq;
+using RedditSharp;
 
-namespace RedditSharp
+namespace SnooNotesAPI.Utilities
 {
-    public sealed class WebAgent : IWebAgent
+    public class SNWebAgent:IWebAgent
     {
+        private const string DomainUrl = "www.reddit.com";
+        private const string OAuthDomainUrl = "oauth.reddit.com";
+        private const string Protocol = "https";
         /// <summary>
         /// Additional values to append to the default RedditSharp user agent.
         /// </summary>
@@ -24,8 +27,7 @@ namespace RedditSharp
         /// requests with extreme predjudice.
         /// </summary>
         public static bool EnableRateLimit { get; set; }
-
-        public static string Protocol { get; set; }
+        
 
         /// <summary>
         /// It is strongly advised that you leave this set to Burst or Pace. Reddit bans excessive
@@ -43,10 +45,6 @@ namespace RedditSharp
             /// </summary>
             Pace,
             /// <summary>
-            /// Restricts requests to five per ten seconds
-            /// </summary>
-            SmallBurst,
-            /// <summary>
             /// Restricts requests to thirty per minute
             /// </summary>
             Burst,
@@ -60,7 +58,17 @@ namespace RedditSharp
         /// The root domain RedditSharp uses to address Reddit.
         /// www.reddit.com by default
         /// </summary>
-        public static string RootDomain { get; set; }
+        public string RootDomain { get; set; }
+
+        public SNWebAgent()
+        {
+            RootDomain = DomainUrl;
+        }
+        public SNWebAgent(string accessToken)
+        {
+            RootDomain = OAuthDomainUrl;
+            AccessToken = accessToken;
+        }
 
         /// <summary>
         /// Used to make calls against Reddit's API using OAuth23
@@ -86,12 +94,9 @@ namespace RedditSharp
             try { return ExecuteRequest(request); }
             catch (Exception)
             {
-                var tempProtocol = Protocol;
                 var tempRootDomain = RootDomain;
-                Protocol = "http";
                 RootDomain = "www.reddit.com";
                 var retval = CreateAndExecuteRequest(url);
-                Protocol = tempProtocol;
                 RootDomain = tempRootDomain;
                 return retval;
             }
@@ -138,7 +143,6 @@ namespace RedditSharp
 
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private static void EnforceRateLimit()
         {
             switch (RateLimit)
@@ -148,27 +152,20 @@ namespace RedditSharp
                         Thread.Sleep(250);
                     _lastRequest = DateTime.UtcNow;
                     break;
-                case RateLimitMode.SmallBurst:
-                    if (_requestsThisBurst == 0)//this is first request
-                        _burstStart = DateTime.UtcNow;
-                    if (_requestsThisBurst >= 5) //limit has been reached
-                    {
-                        while ((DateTime.UtcNow - _burstStart).TotalSeconds < 10)
-                            Thread.Sleep(250);
-                        _burstStart = DateTime.UtcNow;
-                        _requestsThisBurst = 0;
-                    }
-                    _requestsThisBurst++;
-                    break;
                 case RateLimitMode.Burst:
                     if (_requestsThisBurst == 0)//this is first request
                         _burstStart = DateTime.UtcNow;
-                    if (_requestsThisBurst >= 30) //limit has been reached
+                    if (_requestsThisBurst >= 55) //limit has been reached
                     {
                         while ((DateTime.UtcNow - _burstStart).TotalSeconds < 60)
                             Thread.Sleep(250);
                         _burstStart = DateTime.UtcNow;
                         _requestsThisBurst = 0;
+                    }
+                    if ((DateTime.UtcNow - _burstStart).TotalSeconds >= 60)
+                    {
+                        _requestsThisBurst = 0;
+                        _burstStart = DateTime.UtcNow;
                     }
                     _requestsThisBurst++;
                     break;
@@ -269,6 +266,22 @@ namespace RedditSharp
             var raw = Encoding.UTF8.GetBytes(value);
             stream.Write(raw, 0, raw.Length);
             stream.Close();
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    internal class RedditAPINameAttribute : Attribute
+    {
+        internal string Name { get; private set; }
+
+        internal RedditAPINameAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

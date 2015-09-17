@@ -35,7 +35,7 @@ angular.module('SnooNotes', [
     $httpProvider.defaults.withCredentials = true;
 
 })
-.run(function ($rootScope, AuthFactory, SubFactory) {
+.run(function ($rootScope, AuthFactory, SubFactory, $modal) {
     AuthFactory.getCurrentUser();
     SubFactory.getSubsWithAdmin();
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
@@ -43,6 +43,15 @@ angular.module('SnooNotes', [
 
         if (requireLogin && !AuthFactory.currentUser.isAuth) {
             event.preventDefault();
+
+            $rootScope.redirectScope = toState;
+            $rootScope.redirectParams = toParams;
+
+            $modal.open({
+                templateUrl: "loginModal.html",
+                controller: 'AuthCtrl'
+            });
+            
         }
     });
 });

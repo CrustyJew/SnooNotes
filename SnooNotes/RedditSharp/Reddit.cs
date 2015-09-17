@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Authentication;
 using RedditSharp.Things;
+using System.Threading.Tasks;
+using DefaultWebAgent = RedditSharp.WebAgent;
 
 namespace RedditSharp
 {
@@ -24,7 +26,7 @@ namespace RedditSharp
         private const string ComposeMessageUrl = "/api/compose";
         private const string RegisterAccountUrl = "/api/register";
         private const string GetThingUrl = "/api/info.json?id={0}";
-        private const string GetCommentUrl = "/r/{0}/comments/{1}/foo/{2}.json";
+        private const string GetCommentUrl = "/r/{0}/comments/{1}/foo/{2}";
         private const string GetPostUrl = "{0}.json";
         private const string DomainUrl = "www.reddit.com";
         private const string OAuthDomainUrl = "oauth.reddit.com";
@@ -37,16 +39,15 @@ namespace RedditSharp
 
         static Reddit()
         {
-            WebAgent.UserAgent = "";
-            WebAgent.RateLimit = WebAgent.RateLimitMode.Pace;
-            WebAgent.Protocol = "http";
-            WebAgent.RootDomain = "www.reddit.com";
+            DefaultWebAgent.UserAgent = "";
+            DefaultWebAgent.RateLimit = DefaultWebAgent.RateLimitMode.Pace;
+            DefaultWebAgent.Protocol = "https";
+            DefaultWebAgent.RootDomain = "www.reddit.com";
         }
 
         #endregion
 
-        internal readonly IWebAgent _webAgent;
-
+        internal IWebAgent WebAgent { get; set; }
         /// <summary>
         /// Captcha solver instance to use when solving captchas.
         /// </summary>
@@ -60,10 +61,10 @@ namespace RedditSharp
         /// <summary>
         /// Sets the Rate Limiting Mode of the underlying WebAgent
         /// </summary>
-        public WebAgent.RateLimitMode RateLimit
+        public DefaultWebAgent.RateLimitMode RateLimit
         {
-            get { return WebAgent.RateLimit; }
-            set { WebAgent.RateLimit = value; }
+            get { return DefaultWebAgent.RateLimit; }
+            set { DefaultWebAgent.RateLimit = value; }
         }
 
         internal JsonSerializerSettings JsonSerializerSettings { get; set; }
@@ -85,34 +86,73 @@ namespace RedditSharp
         }
 
         public Reddit()
+            : this(true)
+        { }
+
+        public Reddit(bool useSsl)
         {
+            DefaultWebAgent defaultAgent = new DefaultWebAgent();
+
             JsonSerializerSettings = new JsonSerializerSettings
-                {
-                    CheckAdditionalContent = false,
-                    DefaultValueHandling = DefaultValueHandling.Ignore
-                };
-            _webAgent = new WebAgent();
+            {
+                CheckAdditionalContent = false,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+            DefaultWebAgent.Protocol = useSsl ? "https" : "http";
+            WebAgent = defaultAgent;
             CaptchaSolver = new ConsoleCaptchaSolver();
         }
 
-        public Reddit(WebAgent.RateLimitMode limitMode) : this()
+        public Reddit(DefaultWebAgent.RateLimitMode limitMode, bool useSsl = true)
+            : this(useSsl)
         {
-            WebAgent.UserAgent = "";
-            WebAgent.RateLimit = limitMode;
-            WebAgent.RootDomain = "www.reddit.com";
+            DefaultWebAgent.UserAgent = "";
+            DefaultWebAgent.RateLimit = limitMode;
+            DefaultWebAgent.RootDomain = "www.reddit.com";
         }
 
-        public Reddit(string username, string password, bool useSsl = true) : this()
+        public Reddit(string username, string password, bool useSsl = true)
+            : this(useSsl)
         {
             LogIn(username, password, useSsl);
         }
 
-        public Reddit(string accessToken) : this()
+        public Reddit(string accessToken)
+            : this(true)
         {
-            WebAgent.Protocol = "https";
-            WebAgent.RootDomain = OAuthDomainUrl;
-            _webAgent.AccessToken = accessToken;
+            DefaultWebAgent.RootDomain = OAuthDomainUrl;
+            WebAgent.AccessToken = accessToken;
             InitOrUpdateUser();
+        }
+        /// <summary>
+        /// Creates a Reddit instance with the given WebAgent implementation
+        /// </summary>
+        /// <param name="agent">Implementation of IWebAgent interface. Used to generate requests.</param>
+        public Reddit(IWebAgent agent)
+        {
+            WebAgent = agent;
+            JsonSerializerSettings = new JsonSerializerSettings
+            {
+                CheckAdditionalContent = false,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+            CaptchaSolver = new ConsoleCaptchaSolver();
+        }
+        /// <summary>
+        /// Creates a Reddit instance with the given WebAgent implementation
+        /// </summary>
+        /// <param name="agent">Implementation of IWebAgent interface. Used to generate requests.</param>
+        /// <param name="initUser">Whether to run InitOrUpdateUser, requires <paramref name="agent"/> to have credentials first.</param>
+        public Reddit(IWebAgent agent, bool initUser)
+        {
+            WebAgent = agent;
+            JsonSerializerSettings = new JsonSerializerSettings
+            {
+                CheckAdditionalContent = false,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+            CaptchaSolver = new ConsoleCaptchaSolver();
+            if (initUser) InitOrUpdateUser();
         }
 
         /// <summary>
@@ -126,16 +166,16 @@ namespace RedditSharp
         {
             if (Type.GetType("Mono.Runtime") != null)
                 ServicePointManager.ServerCertificateValidationCallback = (s, c, ch, ssl) => true;
-            _webAgent.Cookies = new CookieContainer();
+            WebAgent.Cookies = new CookieContainer();
             HttpWebRequest request;
             if (useSsl)
-                request = _webAgent.CreatePost(SslLoginUrl);
+                request = WebAgent.CreatePost(SslLoginUrl);
             else
-                request = _webAgent.CreatePost(LoginUrl);
+                request = WebAgent.CreatePost(LoginUrl);
             var stream = request.GetRequestStream();
             if (useSsl)
             {
-                _webAgent.WritePostBody(stream, new
+                WebAgent.WritePostBody(stream, new
                 {
                     user = username,
                     passwd = password,
@@ -144,7 +184,7 @@ namespace RedditSharp
             }
             else
             {
-                _webAgent.WritePostBody(stream, new
+                WebAgent.WritePostBody(stream, new
                 {
                     user = username,
                     passwd = password,
@@ -154,7 +194,7 @@ namespace RedditSharp
             }
             stream.Close();
             var response = (HttpWebResponse)request.GetResponse();
-            var result = _webAgent.GetResponseString(response.GetResponseStream());
+            var result = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JObject.Parse(result)["json"];
             if (json["errors"].Count() != 0)
                 throw new AuthenticationException("Incorrect login.");
@@ -166,11 +206,11 @@ namespace RedditSharp
 
         public RedditUser GetUser(string name)
         {
-            var request = _webAgent.CreateGet(string.Format(UserInfoUrl, name));
+            var request = WebAgent.CreateGet(string.Format(UserInfoUrl, name));
             var response = request.GetResponse();
-            var result = _webAgent.GetResponseString(response.GetResponseStream());
+            var result = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JObject.Parse(result);
-            return new RedditUser().Init(this, json, _webAgent);
+            return new RedditUser().Init(this, json, WebAgent);
         }
 
         /// <summary>
@@ -180,11 +220,11 @@ namespace RedditSharp
         /// </summary>
         public void InitOrUpdateUser()
         {
-            var request = _webAgent.CreateGet(string.IsNullOrEmpty(_webAgent.AccessToken) ? MeUrl : OAuthMeUrl);
+            var request = WebAgent.CreateGet(string.IsNullOrEmpty(WebAgent.AccessToken) ? MeUrl : OAuthMeUrl);
             var response = (HttpWebResponse)request.GetResponse();
-            var result = _webAgent.GetResponseString(response.GetResponseStream());
+            var result = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JObject.Parse(result);
-            User = new AuthenticatedUser().Init(this, json, _webAgent);
+            User = new AuthenticatedUser().Init(this, json, WebAgent);
         }
 
         #region Obsolete Getter Methods
@@ -203,7 +243,23 @@ namespace RedditSharp
                 name = name.Substring(2);
             if (name.StartsWith("/r/"))
                 name = name.Substring(3);
+            name = name.TrimEnd('/');
             return GetThing<Subreddit>(string.Format(SubredditAboutUrl, name));
+        }
+
+        /// <summary>
+        /// Returns the subreddit. 
+        /// </summary>
+        /// <param name="name">The name of the subreddit</param>
+        /// <returns>The Subreddit by given name</returns>
+        public async Task<Subreddit> GetSubredditAsync(string name)
+        {
+            if (name.StartsWith("r/"))
+                name = name.Substring(2);
+            if (name.StartsWith("/r/"))
+                name = name.Substring(3);
+            name = name.TrimEnd('/');
+            return await GetThingAsync<Subreddit>(string.Format(SubredditAboutUrl, name));
         }
 
         public Domain GetDomain(string domain)
@@ -211,7 +267,7 @@ namespace RedditSharp
             if (!domain.StartsWith("http://") && !domain.StartsWith("https://"))
                 domain = "http://" + domain;
             var uri = new Uri(domain);
-            return new Domain(this, uri, _webAgent);
+            return new Domain(this, uri, WebAgent);
         }
 
         public JToken GetToken(Uri uri)
@@ -221,9 +277,9 @@ namespace RedditSharp
             if (url.EndsWith("/"))
                 url = url.Remove(url.Length - 1);
 
-            var request = _webAgent.CreateGet(string.Format(GetPostUrl, url));
+            var request = WebAgent.CreateGet(string.Format(GetPostUrl, url));
             var response = request.GetResponse();
-            var data = _webAgent.GetResponseString(response.GetResponseStream());
+            var data = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JToken.Parse(data);
 
             return json[0]["data"]["children"].First;
@@ -231,15 +287,15 @@ namespace RedditSharp
 
         public Post GetPost(Uri uri)
         {
-            return new Post().Init(this, GetToken(uri), _webAgent);
+            return new Post().Init(this, GetToken(uri), WebAgent);
         }
 
         public void ComposePrivateMessage(string subject, string body, string to, string captchaId = "", string captchaAnswer = "")
         {
             if (User == null)
                 throw new Exception("User can not be null.");
-            var request = _webAgent.CreatePost(ComposeMessageUrl);
-            _webAgent.WritePostBody(request.GetRequestStream(), new
+            var request = WebAgent.CreatePost(ComposeMessageUrl);
+            WebAgent.WritePostBody(request.GetRequestStream(), new
             {
                 api_type = "json",
                 subject,
@@ -250,7 +306,7 @@ namespace RedditSharp
                 captcha = captchaAnswer
             });
             var response = request.GetResponse();
-            var result = _webAgent.GetResponseString(response.GetResponseStream());
+            var result = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JObject.Parse(result);
 
             ICaptchaSolver solver = CaptchaSolver; // Prevent race condition
@@ -274,8 +330,8 @@ namespace RedditSharp
         /// <returns>The newly created user account</returns>
         public AuthenticatedUser RegisterAccount(string userName, string passwd, string email = "")
         {
-            var request = _webAgent.CreatePost(RegisterAccountUrl);
-            _webAgent.WritePostBody(request.GetRequestStream(), new
+            var request = WebAgent.CreatePost(RegisterAccountUrl);
+            WebAgent.WritePostBody(request.GetRequestStream(), new
             {
                 api_type = "json",
                 email = email,
@@ -284,19 +340,19 @@ namespace RedditSharp
                 user = userName
             });
             var response = request.GetResponse();
-            var result = _webAgent.GetResponseString(response.GetResponseStream());
+            var result = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JObject.Parse(result);
-            return new AuthenticatedUser().Init(this, json, _webAgent);
+            return new AuthenticatedUser().Init(this, json, WebAgent);
             // TODO: Error
         }
 
         public Thing GetThingByFullname(string fullname)
         {
-            var request = _webAgent.CreateGet(string.Format(GetThingUrl, fullname));
+            var request = WebAgent.CreateGet(string.Format(GetThingUrl, fullname));
             var response = request.GetResponse();
-            var data = _webAgent.GetResponseString(response.GetResponseStream());
+            var data = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JToken.Parse(data);
-            return Thing.Parse(this, json["data"]["children"][0], _webAgent);
+            return Thing.Parse(this, json["data"]["children"][0], WebAgent);
         }
 
         public Comment GetComment(string subreddit, string name, string linkName)
@@ -307,16 +363,26 @@ namespace RedditSharp
                     linkName = linkName.Substring(3);
                 if (name.StartsWith("t1_"))
                     name = name.Substring(3);
-                var request = _webAgent.CreateGet(string.Format(GetCommentUrl, subreddit, linkName, name));
-                var response = request.GetResponse();
-                var data = _webAgent.GetResponseString(response.GetResponseStream());
-                var json = JToken.Parse(data);
-                return Thing.Parse(this, json[1]["data"]["children"][0], _webAgent) as Comment;
+
+                var url = string.Format(GetCommentUrl, subreddit, linkName, name);
+                return GetComment(new Uri(url));
             }
             catch (WebException)
             {
                 return null;
             }
+        }
+
+        public Comment GetComment(Uri uri)
+        {
+            var url = string.Format(GetPostUrl, uri.AbsoluteUri);
+            var request = WebAgent.CreateGet(url);
+            var response = request.GetResponse();
+            var data = WebAgent.GetResponseString(response.GetResponseStream());
+            var json = JToken.Parse(data);
+
+            var sender = new Post().Init(this, json[0]["data"]["children"][0], WebAgent);
+            return new Comment().Init(this, json[1]["data"]["children"][0], WebAgent, sender);
         }
 
         public Listing<T> SearchByUrl<T>(string url) where T : Thing
@@ -325,20 +391,32 @@ namespace RedditSharp
             return Search<T>(urlSearchQuery);
         }
 
-        public Listing<T> Search<T>(string query) where T : Thing
+        public Listing<T> Search<T>(string query, Sorting sortE = Sorting.Relevance, TimeSorting timeE = TimeSorting.All) where T : Thing
         {
-            return new Listing<T>(this, string.Format(SearchUrl, query, "relevance", "all"), _webAgent);
+            string sort = sortE.ToString().ToLower();
+            string time = timeE.ToString().ToLower();
+            return new Listing<T>(this, string.Format(SearchUrl, query, sort, time), WebAgent);
         }
 
         #region Helpers
 
+        protected async internal Task<T> GetThingAsync<T>(string url) where T : Thing
+        {
+            var request = WebAgent.CreateGet(url);
+            var response = request.GetResponse();
+            var data = WebAgent.GetResponseString(response.GetResponseStream());
+            var json = JToken.Parse(data);
+            var ret = await Thing.ParseAsync(this, json, WebAgent);
+            return (T)ret;
+        }
+
         protected internal T GetThing<T>(string url) where T : Thing
         {
-            var request = _webAgent.CreateGet(url);
+            var request = WebAgent.CreateGet(url);
             var response = request.GetResponse();
-            var data = _webAgent.GetResponseString(response.GetResponseStream());
+            var data = WebAgent.GetResponseString(response.GetResponseStream());
             var json = JToken.Parse(data);
-            return (T)Thing.Parse(this, json, _webAgent);
+            return (T)Thing.Parse(this, json, WebAgent);
         }
 
         #endregion

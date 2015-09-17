@@ -89,6 +89,18 @@ namespace RedditSharp.Things
         [JsonConverter(typeof(ModeratorPermissionConverter))]
         public ModeratorPermission ModPermissions { get; set; }
 
+        /// <summary>
+        /// Property determining whether the current logged in user is a moderator on this subreddit.
+        /// </summary>
+        [JsonProperty("user_is_moderator")]
+        public bool UserIsModerator { get; set; }
+
+        /// <summary>
+        /// Property determining whether the current logged in user is banned from the subreddit.
+        /// </summary>
+        [JsonProperty("user_is_banned")]
+        public bool UserIsBanned { get; set; }
+
         [JsonIgnore]
         public string Name { get; set; }
 
@@ -161,15 +173,13 @@ namespace RedditSharp.Things
         {
             return new Listing<Post>(Reddit, string.Format(SearchUrl, Name, Uri.EscapeUriString(terms), "relevance", "all"), WebAgent);
         }
-
         public IEnumerable<tbUserNote> UserNotes
         {
             get
             {
-                return ToolBoxUserNotes.GetUserNotes(Reddit, WebAgent, this);
+                return ToolBoxUserNotes.GetUserNotes(WebAgent, Name);
             }
         }
-
         public SubredditSettings Settings
         {
             get
@@ -309,7 +319,7 @@ namespace RedditSharp.Things
                 Url = new Uri("/r/all", UriKind.Relative),
                 Name = "all",
                 Reddit = reddit,
-                WebAgent = reddit._webAgent
+                WebAgent = reddit.WebAgent
             };
             return rSlashAll;
         }
@@ -323,7 +333,7 @@ namespace RedditSharp.Things
                 Url = new Uri("/", UriKind.Relative),
                 Name = "/",
                 Reddit = reddit,
-                WebAgent = reddit._webAgent
+                WebAgent = reddit.WebAgent
             };
             return frontPage;
         }

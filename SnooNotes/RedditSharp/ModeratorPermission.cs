@@ -15,7 +15,7 @@ namespace RedditSharp
         Mail   = 0x08,
         Posts  = 0x10,
         Wiki   = 0x20,
-        All    = 0x40 | Access | Config | Flair | Mail | Posts | Wiki
+        All    = Access | Config | Flair | Mail | Posts | Wiki
     }
 
     internal class ModeratorPermissionConverter : JsonConverter

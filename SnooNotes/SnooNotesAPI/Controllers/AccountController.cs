@@ -28,9 +28,14 @@ namespace SnooNotesAPI.Controllers
         }
 
         [HttpGet]
-        public string GetCurrentUser()
+        public Models.UserIdentity GetCurrentUser()
         {
-            return User.Identity.Name;
+            ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+            return new Models.UserIdentity {
+                HasRead = ident.HasClaim(c => c.Type == "urn:snoonotes:scope" && c.Value == "read"),
+                HasWikiRead = ident.HasClaim(c => c.Type == "urn:snoonotes:scope" && c.Value == "wikiread"),
+                UserName = ident.Name
+            };
         }
 
         [HttpGet]

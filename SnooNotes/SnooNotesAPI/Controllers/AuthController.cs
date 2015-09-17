@@ -143,13 +143,14 @@ namespace SnooNotesAPI.Controllers
                         if (!theuser.HasWikiRead)
                         {
                             theuser.HasWikiRead = true;
-                            theuser.Claims.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim() { ClaimType = "urn:snoonotes:scope", ClaimValue = "wikiread", UserId = theuser.Id });
+                            //theuser.Claims.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim() { ClaimType = "urn:snoonotes:scope", ClaimValue = "wikiread", UserId = theuser.Id });
                         }
                     }
                     else if (theuser.HasWikiRead)
                     {
                         theuser.HasWikiRead = false;
-                        theuser.Claims.Remove(theuser.Claims.Where(c => c.ClaimType == "urn:snoonotes:scope" && c.ClaimValue == "wikiread").FirstOrDefault());
+                        //UserManager.RemoveClaim(theuser.Id, new Claim("urn:snoonotes:scope", "wikiread"));
+                        //theuser.Claims.Remove(theuser.Claims.Where(c => c.ClaimType == "urn:snoonotes:scope" && c.ClaimValue == "wikiread").FirstOrDefault());
                     }
 
                     if (scope.Contains("read"))
@@ -157,17 +158,18 @@ namespace SnooNotesAPI.Controllers
                         if (!theuser.HasRead)
                         {
                             theuser.HasRead = true;
-                            theuser.Claims.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim() { ClaimType = "urn:snoonotes:scope", ClaimValue = "read", UserId = theuser.Id });
+                            //theuser.Claims.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim() { ClaimType = "urn:snoonotes:scope", ClaimValue = "read", UserId = theuser.Id });
                         }
                     }
                     else if (theuser.HasRead)
                     {
                         theuser.HasRead = false;
-                        theuser.Claims.Remove(theuser.Claims.Where(c => c.ClaimType == "urn:snoonotes:scope" && c.ClaimValue == "read").FirstOrDefault());
+                        //UserManager.RemoveClaim(theuser.Id, new Claim("urn:snoonotes:scope", "read"));
+                        //theuser.Claims.Remove(theuser.Claims.Where(c => c.ClaimType == "urn:snoonotes:scope" && c.ClaimValue == "read").FirstOrDefault());
                     }
 
-
                     UserManager.Update(theuser);
+
                     SignInManager.SignIn(theuser, isPersistent: true, rememberBrowser: false);
                     return new RedirectResult(returnUrl);
                 case SignInStatus.LockedOut:

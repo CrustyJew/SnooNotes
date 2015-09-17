@@ -235,6 +235,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\SubredditSettings.cs" />
+    <Compile Include="Models\UserIdentity.cs" />
     <Compile Include="RequestObjects\UserNoteRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestObjects\TBImportMapping.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="Signalr\SnooNoteUpdates.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\AuthUtils.cs" />
+    <Compile Include="Utilities\SNWebAgent.cs" />
     <Compile Include="Utilities\TBNoteUtils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -250,6 +252,7 @@
     <Content Include="app\controllers\auth.js" />
     <Content Include="app\controllers\home.js" />
     <Content Include="app\controllers\nav.js" />
+    <Content Include="app\controllers\navsub.js" />
     <Content Include="app\controllers\subreddit.js" />
     <Content Include="app\factories\AuthFactory.js" />
     <Content Include="app\factories\SubFactory.js" />

@@ -2,7 +2,7 @@
        .module('SnooNotes')
        .controller('AuthCtrl', AuthCtrl);
 
-function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies) {
+function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies,SubFactory, $state, $rootScope) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
@@ -20,7 +20,17 @@ function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies) {
     function CheckLogin(win) {
         if (win == null || win.closed) {
             $modalInstance.close();
-            AuthFactory.getCurrentUser();
+            AuthFactory.getCurrentUser()
+                .then(function(){
+                    SubFactory.getSubsWithAdmin()
+                    .then(function () {
+                        var scope = $rootScope.redirectScope;
+                        var params = $rootScope.redirectParams;
+                        $rootScope.redirectScope = undefined;
+                        $rootScope.redirectParams = undefined;
+                        $state.go(scope, params , { reload: true });
+                    });
+                });
         }
         else{
             setTimeout(function () { CheckLogin(win) }, 1500);

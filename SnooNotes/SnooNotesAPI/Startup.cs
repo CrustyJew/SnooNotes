@@ -15,6 +15,13 @@ namespace SnooNotesAPI
             app.UseCors(CorsOptions.AllowAll);
             ConfigureAuth(app);
             app.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration { EnableJSONP = true, EnableDetailedErrors = true });
+
+            new RedditSharp.Reddit();
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23) test";
+            RedditSharp.WebAgent.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+
+            Utilities.SNWebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
+            Utilities.SNWebAgent.RateLimit = Utilities.SNWebAgent.RateLimitMode.Burst;
         }
     }
 }

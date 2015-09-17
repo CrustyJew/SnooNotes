@@ -33,9 +33,12 @@
                     $http.get('api/Account/GetCurrentUser')
                         .then(
                             function (u) {
-                                localStorageService.set('currentUser', { isAuth: true, userName: u.data });
-                                exports.currentUser.userName = u.data;
+                                
+                                exports.currentUser.userName = u.data.UserName;
+                                exports.currentUser.hasRead = u.data.HasRead;
+                                exports.currentUser.hasWikiRead = u.data.HasWikiRead;
                                 exports.currentUser.isAuth = true;
+                                localStorageService.set('currentUser', exports.currentUser);
                                 deferred.resolve(exports.currentUser);
                             },
                             function () {
@@ -51,6 +54,8 @@
             function(){
                 localStorageService.remove('currentUser');
                 exports.currentUser.userName = "";
+                exports.currentUser.hasRead = false;
+                exports.currentUser.hasWikiRead = false;
                 exports.currentUser.isAuth = false;
             },
             function () {

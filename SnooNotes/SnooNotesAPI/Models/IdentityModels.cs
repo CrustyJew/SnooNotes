@@ -25,6 +25,8 @@ namespace SnooNotesAPI.Models
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
+            if (HasWikiRead) userIdentity.AddClaim(new Claim("urn:snoonotes:scope", "wikiread"));
+            if (HasRead) userIdentity.AddClaim(new Claim("urn:snoonotes:scope", "read"));
             return userIdentity;
         }
     }

@@ -11,9 +11,9 @@ namespace RedditSharp
     public static class ToolBoxUserNotes
     {
         private const string ToolBoxUserNotesWiki = "/r/{0}/wiki/usernotes";
-        public static IEnumerable<Things.tbUserNote> GetUserNotes(Reddit reddit, IWebAgent webAgent, Things.Subreddit sub)
+        public static IEnumerable<Things.tbUserNote> GetUserNotes( IWebAgent webAgent, string subName)
         {
-            var request = webAgent.CreateGet(String.Format(ToolBoxUserNotesWiki, sub.Name));
+            var request = webAgent.CreateGet(String.Format(ToolBoxUserNotesWiki, subName));
             var reqResponse = webAgent.ExecuteRequest(request);
             var response = JObject.Parse(reqResponse["data"]["content_md"].Value<string>());
 
@@ -55,14 +55,14 @@ namespace RedditSharp
                     //TODO
                     Things.tbUserNote uNote = new Things.tbUserNote();
                     uNote.AppliesToUsername = user.Key;
-                    uNote.SubName = sub.Name;
+                    uNote.SubName = subName;
                     uNote.SubmitterIndex = note["m"].Value<int>();
                     uNote.Submitter = mods[uNote.SubmitterIndex];
                     uNote.NoteTypeIndex = note["w"].Value<int>();
                     uNote.NoteType = warnings[uNote.NoteTypeIndex];
                     uNote.Message = note["n"].Value<string>();
                     uNote.Timestamp = UnixTimeStamp.UnixTimeStampToDateTime(note["t"].Value<long>());
-                    uNote.Url = UnsquashLink(sub.Name, note["l"].ValueOrDefault<string>());
+                    uNote.Url = UnsquashLink(subName, note["l"].ValueOrDefault<string>());
 
                     toReturn.Add(uNote);
                 }

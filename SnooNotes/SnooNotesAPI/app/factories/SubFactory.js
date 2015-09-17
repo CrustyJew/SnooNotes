@@ -1,5 +1,5 @@
 ﻿angular.module('SnooNotes')
-    .factory('SubFactory', function ($q, $http) {
+    .factory('SubFactory', function ($q, $http, $rootScope) {
         var exports = {};
         var _initialized = $q.defer();
         var _adminSubs = [];
@@ -13,12 +13,14 @@
                     _adminSubNames = _adminSubs.map(function (sub) {
                         return sub.SubName;
                     });
+                    exports.adminSubNames.subNames = _adminSubNames;
+                    exports.adminSubDetails.subs = _adminSubs;
                     deferred.resolve(_adminSubs);
                     _initialized.resolve(true);
                 },
                 function (e) {
                     deferred.reject(e);
-                    _initialized.reject(e);
+                    //_initialized.reject(e);
                 });
 
             return deferred.promise;
@@ -33,9 +35,9 @@
             return {};
         }
 
-        exports.adminSubNames = function () { return _adminSubNames };
+        exports.adminSubNames = { subNames: _adminSubNames };
 
-        exports.adminSubDetails = function () { return _adminSubs };
+        exports.adminSubDetails = { subs: _adminSubs };
 
         exports.initialized = _initialized.promise;
 
