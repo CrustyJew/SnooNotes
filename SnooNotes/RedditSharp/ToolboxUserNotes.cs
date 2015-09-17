@@ -11,7 +11,7 @@ namespace RedditSharp
     public static class ToolBoxUserNotes
     {
         private const string ToolBoxUserNotesWiki = "/r/{0}/wiki/usernotes";
-        public static IEnumerable<Things.tbUserNote> GetUserNotes( IWebAgent webAgent, string subName)
+        public static IEnumerable<tbUserNote> GetUserNotes( IWebAgent webAgent, string subName)
         {
             var request = webAgent.CreateGet(String.Format(ToolBoxUserNotesWiki, subName));
             var reqResponse = webAgent.ExecuteRequest(request);
@@ -46,14 +46,14 @@ namespace RedditSharp
 
             JObject users = JObject.Parse(uncompressed);
 
-            List<Things.tbUserNote> toReturn = new List<Things.tbUserNote>();
+            List<tbUserNote> toReturn = new List<tbUserNote>();
             foreach(KeyValuePair<string, JToken> user in users)
             {
                 var x = user.Value;
                 foreach(JToken note in x["ns"].Children())
                 {
-                    //TODO
-                    Things.tbUserNote uNote = new Things.tbUserNote();
+                    
+                    tbUserNote uNote = new tbUserNote();
                     uNote.AppliesToUsername = user.Key;
                     uNote.SubName = subName;
                     uNote.SubmitterIndex = note["m"].Value<int>();

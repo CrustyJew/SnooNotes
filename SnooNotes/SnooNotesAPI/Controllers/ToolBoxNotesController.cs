@@ -23,7 +23,7 @@ namespace SnooNotesAPI.Controllers
 
         // GET: api/ToolBoxNotes/5
         
-        public IEnumerable<RedditSharp.Things.tbUserNote> Get(string id)
+        public IEnumerable<RedditSharp.tbUserNote> Get(string id)
         {
             var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
             if (!(User as ClaimsPrincipal).HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))

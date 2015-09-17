@@ -86,7 +86,7 @@
     <Compile Include="SubredditSettings.cs" />
     <Compile Include="SubredditStyle.cs" />
     <Compile Include="TextData.cs" />
-    <Compile Include="Things\tbUserNote.cs" />
+    <Compile Include="tbUserNote.cs" />
     <Compile Include="Things\Thing.cs" />
     <Compile Include="ToolBoxUserNotes.cs" />
     <Compile Include="ToolBoxUserNotesException.cs" />
