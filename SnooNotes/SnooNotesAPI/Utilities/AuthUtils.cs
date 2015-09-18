@@ -46,9 +46,8 @@ namespace SnooNotesAPI.Utilities
             {
                 GetNewToken(ident);
             }
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
-            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            Utilities.SNWebAgent agent = new SNWebAgent(ident.AccessToken);
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(agent, true);
             var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
             
             List<string> currentRoles = ident.Claims.Where(x => x.ClaimType == roleType).Select(r => r.ClaimValue).ToList<string>();
@@ -139,11 +138,11 @@ namespace SnooNotesAPI.Utilities
 
             if (ident.TokenExpires < DateTime.UtcNow)
             {
-                Utilities.AuthUtils.GetNewToken(ident);
+                GetNewToken(ident);
                 userManager.Update(ident);
             }
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
+            SNWebAgent agent = new SNWebAgent(ident.AccessToken);
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(agent);
             rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
             var subinfo = rd.GetSubreddit(sub.SubName);
             var modsWithAccess = subinfo.Moderators.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0);

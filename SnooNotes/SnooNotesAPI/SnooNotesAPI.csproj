@@ -326,12 +326,6 @@
     <Content Include="Views\Auth\LoginRedirect.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RedditSharp\RedditSharp.csproj">
-      <Project>{a368cb75-75f0-4489-904d-b5cebb0fe624}</Project>
-      <Name>RedditSharp</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
@@ -353,6 +347,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\RedditSharp\RedditSharp\RedditSharp.csproj">
+      <Project>{a368cb75-75f0-4489-904d-b5cebb0fe624}</Project>
+      <Name>RedditSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

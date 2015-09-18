@@ -23,7 +23,7 @@ namespace SnooNotesAPI.Controllers
 
         // GET: api/ToolBoxNotes/5
         
-        public IEnumerable<RedditSharp.tbUserNote> Get(string id)
+        public IEnumerable<RedditSharp.TBUserNote> Get(string id)
         {
             var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
             if (!(User as ClaimsPrincipal).HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
@@ -35,11 +35,8 @@ namespace SnooNotesAPI.Controllers
             {
                 Utilities.AuthUtils.GetNewToken(user);
             }
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
-            RedditSharp.WebAgent.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-            RedditSharp.Reddit r = new RedditSharp.Reddit(user.AccessToken);
-            var sub = r.GetSubreddit(id);
-            var notes = sub.UserNotes;
+            Utilities.SNWebAgent agent = new Utilities.SNWebAgent(user.AccessToken);
+            var notes = RedditSharp.ToolBoxUserNotes.GetUserNotes(agent, id);
             return notes;
         }
 
@@ -56,20 +53,16 @@ namespace SnooNotesAPI.Controllers
             if (user.TokenExpires < DateTime.UtcNow)
             {
                 Utilities.AuthUtils.GetNewToken(user);
+
+                userManager.Update(user);
             }
 
 
             Utilities.SNWebAgent agent = new Utilities.SNWebAgent(user.AccessToken);
 
-            RedditSharp.Reddit r = new RedditSharp.Reddit(agent,true);
-            
             var notes = RedditSharp.ToolBoxUserNotes.GetUserNotes(agent, value.subName);
             List<Models.Note> convertedNotes = Utilities.TBNoteUtils.ConvertTBNotesToSnooNotes(value.subName, value.GetNoteTypeMapping(), notes.ToList());
 
-            var sub = r.GetSubreddit(value.subName);
-            //var notes = sub.UserNotes;
-
-            //List<Models.Note> notesToAdd = Utilities.TBNoteUtils.GetNotesToAdd(convertedNotes);
             return Models.Note.AddNewToolBoxNotes(convertedNotes);
         }
 

@@ -17,7 +17,7 @@ namespace SnooNotesAPI
             app.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration { EnableJSONP = true, EnableDetailedErrors = true });
 
             new RedditSharp.Reddit();
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23) test";
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
             RedditSharp.WebAgent.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
 
             Utilities.SNWebAgent.UserAgent = "SnooNotes (by /u/meepster23)";

@@ -48,9 +48,9 @@ namespace SnooNotesAPI.Controllers
                 Utilities.AuthUtils.GetNewToken(ident);
                 userManager.Update(ident);
             }
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(ident.AccessToken);
-            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+            Utilities.SNWebAgent agent = new Utilities.SNWebAgent(ident.AccessToken);
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(agent, true);
+
             List<Models.Subreddit> activeSubs = Models.Subreddit.GetActiveSubs();
             List<string> activeSubNames = activeSubs.Select(s => s.SubName.ToLower()).ToList();
 
