@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Newtonsoft.Json;
 
 namespace SnooNotesAPI.Controllers
 {
@@ -63,6 +64,18 @@ namespace SnooNotesAPI.Controllers
         public ActionResult Login()
         {
             ViewBag.loggedIn = User.Identity.IsAuthenticated;
+            HttpCookie cookie = Request.Cookies.Get("snPrefs");
+            if(cookie != null)
+            {
+                dynamic prefs = JsonConvert.DeserializeObject(Server.UrlDecode(cookie.Value));
+                ViewBag.Read = prefs.read != null && prefs.read.Value;
+                ViewBag.Wiki = prefs.wiki != null && prefs.wiki.Value;
+            }
+            else
+            {
+                ViewBag.Read = false;
+                ViewBag.Wiki = false;
+            }
             return View();
         }
 

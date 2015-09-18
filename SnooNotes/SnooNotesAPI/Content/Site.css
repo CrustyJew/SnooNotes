@@ -25,6 +25,7 @@ textarea {
 }
 .navbar-login {
     border:none;
+    margin-bottom:0px;
 }
 .navbar-default .navbar-brand{
     color:#00CC00;
@@ -88,6 +89,17 @@ a {
 
 .loginModalContent{
     padding: 0px 15px 10px 15px;
+}
+
+.loginModalContent p{
+    margin-bottom:5px;
+}
+.optScope{
+    position: relative !important; 
+    left: -15px !important; 
+    margin-right:-12px !important; 
+    vertical-align:top !important;
+    cursor:pointer;
 }
 
 .importTBNotes table{

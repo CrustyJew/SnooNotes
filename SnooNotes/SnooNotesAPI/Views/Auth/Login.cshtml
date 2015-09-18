@@ -5,18 +5,23 @@
     <p>
         SnooNotes requests the following Reddit "scopes" to work, but will never use or publish any info except in the course of its designed functions.
     </p>
-    <ul style="margin-top:-5px;margin-bottom:5px">
-        <li><strong>Read:</strong> Used to read the lists of moderators of subs, also used to import Toolbox notes. This does give access to posts / comments made in private subreddits, but SnooNotes will never access them.</li>
+    <ul style="margin-top:-5px;margin-bottom:0px;">
         <li><strong>Identity:</strong> Public profile info to validate your username</li>
         <li><strong>MySubreddits:</strong> Used to validate what subreddits you moderate, this is critical to authorization to protect notes</li>
     </ul>
+    <span style="font-weight:bold;font-size:20px;">Optional Permissions: <span style="font-size:12px;">Select check boxes below to allow</span></span>
+    <ul style="margin-bottom:5px; list-style:none;">
+        <li><label style="font-weight:normal;cursor:pointer"><input type="checkbox" checked="@ViewBag.Read" class="optScope" /><strong>Read:</strong> Used to read the lists of moderators of subs, also used to import Toolbox notes. This does give access to posts / comments made in private subreddits, but SnooNotes will never access them.</label></li>
+        <li><label style="font-weight:normal;cursor:pointer"><input type="checkbox" checked="@ViewBag.Wiki" class="optScope" /><strong>WikiRead:</strong> Used to import Moderator Toolbox Usernotes into SnooNotes.</label></li>
+    </ul>
 
-    <p>These are the reasons that SnooNotes requests these permission, to see the full list of actions these permissions give SnooNotes, please visit <a href="https://www.reddit.com/dev/api/oauth">Reddit's API Documentation</a> and look them up by the scopes listed above. </p>
+    <p>To see the full list of actions these permissions give SnooNotes, please visit <a href="https://www.reddit.com/dev/api/oauth">Reddit's API Documentation</a> and look them up by the scopes listed above. </p>
     <button type="button" onclick="openLoginWin()" class="doLogin" style="background: linear-gradient(to bottom, #74c429, #4ca20b ); font-weight:bold;margin:0px auto;padding: 2px 18px; color:#fff; height:32px; font-size:16px; font-weight:bold;border-radius:2px;border:1px solid darkgrey;display:block;">Login!</button>
 }
 else
 {
     <h1>You are already logged in! Either something went horribly, horribly wrong, or you are being dumb.</h1>
+    @
 }
 
 <script type="text/javascript">
