@@ -11,7 +11,9 @@ function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies,SubFactory, $sta
     $scope.openLoginWindow = function () {
         if ($scope.prefs.wiki == undefined) $scope.prefs.wiki = false;
         if ($scope.prefs.read == undefined) $scope.prefs.read = false;
-        $cookies.putObject('snPrefs', $scope.prefs);
+        var d = new Date();
+        d.setTime(d.getTime() + (10000 * 24 * 60 * 60 * 1000));
+        $cookies.putObject('snPrefs', $scope.prefs,{expires: d.toGMTString()} );
         var oauthwin = window.open('/Auth/DoLogin?' + $.param($scope.prefs), 'SnooLogin', 'height=850px,width=850px');
         oauthwin.focus();
         setTimeout(function () { CheckLogin(oauthwin) }, 1500);
