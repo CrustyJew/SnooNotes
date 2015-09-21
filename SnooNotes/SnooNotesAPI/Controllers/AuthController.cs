@@ -144,6 +144,8 @@ namespace SnooNotesAPI.Controllers
             {
                 case SignInStatus.Success:
                     Models.ApplicationUser theuser = UserManager.FindByName(loginInfo.Login.ProviderKey);
+                    string oldRefreshToken = theuser.RefreshToken;
+
                     theuser.AccessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value;
                     theuser.RefreshToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:refresh").Value;
                     theuser.TokenExpires = DateTime.Parse(loginInfo.ExternalIdentity.FindFirst("urn:reddit:accessexpires").Value);
@@ -153,37 +155,22 @@ namespace SnooNotesAPI.Controllers
 
                     if (scope.Contains("wikiread"))
                     {
-                        if (!theuser.HasWikiRead)
-                        {
-                            theuser.HasWikiRead = true;
-                            //theuser.Claims.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim() { ClaimType = "urn:snoonotes:scope", ClaimValue = "wikiread", UserId = theuser.Id });
-                        }
+                        if (!theuser.HasWikiRead) theuser.HasWikiRead = true;
                     }
-                    else if (theuser.HasWikiRead)
-                    {
-                        theuser.HasWikiRead = false;
-                        //UserManager.RemoveClaim(theuser.Id, new Claim("urn:snoonotes:scope", "wikiread"));
-                        //theuser.Claims.Remove(theuser.Claims.Where(c => c.ClaimType == "urn:snoonotes:scope" && c.ClaimValue == "wikiread").FirstOrDefault());
-                    }
+                    else if (theuser.HasWikiRead) theuser.HasWikiRead = false;
 
                     if (scope.Contains("read"))
                     {
-                        if (!theuser.HasRead)
-                        {
-                            theuser.HasRead = true;
-                            //theuser.Claims.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim() { ClaimType = "urn:snoonotes:scope", ClaimValue = "read", UserId = theuser.Id });
-                        }
+                        if (!theuser.HasRead)  theuser.HasRead = true;
                     }
-                    else if (theuser.HasRead)
-                    {
-                        theuser.HasRead = false;
-                        //UserManager.RemoveClaim(theuser.Id, new Claim("urn:snoonotes:scope", "read"));
-                        //theuser.Claims.Remove(theuser.Claims.Where(c => c.ClaimType == "urn:snoonotes:scope" && c.ClaimValue == "read").FirstOrDefault());
-                    }
+                    else if (theuser.HasRead) theuser.HasRead = false;
 
                     UserManager.Update(theuser);
 
                     SignInManager.SignIn(theuser, isPersistent: true, rememberBrowser: false);
+
+                    Utilities.AuthUtils.RevokeRefreshToken(oldRefreshToken);
+
                     return new RedirectResult(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");

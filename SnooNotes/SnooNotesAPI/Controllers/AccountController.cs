@@ -73,7 +73,7 @@ namespace SnooNotesAPI.Controllers
             }
             var ident = await user.GenerateUserIdentityAsync(userManager);
             HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties { IsPersistent = true }, ident);
-            return ident.Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList<string>();
+            return ident.Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).ToList().Select(c => c.Value).ToList<string>();
 
         }
 

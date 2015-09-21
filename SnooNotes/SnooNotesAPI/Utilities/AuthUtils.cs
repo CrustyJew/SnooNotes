@@ -21,15 +21,23 @@ namespace SnooNotesAPI.Utilities
             string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
             string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by /u/meepster23)";
-            RedditSharp.WebAgent.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
+
             RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
-            
+
             string newaccesstoken = ap.GetOAuthToken(ident.RefreshToken, true);
             ident.AccessToken = newaccesstoken;
             ident.TokenExpires = DateTime.UtcNow.AddMinutes(50);
         }
-
+        public static void RevokeRefreshToken(string token)
+        {
+            string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
+            string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
+            string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
+            SNWebAgent agent = new SNWebAgent();
+            RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI, agent);
+            ap.RevokeToken(token, true);
+           
+        }
         public static void CheckTokenExpiration(ClaimsPrincipal user)
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
