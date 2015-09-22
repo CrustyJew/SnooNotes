@@ -99,7 +99,7 @@ function getSubName(e) {
             }
             sub = $sub[0].textContent.substring(3).replace(/\//g, '');
         }
-        else if (snUtil.ModQueue) {
+        else if (snUtil.ModQueue || snUtil.UserPage) {
             var $sub = $ot.closest('.thing').find('a.subreddit');
             var subinner = $sub[0].textContent;
             if (subinner.match(/\/r\//i)) {
