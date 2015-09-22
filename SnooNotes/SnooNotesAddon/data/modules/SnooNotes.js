@@ -97,11 +97,11 @@ function getSubName(e) {
                 //multiple results here means RES / Mod toolbox is present which messes things up
                 $sub = $sub.filter('.subreddit-name');
             }
-            sub = $sub[0].innerHTML.substring(3).replace(/\//g, '');
+            sub = $sub[0].textContent.substring(3).replace(/\//g, '');
         }
         else if (snUtil.ModQueue) {
-            var $sub = $ot.closest('.thing.reported').find('a.subreddit');
-            var subinner = $sub[0].innerHTML;
+            var $sub = $ot.closest('.thing').find('a.subreddit');
+            var subinner = $sub[0].textContent;
             if (subinner.match(/\/r\//i)) {
                 sub = subinner.substring(3).replace(/\//g, '');
             }

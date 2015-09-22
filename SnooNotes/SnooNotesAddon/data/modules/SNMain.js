@@ -98,6 +98,7 @@ function initSnooNotes() {
 
         snUtil.Modmail = window.location.pathname.match(/\/message\/(?:moderator)\/?/i);
         snUtil.ModQueue = window.location.pathname.match(/\/r\/mod\/about\/modqueue/i);
+        snUtil.UserPage = window.location.pathname.match(/\/user\//i);
         return;
     }(snUtil = window.snUtil || {}));
 }

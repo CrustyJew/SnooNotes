@@ -19,7 +19,7 @@ function getEntriesToProcess() {
         }
     }
     retrynum = 0;
-    if(snUtil.Subreddit || snUtil.Modmail){
+    if(snUtil.Subreddit || snUtil.Modmail ){
         if (snUtil.Modmail ||snUtil.ModQueue || new RegExp("," + snUtil.Subreddit + ",", "i").test(snUtil.ModdedSubs)) {
             console.log("Viewing sub that you mod or modmail");
             $('.author:not(".moderator")', $SNEntries).filter(function(){return $(this).parent('.recipient').length < 1}).each(function (index, ent) {
@@ -56,8 +56,8 @@ function getEntriesToProcess() {
     }
     else { //not browsing a specific subreddit
         $SNEntries.each(function (index, $ent) {
-            if (new RegExp("," + $('.tagline a.subreddit', $ent).html().replace('/r/','') + ",", "i").test(snUtil.ModdedSubs)) {
-                var auth = $('.author', $ent).html().toLowerCase();
+            if (new RegExp("," + $('a.subreddit', $ent.closest('.thing'))[0].textContent.replace('/r/','') + ",", "i").test(snUtil.ModdedSubs)) {
+                var auth = $('.author', $ent)[0].textContent.toLowerCase();
                 if (new RegExp("," + auth + ",","i").test(snUtil.UsersWithNotes)) {
                     if ($('#SnooNote-' + auth).length == 0 && SNUsers.indexOf(auth) == -1) {
                         SNUsers.push(auth);
