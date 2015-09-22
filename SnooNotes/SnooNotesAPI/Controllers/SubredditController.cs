@@ -86,7 +86,7 @@ namespace SnooNotesAPI.Controllers
         }
 
         // PUT: api/Subreddit/5
-        public void Put(string id, [FromBody]Models.Subreddit sub)
+        public object Put(string id, [FromBody]Models.Subreddit sub)
         {
             if (sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128)
             {
@@ -96,8 +96,16 @@ namespace SnooNotesAPI.Controllers
             {
                 sub.SubName = id;
                 Models.Subreddit.UpdateSubredditSettings(sub);
-                Utilities.AuthUtils.UpdateModsForSub(sub);
-
+                
+                bool updated = Utilities.AuthUtils.UpdateModsForSub(sub);
+                if (updated)
+                {
+                    return new { error = false , message = "Settings have been saved and moderator list has been updated!" };
+                }
+                else
+                {
+                    return new { error = false, message = "Settings have been saved and moderator list will be refreshed within 2 hours!" };
+                }
             }
             else
             {

@@ -22,7 +22,8 @@ namespace SnooNotesAPI.Utilities
             string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
             string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
 
-            RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI);
+            SNWebAgent agent = new SNWebAgent();
+            RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI,agent);
 
             string newaccesstoken = ap.GetOAuthToken(ident.RefreshToken, true);
             ident.AccessToken = newaccesstoken;
@@ -132,7 +133,7 @@ namespace SnooNotesAPI.Utilities
             return 0;
         }
 
-        public static void UpdateModsForSub(Models.Subreddit sub)
+        public static bool UpdateModsForSub(Models.Subreddit sub)
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             //var usersWithAccess = userManager.Users.Where(u =>
@@ -149,10 +150,25 @@ namespace SnooNotesAPI.Utilities
                 GetNewToken(ident);
                 userManager.Update(ident);
             }
-            SNWebAgent agent = new SNWebAgent(ident.AccessToken);
+            ClaimsIdentity curuser = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+            SNWebAgent agent;
+            if (curuser.HasClaim("urn:snoonotes:scope", "read"))
+            {
+                agent = new SNWebAgent(ident.AccessToken);
+            }
+            else
+            {
+                agent = new SNWebAgent();
+            }
             RedditSharp.Reddit rd = new RedditSharp.Reddit(agent);
-            rd.RateLimit = RedditSharp.WebAgent.RateLimitMode.Burst;
-            var subinfo = rd.GetSubreddit(sub.SubName);
+            RedditSharp.Things.Subreddit subinfo;
+            try {
+                subinfo = rd.GetSubreddit(sub.SubName);
+            }
+            catch
+            {
+                return false;
+            }
             var modsWithAccess = subinfo.Moderators.Where(m => ((int)m.Permissions & sub.Settings.AccessMask) > 0);
             // get list of users to remove perms from
             var usersToRemove = usersWithAccess.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower())).ToList();
@@ -188,6 +204,8 @@ namespace SnooNotesAPI.Utilities
                     //TODO something, mighta caught a non registered user?
                 }
             }
+
+            return true;
         }
     }
 }
