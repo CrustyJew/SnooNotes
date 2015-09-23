@@ -60,7 +60,7 @@ namespace SnooNotesPermissions
                     if (sub.ReadAccessUser != null)
                     {
                         RedditSharp.Things.Subreddit subreddit;
-                        string accessToken = sub.ReadAccessUser.GetToken(ap);
+                        string accessToken = users[sub.ReadAccessUser].GetToken(ap);
                         SNWebAgent uagent = new SNWebAgent(accessToken);
                         reddit = new RedditSharp.Reddit(uagent);
                         subreddit = reddit.GetSubreddit(sub.SubName);
