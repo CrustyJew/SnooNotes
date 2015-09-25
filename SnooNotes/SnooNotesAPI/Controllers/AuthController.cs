@@ -168,8 +168,12 @@ namespace SnooNotesAPI.Controllers
                     UserManager.Update(theuser);
 
                     SignInManager.SignIn(theuser, isPersistent: true, rememberBrowser: false);
-
-                    Utilities.AuthUtils.RevokeRefreshToken(oldRefreshToken);
+					try {
+						Utilities.AuthUtils.RevokeRefreshToken( oldRefreshToken );
+					}
+					catch {
+						//ignore the inability to revoke the token. It doesn't matter;
+					}
 
                     return new RedirectResult(returnUrl);
                 case SignInStatus.LockedOut:
@@ -181,7 +185,7 @@ namespace SnooNotesAPI.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     string accessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value;
                     var user = new Models.ApplicationUser() { UserName = loginInfo.Login.ProviderKey, RefreshToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:refresh").Value, AccessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value, TokenExpires = DateTime.UtcNow.AddMinutes(50), LastUpdatedRoles = DateTime.UtcNow };
-                    await Utilities.AuthUtils.UpdateModeratedSubreddits(user);
+                    Utilities.AuthUtils.UpdateModeratedSubreddits(user);
                     var createuser = await UserManager.CreateAsync(user);
                     if (createuser.Succeeded)
                     {

@@ -62,7 +62,7 @@ namespace SnooNotesAPI.Controllers
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = userManager.FindByName(User.Identity.Name);
-            await Utilities.AuthUtils.UpdateModeratedSubreddits(user);
+            Utilities.AuthUtils.UpdateModeratedSubreddits(user);
             try
             {
                 userManager.Update(user);
