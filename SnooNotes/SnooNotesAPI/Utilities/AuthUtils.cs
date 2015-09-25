@@ -72,10 +72,11 @@ namespace SnooNotesAPI.Utilities
                 var sub = subs.Find(s => s.Name.ToLower() == role);
                 if (activeSubNames.Contains(role))
                 {
-                    //if they already have the role and they still have the correct access
+                    
                     if (sub != null)
                     {
-                        if (((int)sub.ModPermissions & activeSubs.Where(s => s.SubName.ToLower() == role).Select(s => s.Settings.AccessMask).First()) > 0)
+                        //if they already have the role and they still have the correct access
+                        if (sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) || ((int)sub.ModPermissions & activeSubs.Where(s => s.SubName.ToLower() == role).Select(s => s.Settings.AccessMask).First()) > 0)
                         {
                             //Check if "full" permissions
                             if (sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && !ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true"))
@@ -93,6 +94,7 @@ namespace SnooNotesAPI.Utilities
                         {
                             //lost da permissions
                             rolesToRemove.Add(new Claim(roleType, role));
+                            if (!sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true")) rolesToRemove.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));
                         }
                         
                         //User already has sub as a role and is still a mod
@@ -107,15 +109,25 @@ namespace SnooNotesAPI.Utilities
                 {
                     //sub was deactivated, add it to remove.
                     rolesToRemove.Add(new Claim(roleType,role));
+                    if (!sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + role + ":admin", "true")) rolesToRemove.Add(new Claim("urn:snoonotes:subreddits:" + role + ":admin", "true"));
                 }
 
             }
             //subs now only contains subs that don't exist as roles
             foreach (RedditSharp.Things.Subreddit sub in subs)
             {
-                if (activeSubNames.Contains(sub.Name.ToLower()))
+                string subname = sub.Name.ToLower();
+                if (activeSubNames.Contains(subname))
                 {
-                    rolesToAdd.Add(new Claim(roleType,sub.Name.ToLower()));
+                    if (sub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All))
+                    {
+                        rolesToAdd.Add(new Claim(roleType, subname));
+                        rolesToAdd.Add(new Claim("urn:snoonotes:subreddits:" + subname + ":admin", "true"));
+                    }
+                    else if ( ((int)sub.ModPermissions & activeSubs.Where(s => s.SubName.ToLower() == subname).Select(s => s.Settings.AccessMask).First()) > 0)
+                    {
+                        rolesToAdd.Add(new Claim(roleType, subname));
+                    }
                 }
             }
 
@@ -135,11 +147,21 @@ namespace SnooNotesAPI.Utilities
 
         public static bool UpdateModsForSub(Models.Subreddit sub)
         {
+            if (!ClaimsPrincipal.Current.HasClaim("urn:subreddits:" + sub.SubName.ToLower() + ":admin", "true"))
+            {
+                throw new UnauthorizedAccessException("You don't have 'Full' permissions to this subreddit!");
+            }
+            sub = Models.Subreddit.GetSubreddits(new string[] { sub.SubName }).First();
+            if(sub == null)
+            {
+                throw new Exception("Unrecognized subreddit");
+            }
+            string subName = sub.SubName.ToLower();
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             //var usersWithAccess = userManager.Users.Where(u =>
             //    u.Claims.Where(c =>
             //        c.ClaimType == ClaimTypes.Role && c.ClaimValue == sub.SubName.ToLower()).Count() > 0).ToList();
-            var usersWithAccess = userManager.Users.Where(u => u.Claims.Select(c => c.ClaimValue).Contains(sub.SubName.ToLower())).ToList();
+            var usersWithAccess = userManager.Users.Where(u => u.Claims.Select(c => c.ClaimValue).Contains(subName)).ToList();
 
             //var x = userManager.Users.Where(u=>u.Claims.Select(c => c.ClaimValue).Contains("videos")).ToList();
             //var y = userManager.Users.Select(u => u.Claims);
@@ -174,10 +196,10 @@ namespace SnooNotesAPI.Utilities
             var usersToRemove = usersWithAccess.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower())).ToList();
             foreach (var user in usersToRemove)
             {
-                userManager.RemoveClaim(user.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
-                if (user.Claims.Where(c => c.ClaimType == "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin").Count() > 0)
+                userManager.RemoveClaim(user.Id, new Claim(ClaimTypes.Role, subName));
+                if (user.Claims.Where(c => c.ClaimType == "urn:snoonotes:subreddits:" + subName + ":admin").Count() > 0)
                 {
-                    userManager.RemoveClaim(user.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
+                    userManager.RemoveClaim(user.Id, new Claim("urn:snoonotes:subreddits:" + subName + ":admin", "true"));
 
                 }
             }
@@ -191,11 +213,16 @@ namespace SnooNotesAPI.Utilities
                     var u = userManager.FindByName(user.Name);
                     if (u != null)
                     {
-                        userManager.AddClaim(u.Id, new Claim(ClaimTypes.Role, sub.SubName.ToLower()));
+                        
                         //assume it won't be adding a duplicate *holds breath*
                         if (user.Permissions.HasFlag(RedditSharp.ModeratorPermission.All))
                         {
-                            userManager.AddClaim(u.Id, new Claim("urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true"));
+                            userManager.AddClaim(u.Id, new Claim(ClaimTypes.Role, subName));
+                            userManager.AddClaim(u.Id, new Claim("urn:snoonotes:subreddits:" + subName + ":admin", "true"));
+                        }
+                        else if(((int)user.Permissions & sub.Settings.AccessMask) > 0)
+                        {
+                            userManager.AddClaim(u.Id, new Claim(ClaimTypes.Role, subName));
                         }
                     }
                 }

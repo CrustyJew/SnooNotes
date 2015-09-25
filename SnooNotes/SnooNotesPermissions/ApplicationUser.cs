@@ -50,10 +50,10 @@ namespace SnooNotesPermissions
         {
             using (SqlConnection con = new SqlConnection(constring))
             {
-                string query = "select u.RefreshToken, u.UserName, u.LastUpdatedRoles, u.AccessToken, u.TokenExpires, u.HasWikiRead, u.HasRead, u.Id" +
+                string query = "select u.RefreshToken, u.UserName, u.LastUpdatedRoles, u.AccessToken, u.TokenExpires, u.HasWikiRead, u.HasRead, u.Id " +
                                "from " +
                                "AspNetUsers u ";
-                var lookup = new Dictionary<int, Subreddit>();
+               
                 var result = con.Query<ApplicationUser>(query);
 
                 return result;
