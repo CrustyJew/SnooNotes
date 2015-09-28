@@ -127,6 +127,21 @@ div.importTBNotes{
     border:1px solid lightgrey;
 }
 
+.snFeature{
+    background-color:whitesmoke; 
+    padding:5px 10px 10px 10px;
+    border-radius:5px;
+    box-shadow: 4px 6px 4px 0px rgba(169, 169, 169, 0.75);
+    border:1px solid lightgrey;
+    margin:0px 0px 10px 0px;
+}
+.snFeature img{
+    display:block;
+    max-height:400px;
+}
+.snFeature span{
+    font-weight:bold;
+}
 .snSubmit{
     background: linear-gradient(to bottom, #74c429, #4ca20b ); 
     font-weight:bold;
