@@ -7,14 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SnooNotesPermissions {
-	class Program {
+	public class Program {
 
 		private const string ModeratorsUrl = "/r/{0}/about/moderators.json";
 
 		static RedditSharp.AuthProvider ap;
 		static Dictionary<string, ApplicationUser> users;
 
-		static void Main( string[] args ) {
+		public static void Main( string[] args ) {
 			string ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"];
 			string ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"];
 			string RediretURI = System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"];
@@ -25,15 +25,16 @@ namespace SnooNotesPermissions {
 
 			ap = new RedditSharp.AuthProvider( ClientId, ClientSecret, RediretURI, agent );
 
-			List<Subreddit> subs = Subreddit.GetSubreddits().ToList();
+			
+			users = ApplicationUser.GetUsers().ToDictionary( k => k.UserName.ToLower(), v => v );
+
 			if ( args.Length > 0 ) {
 				foreach ( string subname in args ) {
 					ProcessSub( Subreddit.GetSubreddits( subname ).Single() );
 				}
 			}
 			else {
-				users = ApplicationUser.GetUsers().ToDictionary( k => k.UserName.ToLower(), v => v );
-
+				List<Subreddit> subs = Subreddit.GetSubreddits().ToList();
 				foreach ( Subreddit sub in subs ) {
 					ProcessSub( sub );
 				}

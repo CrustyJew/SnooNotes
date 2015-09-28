@@ -34,3 +34,7 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: InternalsVisibleTo( "SnooNotesPermissions.Tests" )]
+[assembly: InternalsVisibleTo( "SnooNotesPermissions.Explorables" )]
+[assembly: InternalsVisibleTo( "SnooNotesPermissions.Tests1" )]
+

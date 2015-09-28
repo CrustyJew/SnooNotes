@@ -21,22 +21,17 @@ namespace SnooNotesPermissions {
 
 		public static IEnumerable<Subreddit> GetSubreddits( string subName = "all" ) {
 			using ( SqlConnection con = new SqlConnection( constring ) ) {
-				string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, u.HasRead, u.UserName, c.ClaimID, c.AdminClaimId " +
+				string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, u.HasRead, u.UserName, max(coalesce(c1.Id,-1)) as 'ClaimId', max(coalesce(c2.Id,-1)) as 'AdminClaimId' " +
 							   "from Subreddits s " +
 							   "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
-							   "left join (select c1.UserId,c1.ClaimValue as SubName, c1.Id as 'ClaimId', coalesce( c2.Id, -1) as 'AdminClaimId' from AspNetUserClaims c1 " +
-									"left join AspNetUserClaims c2 on c1.userId = c2.UserId and c2.ClaimType like 'urn:snoonotes:subreddits:' + c1.ClaimValue + ':admin' " +
-									"where c1.ClaimType = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role') as c on c.SubName = s.SubName " +
-							   "left join AspNetUsers u on u.Id = c.UserId " +
-							   "where s.Active = 1 and (@SubName = 'all' or s.SubName = @SubName)";
+							   "left join AspNetUserClaims users on (users.ClaimType = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' and users.ClaimValue = s.SubName) or (users.ClaimType like 'urn:snoonotes:subreddits:' + s.SubName + ':admin') " +
+							   "left join AspNetUsers u on u.Id = users.UserId "+
+							   "left join AspNetUserClaims c1 on c1.ClaimType = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' and c1.ClaimValue = s.SubName and c1.UserId = users.UserId " +
+							   "left join AspNetUserClaims c2 on c2.ClaimType like 'urn:snoonotes:subreddits:' + s.SubName + ':admin' and c2.UserId = users.UserId " +
+							   "where s.Active = 1 and (@SubName = 'all' or s.SubName = @SubName) "+
+							   "group by s.SubredditID, s.SubName, s.Active, ss.AccessMask, u.HasRead, u.UserName " +
+							   "order by subname";
 
-				//                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, readUser.Username as 'ReadAccessUser', case when ac.Id is not null then u.Username else '' end as 'SubAdmins', case when c.Id is not null then u.Username else '' end as 'Users' " +
-				//"from Subreddits s " +
-				//"left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
-				//"left join (select s.SubredditID, min(u.UserName) as UserName from AspNetUsers u left join AspNetUserClaims c on c.UserID = u.Id left join Subreddits s on c.ClaimValue = s.SubName or c.ClaimType = 'urn:snoonotes:subreddits:' + s.SubName + ':admin' where u.HasRead = 1 and s.SubredditID is not null group by s.SubredditID) as readUser on readUser.SubredditID = s.SubredditID " +
-				//"left join AspNetUserClaims ac on ac.ClaimType = 'urn:snoonotes:subreddits:' + s.SubName + ':admin' " +
-				//"left join AspNetUserClaims c on ac.UserId = c.UserId and c.ClaimValue = s.SubName " +
-				//"left join AspNetUsers u on c.UserID = u.Id";
 				var lookup = new Dictionary<int, Subreddit>();
 				var result = con.Query<Subreddit, SubredditResultUser, Subreddit>( query, ( s, sru ) => {
 					Subreddit sub;
@@ -53,7 +48,9 @@ namespace SnooNotesPermissions {
 						if ( sru.HasRead && sub.ReadAccessUser == null ) {
 							sub.ReadAccessUser = sru.UserName;
 						}
-						sub.Users.Add( sru.UserName.ToLower() );
+						if ( sru.ClaimID >= 0 ) {
+							sub.Users.Add( sru.UserName.ToLower() );
+						}
 						if ( sru.AdminClaimId >= 0 ) {
 							sub.SubAdmins.Add( sru.UserName.ToLower() );
 						}
