@@ -3,7 +3,9 @@
 <p>This is where you'll be able to manage all aspects of your subreddit outside of the addon's "Options" page on Reddit itself.</p>
 <p>More features will be coming including the ability to search all notes you have etc! But right now, this is where you can import all your notes from Mod Toolbox into SnooNotes.</p>
 <div class="importTBNotes">
-    <form name="frmImportTBNotes" ng-submit="importNotes()">
+    <h2>Import Toolbox Notes</h2>
+    <p>Select the SnooNotes note types that you want to map Toolbox notes to below. No notes will be deleted from either system during this process, only notes that exist in Toolbox and don't exist in SnooNotes will be imported. </p>
+    <form name="frmImportTBNotes" ng-submit="importNotes()" ng-show="currentUser.hasWikiRead">
         <div>
             <table>
                 <tr>
@@ -92,6 +94,9 @@
             <input type="submit" class="snSubmit" value="Import Notes" />
         </div>
     </form>
+    <div ng-show="!currentUser.hasWikiRead">
+        <h2>
+            You need to log in with 'Wiki' access to be able to import notes from Moderator Toolbox!
+        </h2>
+    </div>
 </div>
-
-{{sub.Settings.NoteTypes}}

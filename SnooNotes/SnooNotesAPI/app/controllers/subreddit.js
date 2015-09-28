@@ -2,8 +2,9 @@
        .module('SnooNotes')
        .controller('SubredditCtrl', SubredditCtrl);
 
-function SubredditCtrl($scope, $stateParams, SubFactory) {
+function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
     $scope.import = {};
+    $scope.currentUser = AuthFactory.currentUser;
     var subSettings = SubFactory.getByName($stateParams.subName);
     if (!subSettings) {
         //TODO ERROR
