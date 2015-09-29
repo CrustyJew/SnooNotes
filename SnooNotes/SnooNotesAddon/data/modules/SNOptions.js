@@ -296,33 +296,6 @@ function snBindOptionEvents() {
         }
     });
 
-    $('#SNSubRedditSettings').on("click", ".SNRefreshMods", function (e) {
-        var o = $('.SNSubreddit:visible')[0];
-        var subname = o.attributes['snsub'].value;
-        $('#SNModal').block({ message: '<h1>Attempting to fire EK...</h1>' });
-        $.ajax({
-            url: snUtil.ApiBase + "account/UpdateSubredditMods",
-            method: 'POST',
-            data: JSON.stringify(subname),
-            dataType: "json",
-            contentType: "application/json",
-            success: function () {
-                $('#SNModal').unblock();
-                $('#SNModal').block({
-                    message: '<div class="growlUI growlUISuccess"><h1>Success!</h1><h2>EK fired successfully!</h2></div>',
-                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1, css: $.blockUI.defaults.growlCSS
-                });
-            },
-            error: function(){
-                $('#SNModal').unblock();
-                $('#SNModal').block({
-                    message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>EK created a new alt! If this persists, contact /u/snoonotes.</h2></div>',
-                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1, css: $.blockUI.defaults.growlCSS
-                });
-            },
-
-        })
-    });
     //update preview for notetype
     $('#SNSubRedditSettings').on("keyup change", ".SNSubreddit .SNNoteTypes li", function (e) {
         ntUpdatePreview(this);
@@ -375,7 +348,7 @@ function snGetSubSettings() {
                                                 '<label><input type="checkbox" value="16" ' + (sub.Settings.AccessMask & snUtil.Permissions.Posts ? 'checked="checked"' : '') + '>posts</label>' +
                                                 '<label><input type="checkbox" value="32" ' + (sub.Settings.AccessMask & snUtil.Permissions.Wiki ? 'checked="checked"' : '') + '>wiki</label>' +
                                             '</div>' +
-                                            '<div style="text-align:center;margin-top:5px;"><button type="button" class="SNRefreshMods SNBtnWarn" style="margin-right:0px;">Refresh Mods</button><br /><span style="font-weight:bold">WARNING: May take up to 15 minutes for permissions to expire and refresh!</span></div>' +
+                                            '<div style="text-align:center;margin-top:5px;">WARNING: May take up to 15 minutes for permissions to expire and refresh!</span></div>' +
                                         '</div>' +
                                         '<div class="SNNoteTypes"><div class="SNNoteTypeOptions">' +
                                             '<ol>';
