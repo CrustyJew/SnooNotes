@@ -34,7 +34,7 @@ namespace SnooNotesAPI
                 },
                     OnValidateIdentity = async context=> {
                         var invalidateBySecurityStamp = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(2),
+                        validateInterval: TimeSpan.FromMinutes(15),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager));
                         await invalidateBySecurityStamp.Invoke(context);
 

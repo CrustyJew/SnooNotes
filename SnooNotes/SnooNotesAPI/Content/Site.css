@@ -52,6 +52,10 @@ textarea {
     background-color:#ddd;
 }
 
+.navbar-nav>li{
+    margin-right:10px;
+}
+
 a:hover, a:focus {
     color: #008000;
     text-decoration: underline;
@@ -77,6 +81,11 @@ a {
 
 .currentSubNav{
     cursor:pointer;
+}
+
+.navbar-main a{
+    color: #008000;
+    text-decoration:none;
 }
 
 #SnooNotesLoginFrame{
@@ -136,11 +145,18 @@ div.importTBNotes{
     margin:0px 0px 10px 0px;
 }
 .snFeature img{
-    display:block;
+    display:inline-block;
     max-height:400px;
+    cursor: -webkit-zoom-in;
+    cursor:zoom-in;
+    margin:5px;
+    border-radius:5px;
+
 }
 .snFeature span{
     font-weight:bold;
+    padding-top:10px;
+    display:inline-block;
 }
 .snSubmit{
     background: linear-gradient(to bottom, #74c429, #4ca20b ); 
@@ -152,4 +168,10 @@ div.importTBNotes{
     font-weight:bold;
     border-radius:2px;
     border:1px solid darkgrey;
+}
+
+.alignCenter{
+    margin:0 auto;
+    width:100%;
+    text-align:center;
 }

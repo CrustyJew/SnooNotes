@@ -31,6 +31,13 @@ angular.module('SnooNotes', [
                 }
             }
         })
+        .state('userguide',{
+            url: '/userguide',
+            templateUrl: '/Views/userguide.html',
+            data: {
+                requireLogin: false
+            }
+        })
     ;
     $httpProvider.defaults.withCredentials = true;
 

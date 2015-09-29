@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="//cdn.rawgit.com/noelboss/featherlight/1.3.4/release/featherlight.min.css" type="text/css" rel="stylesheet" />
     <link href="Content/Site.css" rel="stylesheet" />
 </head>
 <body>
@@ -30,7 +31,7 @@
                             <span ng-hide="currentUser.isAuth"><a ng-click="login()" class="login">Login / Signup</a></span>
                         </li>
                     </ul>
-                    <ul class="nav navbar-nav navbar-left">
+                    <ul class="nav navbar-nav navbar-left navbar-main">
                         <li class="dropdown" ng-hide="!currentUser.isAuth">
                             <div class="btn-group subredditNavMenu" dropdown is-open="status.isopen">
                                 <span class="currentSubNav" dropdown-toggle>
@@ -39,6 +40,11 @@
                                 <ul class="dropdown-menu">
                                     <li ng-repeat="subName in adminSubs.subNames" role="menu"><a ui-sref="subreddit({'subName':subName})">{{subName}}</a></li>
                                 </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn-group subredditNavMenu">
+                                <a class="userGuideNav" ui-sref="userguide">User Guide</a>
                             </div>
                         </li>
                     </ul>
@@ -88,7 +94,7 @@
     <script src="Scripts/angular-ui-router.js"></script>
     <script src="Scripts/angular-cookies.js"></script>
     <script src="Scripts/angular-local-storage.min.js"></script>
-
+    <script src="//cdn.rawgit.com/noelboss/featherlight/1.3.4/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="app/app.js"></script>
 
