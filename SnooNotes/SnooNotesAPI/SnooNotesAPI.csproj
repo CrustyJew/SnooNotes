@@ -260,9 +260,11 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\sn1.JPG" />
-    <Content Include="Content\sn2.JPG" />
-    <Content Include="Content\sn3.JPG" />
+    <Content Include="Content\sn1.PNG" />
+    <Content Include="Content\sn2.png" />
+    <Content Include="Content\sn2thumb.png" />
+    <Content Include="Content\sn3.png" />
+    <Content Include="Content\sn3thumb.png" />
     <Content Include="Content\ui-bootstrap-csp.css" />
     <Content Include="favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

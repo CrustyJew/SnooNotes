@@ -5,8 +5,9 @@
     "description": "Meepster's Mod Mangling Mess",
     "author": "",
     "license": "MPL 2.0",
-    "version": "0.0.6.2",
+    "version": "0.0.6.3",
     "main": "lib/main.js",
+    "updateUrl" :  "https://snoonotes.com/Addon/updates.rdf",
     "permissions": {
         "cross-domain-content": [ "https://snoonotesapi.azurewebsites.net/", "https://snoonotes.com/"]
     }
