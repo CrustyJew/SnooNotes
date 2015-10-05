@@ -10,7 +10,7 @@ function getEntriesToProcess() {
 
     var SNUsers = [];
     if (!snUtil.UsersWithNotes) {
-        if (retrynum > 50) return;//fuck on outa here if something is wrong with user;
+        if (retrynum > 75) return;//fuck on outa here if something is wrong with user;
         else {
             retrynum += 1;
             console.log("Users was undefined " + retrynum + " times!");
@@ -54,7 +54,7 @@ function getEntriesToProcess() {
             console.log("Not a sub you mod");
         }
     }
-    else { //not browsing a specific subreddit
+    else { //not browsing a specific subreddit, also /user/ pages
         $SNEntries.each(function (index, $ent) {
             if (new RegExp("," + $('a.subreddit', $ent.closest('.thing'))[0].textContent.replace('/r/','') + ",", "i").test(snUtil.ModdedSubs)) {
                 var auth = $('.author', $ent)[0].textContent.toLowerCase();
@@ -63,18 +63,37 @@ function getEntriesToProcess() {
                         SNUsers.push(auth);
                     }
                     if ($ent.className.indexOf("SNFetching") == -1) {
-                        $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNViewNotes">[view note]</a>'));
+                        $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNViewNotes">[view&nbsp;note]</a>'));
                         $ent.className = $ent.className + " SNFetching";
                     }
                 }
                 else {
                     //TODO add icon for new note
-                    $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNNoNotes">[add note]</a>'));
+                    $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNNoNotes">[add&nbsp;note]</a>'));
                     $ent.className = $ent.className + " SNDone";
                 }
             }
         });
 
+    }
+    if (snUtil.UserPage) {      
+        var $user =  $('body.profile-page .side .titlebox h1')
+        var uname = $user[0].textContent;
+        if (new RegExp("," + uname + ",", "i").test(snUtil.UsersWithNotes)) {
+            if ($('#SnooNote-' + uname).length == 0 && SNUsers.indexOf(uname) == -1) {
+                SNUsers.push(uname);
+            }
+            if ($user.children('a').length <= 0) {
+                $user[0].textContent = $user[0].textContent + '  ';
+                $user.append($('<a SNUser="' + uname + '" class="SNViewNotes">[view&nbsp;note]</a>'));
+            }
+        }
+        else {
+            if ($user.children('a').length <= 0) {
+                $user[0].textContent = $user[0].textContent + '  ';
+                $user.append($('<a SNUser="' + uname + '" class="SNNoNotes">[add&nbsp;note]</a>'));
+            }
+        }
     }
     if (SNUsers.length > 0) {
         snUtil.getNotesForUsers(SNUsers);
