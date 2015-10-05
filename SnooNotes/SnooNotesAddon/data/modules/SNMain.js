@@ -110,6 +110,14 @@ function setModdedSubs(){
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
             snUtil.ModdedSubs = "," + d.join(",") + ",";
+            //initialize the dropdown list if it doesn't exist
+            if ($('#SNContainer #SNSubDropdown').length == 0) {
+                var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
+                for (var i = 0; i < d.length; i++) {
+                    $select.append($('<option value="' + d[i] + '">' + d[i] + '</option>'));
+                }
+                $('#SNContainer').append($select);
+            }
             var event = new CustomEvent("snUtilDone");
             window.dispatchEvent(event);
         },

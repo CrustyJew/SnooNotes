@@ -46,10 +46,12 @@
                 //data:{"id":id}
             });
         });
-        $('#siteTable,.commentarea').on('click', '.SNNoNotes', function (e) {
+        $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNNoNotes', function (e) {
             var $ot = $(e.target);
 
-            var user = $ot.siblings('a.author:first')[0].innerHTML.toLowerCase();
+            var user = $ot.attr('SNUser');
+            var hasNoLink = $ot.hasClass('SNNoLink');
+            var openRight = $ot.hasClass('SNOpenRight');
             var $newNote = $('#SnooNote-' + user);
             var sub = getSubName(e);
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
@@ -61,26 +63,55 @@
                                 '<textarea placeholder="Add a new note for user..." class="SNNewMessage" />' +
                                 '<button type="button" class="SNNewNoteSubmit" ' +
                                     'SNUser="' + user + '" ' +
-                                    'SNSub="' + sub  + '" ' + 
-                                    'SNLink="' + $('ul li.first a', $ot.closest('div.entry')).attr('href') + '" ' +
+                                    'SNLink="' + (hasNoLink ? 'https://reddit.com/' + window.location.pathname : $('ul li.first a', $ot.closest('div.entry')).attr('href') )+ '" ' +
                                 '>Submit</button>  ' +
                             '</div>' +
                             '<div class="SNNoteType"></div>' +
                             '<div class="SNNewError"></div>' +
                         '</div>' +
                     '</div>');
-                var subNoteTypes = snUtil.NoteTypes[sub];
-                var $SNNoteType = $('.SNNoteType',$newNote);
-                for (var i = 0; i < subNoteTypes.length;i++){
-                    var noteType = subNoteTypes[i];
-                    $SNNoteType.append($('<label class="SNTypeRadio SN'+sub+noteType.NoteTypeID+'"><input type="radio" name="SNType" value="'+noteType.NoteTypeID+'">'+noteType.DisplayName+'</label>'));
+                var $sub = $('#SNSubDropdown').clone().removeAttr('id');
+                $('.SNNewNote', $newNote).prepend($sub);
+                if (sub) {
+                    $sub.val(sub);
+                    var subNoteTypes = snUtil.NoteTypes[sub];
+                    var $SNNoteType = $('.SNNoteType', $newNote);
+                    for (var i = 0; i < subNoteTypes.length; i++) {
+                        var noteType = subNoteTypes[i];
+                        $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
+                    }
+                }
+                else {
+                    $sub.val("-1");
+                    $('.SNNoteType', $newNote).append('<strong>Select a subreddit!</strong>');
                 }
                 $('#SNContainer').append($newNote);
             }
-
-            $newNote.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+            if (openRight) {
+                $newNote.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX }).fadeIn('slow');
+            }
+            else {
+                $newNote.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+            }
             $newNote.draggable({ handle: "div.SNHeader" });
         });
+        $('#SNContainer').on('change', '.SNNewNoteSub', function (e) {
+            var sub = this.value;
+            var $newNote = this.closest('div.SNNewNoteContainer');
+            var $noteTypes = $('.SNNoteType', $newNote);
+            $noteTypes.empty();
+            if (sub == "-1") {
+                $noteTypes.append('<strong>Select a subreddit!</strong>');
+            }
+            else {
+                var subNoteTypes = snUtil.NoteTypes[sub];
+                for (var i = 0; i < subNoteTypes.length; i++) {
+                    var noteType = subNoteTypes[i];
+                    $noteTypes.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
+                }
+            }
+        });
+
         e.target.removeEventListener(e.type, arguments.callee);
     });
 })();
@@ -101,6 +132,7 @@ function getSubName(e) {
         }
         else if (snUtil.ModQueue || snUtil.UserPage) {
             var $sub = $ot.closest('.thing').find('a.subreddit');
+            if (!$sub.length) return null;
             var subinner = $sub[0].textContent;
             if (subinner.match(/\/r\//i)) {
                 sub = subinner.substring(3).replace(/\//g, '');
@@ -200,19 +232,31 @@ function showNotes(e) {
     
     var $submit = $('.SNNewNoteSubmit', $sn);
     var $ot = $(e.target);
+    var hasNoLink = $ot.hasClass('SNNoLink');
+    var openRight = $ot.hasClass('SNOpenRight');
     var sub = getSubName(e);
-
-    var subNoteTypes = snUtil.NoteTypes[sub];
-    var $SNNoteType = $('.SNNoteType', $sn);
-    $SNNoteType.empty();
-    for (var i = 0; i < subNoteTypes.length; i++) {
-        var noteType = subNoteTypes[i];
-        $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
+    if ($('.SNNewNoteSub', $sn).length == 0) {
+        var $sub = $('#SNSubDropdown').clone().removeAttr('id');
+        $('.SNNewNote', $sn).prepend($sub);
+        if (sub) $sub.val(sub);
+        else $sub.val("-1");
+        $sub.trigger('change');
     }
+    //var subNoteTypes = snUtil.NoteTypes[sub];
+    //var $SNNoteType = $('.SNNoteType', $sn);
+    //$SNNoteType.empty();
+    //for (var i = 0; i < subNoteTypes.length; i++) {
+    //    var noteType = subNoteTypes[i];
+    //    $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
+    //}
 
-    $submit.attr("SNSub", sub );
-    $submit.attr("SNLink", $('ul li.first a', $ot.closest('div.entry')).attr('href'));
-    $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+    $submit.attr("SNLink", (hasNoLink ? 'https://reddit.com/' + window.location.pathname : $('ul li.first a', $ot.closest('div.entry')).attr('href') ));
+    if (openRight) {
+        $sn.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX }).fadeIn('slow');
+    }
+    else {
+        $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+    }
     $sn.draggable({ handle: "div.SNHeader" });
 }
 

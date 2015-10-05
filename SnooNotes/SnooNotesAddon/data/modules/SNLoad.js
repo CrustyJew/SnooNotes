@@ -85,13 +85,13 @@ function getEntriesToProcess() {
             }
             if ($user.children('a').length <= 0) {
                 $user[0].textContent = $user[0].textContent + '  ';
-                $user.append($('<a SNUser="' + uname + '" class="SNViewNotes">[view&nbsp;note]</a>'));
+                $user.append($('<a SNUser="' + uname + '" class="SNViewNotes SNNoLink SNOpenRight">[view&nbsp;note]</a>'));
             }
         }
         else {
             if ($user.children('a').length <= 0) {
                 $user[0].textContent = $user[0].textContent + '  ';
-                $user.append($('<a SNUser="' + uname + '" class="SNNoNotes">[add&nbsp;note]</a>'));
+                $user.append($('<a SNUser="' + uname + '" class="SNNoNotes SNNoLink SNOpenRight">[add&nbsp;note]</a>'));
             }
         }
     }
