@@ -1,4 +1,7 @@
-﻿function renderOptionsButton(msg) {
+﻿var snSubAccessDirty = false;
+var snSubBanNoteTypeDirty = false;
+
+function renderOptionsButton(msg) {
     var $optBtn = $('#SNOptionsBtn');
     if ($optBtn.length < 1) {
         //option button hasn't been created yet
@@ -43,6 +46,10 @@ function bindOptionClick() {
 
 function renderOptionsContainer() {
     var modal = "";
+
+    snSubAccessDirty = false;
+    snSubBanNoteTypeDirty = false;
+
     if (!snUtil.LoggedIn) {
         modal = '<div class="SnooNotesLoginContainer">' +
         '<div class="SnooNotesDoneLogin" style="display:none;"><h1>All logged in?</h1><button id="SnooNotesConfirmLoggedIn">Click here!</button></div>' +
@@ -96,7 +103,8 @@ function snSubredditOptions() {
 }
 function snSubOptDescriptions() {
     var descs = '' +
-        '<div id="SNAccessMaskDesc">Choose who can view and add notes below. Anyone with full permissions can always view and add notes as well as edit this page</div>';
+        '<div id="SNAccessMaskDesc">Choose who can view and add notes below. Anyone with full permissions can always view and add notes as well as edit this page</div>'+
+        '<div id="SNNoteTypesDesc">Change just about everything about the Note Types belonging to this subreddit below. If no checkbox is chosen for Perm Ban or Temp Ban, then automatic ban notes will not be generated for that type of ban.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Temp&nbsp;|&nbsp;Perm<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ban&nbsp;&nbsp;|&nbsp;&nbsp;Ban</div>';
     return descs;
 }
 function snBindOptionEvents() {
@@ -110,11 +118,15 @@ function snBindOptionEvents() {
         var $subopts = $('.SNSubreddit[snsub=' + sub + ']');
         $subopts.show();
         $('#SNAccessMaskDesc').prependTo($('.SNAccessMask', $subopts));
+        $('#SNNoteTypesDesc').prependTo($('.SNNoteTypes', $subopts));
     });
     $('#SNBtnSubOptsCancel').on('click', function () {
+        snSubAccessDirty = false;
+        snSubBanNoteTypeDirty = false;
         $('#SNSubRedditSettings').hide();
         $('#SNSubOptsForm')[0].reset();
         $('#SNSubredditsContainer').show();
+        
         resetNoteTypes();
     });
     $('#SNBtnSubOptsSave').on('click', function () {
@@ -127,10 +139,12 @@ function snBindOptionEvents() {
         subdata.Settings.AccessMask = 64;
 
         var dSub = {};
-        if ($('.SNAccesMaskOptions[SNChanged="true"]').length > 0) {
+        if (snSubAccessDirty || snSubBanNoteTypeDirty) {
             $('.SNAccessMaskOptions input:checked', o).each(function (ii, chkb) {
                 subdata.Settings.AccessMask += parseInt(chkb.value);
             });
+            subdata.Settings.TempBanID = $('input.SNChkGrp[name="ChkTempBan"]:checked', o).val();
+            subdata.Settings.PermBanID = $('input.SNChkGrp[name="ChkPermBan"]:checked', o).val();
 
             dSub = $.ajax({
                 url: snUtil.RESTApiBase + "Subreddit/" + subdata.SubName,
@@ -223,6 +237,8 @@ function snBindOptionEvents() {
         $.when(dSub, dNtAdd, dNtUpd, dNtDel).then(
             //success
             function () {
+                snSubAccessDirty = false;
+                snSubBanNoteTypeDirty = false;
                 resetNoteTypes();
                 $.unblockUI();
                 $('#SNModal').block({
@@ -302,7 +318,7 @@ function snBindOptionEvents() {
         $(this).attr('SNChanged', 'true');
     });
     $('#SNSubRedditSettings').on("change", ".SNSubreddit .SNAccessMaskOptions", function (e) {
-        $(this).attr('SNChanged', 'true');
+        snSubAccessDirty = true;
     });
     //remove note type (will preserve in DB)
     $('#SNSubRedditSettings').on("click", ".SNSubreddit .SNNoteTypes .SNRemove", function (e) {
@@ -321,6 +337,19 @@ function snBindOptionEvents() {
         $newLI.attr('SNChanged', 'true');
         $ntlo.append($newLI);
         ntUpdatePreview($newLI);
+    });
+
+    $('#SNSubRedditSettings').on("click", "input.SNChkGrp", function (e) {
+        var $chk = $(this);
+        snSubBanNoteTypeDirty = true;
+        if (this.checked) {
+            var grp = this.attributes["name"].value;
+            $('input:checkbox.SNChkGrp[name="' + grp + '"]', $chk.closest('.SNSubreddit')).prop("checked", false);
+            this.checked = true;
+        }
+        else {
+            this.checked = false;
+        }
     });
 }
 function snGetSubSettings() {
@@ -355,7 +384,7 @@ function snGetSubSettings() {
                     for (var n = 0; n < sub.Settings.NoteTypes.length; n++) {
                         var nt = sub.Settings.NoteTypes[n];
                         if (nt) {
-                            subOptsPanel += genNoteTypeLI(nt);
+                            subOptsPanel += genNoteTypeLI(nt,sub.Settings.TempBanID,sub.Settings.PermBanID);
                         }
                     }
                     subOptsPanel += '</ol>' +
@@ -380,9 +409,11 @@ function snGetSubSettings() {
         }
     });
 }
-function genNoteTypeLI(nt) {
+function genNoteTypeLI(nt,tempBanID,permBanID) {
     var ntLI = '<li SNNoteTypeID="' + nt.NoteTypeID + '" SNNoteTypeDisplayOrder="' + nt.DisplayOrder + '">' +
                                                     '<a class="SNSort"></a>' +
+                                                    '<input type="checkbox" class="SNChkGrp" value="' + nt.NoteTypeID + '" name="ChkTempBan" ' + (nt.NoteTypeID == tempBanID ? 'checked="checked"' : '') + '>' +
+                                                    '<input type="checkbox" class="SNChkGrp" value="' + nt.NoteTypeID + '" name="ChkPermBan" ' + (nt.NoteTypeID == permBanID ? 'checked="checked"' : '') + '>' +
                                                     '<input class="SNNoteTypeDisp" type="text" maxlength="20" value="' + nt.DisplayName + '">' +
                                                     '&nbsp;Color:&nbsp;<input class="SNNoteTypeColor" type="text" maxlength="6" value="' + nt.ColorCode + '">' +
                                                     '<label><input type="checkbox" class="SNntBold" value="bold" ' + (nt.Bold ? 'checked="checked"' : '') + '>Bold</label>' +
@@ -401,7 +432,8 @@ function resetNoteTypes() {
             if ($ntli.attr('SNNoteTypeID') == "-1") {
                 $ntli.remove();
             } else {
-                $(ntli).show();
+                $ntli.show();
+                $ntli.attr('SNChanged', '');
             }
         });
         $('li', nt).sort(ntSort).appendTo($(nt));

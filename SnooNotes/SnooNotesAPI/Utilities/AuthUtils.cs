@@ -134,7 +134,7 @@ namespace SnooNotesAPI.Utilities {
 		}
 
 		public static bool UpdateModsForSub( Models.Subreddit sub ) {
-			if ( !ClaimsPrincipal.Current.HasClaim( "urn:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
+			if ( !ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
 				throw new UnauthorizedAccessException( "You don't have 'Full' permissions to this subreddit!" );
 			}
 			sub = Models.Subreddit.GetSubreddits( new string[] { sub.SubName } ).First();
