@@ -1,6 +1,6 @@
 ﻿(function () {
     window.addEventListener("snUtilDone", function (e) {
-        $('#siteTable,.commentarea').on('click', '.SNViewNotes', function (e) {
+        $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNViewNotes', function (e) {
             showNotes(e);
         });
         $('#SNContainer').on('click', '.SNCloseNote', function (e) {

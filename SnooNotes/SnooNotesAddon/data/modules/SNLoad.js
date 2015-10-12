@@ -78,7 +78,7 @@ function getEntriesToProcess() {
     }
     if (snUtil.UserPage) {      
         var $user =  $('body.profile-page .side .titlebox h1')
-        var uname = $user[0].textContent;
+        var uname = $user[0].textContent.toLowerCase();
         if (new RegExp("," + uname + ",", "i").test(snUtil.UsersWithNotes)) {
             if ($('#SnooNote-' + uname).length == 0 && SNUsers.indexOf(uname) == -1) {
                 SNUsers.push(uname);
