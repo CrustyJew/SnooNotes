@@ -15,6 +15,7 @@
             var $newNoteContainer = $(ot).closest('.SNNewNoteContainer');
             var $message = $(ot).siblings('.SNNewMessage');
             var notetype = $newNoteContainer.find('input:radio[name=SNType]:checked').val();
+            var sub = $newNoteContainer.find('select.SNNewNoteSub').val();
             var valid = true;
             var $err = $newNoteContainer.find('.SNNewError');
             var $ntContainer = $newNoteContainer.find('.SNNoteType');
@@ -33,7 +34,7 @@
                 $ntContainer.addClass("SNError");
             }
             if (valid) {
-                submitNote(ot.attributes["SNUser"].value, ot.attributes["SNSub"].value, ot.attributes["SNLink"].value, $message.val(), notetype, $newNoteContainer);
+                submitNote(ot.attributes["SNUser"].value, sub, ot.attributes["SNLink"].value, $message.val(), notetype, $newNoteContainer);
             }
         });
         $('#SNContainer').on('click', '.SNDeleteNote', function (e) {
@@ -88,10 +89,10 @@
                 $('#SNContainer').append($newNote);
             }
             if (openRight) {
-                $newNote.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX }).fadeIn('slow');
+                $newNote.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX,'left':'' }).fadeIn('slow');
             }
             else {
-                $newNote.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+                $newNote.css({ 'top': e.pageY, 'left': e.pageX, 'right':'' }).fadeIn('slow');
             }
             $newNote.draggable({ handle: "div.SNHeader" });
         });
@@ -252,10 +253,10 @@ function showNotes(e) {
 
     $submit.attr("SNLink", (hasNoLink ? 'https://reddit.com/' + window.location.pathname : $('ul li.first a', $ot.closest('div.entry')).attr('href') ));
     if (openRight) {
-        $sn.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX }).fadeIn('slow');
+        $sn.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX, 'left':'' }).fadeIn('slow');
     }
     else {
-        $sn.css({ 'top': e.pageY, 'left': e.pageX }).fadeIn('slow');
+        $sn.css({ 'top': e.pageY, 'left': e.pageX, 'right':'' }).fadeIn('slow');
     }
     $sn.draggable({ handle: "div.SNHeader" });
 }
