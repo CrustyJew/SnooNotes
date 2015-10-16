@@ -131,7 +131,7 @@ function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="SN' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
                 '<td class="SNSubName"><a href="https://reddit.com/r/'+note.SubName+'">' + note.SubName + '</span>' +
                 '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ','<br />') + '</a></td>' +
-                '<td class="SNMessage"><p>' + note.Message + '</p><a class="SNDeleteNote">[x]</a></td></tr>';
+                '<td class="SNMessage"><p><pre>' + note.Message + '</pre></p><a class="SNDeleteNote">[x]</a></td></tr>';
 }
 
 function getUsersWithNotes() {

@@ -100,7 +100,12 @@ namespace SnooNotesAPI.Models
 								", ss.TempBanID = @TempBanID " +
                                 "from SubredditSettings ss inner join Subreddits s on s.SubRedditID = ss.SubRedditID " +
                                 "where s.subname = @SubName";
-                con.Execute(query, new { sub.Settings.AccessMask,sub.Settings.PermBanID,sub.Settings.TempBanID, sub.SubName });
+                int rows = con.Execute(query, new { sub.Settings.AccessMask,sub.Settings.PermBanID,sub.Settings.TempBanID, sub.SubName });
+				if (rows <= 0 ) {
+					string insert = "insert into SubredditSettings(SubRedditID,AccessMask,PermBanID,TempBanID) " +
+									"(select SubRedditID, @AccessMask ,@PermBanID,@TempBanID from Subreddits where SubName = @SubName)";
+					con.Execute( insert, new { sub.Settings.AccessMask, sub.Settings.PermBanID, sub.Settings.TempBanID, sub.SubName } );
+				}
             }
             return true;
         }

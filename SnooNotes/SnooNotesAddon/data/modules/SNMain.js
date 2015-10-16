@@ -105,18 +105,24 @@ function initSnooNotes() {
 
 function setModdedSubs(){
     $.ajax({
-        url: snUtil.ApiBase + "Account/GetModeratedSubreddits",
+        url: snUtil.RESTApiBase + "Subreddit",
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
-            snUtil.ModdedSubs = "," + d.join(",") + ",";
+            var subNames = d.map(function (q) { return q.SubName.toLowerCase(); });
+            snUtil.ModdedSubs = "," + subNames.join(",") + ",";
             //initialize the dropdown list if it doesn't exist
             if ($('#SNContainer #SNSubDropdown').length == 0) {
                 var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
-                for (var i = 0; i < d.length; i++) {
-                    $select.append($('<option value="' + d[i] + '">' + d[i] + '</option>'));
+                for (var i = 0; i < subNames.length; i++) {
+                    $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
                 }
                 $('#SNContainer').append($select);
+            }
+            snUtil.SubSettings = {};
+            for (var i = 0; i < d.length; i++) {
+                //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
+                snUtil.SubSettings[d[i].SubName.toLowerCase()] = d[i].Settings;
             }
             var event = new CustomEvent("snUtilDone");
             window.dispatchEvent(event);

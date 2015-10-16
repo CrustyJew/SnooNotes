@@ -186,7 +186,7 @@ function newNoteNewUser(req) {
         var sub = $submit.attr("SNSub");
         var subNoteTypes = snUtil.NoteTypes[sub];
         var $SNNoteType = $('.SNNoteType', $notecont);
-        for (var i = 0; i < subNoteTypes.length; i++) {
+        for (var i = 0; i < subNoteTypes.length; i++) {//***CHECK ME***
             var noteType = subNoteTypes[i];
             $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
         }
@@ -266,8 +266,10 @@ function closeNote(e) {
 }
 
 function submitNote(user, sub, link, message, type, $noteCont) {
-    $('.SNNewNoteSubmit, .SNNewMessage', $noteCont).attr('disabled', 'disabled');
-    $noteCont.find('.SNNewError').empty();
+    if ($noteCont) {
+        $('.SNNewNoteSubmit, .SNNewMessage', $noteCont).attr('disabled', 'disabled');
+        $noteCont.find('.SNNewError').empty();
+    }
     $.ajax({
         url: window.snUtil.ApiBase + "note",
         method: "POST",

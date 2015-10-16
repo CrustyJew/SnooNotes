@@ -26,6 +26,7 @@ pageMod.PageMod({
         data.url("modules/SnooNotes.js"),
         data.url("modules/SnooLoginPopup.js"),
         data.url("modules/SNOptions.js"),
+        data.url("modules/SNBanNotes.js"),
         data.url("modules/SNMain.js")],
     attachTo: ["existing", "frame", "top"],
     onAttach: function (worker) {

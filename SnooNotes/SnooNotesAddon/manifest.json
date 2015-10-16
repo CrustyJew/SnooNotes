@@ -22,6 +22,7 @@
                 "data/modules/SnooNotes.js",
                 "data/modules/SnooLoginPopup.js",
                 "data/modules/SNOptions.js",
+                "data/modules/SNBanNotes.js",
                 "data/modules/SNMain.js"
             ],
             "css": [
