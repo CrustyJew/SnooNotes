@@ -181,17 +181,9 @@ function newNoteNewUser(req) {
         //hey! I just added that one!
         var $notecont = $(req.note);
         $user.removeClass("SNNew").addClass("SNViewContainer");
-        var $submit = $('.SNNewNoteSubmit', $user);
-        $('.SNNewNoteSubmit', $notecont).replaceWith($submit);
-        var sub = $submit.attr("SNSub");
-        var subNoteTypes = snUtil.NoteTypes[sub];
-        var $SNNoteType = $('.SNNoteType', $notecont);
-        for (var i = 0; i < subNoteTypes.length; i++) {//***CHECK ME***
-            var noteType = subNoteTypes[i];
-            $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
-        }
-        $user.empty();
-        $user.append($notecont.children().hide().fadeIn("fast"));
+        var $header = $('.SNHeader', $user);
+        $header.after($notecont.children('table').hide().fadeIn("fast"));
+        $header.children('a.SNClose').removeClass('SNCloseNewNotes').addClass('SNCloseNote')
     }
 }
 function deleteNoteAndUser(req) {
