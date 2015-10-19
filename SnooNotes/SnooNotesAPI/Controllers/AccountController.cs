@@ -6,7 +6,6 @@ using Microsoft.Owin.Security;
 using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.Owin;
-using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System.Threading.Tasks;

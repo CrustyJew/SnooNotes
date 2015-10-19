@@ -38,12 +38,47 @@
                 }
             });
         }
+        $('body').on('click', '.mod-popup .save', function () {
+            var $popup = $(this).closest('div.mod-popup');
+            var $meta = $popup.children('div.meta');
+            var action = $('select.mod-action', $popup).val();
+            var sub = $('label.subreddit', $meta).text();
+
+            if (action == "ban" && new RegExp(',' + sub + ',', 'i').test(snUtil.ModdedSubs)) {
+                //mod this sub w/ snoonotes
+                var dur = $('input.ban-duration', $popup).val();
+                var type = -1;
+                if (dur) {
+                    //temp ban
+                    type = snUtil.SubSettings[sub.toLowerCase()].TempBanID;
+                }
+                else {
+                    type = snUtil.SubSettings[sub.toLowerCase()].PermBanID;
+                }
+
+                if (!type || type < 0) {
+                    //doesn't have a note type for this ban, run like the wind!
+
+                }
+                else {
+                    var user = $('label.user', $meta).text();
+                    var thing = $('label.thing_id', $meta).text();
+                    var link = $('.thing[data-fullname="' + thing + '"] .entry:first ul li.first a').attr('href');
+                    var message = 'Note: ' + $('.ban-note', $popup).val() + ' - '
+                            + (dur ? dur + ' days' : 'Permanent') + '\n\n'
+                            + 'Message: ' + $('.ban-message', $popup).val();
+
+                    self.addNote(user, sub, link, message, type);
+                }
+            }
+            
+        });
     }
     self.addNote = function(user,sub,link,message,type){
         submitNote(user, sub, link, message, type);
     }
     self.removeDOMListener = function () {
-        $('.banned-table').off('DOMSubtreeModified')
+        $('.banned-table').off('DOMSubtreeModified');
     }
     self.init();
 }
