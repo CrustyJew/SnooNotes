@@ -3,7 +3,8 @@
 
 *.[Dd]ebug.config
 *.[Rr]elease.config
-
+*[Ww]eb.config
+!*/SnooNotesAddon/[Ww]eb.config
 # User-specific files
 *.suo
 *.user

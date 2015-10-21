@@ -312,6 +312,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Addon\updates.rdf" />
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
     <Content Include="Scripts\angular.min.js.map" />
@@ -330,9 +333,6 @@
     <Content Include="Views\userguide.html" />
     <Content Include="Views\home.html" />
     <Content Include="Views\subreddit.html" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Web.config" />
@@ -351,6 +351,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.Template.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -417,4 +418,31 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <Target Name="CopyWebTemplateConfig" BeforeTargets="PrepareForBuild">
+    <Copy SourceFiles="Web.Template.config"
+          DestinationFiles="Web.config"/>
+  </Target>
+
+  <PropertyGroup>
+    <PrepareForRunDependsOn>
+      $(PrepareForRunDependsOn);
+      UpdateWebConfigBeforeRun;
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
+
+  <!-- This target will run right before you run your app in Visual Studio -->
+  <Target Name="UpdateWebConfigBeforeRun">
+    <Message Text="Configuration: $(Configuration): Web.$(Configuration).config"/>
+    <TransformXml Source="Web.Template.config"
+              Transform="Web.$(Configuration).config"
+              Destination="Web.config" />
+  </Target>
+
+  <!-- Exclude the config template files from the created package -->
+  <Target Name="ExcludeCustomConfigTransformFiles" BeforeTargets="ExcludeFilesFromPackage">
+    <ItemGroup>
+      <ExcludeFromPackageFiles Include="Web.Template.config;"/>
+    </ItemGroup>
+    <Message Text="ExcludeFromPackageFiles: @(ExcludeFromPackageFiles)" Importance="high"/>
+  </Target>
 </Project>
