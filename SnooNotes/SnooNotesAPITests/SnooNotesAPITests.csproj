@@ -81,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SnooNotesAPI\SnooNotesAPI.csproj">
-      <Project>{554BB3B8-384F-4B82-A7C6-0EFEDF986FFC}</Project>
+      <Project>{554bb3b8-384f-4b82-a7c6-0efedf986ffc}</Project>
       <Name>SnooNotesAPI</Name>
     </ProjectReference>
     <ProjectReference Include="..\SnooNotesPermissions\SnooNotesPermissions.csproj">
