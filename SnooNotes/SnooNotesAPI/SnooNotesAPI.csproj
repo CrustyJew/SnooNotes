@@ -59,6 +59,10 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -103,6 +107,10 @@
     <Reference Include="Owin.Security.Providers, Version=1.21.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Owin.Security.Providers.dll</HintPath>
+    </Reference>
+    <Reference Include="RedditSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\$(Configuration)\RedditSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -273,6 +281,12 @@
     <Content Include="Global.asax" />
     <Content Include="Icon.png" />
     <Content Include="index.html" />
+    <Content Include="lib\Debug\RedditSharp.dll" />
+    <Content Include="lib\Debug\RedditSharp.pdb" />
+    <Content Include="lib\Debug\RedditSharp.XML" />
+    <Content Include="lib\Placeholder.txt" />
+    <Content Include="lib\Release\RedditSharp.dll" />
+    <Content Include="lib\Release\RedditSharp.pdb" />
     <Content Include="Owin.Security.Providers.dll" />
     <Content Include="Owin.Security.Providers.pdb" />
     <Content Include="Owin.Security.Providers.XML" />
@@ -331,6 +345,12 @@
     <Content Include="Views\Home\UnrecognizedBrowser.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <Content Include="Views\Auth\LoginRedirect.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -354,12 +374,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\RedditSharp\RedditSharp\RedditSharp.csproj">
-      <Project>{a368cb75-75f0-4489-904d-b5cebb0fe624}</Project>
-      <Name>RedditSharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
