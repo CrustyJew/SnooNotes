@@ -188,6 +188,10 @@
     margin-bottom: 5px;
 }
 
+#SNNoteTypesDesc {
+    font-weight: bold;
+}
+
 div.growlUISuccess h1 {
     color: #3c763d !important;
     font-weight: bold;
@@ -216,7 +220,7 @@ div.growlUI h2 {
 
 #SNSubRedditSettings .SNNoteTypes {
     display: inline-block;
-    width: 595px;
+    width: 650px;
     padding: 5px;
     border: 1px solid transparent;
     background-color: lightgrey;

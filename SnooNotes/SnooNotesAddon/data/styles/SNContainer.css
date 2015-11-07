@@ -4,7 +4,7 @@
     z-index: 90000;
     background-color: white;
     border: darkgrey 1px solid;
-    min-width: 580px;
+    min-width: 700px;
     max-width: 750px;
     border-radius: 10px;
     min-height: 150px;
@@ -57,6 +57,7 @@
 .SNMessage {
     border-radius: 0 10px 10px 0; 
     position:relative;
+    white-space:pre-wrap;
 }
 
 .SNClose {
@@ -74,17 +75,28 @@
 }
 
 .SNNewNote {
-    margin-left: -200px;
+    margin-left: -340px;
     padding-left: 50%;
     padding-top: 10px;
     height: 81px;
 }
 
+.SNNewNoteSub{
+    float:left;
+    margin-right:15px;
+    margin-top:-10px;
+    height:20px;
+    position:relative;
+    top:50%;
+    width:125px;
+}
+
 .SNNewMessage {
-    height: 75px;
+    height: 100%;
     resize: none;
     width: 400px;
     box-sizing:border-box;
+    float:left;
 }
 .SNNewMessage:disabled {
     background: rgba(200,200,200,0.9)none repeat scroll 0 0;
@@ -97,13 +109,15 @@
     height: 32px;
     vertical-align: middle;
     position: relative;
-    top: -36px;
+    top: 50%;
+    margin-top:-16px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.24);
     color:#fff;
     border: 1px solid darkgrey;
     font-family: Verdana,Arial,sans-serif;
     text-transform:none;
     border-radius:2px;
+    float:left;
 }
 
 .SNNewNoteSubmit:disabled{

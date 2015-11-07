@@ -32,7 +32,7 @@ namespace SnooNotesAPI.Models
         public static IEnumerable<Subreddit> GetSubreddits(IEnumerable<string> subnames){
             using (SqlConnection con = new SqlConnection(constring))
             {
-                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, " +
+                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, ss.TempBanID, ss.PermBanID, " +
                                "nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic " + 
                                "from Subreddits s " +
                                "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
@@ -74,7 +74,7 @@ namespace SnooNotesAPI.Models
         {
             using (SqlConnection con = new SqlConnection(constring))
             {
-                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask from Subreddits s left join " +
+                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, ss.TempBanID, ss.PermBanID from Subreddits s left join " +
                                "SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
                                "where active = 1";
                 var result = con.Query<Subreddit, SubredditSettings, Subreddit>(query, (s, ss) =>
@@ -96,9 +96,16 @@ namespace SnooNotesAPI.Models
             {
                 string query = "update ss " +
                                 "set ss.AccessMask = @AccessMask " +
+								", ss.PermBanID = @PermBanID " +
+								", ss.TempBanID = @TempBanID " +
                                 "from SubredditSettings ss inner join Subreddits s on s.SubRedditID = ss.SubRedditID " +
                                 "where s.subname = @SubName";
-                con.Execute(query, new { sub.Settings.AccessMask, sub.SubName });
+                int rows = con.Execute(query, new { sub.Settings.AccessMask,sub.Settings.PermBanID,sub.Settings.TempBanID, sub.SubName });
+				if (rows <= 0 ) {
+					string insert = "insert into SubredditSettings(SubRedditID,AccessMask,PermBanID,TempBanID) " +
+									"(select SubRedditID, @AccessMask ,@PermBanID,@TempBanID from Subreddits where SubName = @SubName)";
+					con.Execute( insert, new { sub.Settings.AccessMask, sub.Settings.PermBanID, sub.Settings.TempBanID, sub.SubName } );
+				}
             }
             return true;
         }

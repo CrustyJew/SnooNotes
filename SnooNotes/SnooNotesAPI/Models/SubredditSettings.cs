@@ -9,6 +9,9 @@ namespace SnooNotesAPI.Models
     {
         public int AccessMask { get; set; }
         public List<NoteType> NoteTypes { get; set; }
+		public int? PermBanID { get; set; }
+		public int? TempBanID { get; set; }
+
 
         public SubredditSettings()
         {

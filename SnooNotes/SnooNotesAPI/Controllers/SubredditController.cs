@@ -90,11 +90,20 @@ namespace SnooNotesAPI.Controllers
         {
             if (sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128)
             {
-                throw new HttpResponseException(new HttpResponseMessage() { ReasonPhrase = "Invalid AccessMask", StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent("Access Mask was invalid") });
+                throw new HttpResponseException(new HttpResponseMessage() { ReasonPhrase = "Invalid AccessMask", StatusCode = HttpStatusCode.BadRequest, Content = new StringContent("Access Mask was invalid") });
             }
             else if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
             {
                 sub.SubName = id;
+				var noteTypes = Models.NoteType.GetNoteTypesForSubs( new List<string>() { id } );
+
+				if ( sub.Settings.PermBanID.HasValue && !noteTypes.Any(nt=>nt.NoteTypeID == sub.Settings.PermBanID.Value) ) {
+					throw new HttpResponseException( new HttpResponseMessage() { ReasonPhrase = "Invalid Perm Ban ID", StatusCode = HttpStatusCode.BadRequest, Content = new StringContent( "Perm Ban id was invalid" ) } );
+				}
+				if ( sub.Settings.TempBanID.HasValue && !noteTypes.Any( nt => nt.NoteTypeID == sub.Settings.TempBanID.Value ) ) {
+					throw new HttpResponseException( new HttpResponseMessage() { ReasonPhrase = "Invalid Temp Ban ID", StatusCode = HttpStatusCode.BadRequest, Content = new StringContent( "Temp Ban id was invalid" ) } );
+				}
+
                 Models.Subreddit.UpdateSubredditSettings(sub);
                 
                 bool updated = Utilities.AuthUtils.UpdateModsForSub(sub);
