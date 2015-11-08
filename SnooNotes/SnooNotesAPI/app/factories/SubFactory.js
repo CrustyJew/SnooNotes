@@ -7,7 +7,7 @@
         exports.getSubsWithAdmin = function () {
             var deferred = $q.defer();
 
-            $http.get('restapi/Subreddit').then(
+            $http.get('restapi/Subreddit?id=admin').then(
                 function (d) {
                     _adminSubs = d.data;
                     _adminSubNames = _adminSubs.map(function (sub) {

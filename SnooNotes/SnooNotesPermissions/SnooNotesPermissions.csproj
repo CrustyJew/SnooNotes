@@ -104,7 +104,6 @@
     <Compile Include="SubredditSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
@@ -154,6 +153,5 @@
       </AppConfigWithTargetPath>
     </ItemGroup>
   </Target>
-
-
+  <Import Project="..\packages\Microsoft.Web.WebJobs.Publish.1.0.4\tools\webjobs.targets" Condition="Exists('..\packages\Microsoft.Web.WebJobs.Publish.1.0.4\tools\webjobs.targets')" />
 </Project>

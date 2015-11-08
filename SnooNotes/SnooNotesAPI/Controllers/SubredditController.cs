@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
 using System.Security.Claims;
 using System.Runtime.Caching;
 using Microsoft.Owin;
 using Microsoft.AspNet.Identity.Owin;
 using System.Web;
 using Microsoft.AspNet.Identity;
+using System.Web.Http;
 
 namespace SnooNotesAPI.Controllers
 {
@@ -20,24 +20,29 @@ namespace SnooNotesAPI.Controllers
         public IEnumerable<Models.Subreddit> Get()
         {
             var subs = (ClaimsPrincipal.Current.Identity as ClaimsIdentity).Claims.Where(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Select(c => c.Value);
-            subs = subs.Where(s => ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + s + ":admin", "true"));
+            //subs = subs.Where(s => ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + s + ":admin", "true"));
             return Models.Subreddit.GetSubreddits(subs);
         }
 
         // GET: api/Subreddit/videos
-        public Models.Subreddit Get(string id)
+        public IEnumerable<Models.Subreddit> Get(string id)
         {
 
-
-
-            if (ClaimsPrincipal.Current.IsInRole(id.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id + ":admin", "true"))
-            {
-                return Models.Subreddit.GetSubreddits(new string[] { id }).First();
+            if ( id.ToLower() == "admin" ) {
+                var subs = ( ClaimsPrincipal.Current.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == ClaimsIdentity.DefaultRoleClaimType ).Select( c => c.Value );
+                subs = subs.Where( s => ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + s + ":admin", "true" ) );
+                return Models.Subreddit.GetSubreddits( subs );
             }
-            else
-            {
-                throw new UnauthorizedAccessException("You are not a moderator of that subreddit, or you don't have full permissions!");
-            };
+            else {
+                List<Models.Subreddit> toReturn = new List<Models.Subreddit>();
+                foreach ( string sub in id.Split( ',' ) ) {
+                    if (!( ClaimsPrincipal.Current.IsInRole( id.ToLower() ) && ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + id + ":admin", "true" )) ) {
+                        throw new UnauthorizedAccessException( "You are not a moderator of that subreddit, or you don't have full permissions!" );
+                    }
+                    
+                }
+                return Models.Subreddit.GetSubreddits( id.Split( ',' ) );
+            }
         }
 
         // POST: api/Subreddit
