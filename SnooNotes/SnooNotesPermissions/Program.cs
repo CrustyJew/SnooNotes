@@ -111,12 +111,14 @@ namespace SnooNotesPermissions {
 			}
 
 			foreach(string user in sub.Users ) {
-				if(mods.Count( m => m.Name.ToLower() == user ) == 0 ) {
+                var mod = mods.SingleOrDefault( m => m.Name.ToLower() == user );
+                
+                if (mod == null || (((int) mod.Permissions & sub.AccessMask ) <= 0 && !mod.Permissions.HasFlag(RedditSharp.ModeratorPermission.All))) {
 					userIdsToRemove.Add( users[user].Id );
 				}
 			}
 			foreach (string admin in sub.SubAdmins ) {
-				var mod = mods.Single( m => m.Name.ToLower() == admin );
+				var mod = mods.SingleOrDefault( m => m.Name.ToLower() == admin );
                 if (mod == null || !mod.Permissions.HasFlag(RedditSharp.ModeratorPermission.All ) ) {
 					userIdsToRemoveAdmin.Add( users[admin].Id );
 				}
