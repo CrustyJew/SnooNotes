@@ -80,6 +80,7 @@ namespace SnooNotesAPI
             {   
                 ClientId = System.Configuration.ConfigurationManager.AppSettings["RedditClientID"],
                 ClientSecret = System.Configuration.ConfigurationManager.AppSettings["RedditClientSecret"], 
+                //CallbackPath = new PathString(System.Configuration.ConfigurationManager.AppSettings["RedditRedirectURI"]),
                 UserAgent = "SnooNotes (by /u/meepster23)",
                 Provider = new Owin.Security.Providers.Reddit.Provider.RedditAuthenticationProvider()
                 {

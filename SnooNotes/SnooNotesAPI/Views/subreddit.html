@@ -91,7 +91,10 @@
                     </td>
                 </tr>
             </table>
-            <input type="submit" class="snSubmit" value="Import Notes" />
+            <input type="submit" class="snSubmit" value="Import Notes" ng-hide="importing||imported||error"/>
+            <div ng-show="importing"><h2>Importing notes...</h2></div>
+            <div ng-show="imported"><h2>Notes have been imported!</h2></div>
+            <div ng-show="error"><h2 style="color:red;">An error occured. Blame /u/meepster23 ..</h2></div>
         </div>
     </form>
     <div ng-show="!currentUser.hasWikiRead">

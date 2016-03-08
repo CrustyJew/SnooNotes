@@ -4,6 +4,8 @@
 
 function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
     $scope.import = {};
+    $scope.importing = false;
+    $scope.imported = false;
     $scope.currentUser = AuthFactory.currentUser;
     var subSettings = SubFactory.getByName($stateParams.subName);
     if (!subSettings) {
@@ -49,7 +51,8 @@ function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
         for (var propertyName in $scope.import) {
             noteMapping[propertyName] = $scope.import[propertyName].NoteTypeID;
         }
-        SubFactory.importTBNotes(noteMapping);
+        $scope.importing = true;
+        SubFactory.importTBNotes(noteMapping).then(function () { $scope.imported = true; $scope.importing = false; }, function () { $scope.error = true; $scope.importing = false; });
     }
     //$scope.selChange = function () {
     //    this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value);

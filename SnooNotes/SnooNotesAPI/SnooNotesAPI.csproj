@@ -317,6 +317,7 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="Addon\updates.rdf" />
+    <None Include="Properties\PublishProfiles\SnooNotesApi - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
