@@ -8,7 +8,7 @@
     [Bold] BIT NOT NULL, 
     [Italic] BIT NOT NULL, 
     [Disabled] BIT NOT NULL DEFAULT 0, 
-    CONSTRAINT [FK_NoteTypes_Subreddit] FOREIGN KEY ([SubRedditID]) REFERENCES SubReddits([SubRedditID]) 
+    CONSTRAINT [FK_NoteTypes_Subreddit] FOREIGN KEY ([SubredditID]) REFERENCES Subreddits([SubredditID]) 
 )
 
 GO

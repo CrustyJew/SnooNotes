@@ -2,12 +2,12 @@ function initSnooNotes() {
     (function (snUtil) {
         
 
-        snUtil.ApiBase = "https://snoonotes.com/api/";
-        snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-        snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
-        //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-        //snUtil.ApiBase = "https://localhost:44311/api/";
-        //snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+        //snUtil.ApiBase = "https://snoonotes.com/api/";
+        //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+        //snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
+        snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+        snUtil.ApiBase = "https://localhost:44311/api/";
+        snUtil.RESTApiBase = "https://localhost:44311/restapi/";
         snUtil.Permissions = {};
         snUtil.Permissions.None = 0x00;
         snUtil.Permissions.Access = 0x01;

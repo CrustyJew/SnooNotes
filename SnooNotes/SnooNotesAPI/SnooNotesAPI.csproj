@@ -208,6 +208,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="BLL\NotesBLL.cs" />
+    <Compile Include="BLL\NoteTypesBLL.cs" />
+    <Compile Include="BLL\SubredditBLL.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -217,6 +220,9 @@
     <Compile Include="Controllers\ToolBoxNotesController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="DAL\NotesDAL.cs" />
+    <Compile Include="DAL\NoteTypesDAL.cs" />
+    <Compile Include="DAL\SubredditDAL.cs" />
     <Compile Include="Migrations\201506091908448_Initial.cs" />
     <Compile Include="Migrations\201506091908448_Initial.Designer.cs">
       <DependentUpon>201506091908448_Initial.cs</DependentUpon>

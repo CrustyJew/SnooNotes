@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Threading.Tasks;
+
 namespace SnooNotesAPI.Controllers
 {
     [Authorize]
@@ -42,7 +44,7 @@ namespace SnooNotesAPI.Controllers
 
         // POST: api/ToolBoxNotes
         [ValidateModel]
-        public int Post([FromBody]RequestObjects.TBImportMapping value)
+        public Task<int> Post([FromBody]RequestObjects.TBImportMapping value)
         {
             if (!(User as ClaimsPrincipal).HasClaim("urn:snoonotes:subreddits:" + value.subName.ToLower() + ":admin", "true"))
             {
@@ -63,7 +65,7 @@ namespace SnooNotesAPI.Controllers
             var notes = RedditSharp.ToolBoxUserNotes.GetUserNotes(agent, value.subName);
             List<Models.Note> convertedNotes = Utilities.TBNoteUtils.ConvertTBNotesToSnooNotes(value.subName, value.GetNoteTypeMapping(), notes.ToList());
 
-            return Models.Note.AddNewToolBoxNotes(convertedNotes);
+            return new DAL.NotesDAL().AddNewToolBoxNotes(convertedNotes);
         }
 
         // PUT: api/ToolBoxNotes/5

@@ -185,7 +185,7 @@ namespace SnooNotesAPI.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     string accessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value;
                     var user = new Models.ApplicationUser() { UserName = loginInfo.Login.ProviderKey, RefreshToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:refresh").Value, AccessToken = loginInfo.ExternalIdentity.FindFirst("urn:reddit:accesstoken").Value, TokenExpires = DateTime.UtcNow.AddMinutes(50), LastUpdatedRoles = DateTime.UtcNow };
-                    Utilities.AuthUtils.UpdateModeratedSubreddits(user);
+                    await Utilities.AuthUtils.UpdateModeratedSubreddits(user);
                     var createuser = await UserManager.CreateAsync(user);
                     if (createuser.Succeeded)
                     {
