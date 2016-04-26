@@ -19,7 +19,8 @@ namespace SnooNotesAPI.Controllers {
             }
             else if (Request.Browser.Browser == "Firefox")
             {
-                return File("/Addon/snoonotes.xpi", "application/x-xpinstall");
+                //return File("/Addon/snoonotes.xpi", "application/x-xpinstall");
+                return Redirect( "https://addons.mozilla.org/en-US/firefox/addon/snoonotes/" );
             }
             else
             {
