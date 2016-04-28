@@ -2,7 +2,7 @@
 
 <p>This is where you'll be able to manage all aspects of your subreddit outside of the addon's "Options" page on Reddit itself.</p>
 <p>More features will be coming including the ability to search all notes you have etc! But right now, this is where you can import all your notes from Mod Toolbox into SnooNotes.</p>
-<div class="importTBNotes">
+<div class="importTBNotes boxArea">
     <h2>Import Toolbox Notes</h2>
     <p>Select the SnooNotes note types that you want to map Toolbox notes to below. No notes will be deleted from either system during this process, only notes that exist in Toolbox and don't exist in SnooNotes will be imported. </p>
     <form name="frmImportTBNotes" ng-submit="importNotes()" ng-show="currentUser.hasWikiRead">
@@ -91,7 +91,7 @@
                     </td>
                 </tr>
             </table>
-            <input type="submit" class="snSubmit" value="Import Notes" ng-hide="importing||imported||error"/>
+            <input type="submit" class="snSubmit" value="Import Notes" ng-hide="importing||imported||error" />
             <div ng-show="importing"><h2>Importing notes...</h2></div>
             <div ng-show="imported"><h2>Notes have been imported!</h2></div>
             <div ng-show="error"><h2 style="color:red;">An error occured. Blame /u/meepster23 ..</h2></div>
@@ -102,4 +102,22 @@
             You need to log in with 'Wiki' access to be able to import notes from Moderator Toolbox!
         </h2>
     </div>
+</div>
+<div class="boxArea">
+    <h2>Codeword Dirtbag Reddit Bot Integration</h2>
+    <form name="frmBotIntegration" ng-submit="updateSub()">
+        <label class="control-label" for="url">URL</label>
+        <input type="text" class="form-control" name="url" ng-model="sub.BotSettings.DirtbagUrl" placeholder="For the love of all that is holy, use https!" />
+        <label class="control-label" for="username">Username</label>
+        <input type="text" class="form-control" id="username" ng-model="sub.BotSettings.DirtbagUsername"/>
+        <label class="control-label" for="password">Password</label>
+        <input type="password" class="form-control" name="password" ng-model="sub.BotSettings.DirtbagPassword" placeholder="{{sub.BotSettings.DirtbagUrl ? 'Saved' : ''}}"/>
+
+        <div class="buttonContainer">
+            <input type="button" class="snInfoButton" value="Test" ng-click="testDirtbag()" />
+            <input type="submit" class="snSubmit" value="Save" />
+            <input type="button" class="snInfoButton" value="Reset" ng-click="reset()" ng-hide="frmBotIntegration.$pristine" />
+            <div class="message" ng-class="{hasError: !testSuccess}">{{dirtbagMessage}}</div>
+        </div>
+    </form>
 </div>

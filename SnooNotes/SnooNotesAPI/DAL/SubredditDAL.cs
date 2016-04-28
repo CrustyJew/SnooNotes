@@ -10,21 +10,22 @@ using System.Threading.Tasks;
 
 namespace SnooNotesAPI.DAL {
     public class SubredditDAL {
-        private static string constring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private static string connstring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
 
         public async Task<string> AddSubreddit( Subreddit sub ) {
             sub.SubName = sub.SubName;
-            using ( SqlConnection con = new SqlConnection( constring ) ) {
+            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "insert into Subreddits (SubName,Active) values (@SubName,@Active)";
-                await con.ExecuteAsync( query, new { sub.SubName, sub.Active } );
+                await conn.ExecuteAsync( query, new { sub.SubName, sub.Active } );
                 string result = "Success";
                 return result;
             }
         }
 
         public async Task<IEnumerable<Subreddit>> GetSubreddits( IEnumerable<string> subnames ) {
-            using ( SqlConnection con = new SqlConnection( constring ) ) {
-                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, ss.TempBanID, ss.PermBanID, " +
+            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
+                string query = "select s.SubredditID, s.SubName, s.Active, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, "+
+                               "ss.AccessMask, ss.TempBanID, ss.PermBanID, " +
                                "nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic " +
                                "from Subreddits s " +
                                "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
@@ -32,7 +33,7 @@ namespace SnooNotesAPI.DAL {
                                "where s.SubName in @subnames and nt.Disabled = 0";
 
                 var lookup = new Dictionary<int, Subreddit>();
-                var result = await con.QueryAsync<Subreddit, SubredditSettings, NoteType, Subreddit>( query, ( s, ss, nt ) => {
+                var result = await conn.QueryAsync<Subreddit, DirtbagSettings, SubredditSettings, NoteType, Subreddit>( query, ( s, bs, ss, nt ) => {
                     Subreddit sub;
                     if ( !lookup.TryGetValue( s.SubredditID, out sub ) ) {
                         lookup.Add( s.SubredditID, sub = s );
@@ -44,10 +45,11 @@ namespace SnooNotesAPI.DAL {
                     else if ( sub.Settings == null ) {
                         sub.Settings = ss;
                     }
+                    sub.BotSettings = bs;
                     sub.Settings.NoteTypes.Add( nt );
 
                     return sub;
-                }, splitOn: "AccessMask,NoteTypeID", param: new { subnames } );
+                }, splitOn: "DirtbagUrl,AccessMask,NoteTypeID", param: new { subnames } );
                 //string noteTypeQuery = "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt "
                 //        + " inner join Subreddits s on s.SubredditID = nt.SubredditID"
                 //        + " where s.SubName in @subnames";
@@ -59,12 +61,36 @@ namespace SnooNotesAPI.DAL {
 
         }
 
+        public async Task<bool> UpdateBotSettings(Subreddit sub ) {
+            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
+                string query = @"
+update Subreddits s
+set s.DirtbagUrl = @DirtbagUrl,
+s.DirtbagUsername = @DirtbagUsername,
+s.DirtbagPassword = @DirtbagPassword
+";
+                await conn.ExecuteAsync( query, new { sub.BotSettings.DirtbagUrl, sub.BotSettings.DirtbagUsername, sub.BotSettings.DirtbagPassword } );
+                return true;
+            }
+        }
+
+        public async Task<DirtbagSettings> GetBotSettings(string subName ) {
+            using (SqlConnection conn = new SqlConnection( connstring ) ) {
+                string query = @"
+select s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword
+FROM Subreddits s
+WHERE s.SubName = @subName
+";
+                return ( await conn.QueryAsync<DirtbagSettings>( query, new { subName } ) ).FirstOrDefault();
+            }
+        }
+
         public async Task<List<Subreddit>> GetActiveSubs() {
-            using ( SqlConnection con = new SqlConnection( constring ) ) {
+            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, ss.TempBanID, ss.PermBanID from Subreddits s left join " +
                                "SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
                                "where active = 1";
-                var result = await con.QueryAsync<Subreddit, SubredditSettings, Subreddit>( query, ( s, ss ) => {
+                var result = await conn.QueryAsync<Subreddit, SubredditSettings, Subreddit>( query, ( s, ss ) => {
                     if ( ss == null ) {
                         ss = new SubredditSettings();
                     }
@@ -76,18 +102,18 @@ namespace SnooNotesAPI.DAL {
         }
 
         public async Task<bool> UpdateSubredditSettings( Subreddit sub ) {
-            using ( SqlConnection con = new SqlConnection( constring ) ) {
+            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "update ss " +
                                 "set ss.AccessMask = @AccessMask " +
                                 ", ss.PermBanID = @PermBanID " +
                                 ", ss.TempBanID = @TempBanID " +
                                 "from SubredditSettings ss inner join Subreddits s on s.SubRedditID = ss.SubRedditID " +
                                 "where s.subname = @SubName";
-                int rows = await con.ExecuteAsync( query, new { sub.Settings.AccessMask, sub.Settings.PermBanID, sub.Settings.TempBanID, sub.SubName } );
+                int rows = await conn.ExecuteAsync( query, new { sub.Settings.AccessMask, sub.Settings.PermBanID, sub.Settings.TempBanID, sub.SubName } );
                 if ( rows <= 0 ) {
                     string insert = "insert into SubredditSettings(SubRedditID,AccessMask,PermBanID,TempBanID) " +
                                     "(select SubRedditID, @AccessMask ,@PermBanID,@TempBanID from Subreddits where SubName = @SubName)";
-                    con.Execute( insert, new { sub.Settings.AccessMask, sub.Settings.PermBanID, sub.Settings.TempBanID, sub.SubName } );
+                    conn.Execute( insert, new { sub.Settings.AccessMask, sub.Settings.PermBanID, sub.Settings.TempBanID, sub.SubName } );
                 }
             }
             return true;

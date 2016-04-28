@@ -13,6 +13,7 @@ function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
         $scope.sub = { SubName: "ERROR" };
     } else {
         $scope.sub = subSettings;
+        $scope.sub.oldBotSettings = angular.copy(subSettings.BotSettings);
     }
     for (var i = 0; i < $scope.sub.Settings.NoteTypes.length; i++) {
         var nt = $scope.sub.Settings.NoteTypes[i];
@@ -53,6 +54,26 @@ function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
         }
         $scope.importing = true;
         SubFactory.importTBNotes(noteMapping).then(function () { $scope.imported = true; $scope.importing = false; }, function () { $scope.error = true; $scope.importing = false; });
+    }
+
+    $scope.updateSub = function () {
+        $scope.updating = true;
+        $scope.updated = false;
+        $scope.updatingError = "";
+        SubFactory.updateSub($scope.sub).
+            then(function (d) {
+                $scope.updating = false;
+                $scope.updated = true;
+            }, function (e) {
+                $scope.updating = false;
+                $scope.updatingError = e;
+            });
+
+    }
+
+    $scope.reset = function () {
+        $scope.sub.BotSettings = angular.copy($scope.sub.oldBotSettings);
+        $scope.frmBotIntegration.$setPristine();
     }
     //$scope.selChange = function () {
     //    this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value);

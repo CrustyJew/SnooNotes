@@ -208,11 +208,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="BLL\DirtbagBLL.cs" />
     <Compile Include="BLL\NotesBLL.cs" />
     <Compile Include="BLL\NoteTypesBLL.cs" />
     <Compile Include="BLL\SubredditBLL.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\DirtbagController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
     <Compile Include="Controllers\NoteTypeController.cs" />
@@ -242,6 +244,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BasicNote.cs" />
     <Compile Include="Models\BasicNoteType.cs" />
+    <Compile Include="Models\DirtbagSettings.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteType.cs" />
@@ -270,6 +273,7 @@
     <Content Include="app\controllers\navsub.js" />
     <Content Include="app\controllers\subreddit.js" />
     <Content Include="app\factories\AuthFactory.js" />
+    <Content Include="app\factories\DirtbagFactory.js" />
     <Content Include="app\factories\SubFactory.js" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />

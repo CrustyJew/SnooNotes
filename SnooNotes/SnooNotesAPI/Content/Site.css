@@ -11,9 +11,9 @@
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
+.importTBNotes input,
+.importTBNotes select,
+.importTBNotes textarea {
     max-width: 280px;
 }
 
@@ -128,7 +128,7 @@ a {
     width:200px;
 }
 
-div.importTBNotes{
+div.boxArea{
     background-color:whitesmoke; 
     padding:5px 10px 10px 10px;
     border-radius:5px;
@@ -136,6 +136,29 @@ div.importTBNotes{
     border:1px solid lightgrey;
 }
 
+.boxArea form{
+    padding-left:10px;
+}
+
+.snInfoButton{
+    background: linear-gradient(to bottom, #32cdfc, #05abe0); 
+    font-weight:bold;
+    padding: 2px 18px;
+    color:#fff; 
+    height:32px; 
+    font-size:16px; 
+    font-weight:bold;
+    border-radius:2px;
+    border:1px solid darkgrey;
+}
+
+.buttonContainer{
+    padding:15px;
+    text-align:center;
+}
+.buttonContainer input{
+    margin:10px;
+}
 .snFeature{
     background-color:whitesmoke; 
     padding:5px 10px 10px 10px;

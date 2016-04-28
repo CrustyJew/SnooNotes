@@ -54,5 +54,18 @@
 
             return deferred.promise;
         }
+
+        exports.updateSub = function (sub) {
+            var deferred = $q.defer();
+
+            $http.put('restapi/Subreddit/' + sub.SubName, JSON.stringify(sub)).
+                then(function (r) {
+                    deferred.resolve(r.data);
+                }, function (e) {
+                    deferred.reject(e);
+                });
+
+            return deferred.promise;
+        }
         return exports;
     });
