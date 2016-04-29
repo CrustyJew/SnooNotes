@@ -159,6 +159,15 @@ div.boxArea{
 .buttonContainer input{
     margin:10px;
 }
+
+div.hasError{
+    color:red;
+    font-weight:bold;
+}
+
+div.success{
+    color:green;
+}
 .snFeature{
     background-color:whitesmoke; 
     padding:5px 10px 10px 10px;

@@ -61,15 +61,17 @@ namespace SnooNotesAPI.DAL {
 
         }
 
-        public async Task<bool> UpdateBotSettings(Subreddit sub ) {
+        public async Task<bool> UpdateBotSettings(DirtbagSettings settings, string subName) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = @"
-update Subreddits s
-set s.DirtbagUrl = @DirtbagUrl,
-s.DirtbagUsername = @DirtbagUsername,
-s.DirtbagPassword = @DirtbagPassword
+update Subreddits
+set DirtbagUrl = @DirtbagUrl,
+DirtbagUsername = @DirtbagUsername,
+DirtbagPassword = @DirtbagPassword
+WHERE
+SubName = @subName
 ";
-                await conn.ExecuteAsync( query, new { sub.BotSettings.DirtbagUrl, sub.BotSettings.DirtbagUsername, sub.BotSettings.DirtbagPassword } );
+                await conn.ExecuteAsync( query, new { settings.DirtbagUrl, settings.DirtbagUsername, settings.DirtbagPassword, subName } );
                 return true;
             }
         }

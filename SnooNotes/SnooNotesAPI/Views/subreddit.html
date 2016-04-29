@@ -111,13 +111,13 @@
         <label class="control-label" for="username">Username</label>
         <input type="text" class="form-control" id="username" ng-model="sub.BotSettings.DirtbagUsername"/>
         <label class="control-label" for="password">Password</label>
-        <input type="password" class="form-control" name="password" ng-model="sub.BotSettings.DirtbagPassword" placeholder="{{sub.BotSettings.DirtbagUrl ? 'Saved' : ''}}"/>
+        <input type="password" class="form-control" name="password" ng-model="sub.BotSettings.DirtbagPassword" placeholder="{{sub.BotSettings.DirtbagUrl && !urlChanged() ? 'Saved' : ''}}"/>
 
         <div class="buttonContainer">
             <input type="button" class="snInfoButton" value="Test" ng-click="testDirtbag()" />
-            <input type="submit" class="snSubmit" value="Save" />
+            <input type="submit" class="snSubmit" value="Save" ng-disabled="updating" />
             <input type="button" class="snInfoButton" value="Reset" ng-click="reset()" ng-hide="frmBotIntegration.$pristine" />
-            <div class="message" ng-class="{hasError: !testSuccess}">{{dirtbagMessage}}</div>
+            <div class="message" ng-class="{hasError: !successMessage, success: successMessage}">{{dirtbagMessage}}</div>
         </div>
     </form>
 </div>

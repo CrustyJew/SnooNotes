@@ -198,6 +198,7 @@
     <Folder Include="App_Start\App_Data\" />
     <Folder Include="Areas\" />
     <Folder Include="DataAccess\" />
+    <Folder Include="Helpers\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\ToolBoxNotes\" />
   </ItemGroup>
@@ -222,6 +223,7 @@
     <Compile Include="Controllers\ToolBoxNotesController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="DAL\DirtbagDAL.cs" />
     <Compile Include="DAL\NotesDAL.cs" />
     <Compile Include="DAL\NoteTypesDAL.cs" />
     <Compile Include="DAL\SubredditDAL.cs" />

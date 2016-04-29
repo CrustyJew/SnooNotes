@@ -2,7 +2,7 @@
        .module('SnooNotes')
        .controller('SubredditCtrl', SubredditCtrl);
 
-function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
+function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory, DirtbagFactory) {
     $scope.import = {};
     $scope.importing = false;
     $scope.imported = false;
@@ -58,15 +58,19 @@ function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
 
     $scope.updateSub = function () {
         $scope.updating = true;
-        $scope.updated = false;
-        $scope.updatingError = "";
-        SubFactory.updateSub($scope.sub).
+        $scope.dirtbagMessage = "";
+        DirtbagFactory.saveSettings($scope.sub.BotSettings, $scope.sub.SubName).
             then(function (d) {
                 $scope.updating = false;
-                $scope.updated = true;
+                $scope.sub.BotSettings = angular.copy(d);
+                $scope.sub.oldBotSettings = angular.copy(d);
+                $scope.frmBotIntegration.$setPristine();
+                $scope.dirtbagMessage = "Saved settings!";
+                $scope.successMessage = true;
             }, function (e) {
                 $scope.updating = false;
-                $scope.updatingError = e;
+                $scope.dirtbagMessage = e;
+                $scope.successMessage = false;
             });
 
     }
@@ -75,6 +79,20 @@ function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory) {
         $scope.sub.BotSettings = angular.copy($scope.sub.oldBotSettings);
         $scope.frmBotIntegration.$setPristine();
     }
+
+    $scope.testDirtbag = function () {
+        DirtbagFactory.testConnection($scope.sub.BotSettings, $scope.sub.SubName)
+            .then(function (success) {
+                $scope.successMessage = true; $scope.dirtbagMessage = "Test Succeeded!"
+            }, function (e) {
+                $scope.successMessage = false; $scope.dirtbagMessage = e;
+            })
+    }
+
+    $scope.urlChanged= function(){
+        return $scope.sub.BotSettings.DirtbagUrl != $scope.sub.oldBotSettings.DirtbagUrl;
+    }
+    
     //$scope.selChange = function () {
     //    this.setAttribute('style', this.options[this.selectedIndex].attributes['style'].value);
     //}
