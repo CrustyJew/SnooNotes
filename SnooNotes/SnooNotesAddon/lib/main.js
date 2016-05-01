@@ -19,7 +19,7 @@ pageMod.PageMod({
         data.url("styles/SNOptions.css"),
         data.url("styles/jquery-ui.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
-        data.url("libs/jquery.blockUI.min.js"),
+        data.url("libs/jquery.blockUI.js"),
         data.url("libs/jquery-ui.js"),
         data.url("modules/SNFirefox.js"),
         data.url("modules/SNLoad.js"),
@@ -73,7 +73,7 @@ pageMod.PageMod({
 
 var pageWorker = require("sdk/page-worker").Page({
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
-        data.url("libs/jquery.signalR-2.2.0.min.js"),
+        data.url("libs/jquery.signalR-2.2.0.js"),
         data.url("libs/snUpdatesHub.js"),
         data.url("modules/SNWorkerFirefox.js"),
         data.url("modules/SNWorker.js")],

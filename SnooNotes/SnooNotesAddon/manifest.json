@@ -15,7 +15,7 @@
             "exclude_matches": ["*://*.reddit.com/api/v1/authorize*", "*://*.reddit.com/login*"],
             "js": [
                 "data/libs/jquery-2.1.3.min.js",
-                "data/libs/jquery.blockUI.min.js",
+                "data/libs/jquery.blockUI.js",
                 "data/libs/jquery-ui.js",
                 "data/modules/SNChrome.js",
                 "data/modules/SNLoad.js",
