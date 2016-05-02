@@ -101,8 +101,8 @@
     <Reference Include="Microsoft.Owin.Security.OAuth">
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin">
@@ -271,28 +271,27 @@
     <Content Include="app\app.js" />
     <Content Include="app\controllers\auth.js" />
     <Content Include="app\controllers\home.js" />
+    <Content Include="app\controllers\index.js" />
     <Content Include="app\controllers\nav.js" />
     <Content Include="app\controllers\navsub.js" />
     <Content Include="app\controllers\subreddit.js" />
+    <Content Include="app\directives\index.js" />
+    <Content Include="app\directives\styledDropdown.js" />
     <Content Include="app\factories\AuthFactory.js" />
     <Content Include="app\factories\DirtbagFactory.js" />
+    <Content Include="app\factories\index.js" />
     <Content Include="app\factories\SubFactory.js" />
     <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\sn1.PNG" />
     <Content Include="Content\sn2.png" />
     <Content Include="Content\sn2thumb.png" />
     <Content Include="Content\sn3.png" />
     <Content Include="Content\sn3thumb.png" />
-    <Content Include="Content\ui-bootstrap-csp.css" />
     <Content Include="favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Icon.png" />
+    <Content Include="gulpfile.js" />
     <Content Include="index.html" />
     <Content Include="lib\Debug\RedditSharp.dll" />
     <Content Include="lib\Debug\RedditSharp.pdb" />
@@ -303,37 +302,15 @@
     <Content Include="Owin.Security.Providers.dll" />
     <Content Include="Owin.Security.Providers.pdb" />
     <Content Include="Owin.Security.Providers.XML" />
-    <Content Include="Scripts\angular-cookies.js" />
-    <Content Include="Scripts\angular-cookies.min.js" />
     <Content Include="Scripts\angular-local-storage.min.js" />
-    <Content Include="Scripts\angular-mocks.js" />
-    <Content Include="Scripts\angular-route.js" />
-    <Content Include="Scripts\angular-route.min.js" />
-    <Content Include="Scripts\angular-ui-router.js" />
-    <Content Include="Scripts\angular-ui-router.min.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
-    <Content Include="Scripts\angular.js" />
-    <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
     <None Include="Addon\updates.rdf" />
+    <Content Include="package.json" />
+    <Content Include="app\site.scss" />
     <None Include="Properties\PublishProfiles\SnooNotesApi - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
-    <Content Include="Scripts\angular.min.js.map" />
-    <Content Include="Scripts\angular-route.min.js.map" />
-    <Content Include="Scripts\angular-cookies.min.js.map" />
     <Content Include="Properties\webjobs-list.json" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
@@ -341,7 +318,6 @@
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\npm.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Views\userguide.html" />
@@ -371,7 +347,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201506091908448_Initial.resx">
@@ -453,5 +428,38 @@
     </ItemGroup>
     <Message Text="ExcludeFromPackageFiles: @(ExcludeFromPackageFiles)" Importance="high" />
   </Target>
-  <Import Project="..\packages\Microsoft.Web.WebJobs.Publish.1.0.4\tools\webjobs.targets" Condition="Exists('..\packages\Microsoft.Web.WebJobs.Publish.1.0.4\tools\webjobs.targets')" />
+  <PropertyGroup>
+    <CompileDependsOn>
+      $(CompileDependsOn);
+      GulpBuild;
+    </CompileDependsOn>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      GulpClean
+    </CleanDependsOn>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="GulpBuild">
+    <Exec Command="npm install" />
+    <Exec Command="gulp $(ConfigurationName)" />
+  </Target>
+  <Target Name="GulpClean">
+    <Exec Command="gulp clean" />
+  </Target>
+  <Target Name="CollectGulpOutput">
+    <ItemGroup>
+      <CustomFiles Include="build\**\*" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>build\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="CollectGulpOutput list: %(_CustomFiles.Identity)" />
+  </Target>
 </Project>

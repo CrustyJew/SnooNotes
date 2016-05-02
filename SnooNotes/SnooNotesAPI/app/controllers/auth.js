@@ -1,8 +1,4 @@
-﻿angular
-       .module('SnooNotes')
-       .controller('AuthCtrl', AuthCtrl);
-
-function AuthCtrl($scope, AuthFactory, $modalInstance, $cookies,SubFactory, $state, $rootScope) {
+﻿module.exports = function ($scope, AuthFactory, $modalInstance, $cookies,SubFactory, $state, $rootScope) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');

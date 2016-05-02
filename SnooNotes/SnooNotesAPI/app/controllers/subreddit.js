@@ -1,8 +1,4 @@
-﻿angular
-       .module('SnooNotes')
-       .controller('SubredditCtrl', SubredditCtrl);
-
-function SubredditCtrl($scope, $stateParams, SubFactory, AuthFactory, DirtbagFactory) {
+﻿module.exports = function ($scope, $stateParams, SubFactory, AuthFactory, DirtbagFactory) {
     $scope.import = {};
     $scope.importing = false;
     $scope.imported = false;

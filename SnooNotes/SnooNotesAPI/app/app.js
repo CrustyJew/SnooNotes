@@ -1,10 +1,19 @@
-﻿
-angular.module('SnooNotes', [
+﻿require("angular");
+require("angular-local-storage");
+require("angular-cookies");
+require("angular-ui-router");
+require("angular-ui-bootstrap");
+var app = angular.module('SnooNotes', [
     'ui.router',
     'ngCookies',
     'LocalStorageModule',
     'ui.bootstrap'
-]).config(function ($stateProvider, $urlRouterProvider, $httpProvider) {
+]);
+
+require("./controllers");
+require("./factories");
+require("./directives");
+    app.config(function ($stateProvider, $urlRouterProvider, $httpProvider) {
     //'use strict';
     $urlRouterProvider
         .otherwise('/');
@@ -42,7 +51,7 @@ angular.module('SnooNotes', [
     $httpProvider.defaults.withCredentials = true;
 
 })
-.run(function ($rootScope, AuthFactory, SubFactory, $modal) {
+.run(function ($rootScope, AuthFactory, SubFactory, $uibModal) {
     AuthFactory.getCurrentUser();
     SubFactory.getSubsWithAdmin();
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
@@ -54,7 +63,7 @@ angular.module('SnooNotes', [
             $rootScope.redirectScope = toState;
             $rootScope.redirectParams = toParams;
 
-            $modal.open({
+            $uibModal.open({
                 templateUrl: "loginModal.html",
                 controller: 'AuthCtrl'
             });
@@ -62,31 +71,4 @@ angular.module('SnooNotes', [
         }
     });
 });
-angular
-       .module('SnooNotes')
-.directive('styledDropdown', function ($parse) {
-    return {
-        require: 'select',
-        restrict:'A',
-        link: function (scope, elem, attrs, ngSelect) {
-            var optionsSourceStr = attrs.ngOptions.split(' ').pop(),
-                getOptionsStyle = $parse(attrs.optionsStyle);
 
-            scope.$watch(optionsSourceStr, function (items) {
-                angular.forEach(items, function (item, index) {
-                    var css = getOptionsStyle(item),
-                        option = elem.find('option[value="' + item.$$hashKey + '"]');
-                    option.css(css);
-                });
-            });
-
-            scope.$watch(attrs.ngModel, function (item) {
-                if (!item) {
-                    elem.attr('style', elem.find('option[value=""]').attr('style'));
-                } else {
-                    elem.css(getOptionsStyle(item));
-                }
-            });
-        }
-    }
-});
