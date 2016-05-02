@@ -270,11 +270,13 @@
     <Content Include="Addon\snoonotes.xpi" />
     <Content Include="app\app.js" />
     <Content Include="app\controllers\auth.js" />
+    <Content Include="app\controllers\bannedEntities.js" />
     <Content Include="app\controllers\home.js" />
     <Content Include="app\controllers\index.js" />
     <Content Include="app\controllers\nav.js" />
     <Content Include="app\controllers\navsub.js" />
     <Content Include="app\controllers\subreddit.js" />
+    <Content Include="app\controllers\subredditSettings.js" />
     <Content Include="app\directives\index.js" />
     <Content Include="app\directives\styledDropdown.js" />
     <Content Include="app\factories\AuthFactory.js" />
@@ -303,12 +305,15 @@
     <Content Include="Owin.Security.Providers.pdb" />
     <Content Include="Owin.Security.Providers.XML" />
     <Content Include="Scripts\angular-local-storage.min.js" />
+    <Content Include="Views\bannedEntities.html" />
+    <Content Include="Views\subredditSettings.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
     <None Include="Addon\updates.rdf" />
     <Content Include="package.json" />
     <Content Include="app\site.scss" />
+    <None Include="Properties\PublishProfiles\asdf.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\SnooNotesApi.pubxml" />
     <Content Include="Properties\webjobs-list.json" />
@@ -456,7 +461,7 @@
   <Target Name="CollectGulpOutput">
     <ItemGroup>
       <CustomFiles Include="build\**\*" />
-      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+      <FilesForPackagingFromProject Include="%(CustomFiles.Identity)">
         <DestinationRelativePath>build\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
     </ItemGroup>

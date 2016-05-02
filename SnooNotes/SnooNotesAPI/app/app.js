@@ -3,11 +3,13 @@ require("angular-local-storage");
 require("angular-cookies");
 require("angular-ui-router");
 require("angular-ui-bootstrap");
+require("angular-datatables");
 var app = angular.module('SnooNotes', [
     'ui.router',
     'ngCookies',
     'LocalStorageModule',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'datatables'
 ]);
 
 require("./controllers");
@@ -21,7 +23,7 @@ require("./directives");
         .state('home', {
             url: '/',
             //template:"<h1>aksdlfj</h1>"
-            templateUrl: "/Views/home.html",
+            templateUrl: '/Views/home.html',
             controller: 'HomeCtrl',
             data: {
                 requireLogin: false
@@ -29,7 +31,7 @@ require("./directives");
         })
         .state('subreddit', {
             url: '/subreddit/:subName',
-            templateUrl: "/Views/subreddit.html",
+            templateUrl: '/Views/subreddit.html',
             controller: 'SubredditCtrl',
             data: {
                 requireLogin: true
@@ -40,6 +42,18 @@ require("./directives");
                 }
             }
         })
+        .state('subreddit.settings', {
+            url: '/settings',
+            templateUrl: '/Views/subredditSettings.html',
+            controller: 'SubredditSettingsCtrl',
+            data: {
+            }
+        })
+        .state('subreddit.banned'), {
+            url: '/banned',
+            templateUrl: '/Views/bannedEntities.html',
+            controller: 'BannedEntitiesCtrl'
+        }
         .state('userguide',{
             url: '/userguide',
             templateUrl: '/Views/userguide.html',
