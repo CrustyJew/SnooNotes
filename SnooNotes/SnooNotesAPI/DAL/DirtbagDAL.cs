@@ -5,10 +5,13 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SnooNotesAPI.DAL {
     public class DirtbagDAL {
         private const string TEST_CONNECTION_ENDPOINT = "api/Info/TestConnection?subreddit={0}";
+        private const string BAN_LIST_ENDPOINT = "api/AutomodBanned?subname={0}"; //TODO: dear god why can't I name shit consistently
         public Task<bool> TestConnection( DirtbagSettings botSettings, string subreddit ) {
             return TestConnection( botSettings.DirtbagUrl, botSettings.DirtbagUsername, botSettings.DirtbagPassword, subreddit );
         }
@@ -24,6 +27,23 @@ namespace SnooNotesAPI.DAL {
                     throw new HttpRequestException( response.StatusCode +": " + await response.Content.ReadAsStringAsync() );
                 }
                 
+            }
+        }
+
+        public async Task<IEnumerable<BannedEntity>> GetBanList(DirtbagSettings conn ) {
+            using (var client = new HttpClient() ) {
+                string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{conn.DirtbagUsername}:{conn.DirtbagPassword}" ) );
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
+
+                var response = await client.GetAsync( string.Format( conn.DirtbagUrl + BAN_LIST_ENDPOINT, conn.DirtbagUrl ) );
+
+                if(!response.IsSuccessStatusCode)
+                    throw new HttpRequestException( response.StatusCode + ": " + await response.Content.ReadAsStringAsync() );
+
+                string responseString = await response.Content.ReadAsStringAsync();
+
+                IEnumerable<BannedEntity> toReturn = JsonConvert.DeserializeObject<IEnumerable<BannedEntity>>( responseString );
+                return toReturn;
             }
         }
 

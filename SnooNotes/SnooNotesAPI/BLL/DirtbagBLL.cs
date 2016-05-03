@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
 using System.Runtime.Caching;
-
+using System.Net.Http;
 
 namespace SnooNotesAPI.BLL {
     public class DirtbagBLL {
@@ -39,6 +39,15 @@ namespace SnooNotesAPI.BLL {
             DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
             var curSettings = await GetSettings( subName );
             return await dirtbag.TestConnection( curSettings, subName );
+        }
+
+        public async Task<IEnumerable<Models.BannedEntity>> GetBanList(string subName ) {
+            var curSettings = await GetSettings( subName );
+            if ( curSettings == null || string.IsNullOrWhiteSpace( curSettings.DirtbagUrl ) )
+                throw new HttpRequestException( $"No valid settings for {subName} could be found!" );
+
+            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            return await dirtbag.GetBanList( curSettings );
         }
 
         private async Task<Models.DirtbagSettings> GetSettings(string subName ) {

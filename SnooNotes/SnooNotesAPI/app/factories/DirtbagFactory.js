@@ -27,5 +27,17 @@
         return deferred.promise;
     }
 
+    exports.getBanList = function (sub) {
+        var deferred = $q.defer();
+        $http.get("/api/Dirtbag/" + sub + "/BanList")
+            .then(
+                function (d) {
+                    deferred.resolve(d.data);
+                }, function (e) {
+                    deferred.reject(e);
+                });
+        return deferred.promise;
+    }
+
     return exports;
 };

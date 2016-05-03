@@ -244,6 +244,7 @@
       <DependentUpon>201509152058586_AddScopeToUser.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\BannedEntity.cs" />
     <Compile Include="Models\BasicNote.cs" />
     <Compile Include="Models\BasicNoteType.cs" />
     <Compile Include="Models\DirtbagSettings.cs" />
