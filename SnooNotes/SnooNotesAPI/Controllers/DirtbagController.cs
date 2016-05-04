@@ -39,7 +39,7 @@ namespace SnooNotesAPI.Controllers
             return settings;
         }
 
-        [HttpGet][Route("{subname}/GetBanList")]
+        [HttpGet][Route("{subname}/BanList")]
         public Task<IEnumerable<Models.BannedEntity>> GetBanList(string subname ) {
             if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );

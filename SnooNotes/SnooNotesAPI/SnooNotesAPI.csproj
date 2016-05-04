@@ -290,6 +290,11 @@
     <Content Include="Content\sn2thumb.png" />
     <Content Include="Content\sn3.png" />
     <Content Include="Content\sn3thumb.png" />
+    <Content Include="Content\sort_asc.png" />
+    <Content Include="Content\sort_asc_disabled.png" />
+    <Content Include="Content\sort_both.png" />
+    <Content Include="Content\sort_desc.png" />
+    <Content Include="Content\sort_desc_disabled.png" />
     <Content Include="favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

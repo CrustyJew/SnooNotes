@@ -30,12 +30,12 @@ namespace SnooNotesAPI.DAL {
             }
         }
 
-        public async Task<IEnumerable<BannedEntity>> GetBanList(DirtbagSettings conn ) {
+        public async Task<IEnumerable<BannedEntity>> GetBanList(DirtbagSettings conn, string subreddit ) {
             using (var client = new HttpClient() ) {
                 string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{conn.DirtbagUsername}:{conn.DirtbagPassword}" ) );
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
 
-                var response = await client.GetAsync( string.Format( conn.DirtbagUrl + BAN_LIST_ENDPOINT, conn.DirtbagUrl ) );
+                var response = await client.GetAsync( string.Format( conn.DirtbagUrl + BAN_LIST_ENDPOINT, subreddit ) );
 
                 if(!response.IsSuccessStatusCode)
                     throw new HttpRequestException( response.StatusCode + ": " + await response.Content.ReadAsStringAsync() );

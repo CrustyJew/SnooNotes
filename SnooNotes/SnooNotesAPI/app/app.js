@@ -1,4 +1,6 @@
-﻿require("angular");
+﻿
+require('datatables.net')(window,$);
+require("angular");
 require("angular-local-storage");
 require("angular-cookies");
 require("angular-ui-router");
@@ -49,11 +51,11 @@ require("./directives");
             data: {
             }
         })
-        .state('subreddit.banned'), {
+        .state('subreddit.banned', {
             url: '/banned',
             templateUrl: '/Views/bannedEntities.html',
             controller: 'BannedEntitiesCtrl'
-        }
+        })
         .state('userguide',{
             url: '/userguide',
             templateUrl: '/Views/userguide.html',

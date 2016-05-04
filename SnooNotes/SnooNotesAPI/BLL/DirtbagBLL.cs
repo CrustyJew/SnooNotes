@@ -47,7 +47,7 @@ namespace SnooNotesAPI.BLL {
                 throw new HttpRequestException( $"No valid settings for {subName} could be found!" );
 
             DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
-            return await dirtbag.GetBanList( curSettings );
+            return await dirtbag.GetBanList( curSettings, subName );
         }
 
         private async Task<Models.DirtbagSettings> GetSettings(string subName ) {
