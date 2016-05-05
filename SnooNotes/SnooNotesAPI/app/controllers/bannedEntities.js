@@ -1,8 +1,9 @@
 ﻿module.exports = function (DirtbagFactory, $scope, $compile, DTOptionsBuilder, DTColumnBuilder) {
 
     var entities = {};
+    $scope.dtInstance = {};
 
-    $scope.dtOptions = DTOptionsBuilder.fromFnPromise(DirtbagFactory.getBanList($scope.subName))
+    $scope.dtOptions = DTOptionsBuilder.fromFnPromise(getBanList)
         .withPaginationType('full_numbers')
         .withOption('createdRow', createdRow);
     $scope.dtColumns = [
@@ -17,7 +18,11 @@
     
     $scope.delete = function (entity) {
         var x = entities[entity];
-        alert(x.ID + ": " + x.EntityString);
+        //alert(x.ID + ": " + x.EntityString);
+        DirtbagFactory.removeBan($scope.subName, x.ID)
+        .finally(function () {
+            $scope.dtInstance.reloadData();
+        })
     }
     function createdRow(row, data, dataIndex) {
         $compile(angular.element(row).contents())($scope);
@@ -25,6 +30,10 @@
 
     function actionsHtml(data, type, full, meta) {
         entities[data.ID] = data;
-        return '<button class="btn btn-danger" ng-click="delete('+data.ID+')" text="delete" />';
+        return '<button class="btn btn-danger" ng-click="delete(' + data.ID + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+    }
+
+    function getBanList() {
+        return DirtbagFactory.getBanList($scope.subName);
     }
 }

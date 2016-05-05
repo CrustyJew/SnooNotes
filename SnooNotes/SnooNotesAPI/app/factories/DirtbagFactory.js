@@ -39,5 +39,19 @@
         return deferred.promise;
     }
 
+    exports.removeBan = function (sub, id) {
+        var deferred = $q.defer();
+        $http.delete("/api/Dirtbag/" + sub + "/BanList/" + id)
+            .then(
+                function (d) {
+                    deferred.resolve(d.data);
+                },
+                function (e) {
+                    deferred.reject(e);
+                }
+            );
+        return deferred.promise;
+
+    }
     return exports;
 };

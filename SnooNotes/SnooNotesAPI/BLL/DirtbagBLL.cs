@@ -50,6 +50,15 @@ namespace SnooNotesAPI.BLL {
             return await dirtbag.GetBanList( curSettings, subName );
         }
 
+        public async Task<bool> RemoveBan(int id, string modName, string subName ) {
+            var curSettings = await GetSettings( subName );
+            if ( curSettings == null || string.IsNullOrWhiteSpace( curSettings.DirtbagUrl ) )
+                throw new HttpRequestException( $"No valid settings for {subName} could be found!" );
+
+            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            return await dirtbag.RemoveFromBanList( curSettings, id, modName, subName );
+        }
+
         private async Task<Models.DirtbagSettings> GetSettings(string subName ) {
             DAL.SubredditDAL subDAL = new DAL.SubredditDAL();
             var cacheVal = cache[CACHE_PREFIX + subName];

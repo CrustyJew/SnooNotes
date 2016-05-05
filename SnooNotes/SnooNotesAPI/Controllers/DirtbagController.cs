@@ -47,5 +47,14 @@ namespace SnooNotesAPI.Controllers
             BLL.DirtbagBLL dirtbag = new BLL.DirtbagBLL();
             return dirtbag.GetBanList( subname );
         }
+
+        [HttpDelete][Route("{subname}/BanList/{id}")]
+        public Task<bool> RemoveBan(string subname, int id ) {
+            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+
+            BLL.DirtbagBLL dirtbag = new BLL.DirtbagBLL();
+            return dirtbag.RemoveBan( id, ClaimsPrincipal.Current.Identity.Name, subname );
+        }
     }
 }
