@@ -9,6 +9,7 @@
     $scope.dtColumns = [
         DTColumnBuilder.newColumn('ID').notVisible(),
         DTColumnBuilder.newColumn('EntityString').withTitle('Entity (Author or channelid)'),
+        DTColumnBuilder.newColumn('Type').withTitle('Type'),
         DTColumnBuilder.newColumn('BannedBy').withTitle('Banned By'),
         DTColumnBuilder.newColumn('BanReason').withTitle('Ban Reason'),
         DTColumnBuilder.newColumn('BanDate').withTitle('Ban Date'),

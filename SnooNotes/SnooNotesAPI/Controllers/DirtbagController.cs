@@ -56,5 +56,23 @@ namespace SnooNotesAPI.Controllers
             BLL.DirtbagBLL dirtbag = new BLL.DirtbagBLL();
             return dirtbag.RemoveBan( id, ClaimsPrincipal.Current.Identity.Name, subname );
         }
+
+        [HttpPost][Route("{subname}/BanList/Channels")]
+        public Task BanChannel( Models.BannedEntity entity, string subname ) {
+            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+
+            BLL.DirtbagBLL dirtbag = new BLL.DirtbagBLL();
+            return dirtbag.BanChannel( subname, entity.EntityString, entity.BanReason, entity.ThingID, ClaimsPrincipal.Current.Identity.Name );
+        }
+
+        [HttpPost][Route("{subname}/BanList/Users")]
+        public Task BanUser(Models.BannedEntity entity, string subname ) {
+            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+
+            BLL.DirtbagBLL dirtbag = new BLL.DirtbagBLL();
+            return dirtbag.BanUser( subname, entity.EntityString, entity.BanReason, entity.ThingID, ClaimsPrincipal.Current.Identity.Name );
+        }
     }
 }

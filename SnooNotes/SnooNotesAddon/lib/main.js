@@ -17,7 +17,8 @@ pageMod.PageMod({
     contentStyleFile: [data.url("styles/SnooLogin.css"),
         data.url("styles/SNContainer.css"),
         data.url("styles/SNOptions.css"),
-        data.url("styles/jquery-ui.css")],
+        data.url("styles/jquery-ui.css"),
+        data.url("styles/Dirtbag.css")],
     contentScriptFile: [data.url("libs/jquery-2.1.3.min.js"),
         data.url("libs/jquery.blockUI.min.js"),
         data.url("libs/jquery-ui.js"),
@@ -27,7 +28,8 @@ pageMod.PageMod({
         data.url("modules/SnooLoginPopup.js"),
         data.url("modules/SNOptions.js"),
         data.url("modules/SNBanNotes.js"),
-        data.url("modules/SNMain.js")],
+        data.url("modules/SNMain.js"),
+        data.url("modules/DBAutomod.js")],
     attachTo: ["existing", "frame", "top"],
     onAttach: function (worker) {
         console.log(worker.tab.url);

@@ -61,7 +61,7 @@ function initSnooNotes() {
             snBrowser.reinitAll();
             checkLoggedIn();
             setModdedSubs();
-            
+            getDirtbagSubs();
         };
         //have to have the snUtil functions ready >.<
         browserInit(); //init browser first to attach listeners etc
@@ -120,16 +120,40 @@ function setModdedSubs(){
                 $('#SNContainer').append($select);
             }
             snUtil.SubSettings = {};
+
+         
             for (var i = 0; i < d.length; i++) {
+                var name = d[i].SubName.toLowerCase();
                 //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
-                snUtil.SubSettings[d[i].SubName.toLowerCase()] = d[i].Settings;
+                snUtil.SubSettings[name] = d[i].Settings;
             }
+
             var event = new CustomEvent("snUtilDone");
             window.dispatchEvent(event);
         },
         error: handleAjaxError
     });
     return;
+}
+
+function getDirtbagSubs() {
+    $.ajax({
+        url: snUtil.RESTApiBase + "Subreddit/admin",
+        method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function (d, s, x) {
+
+            snUtil.DirtbagSubs = "";
+            var dbSubs = [];
+            for (var i = 0; i < d.length; i++) {
+                var botSettings = d[i].BotSettings;
+                //check if there is a URL for DirtBag 
+                if (botSettings && botSettings.DirtbagUrl) dbSubs.push(d[i].SubName);
+            }
+            snUtil.DirtbagSubs = "," + dbSubs.join(",") + ",";
+        },
+        error: handleAjaxError
+    });
 }
 function checkLoggedIn() {
     $.ajax({
@@ -140,7 +164,10 @@ function checkLoggedIn() {
             snUtil.LoggedIn = true;
             snBrowser.loggedIn();
             window.dispatchEvent(new CustomEvent("snLoggedIn"));
-            if (!snUtil.ModdedSubs) setModdedSubs();
+            if (!snUtil.ModdedSubs) {
+                setModdedSubs();
+                getDirtbagSubs();
+            }
         },
         error: handleAjaxError
     });

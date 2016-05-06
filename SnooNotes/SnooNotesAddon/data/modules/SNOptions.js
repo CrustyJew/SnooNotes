@@ -356,7 +356,7 @@ function snGetSubSettings() {
 
     $('#SNSubredditsContainer').block({ message: "<h1>Fetching things for master</h1>", fadeIn: 0 });
     $.ajax({
-        url: snUtil.RESTApiBase + "Subreddit/",
+        url: snUtil.RESTApiBase + "Subreddit/admin",
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {

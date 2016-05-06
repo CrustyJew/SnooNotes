@@ -64,10 +64,45 @@ namespace SnooNotesAPI.BLL {
             var cacheVal = cache[CACHE_PREFIX + subName];
             if(cacheVal == null ) {
                 var botSets = await subDAL.GetBotSettings( subName );
-                cache.AddOrGetExisting( CACHE_PREFIX + subName, botSets, DateTimeOffset.Now.AddMinutes( 30 ) );
-                cacheVal = cache[CACHE_PREFIX + subName]; //This may be redundant. I don't remember how object references interact with arrays like this but I'm too lazy to find out at the moment;
+                cache.Set( CACHE_PREFIX + subName, botSets, DateTimeOffset.Now.AddMinutes( 30 ) );
+                return botSets;
             }
             return (Models.DirtbagSettings) cacheVal;
+        }
+
+        public async Task BanChannel( string subName, string url, string reason, string thingID, string bannedBy ) {
+            DAL.YouTubeDAL ytDAL = new DAL.YouTubeDAL();
+            string ytVidID = Helpers.YouTubeHelpers.ExtractVideoId( url );
+            if ( string.IsNullOrWhiteSpace( ytVidID ) )
+                throw new ArgumentException( $"Couldn't extract YouTube video ID from url: {url}" );
+            string channelID = await ytDAL.GetChannelID( ytVidID );
+            Models.BannedEntity toBan = new Models.BannedEntity() {
+                BanDate = DateTime.UtcNow,
+                BannedBy = bannedBy,
+                BanReason = reason,
+                EntityString = channelID,
+                SubName = subName,
+                ThingID = thingID,
+                Type = Models.BannedEntity.EntityType.Channel
+            };
+            var conn = await GetSettings( subName );
+            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            await dirtbag.AddToBanList(conn, new List<Models.BannedEntity>() { toBan } );
+        }
+
+        public async Task BanUser( string subName, string username, string reason, string thingID, string bannedBy ) {
+            Models.BannedEntity toBan = new Models.BannedEntity() {
+                BanDate = DateTime.UtcNow,
+                BannedBy = bannedBy,
+                BanReason = reason,
+                EntityString = username,
+                SubName = subName,
+                ThingID = thingID,
+                Type = Models.BannedEntity.EntityType.User
+            };
+            var conn = await GetSettings( subName );
+            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            await dirtbag.AddToBanList( conn, new List<Models.BannedEntity>() { toBan } );
         }
     }
 }

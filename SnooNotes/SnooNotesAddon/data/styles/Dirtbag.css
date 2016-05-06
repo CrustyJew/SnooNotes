@@ -1,0 +1,16 @@
+﻿.dbAutoModBan {
+    margin: 0 5px 0 5px;
+    background-color: yellow;
+    padding: 2px 4px;
+    border: 1px solid lightgrey;
+    border-radius: 2px;
+}
+
+.dbAutoModBan a {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.dbAutoModBan > span{
+    font-weight:bold;
+}

@@ -23,13 +23,15 @@
                 "data/modules/SnooLoginPopup.js",
                 "data/modules/SNOptions.js",
                 "data/modules/SNBanNotes.js",
-                "data/modules/SNMain.js"
+                "data/modules/SNMain.js",
+                "data/modules/DBAutomod.js"
             ],
             "css": [
                 "data/styles/SNContainer.css",
                 "data/styles/SnooLogin.css",
                 "data/styles/SNOptions.css",
-                "data/styles/jquery-ui.css"
+                "data/styles/jquery-ui.css",
+                "data/styles/Dirtbag.css"
             ],
             "run_at": "document_end"
         }

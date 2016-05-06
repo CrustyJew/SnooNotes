@@ -38,6 +38,10 @@ namespace SnooNotesAPI.Controllers
         // POST: api/NoteType
         public Task<IEnumerable<Models.NoteType>> Post([FromBody]IEnumerable<Models.NoteType> values)
         {
+            foreach ( string subname in values.Select( v => v.SubName ) ) {
+                if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+                    throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+            }
             var ret = noteTypeBLL.AddMultipleNoteTypes(values,User.Identity.Name);
             return ret;
         }
@@ -45,13 +49,20 @@ namespace SnooNotesAPI.Controllers
         // PUT: api/NoteType/5
         public Task<IEnumerable<Models.NoteType>> Put([FromBody]Models.NoteType[] values)
         {
+            foreach ( string subname in values.Select( v => v.SubName ) ) {
+                if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+                    throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+            }
             return noteTypeBLL.UpdateMultipleNoteTypes(values,User.Identity.Name);
         }
 
         // DELETE: api/NoteType/5
         public Task<IEnumerable<int>> Delete([FromBody]Models.NoteType[] values)
         {
-           
+            foreach ( string subname in values.Select( v => v.SubName ) ) {
+                if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+                    throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+            }
             return noteTypeBLL.DeleteMultipleNoteTypes(values,User.Identity.Name);
         }
 

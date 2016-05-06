@@ -13,7 +13,7 @@ namespace SnooNotesAPI.BLL {
         public NoteTypesBLL() {
             noteTypesDAL = new DAL.NoteTypesDAL();
         }
-        public async Task<Dictionary<string, IEnumerable<BasicNoteType>>> GetNoteTypesForSubs(IEnumerable<string> subs) {
+        public async Task<Dictionary<string, IEnumerable<BasicNoteType>>> GetNoteTypesForSubs( IEnumerable<string> subs ) {
             Dictionary<string, IEnumerable<BasicNoteType>> toReturn = new Dictionary<string, IEnumerable<BasicNoteType>>();
             var notetypes = await noteTypesDAL.GetNoteTypesForSubs( subs );
             foreach ( string sub in subs ) {
@@ -29,7 +29,7 @@ namespace SnooNotesAPI.BLL {
 
         public async Task<IEnumerable<NoteType>> AddMultipleNoteTypes( IEnumerable<NoteType> values, string name ) {
             foreach ( Models.NoteType nt in values ) {
-                if ( ! await ValidateNoteType( nt ) ) {
+                if ( !await ValidateNoteType( nt ) ) {
                     throw new HttpResponseException( System.Net.HttpStatusCode.BadRequest );
                 }
             }
@@ -40,13 +40,14 @@ namespace SnooNotesAPI.BLL {
         }
 
         public async Task<IEnumerable<int>> DeleteMultipleNoteTypes( NoteType[] values, string name ) {
-            if ( ! await noteTypesDAL.ValidateNoteTypesInSubs( values ) ) {
+            if ( !await noteTypesDAL.ValidateNoteTypesInSubs( values ) ) {
                 throw new HttpResponseException( new System.Net.Http.HttpResponseMessage( System.Net.HttpStatusCode.BadRequest ) { ReasonPhrase = "You gone and changed a NoteType to a different Subreddit ya goof!" } );
             }
             foreach ( NoteType nt in values ) {
-                if ( !ClaimsPrincipal.Current.IsInRole( nt.SubName.ToLower() ) ) {
-                    throw new UnauthorizedAccessException( "You are not a moderator of that subreddit!" );
-                }
+
+                if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{nt.SubName.ToLower()}:admin", "true" ) )
+                    throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+
             }
             await noteTypesDAL.DeleteMultipleNoteTypes( values, name );
             Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
@@ -55,7 +56,7 @@ namespace SnooNotesAPI.BLL {
 
         public async Task<IEnumerable<Models.NoteType>> UpdateMultipleNoteTypes( NoteType[] values, string name ) {
             foreach ( Models.NoteType nt in values ) {
-                if ( ! await ValidateNoteType( nt ) ) {
+                if ( !await ValidateNoteType( nt ) ) {
                     throw new HttpResponseException( System.Net.HttpStatusCode.BadRequest );
                 }
 

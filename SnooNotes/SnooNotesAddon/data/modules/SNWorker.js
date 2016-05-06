@@ -49,6 +49,7 @@ function initSocket() {
         getNoteTypes();
     }
     $.connection.hub.disconnected(function () {
+        console.log('Socket Disconnected');
         if (socketOpen) {
             setTimeout(function () {
                 $.connection.hub.start();
