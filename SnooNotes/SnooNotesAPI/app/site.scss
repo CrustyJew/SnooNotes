@@ -1,4 +1,8 @@
-﻿body {
+﻿[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
     /*background-color:#46b2b2;*/

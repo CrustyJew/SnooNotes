@@ -23,7 +23,7 @@
                     <a class="navbar-brand" href="#/">SnooNotes!</a>
                 </div>
                 <div class="navbar-collapse collapse" ng-class="!navCollapsed && 'in'" ng-click="navCollapsed=true" data-ng-controller="NavCtrl">
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right" ng-cloak>
                         <li style="text-align:right;">
                             Welcome<span ng-hide="!currentUser.isAuth">&nbsp;{{currentUser.userName}}</span>!
                             <br />
@@ -34,7 +34,7 @@
                     <ul class="nav navbar-nav navbar-left navbar-main">
                         <li class="dropdown" ng-hide="!currentUser.isAuth">
                             <div class="btn-group subredditNavMenu" uib-dropdown is-open="status.isopen">
-                                <span class="currentSubNav" uib-dropdown-toggle>
+                                <span class="currentSubNav" uib-dropdown-toggle ng-cloak>
                                     {{curSub}} <b class="caret"></b>
                                 </span>
                                 <ul class="dropdown-menu">
