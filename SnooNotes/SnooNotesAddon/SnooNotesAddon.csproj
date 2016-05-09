@@ -69,6 +69,7 @@
     <Content Include="data\libs\jquery.blockUI.min.js" />
     <Content Include="data\libs\jquery.signalR-2.2.0.min.js" />
     <Content Include="data\libs\snUpdatesHub.js" />
+    <Content Include="data\modules\DBAutomod.js" />
     <Content Include="data\modules\SNBanNotes.js" />
     <Content Include="data\modules\SNChrome.js" />
     <Content Include="data\modules\SNFirefox.js" />
@@ -78,6 +79,7 @@
     <Content Include="data\modules\SNWorker.js" />
     <Content Include="data\modules\SNWorkerChrome.js" />
     <Content Include="data\modules\SNWorkerFirefox.js" />
+    <Content Include="data\styles\Dirtbag.css" />
     <Content Include="data\styles\jquery-ui.css" />
     <Content Include="data\styles\SNContainer.css" />
     <Content Include="data\styles\SnooLogin.css" />

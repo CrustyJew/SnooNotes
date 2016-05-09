@@ -1,7 +1,4 @@
-﻿    angular
-        .module('SnooNotes')
-        .controller('HomeCtrl', HomeCtrl);
+﻿
+module.exports = function ($scope, AuthFactory) {
 
-    function HomeCtrl($scope, AuthFactory) {
-
-    }
+}

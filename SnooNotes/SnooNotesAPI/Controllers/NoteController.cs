@@ -5,47 +5,40 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SnooNotesAPI.Controllers
 {
     [Authorize]
     public class NoteController : ApiController
     {
-        
+        private BLL.NotesBLL notesBLL;
+        public NoteController() {
+            notesBLL = new BLL.NotesBLL();
+        }
 
         [HttpGet]
-        public IEnumerable<string> GetUsernamesWithNotes()
+        public Task<IEnumerable<string>> GetUsernamesWithNotes()
         {
-            ClaimsPrincipal ident = User as ClaimsPrincipal;
-            return Models.Note.GetUsersWithNotes(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
+            ClaimsPrincipal ident = ClaimsPrincipal.Current;
+            return notesBLL.GetUsersWithNotes(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
 
         }
         [HttpGet]
-        public Dictionary<string, IEnumerable<Models.BasicNote>> InitializeNotes()
+        public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> InitializeNotes()
         {
-            var usernames = GetUsernamesWithNotes();
              ClaimsPrincipal ident = User as ClaimsPrincipal;
-            var x = Models.Note.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value)).ToList();
-
-                Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
-                foreach (string user in usernames)
-                {
-                    var notes = x.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url=n.Url, Timestamp=n.Timestamp });
-                    toReturn.Add(user, notes);
-                }
-                return toReturn;
-                //return Models.Note.GetNotesForSub(sub);
-           
+            return notesBLL.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
         }
 
         // POST: api/Note
-        public void Post([FromBody]Models.Note value)
+        public async Task Post([FromBody]Models.Note value)
         {
             if (User.IsInRole(value.SubName.ToLower()))
             {
                 value.Submitter = User.Identity.Name;
                 value.Timestamp = DateTime.UtcNow;
-                Models.Note insertedNote = Models.Note.AddNoteForUser(value);
+                Models.Note insertedNote = await notesBLL.AddNoteForUser(value);
 
                 Signalr.SnooNoteUpdates.Instance.SendNewNote(insertedNote);
             }
@@ -56,12 +49,12 @@ namespace SnooNotesAPI.Controllers
         }
 
         // DELETE: api/Note/5
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            Models.Note note = Models.Note.GetNoteByID(id);
+            Models.Note note = await notesBLL.GetNoteByID(id);
             if ( User.IsInRole(note.SubName.ToLower()))
             {
-                Models.Note.DeleteNoteForUser(note,User.Identity.Name);
+                await notesBLL.DeleteNoteForUser(note,User.Identity.Name);
                 Signalr.SnooNoteUpdates.Instance.DeleteNote(note);
             }
             else

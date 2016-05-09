@@ -1,8 +1,4 @@
-﻿angular
-       .module('SnooNotes')
-       .controller('NavCtrl', NavCtrl);
-
-function NavCtrl($scope, AuthFactory, $modal, SubFactory,$location,$stateParams,$state) {
+﻿module.exports = function ($scope, AuthFactory, $uibModal, SubFactory, $location, $stateParams, $state) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.curSub = $stateParams.subName;
 
@@ -15,7 +11,7 @@ function NavCtrl($scope, AuthFactory, $modal, SubFactory,$location,$stateParams,
         AuthFactory.logout();
     }
     $scope.login = function () {
-        var loginModal = $modal.open({
+        var loginModal = $uibModal.open({
             templateUrl: "loginModal.html",
             controller: 'AuthCtrl'
         });

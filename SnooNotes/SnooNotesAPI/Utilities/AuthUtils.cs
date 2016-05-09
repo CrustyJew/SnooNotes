@@ -49,7 +49,7 @@ namespace SnooNotesAPI.Utilities {
 			}
 		}
 
-		public static void UpdateModeratedSubreddits( Models.ApplicationUser ident ) {
+		public static async Task UpdateModeratedSubreddits( Models.ApplicationUser ident ) {
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				GetNewToken( ident );
 			}
@@ -59,7 +59,7 @@ namespace SnooNotesAPI.Utilities {
 
 			List<string> currentRoles = ident.Claims.Where( x => x.ClaimType == roleType ).Select( r => r.ClaimValue ).ToList<string>();
 
-			List<Models.Subreddit> activeSubs = Models.Subreddit.GetActiveSubs();
+			List<Models.Subreddit> activeSubs = await new BLL.SubredditBLL().GetActiveSubs();
 			List<string> activeSubNames = activeSubs.Select( s => s.SubName.ToLower() ).ToList();
 
 			List<IdentityUserClaim> currentAdminRoles = ident.Claims.Where( c => c.ClaimType.StartsWith( "urn:snoonotes:subreddits:" ) ).ToList();
@@ -98,7 +98,7 @@ namespace SnooNotesAPI.Utilities {
 				else {
 					//sub was deactivated, add it to remove.
 					rolesToRemove.Add( new Claim( roleType, role ) );
-					if ( !sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
+					if ( ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
 				}
 
 			}
@@ -133,11 +133,11 @@ namespace SnooNotesAPI.Utilities {
 
 		}
 
-		public static bool UpdateModsForSub( Models.Subreddit sub ) {
+		public async static Task<bool> UpdateModsForSub( Models.Subreddit sub ) {
 			if ( !ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
 				throw new UnauthorizedAccessException( "You don't have 'Full' permissions to this subreddit!" );
 			}
-			sub = Models.Subreddit.GetSubreddits( new string[] { sub.SubName } ).First();
+			sub = (await new BLL.SubredditBLL().GetSubreddits( new string[] { sub.SubName } )).First();
 			if ( sub == null ) {
 				throw new Exception( "Unrecognized subreddit" );
 			}
