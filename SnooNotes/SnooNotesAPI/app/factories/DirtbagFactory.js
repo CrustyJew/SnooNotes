@@ -53,5 +53,18 @@
         return deferred.promise;
 
     }
+
+    exports.updateBanReason = function (sub, id, reason) {
+        var deferred = $q.defer();
+        $http.put("/api/Dirtbag/" + sub + "/BanList/" + id, '"' + reason + '"')
+            .then(
+                function (d) {
+                    deferred.resolve(true);
+                }, function (e) {
+                    deferred.reject(e);
+                }
+            );
+        return deferred.promise;
+    }
     return exports;
 };

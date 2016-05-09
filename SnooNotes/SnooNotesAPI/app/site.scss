@@ -134,6 +134,7 @@ div.boxArea{
     border-radius:5px;
     box-shadow: 4px 6px 4px 0px rgba(169, 169, 169, 0.75);
     border:1px solid lightgrey;
+    margin-bottom:10px;
 }
 
 .boxArea form{
@@ -208,6 +209,16 @@ div.success{
     text-align:center;
 }
 
+.textarea-small-box{
+    width:150px;
+    height:50px;
+    resize:none;
+}
+
+.error-list{
+    color:red;
+    font-weight:bold;
+}
 
 
 /*

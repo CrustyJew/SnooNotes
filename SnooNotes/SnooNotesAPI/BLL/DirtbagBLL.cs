@@ -70,6 +70,12 @@ namespace SnooNotesAPI.BLL {
             return (Models.DirtbagSettings) cacheVal;
         }
 
+        public async Task UpdateBanReason( string subName, int id, string reason, string modname ) {
+            var conn = await GetSettings( subName );
+            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            await dirtbag.UpdateBanReason(conn, subName, id, reason, modname );
+        }
+
         public async Task BanChannel( string subName, string url, string reason, string thingID, string bannedBy ) {
             DAL.YouTubeDAL ytDAL = new DAL.YouTubeDAL();
             string ytVidID = Helpers.YouTubeHelpers.ExtractVideoId( url );
