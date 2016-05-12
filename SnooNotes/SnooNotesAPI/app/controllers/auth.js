@@ -1,7 +1,7 @@
-﻿module.exports = function ($scope, AuthFactory, $modalInstance, $cookies,SubFactory, $state, $rootScope) {
+﻿module.exports = function ($scope, AuthFactory, $uibModalInstance, $cookies,SubFactory, $state, $rootScope) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
     }
     $scope.prefs = $cookies.getObject('snPrefs') || {wiki:false,read:false};
     $scope.openLoginWindow = function () {
@@ -17,7 +17,7 @@
 
     function CheckLogin(win) {
         if (win == null || win.closed) {
-            $modalInstance.close();
+            $uibModalInstance.close();
             AuthFactory.getCurrentUser()
                 .then(function(){
                     SubFactory.getSubsWithAdmin()

@@ -19,6 +19,7 @@
     
     $scope.delete = function (entity) {
         var x = $scope.entities[entity];
+        x.deleting = true;
         //alert(x.ID + ": " + x.EntityString);
         DirtbagFactory.removeBan($scope.subName, x.ID)
         .finally(function () {
@@ -50,10 +51,10 @@
     function actionsHtml(data, type, full, meta) {
         $scope.entities[data.ID] = data;
         data.newReason = data.BanReason;
-        return '<button class="btn btn-warning" ng-click="entities[' + data.ID + '].editing=true;" ng-hide="entities[' + data.ID + '].editing"><span class="glyphicon glyphicon-edit"></span></button>' +
+        return '<button class="btn btn-warning" ng-click="entities[' + data.ID + '].editing=true;" ng-disabled="entities[' + data.ID + '].deleting" ng-hide="entities[' + data.ID + '].editing"><span class="glyphicon glyphicon-edit"></span></button>' +
             '<button class="btn btn-success" ng-click="saveEdit(' + data.ID + ')" ng-show="entities[' + data.ID + '].editing"><span class="glyphicon glyphicon-ok-sign"></span></button>' +
             '<button class="btn" ng-click="cancelEdit(' + data.ID + ')" ng-show="entities[' + data.ID + '].editing"><span class="glyphicon glyphicon-remove-sign"></span></button>' +
-            '<button class="btn btn-danger" ng-click="delete(' + data.ID + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+            '<button class="btn btn-danger" ng-disabled="entities['+data.ID+'].deleting" ng-click="delete(' + data.ID + ')"><span class="glyphicon glyphicon-trash"></span></button>';
     }
 
     function editReasonHtml(data, type, full, meta) {

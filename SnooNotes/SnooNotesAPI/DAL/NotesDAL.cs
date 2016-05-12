@@ -48,6 +48,15 @@ namespace SnooNotesAPI.DAL {
                 return await con.QueryAsync<Note>( query, new { subnames } );
             }
         }
+        public async Task<IEnumerable<Note>> GetNotesForSubs( IEnumerable<string> subnames, IEnumerable<string> users ) {
+            using ( SqlConnection con = new SqlConnection( constring ) ) {
+                string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
+                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
+                        + " where s.SubName in @subnames and n.AppliesToUsername in @users";
+
+                return await con.QueryAsync<Note>( query, new { subnames, users } );
+            }
+        }
         public async Task<Note> GetNoteByID( int id ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
                 string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "

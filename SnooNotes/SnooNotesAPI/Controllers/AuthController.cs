@@ -78,8 +78,7 @@ namespace SnooNotesAPI.Controllers
             }
             return View();
         }
-
-        [Authorize]
+        
         public void Logout()
         {
             AuthenticationManager.SignOut();

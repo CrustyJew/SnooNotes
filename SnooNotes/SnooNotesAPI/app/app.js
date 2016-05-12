@@ -35,6 +35,8 @@ require("./directives");
             url: '/subreddit/:subName',
             templateUrl: '/Views/subreddit.html',
             controller: 'SubredditCtrl',
+            redirectTo: 'subreddit.settings',
+            //abstract:true,
             data: {
                 requireLogin: true
             },
@@ -43,6 +45,7 @@ require("./directives");
                     return SubFactory.initialized;
                 }
             }
+
         })
         .state('subreddit.settings', {
             url: '/settings',
@@ -56,6 +59,11 @@ require("./directives");
             templateUrl: '/Views/bannedEntities.html',
             controller: 'BannedEntitiesCtrl'
         })
+        //.state('subreddit.default', {
+        //    url: '',
+        //    templateUrl: '/Views/subredditSettings.html',
+        //    controller: 'SubredditSettingsCtrl'
+        //})
         .state('userguide',{
             url: '/userguide',
             templateUrl: '/Views/userguide.html',
@@ -67,7 +75,7 @@ require("./directives");
     $httpProvider.defaults.withCredentials = true;
 
 })
-.run(function ($rootScope, AuthFactory, SubFactory, $uibModal) {
+.run(function ($rootScope, AuthFactory, SubFactory, $uibModal, $state) {
     AuthFactory.getCurrentUser();
     SubFactory.getSubsWithAdmin();
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
@@ -84,6 +92,13 @@ require("./directives");
                 controller: 'AuthCtrl'
             });
             
+        }
+    });
+
+    $rootScope.$on('$stateChangeSuccess', function (evt, to, params) {
+        if (to.redirectTo) {
+            evt.preventDefault();
+            $state.go(to.redirectTo, params, { location: false });
         }
     });
 });

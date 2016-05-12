@@ -3,7 +3,7 @@
     "version": "0.0.8.0",
     "manifest_version": 2,
     "minimum_chrome_version": "26.0",
-    "description": "Meepster's Mod Management Mangler",
+    "description": "Usernotes plus a whole lot more!",
     "background": {
         "page": "data/WorkerPageChrome.html"
     },
@@ -44,7 +44,6 @@
 		"http://reddit.com/*",
 		"https://reddit.com/*",
 		"http://*.reddit.com/*",
-        "https://*.reddit.com/*",
-        "https://localhost:44311/"
+        "https://*.reddit.com/*"
 	]
 }

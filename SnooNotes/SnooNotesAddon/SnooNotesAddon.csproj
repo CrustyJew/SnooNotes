@@ -66,8 +66,8 @@
   <ItemGroup>
     <Content Include="data\libs\jquery-2.1.3.min.js" />
     <Content Include="data\libs\jquery-ui.js" />
-    <Content Include="data\libs\jquery.blockUI.min.js" />
-    <Content Include="data\libs\jquery.signalR-2.2.0.min.js" />
+    <Content Include="data\libs\jquery.blockUI.js" />
+    <Content Include="data\libs\jquery.signalR-2.2.0.js" />
     <Content Include="data\libs\snUpdatesHub.js" />
     <Content Include="data\modules\DBAutomod.js" />
     <Content Include="data\modules\SNBanNotes.js" />
