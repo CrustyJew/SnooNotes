@@ -1,4 +1,4 @@
-﻿module.exports = function ($scope, $stateParams, SubFactory, AuthFactory, DirtbagFactory) {
+﻿module.exports = /*@ngInject*/ function ($scope, $stateParams, SubFactory, AuthFactory, DirtbagFactory) {
     $scope.import = {};
     $scope.importing = false;
     $scope.imported = false;

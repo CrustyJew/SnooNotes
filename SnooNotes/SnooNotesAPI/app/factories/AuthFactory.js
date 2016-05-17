@@ -1,4 +1,4 @@
-﻿module.exports = function AuthFactory($q, $http, $location, localStorageService, $cookies) {
+﻿module.exports = /*@ngInject*/ function AuthFactory($q, $http, $location, localStorageService, $cookies) {
     'use strict';
     var exports = {};
 

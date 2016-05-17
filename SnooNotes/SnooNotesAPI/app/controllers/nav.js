@@ -1,4 +1,4 @@
-﻿module.exports = function ($scope, AuthFactory, $uibModal, SubFactory, $location, $stateParams, $state) {
+﻿module.exports = /*@ngInject*/ function ($scope, AuthFactory, $uibModal, SubFactory, $location, $stateParams, $state) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.curSub = $stateParams.subName;
 

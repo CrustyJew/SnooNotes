@@ -31,7 +31,7 @@ namespace SnooNotesAPI.Controllers
             return notesBLL.GetNotesForSubs(ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value));
         }
 
-        [HttpPost]
+        [HttpPost][Route("api/Note/GetNotes")]
         public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes(IEnumerable<string> users ) {
             ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
             return notesBLL.GetNotesForSubs( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), users );

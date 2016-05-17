@@ -1,4 +1,4 @@
-﻿module.exports = function ($scope, AuthFactory, $uibModalInstance, $cookies,SubFactory, $state, $rootScope) {
+﻿module.exports = /*@ngInject*/ function ($scope, AuthFactory, $uibModalInstance, $cookies, SubFactory, $state, $rootScope) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');

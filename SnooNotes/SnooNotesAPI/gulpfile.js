@@ -7,13 +7,16 @@ var gulp = require("gulp"),
     del = require("del"),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
+    buffer = require('vinyl-buffer'),
     vinylPaths = require('vinyl-paths'),
     ngAnnotate = require('gulp-ng-annotate'),
     sourcemaps = require('gulp-sourcemaps'),
     sass = require('gulp-sass'),
     mainBowerFiles = require('main-bower-files'),
     concat = require("gulp-concat"),
-    templateCache = require("gulp-angular-templatecache");
+    templateCache = require("gulp-angular-templatecache"),
+    uglify = require("gulp-uglify"),
+    ngAnnotate = require('browserify-ngannotate');
 //
 //cssmin = require("gulp-cssmin"),
 //uglify = require("gulp-uglify");
@@ -30,15 +33,31 @@ gulp.task("clean", function () {
     del.sync([config.buildDir + '**', '!' + config.buildDir]);
 
 });
-gulp.task("Debug", ["clean", "css", "templates", "browserify"], function () {
+gulp.task("Debug", ["clean", "css", "templates", "browserify-debug"], function () {
 
 });
-gulp.task("browserify", function () {
+
+gulp.task("Release", ["clean", "css", "templates", "browserify-min"], function () {
+
+});
+
+gulp.task("browserify-debug", function () {
     return browserify(config.sourceDir + 'app.js', { insertGlobals: true, debug: true })
         .bundle()
         .pipe(source('app.js'))
         .pipe(gulp.dest(config.buildDir));
 });
+
+gulp.task("browserify-min", function () {
+    return browserify(config.sourceDir + 'app.js', { insertGlobals: true, debug: true, transform: [ngAnnotate] })
+        .bundle()
+        .pipe(source('app.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('./maps'))
+        .pipe(gulp.dest(config.buildDir));
+})
 
 gulp.task("css", function () {
     return gulp.src(config.sourceDir + "site.scss")

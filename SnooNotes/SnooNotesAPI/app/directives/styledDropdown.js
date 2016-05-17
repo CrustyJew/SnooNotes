@@ -1,4 +1,4 @@
-﻿module.exports = function ($parse) {
+﻿module.exports = /*@ngInject*/ function ($parse) {
     return {
         require: 'select',
         restrict: 'A',

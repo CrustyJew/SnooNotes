@@ -1,4 +1,4 @@
 ﻿
-module.exports = function ($scope, AuthFactory) {
+module.exports = /*@ngInject*/ function ($scope, AuthFactory) {
 
 }

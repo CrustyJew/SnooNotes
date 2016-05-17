@@ -1,4 +1,4 @@
-﻿module.exports = function (DirtbagFactory, $scope, $filter, $compile, DTOptionsBuilder, DTColumnBuilder) {
+﻿module.exports = /*@ngInject*/ function (DirtbagFactory, $scope, $filter, $compile, DTOptionsBuilder, DTColumnBuilder) {
 
     $scope.entities = {};
     $scope.dtInstance = {};

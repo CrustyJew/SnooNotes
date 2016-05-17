@@ -1,4 +1,4 @@
-﻿module.exports = function ($q, $http, $rootScope) {
+﻿module.exports = /*@ngInject*/ function ($q, $http, $rootScope) {
     var exports = {};
 
     exports.testConnection = function (settings, sub) {
