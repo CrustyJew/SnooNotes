@@ -6,36 +6,50 @@ function initSocket() {
     var snUpdate = $.connection.SnooNoteUpdates;
     snUpdate.client.receiveUpdate = function (note) { console.log(note.toString()); }
     snUpdate.client.addNewNote = function (note) {
+        var user = note.AppliesToUsername.toLowerCase();
+        var i = snUtil.UsersWithNotes.indexOf(user);
+        var newUser = false;
+        if (i < 0) {
+            newUser = true;
+            snUtil.UsersWithNotes.push(user);
+        }
         
-        var $user = $('#SnooNote-'+note.AppliesToUsername.toLowerCase());
-        if ($user.length == 0) {
+        if (newUser) {
             console.log("Gots a new note for a brand new user");
             //brand spankin new user
-            var notecont = generateNoteContainer(note.AppliesToUsername, generateNoteRow(note));
-            $('body').append(notecont);
-            snBrowser.newNoteNewUser({ "user": note.AppliesToUsername.toLowerCase(), "note": notecont[0].outerHTML });
+            var notecont = generateNoteContainer(user, generateNoteRow(note));
             
+            snBrowser.newNoteNewUser({ "user": user, "note": notecont });
+
         }
         else {
             console.log("Gots a new note for an existing user");
             //user exists, shove the new note in there
             var noterow = generateNoteRow(note);
-            $('table', $user).append(noterow);
-            snBrowser.newNoteExistingUser({ "user": note.AppliesToUsername.toLowerCase(), "note": noterow });
             
+            snBrowser.newNoteExistingUser({ "user": user, "note": noterow });
+
         }
     }
 
-    snUpdate.client.deleteNote = function (user,noteID) {
+    snUpdate.client.deleteNote = function (user, noteID, lastNoteForSub) {
         console.log("Removing a note!");
-        var $note = $('tr#SN' + noteID);
-        var $user = $note.closest('div');
-        $note.remove();
+        user = user.toLowerCase();
+        if (lastNoteForSub) {
+            console.log("User might have run outta notes, so getting a fresh list");
+            checkUserHasNotes(user).then(function (d) {
+                if (d) {
+                    console.log("User still has notes in other subs");
+                    snBrowser.deleteNote({ "user": user, "noteID": noteID })
+                }
+                else {
+                    console.log("User is outta notes in all subs");
+                    var i = snUtil.UsersWithNotes.indexOf(user);
+                    if (i > -1) snUtil.UsersWithNotes.splice(i, 1);
 
-        if ($('tr', $user).length == 0) {
-            console.log("User dun run outta notes, so removing it too");
-            $user.remove();
-            snBrowser.deleteNoteAndUser( { "user": user, "noteID": noteID });    
+                    snBrowser.deleteNoteAndUser({ "user": user, "noteID": noteID });
+                }
+            })
         }
         else {
             snBrowser.deleteNote({ "user": user, "noteID": noteID })
@@ -65,7 +79,7 @@ function initSocket() {
     snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
     //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
     //snUtil.ApiBase = "https://localhost:44311/api/";
-    
+
     snUtil.NoteStyles = document.createElement('style');
     document.head.appendChild(snUtil.NoteStyles);
 
@@ -75,27 +89,17 @@ function initSocket() {
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     if (jqXHR.status === 401) {
         //do nothing on worker page, wait for user to login
-        
+
     }
-    console.log("ERROR: "+textStatus);
+    console.log("ERROR: " + textStatus);
 }
 function initWorker() {
     console.log("initWorker");
     getUsersWithNotes();
     getNoteTypes();
-    $.ajax({
-        url: snUtil.ApiBase + "Note/InitializeNotes",
-        method: "GET",
-        async:false,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
-            initNoteData(d);
-            initSocket();
-            console.log("pageWorker: initialized");
-            snBrowser.workerInitialized({});
-        },
-        error: handleAjaxError
-    });
+    initSocket();
+    console.log("pageWorker: initialized");
+    snBrowser.workerInitialized({});
 }
 function closeSocket() {
     socketOpen = false;
@@ -116,7 +120,7 @@ function initNoteData(data) {
     }
 }
 function generateNoteContainer(user, notes) {
-    var $usernote = $('' +
+    var usernote = '' +
       '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer" style="display:none;">' +
         '<div class="SNHeader"><a class="SNClose SNCloseNote">Close [x]</a></div>' +
         '<table>' + notes + '</table>' +
@@ -125,13 +129,13 @@ function generateNoteContainer(user, notes) {
             '<div class="SNNoteType"></div>' +
             '<div class="SNNewError"></div>' +
         '</div>' +
-      '</div>');
-    return $usernote;
+      '</div>';
+    return usernote;
 }
 function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="SN' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
-                '<td class="SNSubName"><a href="https://reddit.com/r/'+note.SubName+'">' + note.SubName + '</span>' +
-                '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ','<br />') + '</a></td>' +
+                '<td class="SNSubName"><a href="https://reddit.com/r/' + note.SubName + '">' + note.SubName + '</span>' +
+                '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ', '<br />') + '</a></td>' +
                 '<td class="SNMessage"><p>' + note.Message + '</p><a class="SNDeleteNote">[x]</a></td></tr>';
 }
 
@@ -142,11 +146,20 @@ function getUsersWithNotes() {
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (d, s, x) {
-            snUtil.UsersWithNotes = d;
-            snBrowser.gotUsersWithNotes(d);
-            
+            snUtil.UsersWithNotes = d.join("|").toLowerCase().split("|");
+            snBrowser.gotUsersWithNotes(snUtil.UsersWithNotes);
+
         },
         error: handleAjaxError
+    });
+}
+
+function checkUserHasNotes(user) {
+    console.log("Checking that '" + user + "' has notes");
+    return $.ajax({
+        url: snUtil.ApiBase + "Note/" + user + "/HasNotes",
+        method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
     });
 }
 
@@ -155,15 +168,28 @@ function requestUserNotes(req) {
     if (req.users.length <= 0) {
         return;
     }
-    var usersIDs = req.users.join('|').toLowerCase();
-    usersIDs = usersIDs.replace(/\|/g, ',#SnooNote-');
-    usersIDs = "#SnooNote-" + usersIDs;
-    var usersHTML = "";
-    $(usersIDs).each(function (index, $ent) {
-        usersHTML += $ent.outerHTML;
+    $.ajax({
+        url: snUtil.ApiBase + "Note/GetNotes",
+        method: "POST",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        contentType: "application/json",
+        data: JSON.stringify(req.users),
+        success: function (data) {
+            console.log("Building Notes HTML");
+            var usersHTML = "";
+            for (var key in data) {
+                var udata = data[key];
+                var unoterows = "";
+
+                for (var i = 0; i < udata.length; i++) {
+                    var note = udata[i];
+                    unoterows += generateNoteRow(note);
+                }
+                 usersHTML += generateNoteContainer(key, unoterows);
+            }
+            snBrowser.sendUserNotes({ "notes": usersHTML, "worker": req.worker });
+        }
     });
-    snBrowser.sendUserNotes({ "notes": usersHTML, "worker": req.worker });
-    
 }
 
 function getNoteTypes() {
@@ -172,7 +198,7 @@ function getNoteTypes() {
         url: snUtil.ApiBase + "NoteType/Get",
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function(d,s,x) {
+        success: function (d, s, x) {
             initNoteTypeData(d);
         },
         error: handleAjaxError

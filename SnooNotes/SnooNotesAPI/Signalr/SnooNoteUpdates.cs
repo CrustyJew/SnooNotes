@@ -34,9 +34,9 @@ namespace SnooNotesAPI.Signalr
             Clients.Group(anote.SubName.ToLower()).addNewNote(anote);
         }
 
-        public void DeleteNote(Models.Note anote)
+        public void DeleteNote(Models.Note anote, bool outOfNotes)
         {
-            Clients.Group(anote.SubName.ToLower()).deleteNote(anote.AppliesToUsername,anote.NoteID);
+            Clients.Group(anote.SubName.ToLower()).deleteNote(anote.AppliesToUsername,anote.NoteID, outOfNotes);
         }
 
         public void RefreshNoteTypes(IEnumerable<string> SubNames)

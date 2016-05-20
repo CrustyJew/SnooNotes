@@ -38,6 +38,10 @@ namespace SnooNotesAPI.BLL {
             return toReturn;
         }
 
+        public Task<bool> UserHasNotes(IEnumerable<string> subnames, string username ) {
+            return notesDAL.UserHasNotes( subnames, username );
+        }
+
         public Task<Note> AddNoteForUser( Note value ) {
             return notesDAL.AddNoteForUser( value );
         }
@@ -46,7 +50,7 @@ namespace SnooNotesAPI.BLL {
             return notesDAL.GetNoteByID( id );
         }
 
-        public Task DeleteNoteForUser( Note note, string name ) {
+        public Task<bool> DeleteNoteForUser( Note note, string name ) {
             return notesDAL.DeleteNoteForUser( note, name );
         }
     }

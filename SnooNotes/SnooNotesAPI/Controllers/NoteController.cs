@@ -32,9 +32,15 @@ namespace SnooNotesAPI.Controllers
         }
 
         [HttpPost][Route("api/Note/GetNotes")]
-        public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes(IEnumerable<string> users ) {
+        public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes([FromBody]IEnumerable<string> users ) {
             ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
             return notesBLL.GetNotesForSubs( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), users );
+        }
+
+        [HttpGet][Route("api/Note/{username}/HasNotes")]
+        public Task<bool> UserHasNotes(string username ) {
+            ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+            return notesBLL.UserHasNotes( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), username );
         }
         // POST: api/Note
         public async Task Post([FromBody]Models.Note value)
@@ -59,8 +65,8 @@ namespace SnooNotesAPI.Controllers
             Models.Note note = await notesBLL.GetNoteByID(id);
             if ( User.IsInRole(note.SubName.ToLower()))
             {
-                await notesBLL.DeleteNoteForUser(note,User.Identity.Name);
-                Signalr.SnooNoteUpdates.Instance.DeleteNote(note);
+                bool outOfNotes = await notesBLL.DeleteNoteForUser(note,User.Identity.Name);
+                Signalr.SnooNoteUpdates.Instance.DeleteNote(note, outOfNotes);
             }
             else
             {

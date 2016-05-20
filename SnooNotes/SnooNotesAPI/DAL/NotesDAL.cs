@@ -39,6 +39,15 @@ namespace SnooNotesAPI.DAL {
                 return await con.QueryAsync<string>( query, new { subnames } );
             }
         }
+        public async Task<bool> UserHasNotes(IEnumerable<string> subnames, string username ) {
+            using ( SqlConnection con = new SqlConnection( constring ) ) {
+                string query = "select count(*) "
+                       + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
+                       + " where s.SubName in @subnames and n.AppliesToUsername = @username";
+                int count = (await con.QueryAsync<int>( query, new { subnames, username } )).FirstOrDefault();
+                return count > 0;
+            }
+        }
         public async Task<IEnumerable<Note>> GetNotesForSubs( IEnumerable<string> subnames ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
                 string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
@@ -79,15 +88,27 @@ namespace SnooNotesAPI.DAL {
                 return insertedNote;
             }
         }
-
-        public async Task<string> DeleteNoteForUser( Note anote, string uname ) {
+        /// <summary>
+        /// Returns True if user has no more notes in subreddit
+        /// </summary>
+        /// <param name="anote"></param>
+        /// <param name="uname"></param>
+        /// <returns></returns>
+        public async Task<bool> DeleteNoteForUser( Note anote, string uname ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
-                string query = "delete n " +
-                    "OUTPUT GETUTCDATE() as 'HistTimestamp','D' as 'HistAction',@uname as 'HistUser', DELETED.NoteID, DELETED.NoteTypeID, DELETED.SubRedditID,DELETED.Submitter,DELETED.Message,DELETED.AppliesToUsername,DELETED.URL,DELETED.TimeStamp into Notes_History " +
-                    "from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID " +
-                    "where NoteID = @noteid and sr.SubName = @subname";
-                await con.ExecuteAsync( query, new { anote.NoteID, anote.SubName, uname } );
-                return "Success";
+                string query = @"
+delete n 
+OUTPUT GETUTCDATE() as 'HistTimestamp','D' as 'HistAction',@uname as 'HistUser', DELETED.NoteID, DELETED.NoteTypeID, DELETED.SubRedditID,DELETED.Submitter,DELETED.Message,DELETED.AppliesToUsername,DELETED.URL,DELETED.TimeStamp into Notes_History 
+from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID 
+where NoteID = @noteid and sr.SubName = @subname;
+
+Select count(*)
+from Notes n INNER JOIN Subreddits sr on n.SubredditID = sr.SubredditID 
+WHERE
+n.AppliesToUsername = @AppliesToUsername and sr.SubName = @subname;
+";
+                int count = (await con.QueryAsync<int>( query, new { anote.NoteID, anote.SubName, uname, anote.AppliesToUsername } )).FirstOrDefault();
+                return count == 0;
             }
         }
 
