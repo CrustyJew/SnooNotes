@@ -12,6 +12,7 @@
     [AppliesToUsername] NVARCHAR(50) NOT NULL, 
     [Url] NVARCHAR(250) NULL, 
     [Timestamp] DATETIME NULL, 
+    [ParentSubreddit] NVARCHAR(50) NULL, 
 )
 
 GO

@@ -66,19 +66,19 @@ function initSocket() {
         console.log('Socket Disconnected');
         if (socketOpen) {
             setTimeout(function () {
-                $.connection.hub.start();
+                $.connection.hub.start().then(function () { console.log('Connected socket'); }, function (e) { console.log(e.toString()) });
             }, 5000); // Restart connection after 5 seconds.
         }
     });
-    $.connection.hub.start().done(function () { console.log('Connected socket'); });
+    $.connection.hub.start().then(function () { console.log('Connected socket'); }, function (e) { console.log(e.toString()) });
 
 }
 (function (snUtil) {
     browserInit();
-    snUtil.ApiBase = "https://snoonotes.com/api/";
-    snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-    //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-    //snUtil.ApiBase = "https://localhost:44311/api/";
+    //snUtil.ApiBase = "https://snoonotes.com/api/";
+    //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+    snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+    snUtil.ApiBase = "https://localhost:44311/api/";
 
     snUtil.NoteStyles = document.createElement('style');
     document.head.appendChild(snUtil.NoteStyles);
@@ -134,7 +134,8 @@ function generateNoteContainer(user, notes) {
 }
 function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="SN' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
-                '<td class="SNSubName"><a href="https://reddit.com/r/' + note.SubName + '">' + note.SubName + '</span>' +
+                '<td class="SNSubName"><a href="https://reddit.com/r/' + note.SubName + '">' + note.SubName + '</a>' +
+                (note.ParentSubreddit ? '<br>via<br><a href="https://reddit.com/r/'+ note.ParentSubreddit + '">' + note.ParentSubreddit + '</a>' : '')+
                 '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ', '<br />') + '</a></td>' +
                 '<td class="SNMessage"><p>' + note.Message + '</p><a class="SNDeleteNote">[x]</a></td></tr>';
 }

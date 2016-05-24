@@ -32,7 +32,7 @@ namespace SnooNotesAPI.BLL {
             var notes = ( await notesDAL.GetNotesForSubs( subnames, users ) ).ToList();
             Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
             foreach ( string user in notes.Select( n => n.AppliesToUsername ).Distinct() ) {
-                var unotes = notes.Where( u => u.AppliesToUsername == user ).Select( n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp } );
+                var unotes = notes.Where( u => u.AppliesToUsername == user ).Select( n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp, ParentSubreddit = n.ParentSubreddit } );
                 toReturn.Add( user, unotes );
             }
             return toReturn;
@@ -44,6 +44,10 @@ namespace SnooNotesAPI.BLL {
 
         public Task<Note> AddNoteForUser( Note value ) {
             return notesDAL.AddNoteForUser( value );
+        }
+
+        public Task<Note> AddNoteToCabal(Note value, string cabalSub ) {
+            return notesDAL.AddNoteToCabal( value, cabalSub );
         }
 
         public Task<Note> GetNoteByID( int id ) {

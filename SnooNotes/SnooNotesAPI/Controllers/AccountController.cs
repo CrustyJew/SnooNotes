@@ -68,19 +68,5 @@ namespace SnooNotesAPI.Controllers {
 
         }
 
-        //[HttpPost]
-        //public void UpdateSubredditMods([FromBody]string subname)
-        //{
-        //    if (ClaimsPrincipal.Current.IsInRole(subname.ToLower()) && ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + subname.ToLower() + ":admin", "true"))
-        //    {
-        //        var sub = Models.Subreddit.GetSubreddits(new List<string>() { subname }).First();
-        //        Utilities.AuthUtils.UpdateModsForSub(sub);
-        //    }
-        //    else
-        //    {
-        //        throw new UnauthorizedAccessException("You are not a moderator of that subreddit, or you don't have full permissions!");
-        //    }
-
-        //}
     }
 }

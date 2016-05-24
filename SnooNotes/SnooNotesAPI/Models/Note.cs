@@ -24,6 +24,7 @@ namespace SnooNotesAPI.Models
                 _timestamp = DateTime.SpecifyKind(value, DateTimeKind.Utc);
             }
         }
-        
+        public string ParentSubreddit { get; set; }
+
     }
 }

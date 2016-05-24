@@ -2,12 +2,14 @@ function initSnooNotes() {
     (function (snUtil) {
         
 
-        snUtil.ApiBase = "https://snoonotes.com/api/";
-        snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-        snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
-        //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-        //snUtil.ApiBase = "https://localhost:44311/api/";
-        //snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+        //snUtil.ApiBase = "https://snoonotes.com/api/";
+        //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+        //snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
+        snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
+        snUtil.ApiBase = "https://localhost:44311/api/";
+        snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+        snUtil.CabalSub = "SpamCabal";
+
         snUtil.Permissions = {};
         snUtil.Permissions.None = 0x00;
         snUtil.Permissions.Access = 0x01;
@@ -17,6 +19,7 @@ function initSnooNotes() {
         snUtil.Permissions.Posts = 0x10;
         snUtil.Permissions.Wiki = 0x20;
         snUtil.Permissions.All = 0x40 | snUtil.Permissions.Access | snUtil.Permissions.Config | snUtil.Permissions.Flair | snUtil.Permissions.Mail | snUtil.Permissions.Posts | snUtil.Permissions.Wiki;
+        
 
         if ($('#SNContainer').length == 0) {
             $('body').append($('<div id="SNContainer"></div>'));
@@ -115,7 +118,12 @@ function setModdedSubs(){
             if ($('#SNContainer #SNSubDropdown').length == 0) {
                 var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
                 for (var i = 0; i < subNames.length; i++) {
-                    $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
+                    if (subNames[i].toLowerCase() == snUtil.CabalSub.toLowerCase()) {
+                        snUtil.MemberOfCabal;
+                    }
+                    else {
+                        $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
+                    }
                 }
                 $('#SNContainer').append($select);
             }
