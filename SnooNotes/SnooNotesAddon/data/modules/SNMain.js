@@ -103,7 +103,7 @@ function initSnooNotes() {
         snUtil.ModQueue = window.location.pathname.match(/\/r\/mod\/about\/modqueue/i);
         snUtil.UserPage = window.location.pathname.match(/\/user\//i);
         return;
-    }(snUtil = window.snUtil || {}));
+    }(snUtil = this.snUtil || {}));
 }
 
 function setModdedSubs(){

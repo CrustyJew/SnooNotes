@@ -1,4 +1,5 @@
-﻿function browserInit() {
+﻿//DEPRECATED can build in to SNMain etc now
+function browserInit() {
     
     (function (snBrowser) {
         snBrowser.requstUserNotes = function(users){

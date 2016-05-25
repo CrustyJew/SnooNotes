@@ -41,7 +41,7 @@
             var ot = e.target;
             var id = $(ot).closest('tr').attr("id").replace("SN", "");
             $.ajax({
-                url: window.snUtil.ApiBase + "note/Delete?id=" + id,
+                url: snUtil.ApiBase + "note/Delete?id=" + id,
                 method: "DELETE",
                 //datatype: "application/json",
                 //data:{"id":id}
@@ -119,11 +119,11 @@
 
 function getSubName(e) {
 
-    var sub = window.snUtil.Subreddit;
+    var sub = snUtil.Subreddit;
     if (!sub || snUtil.ModQueue) {
         var $ot = $(e.target);
         //not a comment or browsing a sub you mod
-        if (window.snUtil.Modmail) {
+        if (snUtil.Modmail) {
             var $sub = $ot.closest('.thing.message-parent').find('span.correspondent.reddit a');
             if ($sub.length > 1) {
                 //multiple results here means RES / Mod toolbox is present which messes things up
@@ -263,7 +263,7 @@ function submitNote(user, sub, link, message, type, $noteCont) {
     $noteCont.find('.SNNewError').empty();
     }
     $.ajax({
-        url: window.snUtil.ApiBase + "note",
+        url: snUtil.ApiBase + "note",
         method: "POST",
         datatype: "application/json",
         data: { "NoteTypeID": type, "SubName": sub, "Message": message, "AppliesToUsername": user, "Url": link },
