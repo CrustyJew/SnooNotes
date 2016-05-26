@@ -1,6 +1,9 @@
 ﻿var waitingToClose;
 var loggedIn = false;
 var usersWithNotes = [];
+var moddedSubs = [];
+var subSettings = [];
+var dirtbagSubs = [];
 var cssReady = false;
 
 var socketOpen = false;
@@ -81,8 +84,11 @@ function initSocket() {
 (function (snUtil) {
     //snUtil.ApiBase = "https://snoonotes.com/api/";
     //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+    //snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
     snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
     snUtil.ApiBase = "https://localhost:44311/api/";
+    snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+    snUtil.CabalSub = "SpamCabal";
 
     snUtil.NoteStyles = document.createElement('style');
     document.head.appendChild(snUtil.NoteStyles);
@@ -157,6 +163,44 @@ function getUsersWithNotes() {
         error: handleAjaxError
     });
 }
+
+function getModdedSubs() {
+    console.log("Getting moderated subreddits and settings");
+    $.ajax({
+        url: snUtil.RESTApiBase + "Subreddit",
+        method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function (d) {
+            moddedSubs = d.map(function (sub) { return sub.SubName.toLowerCase() });
+            subSettings = {};
+
+            for (var i = 0; i < d.length; i++) {
+                var name = d[i].SubName.toLowerCase();
+                //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
+                subSettings[name] = d[i].Settings;
+            }
+        }
+    })
+}
+
+function getDirtbagSubs() {
+    $.ajax({
+        url: snUtil.RESTApiBase + "Subreddit/admin",
+        method: "GET",
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function (d, s, x) {
+
+            dirtbagSubs = [];
+            for (var i = 0; i < d.length; i++) {
+                var botSettings = d[i].BotSettings;
+                //check if there is a URL for DirtBag 
+                if (botSettings && botSettings.DirtbagUrl) dirtbagSubs.push(d[i].SubName.toLowerCase());
+            }
+        },
+        error: handleAjaxError
+    });
+}
+
 
 function checkUserHasNotes(user) {
     console.log("Checking that '" + user + "' has notes");
