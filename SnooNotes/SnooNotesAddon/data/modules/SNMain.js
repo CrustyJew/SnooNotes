@@ -30,8 +30,7 @@ function initSnooNotes() {
         snUtil.NoteStyles = document.createElement('style');
         $('#SNContainer').append(snUtil.NoteStyles);
         snUtil.reinitWorker = function () {
-            var event = new CustomEvent("snUtilDone");
-            window.dispatchEvent(event);
+            getSettings();
         }
         snUtil.setUsersWithNotes = function(users){
             if (!users) {
@@ -62,14 +61,15 @@ function initSnooNotes() {
             $('.SNDone').removeClass('SNDone');
             $('#SNContainer').empty();
             snBrowser.reinitAll();
-            checkLoggedIn();
-            setModdedSubs();
-            getDirtbagSubs();
+            getSettings();
         };
         //have to have the snUtil functions ready >.<
         browserInit(); //init browser first to attach listeners etc
         //do this lateish so we get all the listeners hooked up first
-        if (!snUtil.LoggedIn) checkLoggedIn();
+        //if (!snUtil.settings.loggedIn) checkLoggedIn();
+
+        getSettings();
+
         var sub = /reddit\.com\/r\/[a-z0-9\+]*\/?/i.exec(window.location);
         snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
         snUtil.Subreddit = snUtil.Subreddit.indexOf('+') != -1  ? "" : snUtil.Subreddit; //if it contains a plus sign, it's a multi reddit, not a mod
@@ -106,80 +106,110 @@ function initSnooNotes() {
     }(snUtil = this.snUtil || {}));
 }
 
-function setModdedSubs(){
-    $.ajax({
-        url: snUtil.RESTApiBase + "Subreddit",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
-            var subNames = d.map(function (q) { return q.SubName.toLowerCase(); });
-            snUtil.ModdedSubs = "," + subNames.join(",") + ",";
-            //initialize the dropdown list if it doesn't exist
-            if ($('#SNContainer #SNSubDropdown').length == 0) {
+function getSettings() {
+    chrome.runtime.sendMessage({ "method": "getSettings" }, function (settings) {
+        snUtil.settings = settings;
+        if (settings) {
+            if (settings.loggedIn) {
+                window.dispatchEvent(new CustomEvent("snLoggedIn"));
+
+                $('#SNSubDropdown').remove();
                 var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
-                for (var i = 0; i < subNames.length; i++) {
-                    if (subNames[i].toLowerCase() == snUtil.CabalSub.toLowerCase()) {
-                        snUtil.MemberOfCabal;
+                for (var i = 0; i < settings.moddedSubs.length; i++) {
+                    if (settings.moddedSubs[i] != snUtil.CabalSub.toLowerCase()) {
+                        $select.append($('<option value="' + settings.moddedSubs[i] + '">' + settings.moddedSubs[i] + '</option>'));
                     }
                     else {
-                        $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
+                       
                     }
                 }
                 $('#SNContainer').append($select);
+
+                var event = new CustomEvent("snUtilDone");
+                window.dispatchEvent(event);
             }
-            snUtil.SubSettings = {};
+            else {
+                window.dispatchEvent(new CustomEvent("snLoggedOut"));
+            }
+            
+        }
+    });
+}
+
+//function setModdedSubs(){
+//    $.ajax({
+//        url: snUtil.RESTApiBase + "Subreddit",
+//        method: "GET",
+//        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+//        success: function (d, s, x) {
+//            var subNames = d.map(function (q) { return q.SubName.toLowerCase(); });
+//            snUtil.ModdedSubs = "," + subNames.join(",") + ",";
+//            //initialize the dropdown list if it doesn't exist
+//            if ($('#SNContainer #SNSubDropdown').length == 0) {
+//                var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
+//                for (var i = 0; i < subNames.length; i++) {
+//                    if (subNames[i].toLowerCase() == snUtil.CabalSub.toLowerCase()) {
+//                        snUtil.MemberOfCabal;
+//                    }
+//                    else {
+//                        $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
+//                    }
+//                }
+//                $('#SNContainer').append($select);
+//            }
+//            snUtil.SubSettings = {};
 
          
-            for (var i = 0; i < d.length; i++) {
-                var name = d[i].SubName.toLowerCase();
-                //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
-                snUtil.SubSettings[name] = d[i].Settings;
-            }
+//            for (var i = 0; i < d.length; i++) {
+//                var name = d[i].SubName.toLowerCase();
+//                //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
+//                snUtil.SubSettings[name] = d[i].Settings;
+//            }
 
-            var event = new CustomEvent("snUtilDone");
-            window.dispatchEvent(event);
-        },
-        error: handleAjaxError
-    });
-    return;
-}
+//            var event = new CustomEvent("snUtilDone");
+//            window.dispatchEvent(event);
+//        },
+//        error: handleAjaxError
+//    });
+//    return;
+//}
 
-function getDirtbagSubs() {
-    $.ajax({
-        url: snUtil.RESTApiBase + "Subreddit/admin",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
+//function getDirtbagSubs() {
+//    $.ajax({
+//        url: snUtil.RESTApiBase + "Subreddit/admin",
+//        method: "GET",
+//        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+//        success: function (d, s, x) {
 
-            snUtil.DirtbagSubs = "";
-            var dbSubs = [];
-            for (var i = 0; i < d.length; i++) {
-                var botSettings = d[i].BotSettings;
-                //check if there is a URL for DirtBag 
-                if (botSettings && botSettings.DirtbagUrl) dbSubs.push(d[i].SubName);
-            }
-            snUtil.DirtbagSubs = "," + dbSubs.join(",") + ",";
-        },
-        error: handleAjaxError
-    });
-}
-function checkLoggedIn() {
-    $.ajax({
-        url: snUtil.ApiBase + "Account/IsLoggedIn",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
-            snUtil.LoggedIn = true;
-            snBrowser.loggedIn();
-            window.dispatchEvent(new CustomEvent("snLoggedIn"));
-            if (!snUtil.ModdedSubs) {
-                setModdedSubs();
-                getDirtbagSubs();
-            }
-        },
-        error: handleAjaxError
-    });
-}
+//            snUtil.DirtbagSubs = "";
+//            var dbSubs = [];
+//            for (var i = 0; i < d.length; i++) {
+//                var botSettings = d[i].BotSettings;
+//                //check if there is a URL for DirtBag 
+//                if (botSettings && botSettings.DirtbagUrl) dbSubs.push(d[i].SubName);
+//            }
+//            snUtil.DirtbagSubs = "," + dbSubs.join(",") + ",";
+//        },
+//        error: handleAjaxError
+//    });
+//}
+//function checkLoggedIn() {
+//    $.ajax({
+//        url: snUtil.ApiBase + "Account/IsLoggedIn",
+//        method: "GET",
+//        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+//        success: function (d, s, x) {
+//            snUtil.LoggedIn = true;
+//            snBrowser.loggedIn();
+//            window.dispatchEvent(new CustomEvent("snLoggedIn"));
+//            if (!snUtil.ModdedSubs) {
+//                setModdedSubs();
+//                getDirtbagSubs();
+//            }
+//        },
+//        error: handleAjaxError
+//    });
+//}
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     if(jqXHR.status === 401)
     {

@@ -25,7 +25,7 @@ function browserInit() {
                     snUtil.updateUsersWithNotes(request.req);
                     break;
                 case "reinitWorker" :
-                    //snUtil.reinitWorker();
+                    snUtil.reinitWorker();
                     break;
                 case "newNoteExistingUser":
                     newNoteExistingUser(request.req); //snoonotes.js
