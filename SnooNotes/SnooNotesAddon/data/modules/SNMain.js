@@ -8,7 +8,7 @@ function initSnooNotes() {
         snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
         snUtil.ApiBase = "https://localhost:44311/api/";
         snUtil.RESTApiBase = "https://localhost:44311/restapi/";
-        snUtil.CabalSub = "SpamCabal";
+        snUtil.CabalSub = "spamcabal"; //lower case this bad boy
 
         snUtil.Permissions = {};
         snUtil.Permissions.None = 0x00;
@@ -116,7 +116,7 @@ function getSettings() {
                 $('#SNSubDropdown').remove();
                 var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
                 for (var i = 0; i < settings.moddedSubs.length; i++) {
-                    if (settings.moddedSubs[i] != snUtil.CabalSub.toLowerCase()) {
+                    if (settings.moddedSubs[i] != snUtil.CabalSub) {
                         $select.append($('<option value="' + settings.moddedSubs[i] + '">' + settings.moddedSubs[i] + '</option>'));
                     }
                     else {
@@ -124,7 +124,15 @@ function getSettings() {
                     }
                 }
                 $('#SNContainer').append($select);
-
+                if (settings.isCabal) {
+                    var cabalTypes = settings.subSettings[snUtil.CabalSub].NoteTypes;
+                    var cabalPanel = '<div id="SNCabalTypes"><ul class="SNNoteType">';
+                    for (var x = 0; x < cabalTypes.length; x++) {
+                        cabalPanel += '<li class="SN' + snUtil.CabalSub + cabalTypes[x].NoteTypeID + '" sn-cabal-type="' + cabalTypes[x].NoteTypeID + '">' + cabalTypes[x].DisplayName + '</li>';
+                    }
+                    cabalPanel += '</ul></div>';
+                    $('#SNContainer').append($(cabalPanel));
+                }
                 var event = new CustomEvent("snUtilDone");
                 window.dispatchEvent(event);
             }

@@ -166,7 +166,7 @@ function generateNoteContainer(user, notes) {
 function generateNoteRow(note) {
     return '<tr id="SN' + note.NoteID + '" class="SN' + note.SubName.toLowerCase() + note.NoteTypeID + '">' +
                 '<td class="SNSubName"><a href="https://reddit.com/r/' + note.SubName + '">' + note.SubName + '</a>' +
-                (note.ParentSubreddit ? '<br>via<br><a href="https://reddit.com/r/' + note.ParentSubreddit + '">' + note.ParentSubreddit + '</a>' : settings.isCabal ? '<br><br><span class="SNCabalize"></span>' : '') +
+                (note.ParentSubreddit ? '<br>via<br><a href="https://reddit.com/r/' + note.ParentSubreddit + '">' + note.ParentSubreddit + '</a>' : settings.isCabal ? '<br><span class="SNCabalify"></span>' : '') +
                 '<td class="SNSubmitter"><span>' + note.Submitter + '</span><br /><a href="' + note.Url + '">' + new Date(note.Timestamp).toLocaleString().replace(', ', '<br />') + '</a></td>' +
                 '<td class="SNMessage"><p>' + note.Message + '</p>' + 
                 (!note.ParentSubreddit || settings.moddedSubs.indexOf(note.ParentSubreddit.toLowerCase()) > -1 ? '<a class="SNDeleteNote">[x]</a></td></tr>' : '');

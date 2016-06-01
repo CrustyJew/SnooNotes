@@ -1,6 +1,7 @@
 ﻿(function () {
     window.addEventListener("snUtilDone", function (e) {
         $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNViewNotes', function (e) {
+            $('.SNNew:visible,.SNViewContainer:visible,#SNCabalTypes:visible').hide();
             showNotes(e);
         });
         $('#SNContainer').on('click', '.SNCloseNote', function (e) {
@@ -49,6 +50,8 @@
         });
         $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNNoNotes', function (e) {
             var $ot = $(e.target);
+
+            $('.SNNew:visible,.SNViewContainer:visible,#SNCabalTypes:visible').hide();
 
             var user = $ot.attr('SNUser');
             var hasNoLink = $ot.hasClass('SNNoLink');
@@ -113,6 +116,25 @@
             }
         });
 
+        $('#SNContainer').on('click', '.SNCabalify', function (e) {
+            var $cabalTypes = $('#SNCabalTypes');
+            $cabalTypes.attr('sn-note-id', $(e.target).closest('tr').attr("id").replace("SN", ""));
+            $cabalTypes.css({ 'top': e.pageY, 'left': e.pageX, 'right': '' }).fadeIn('fast');
+        });
+        $(document).click(function (event) {
+            var $tar = $(event.target);
+            if ($tar.is('.SNViewNotes,.SNNoNotes,.SNCabalify')) {
+                //let the view/add click events handle it.
+                return;
+            }
+            if (!$tar.closest('#SNCabalTypes').length && !$tar.is('#SNCabalTypes') && $('#SNCabalTypes').is(":visible")) {
+                $('#SNCabalTypes').hide();
+            }
+            if (!$tar.closest('.SNNew,.SNViewContainer').length && !$tar.is('.SNNew,.SNViewContainer')) {
+                $('.SNNew:visible,.SNViewContainer:visible').hide();
+            }
+
+        });
         e.target.removeEventListener(e.type, arguments.callee);
     });
 })();
