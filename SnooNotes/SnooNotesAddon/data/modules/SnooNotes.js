@@ -118,10 +118,14 @@
 })();
 
 function getSubName(e) {
-
+    var subName = $(e.target).closest('.thing').attr('data-subreddit');
+    if (subName) {
+        return subName.toLowerCase();
+    }
     var sub = snUtil.Subreddit;
     if (!sub || snUtil.ModQueue) {
         var $ot = $(e.target);
+        
         //not a comment or browsing a sub you mod
         if (snUtil.Modmail) {
             var $sub = $ot.closest('.thing.message-parent').find('span.correspondent.reddit a');

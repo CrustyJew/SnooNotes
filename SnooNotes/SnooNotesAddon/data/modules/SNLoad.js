@@ -7,7 +7,6 @@ function getEntriesToProcess() {
     var $SNEntries = {};
     $SNEntries = $('.sitetable .thing .entry:not(.SNDone), .commentarea .thing .entry:not(.SNDone)');
     
-
     var SNUsers = [];
     if (!snUtil.UsersWithNotes) {
         if (retrynum > 75) return;//fuck on outa here if something is wrong with user;
@@ -19,63 +18,38 @@ function getEntriesToProcess() {
         }
     }
     retrynum = 0;
-    if(snUtil.Subreddit || snUtil.Modmail ){
-        if (snUtil.Modmail ||snUtil.ModQueue || snUtil.settings.moddedSubs.indexOf(snUtil.Subreddit.toLowerCase()) > -1 ) {
-            console.log("Viewing sub that you mod or modmail");
-            $('.author:not(".moderator")', $SNEntries).filter(function(){return $(this).parent('.recipient').length < 1}).each(function (index, ent) {
-                var $container = $(ent).closest('div');
-                //console.log("," + ent.innerHTML + "," + " ------ " + snUtil.UsersWithNotes);
-                if (new RegExp("," + ent.innerHTML + ",","i").test(snUtil.UsersWithNotes)) {
-                    if ($container.hasClass('SNFetching') && SNUsers.indexOf(ent.innerHTML) == -1) { //don't add doubles
-                        SNUsers.push(ent.innerHTML);
+    $('div.thing:not(.SNDone,.SNFetching)').each(function () {
+        var $thing = $(this);
+        var $authElem = $thing.children('.entry').find('.author:not(.moderator)');
+        var sub = $thing.attr('data-subreddit');
+        var author = $thing.attr('data-author');
+        if (!sub) {
+            $thing.addClass('SNDone');
+            return;
+        }
+        if (snUtil.settings.moddedSubs.indexOf(sub.toLowerCase()) > -1) {
+            if (snUtil.settings.usersWithNotes.indexOf(author.toLowerCase()) > -1) {
+                if ($('#SnooNote-' + author.toLowerCase()).length == 0) {
+                    //we don't have the note loaded yet
+                    if (SNUsers.indexOf(author.toLowerCase()) == -1) {
+                        //the user isn't in the list to request yet
+                        SNUsers.push(author.toLowerCase());
                     }
-                    else {
-                        if ($('#SnooNote-' + ent.innerHTML.toLowerCase()).length == 0) {
-                            if (SNUsers.indexOf(ent.innerHTML) == -1) {
-                                SNUsers.push(ent.innerHTML);
-                            }
-                            $container.addClass('SNFetching');
-                        }
-                        else {
-                            $container.addClass('SNDone');
-                        }
-                        $('<a SNUser="'+ent.innerHTML.toLowerCase()+'" class="SNViewNotes">[view note]</a>').insertAfter(ent);
-                    }
-                    
+                    $thing.addClass('SNFetching');
                 }
                 else {
-                    //TODO add icon for new note
-                    $('<a SNUser="' + ent.innerHTML.toLowerCase() + '" class="SNNoNotes">[add note]</a>').insertAfter(ent);
-                    $container.addClass('SNDone');
+                    //already have the notes for the user
+                    $thing.addClass('SNDone');
                 }
-            });
-        }
-        else { //not browsing a /r/ you moderate
-            console.log("Not a sub you mod");
-        }
-    }
-    else { //not browsing a specific subreddit, also /user/ pages
-        $SNEntries.each(function (index, $ent) {
-            if (snUtil.settings.moddedSubs.indexOf($('a.subreddit', $ent.closest('.thing'))[0].textContent.replace('/r/','')) > -1) {
-                var auth = $('.author', $ent)[0].textContent.toLowerCase();
-                if (new RegExp("," + auth + ",","i").test(snUtil.UsersWithNotes)) {
-                    if ($('#SnooNote-' + auth).length == 0 && SNUsers.indexOf(auth) == -1) {
-                        SNUsers.push(auth);
-                    }
-                    if ($ent.className.indexOf("SNFetching") == -1) {
-                        $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNViewNotes">[view&nbsp;note]</a>'));
-                        $ent.className = $ent.className + " SNFetching";
-                    }
-                }
-                else {
-                    //TODO add icon for new note
-                    $('.author', $ent).after($('<a SNUser="' + auth + '" class="SNNoNotes">[add&nbsp;note]</a>'));
-                    $ent.className = $ent.className + " SNDone";
-                }
+                $authElem.after('<a SNUser="' + author.toLowerCase() + '" class="SNViewNotes">[view&nbsp;note]</a>');
             }
-        });
-
-    }
+            else {
+                //user doesn't have notes
+                $thing.addClass('SNDone');
+                $authElem.after('<a SNUser="' + author.toLowerCase() + '" class="SNNoNotes">[add&nbsp;note]</a>')
+            }
+        }
+    })
     if (snUtil.UserPage) {      
         var $user =  $('body.profile-page .side .titlebox h1')
         var uname = $user[0].textContent.toLowerCase();
@@ -109,7 +83,7 @@ function processEntries(notes) {
    
     $('#SNContainer').append($(notes));
     if (notes) {
-        $('.sitetable .thing .entry.SNFetching').removeClass("SNFetching").addClass("SNDone"); //TODO check this to make sure it won't lose notes / users randomly.s
+        $('.thing.SNFetching').removeClass("SNFetching").addClass("SNDone"); //TODO check this to make sure it won't lose notes / users randomly.s
     }
 }
 
