@@ -60,7 +60,7 @@
             var sub = getSubName(e);
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
                 $newNote = $('' +
-                    '<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
+                    '<div id="SnooNote-' + user + '" class="SNNew SNNoteArea" style="display:none;">' +
                         '<div class="SNHeader"><a class="SNCloseNewNote SNClose">Cancel [x]</a></div>' +
                         '<div class="SNNewNoteContainer">' +
                             '<div class="SNNewNote">' +
@@ -119,8 +119,31 @@
         $('#SNContainer').on('click', '.SNCabalify', function (e) {
             var $cabalTypes = $('#SNCabalTypes');
             $cabalTypes.attr('sn-note-id', $(e.target).closest('tr').attr("id").replace("SN", ""));
-            $cabalTypes.css({ 'top': e.pageY, 'left': e.pageX, 'right': '' }).fadeIn('fast');
+            $cabalTypes.css({ 'top': e.pageY - 10, 'left': e.pageX + 10, 'right': '' }).fadeIn('fast');
         });
+
+        $('#SNContainer').on('click', '#SNCabalTypes li', function (e) {
+            var id = $('#SNCabalTypes').attr('sn-note-id');
+            var type = $(e.target).attr('sn-cabal-type');
+            $('.SNNoteArea:visible .SNCabalify').hide();
+            $('#SNCabalTypes:visible').hide();
+            $.ajax({
+                url: snUtil.ApiBase + 'Note/Cabal?id='+id+'&typeid='+type,
+                method: "POST",
+                //data: {'id':id, 'typeid' : type}
+            })
+            .then(function () {
+
+            })
+            .fail(function (e) {
+                $('body').block({
+                    message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Cabalifying the note failed. Maybe it needs more shekels?</h2></div>',
+                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1,
+                    css: $.blockUI.defaults.growlCSS
+                });
+                $('.SNNoteArea:visible .SNCabalify').show();
+            })
+        })
         $(document).click(function (event) {
             var $tar = $(event.target);
             if ($tar.is('.SNViewNotes,.SNNoNotes,.SNCabalify')) {
@@ -129,10 +152,12 @@
             }
             if (!$tar.closest('#SNCabalTypes').length && !$tar.is('#SNCabalTypes') && $('#SNCabalTypes').is(":visible")) {
                 $('#SNCabalTypes').hide();
+
+                if (!$tar.closest('.SNNew,.SNViewContainer').length && !$tar.is('.SNNew,.SNViewContainer')) {
+                    $('.SNNew:visible,.SNViewContainer:visible').hide();
+                }
             }
-            if (!$tar.closest('.SNNew,.SNViewContainer').length && !$tar.is('.SNNew,.SNViewContainer')) {
-                $('.SNNew:visible,.SNViewContainer:visible').hide();
-            }
+            
 
         });
         e.target.removeEventListener(e.type, arguments.callee);

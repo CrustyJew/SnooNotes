@@ -126,7 +126,7 @@ function getSettings() {
                 $('#SNContainer').append($select);
                 if (settings.isCabal) {
                     var cabalTypes = settings.subSettings[snUtil.CabalSub].NoteTypes;
-                    var cabalPanel = '<div id="SNCabalTypes"><ul class="SNNoteType">';
+                    var cabalPanel = '<div id="SNCabalTypes" style="display:none;"><ul class="SNNoteType">';
                     for (var x = 0; x < cabalTypes.length; x++) {
                         cabalPanel += '<li class="SN' + snUtil.CabalSub + cabalTypes[x].NoteTypeID + '" sn-cabal-type="' + cabalTypes[x].NoteTypeID + '">' + cabalTypes[x].DisplayName + '</li>';
                     }

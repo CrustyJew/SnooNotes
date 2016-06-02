@@ -56,12 +56,17 @@ namespace SnooNotesAPI.Controllers {
 
         [HttpPost]
         [Route( "api/Note/Cabal" )]
-        public async Task AddNoteToCabal( Models.Note value ) {
+        public async Task AddNoteToCabal( int id, int typeid ) {
             string cabalSub = System.Configuration.ConfigurationManager.AppSettings["CabalSubreddit"].ToLower();
+            Models.Note note = await notesBLL.GetNoteByID( id );
+            if( !User.IsInRole( note.SubName.ToLower() ) ) {
+                throw new UnauthorizedAccessException( "That note ID doesn't belong to you. Go on! GIT!" );
+            }
             if ( User.IsInRole( cabalSub ) ) {
-                value.Timestamp = DateTime.UtcNow;
-                value.Submitter = ClaimsPrincipal.Current.Identity.Name;
-                var insertedNote = await notesBLL.AddNoteToCabal( value, cabalSub );
+                note.Timestamp = DateTime.UtcNow;
+                note.Submitter = ClaimsPrincipal.Current.Identity.Name;
+                note.NoteTypeID = typeid;
+                var insertedNote = await notesBLL.AddNoteToCabal( note, cabalSub );
                 Signalr.SnooNoteUpdates.Instance.SendNewNote( insertedNote );
             }
             else {

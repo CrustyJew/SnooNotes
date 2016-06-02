@@ -165,6 +165,7 @@
     border: darkgrey 1px solid;
     width:150px;
     border-radius:5px;
+    position:absolute;
 }
 
 #SNCabalTypes li{
@@ -178,3 +179,7 @@
     #SNCabalTypes ul {
         margin-top:0px;
     }
+
+#SNContainer > #SNSubDropdown{
+    display:none;
+}

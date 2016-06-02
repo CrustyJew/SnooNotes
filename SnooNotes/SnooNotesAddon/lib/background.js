@@ -152,7 +152,7 @@ function initNoteData(data) {
 }
 function generateNoteContainer(user, notes) {
     var usernote = '' +
-      '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer" style="display:none;">' +
+      '<div id="SnooNote-' + user.toLowerCase() + '" class="SNViewContainer SNNoteArea" style="display:none;">' +
         '<div class="SNHeader"><a class="SNClose SNCloseNote">Close [x]</a></div>' +
         '<table>' + notes + '</table>' +
         '<div class="SNNewNoteContainer">' +

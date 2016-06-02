@@ -27,6 +27,8 @@ function getEntriesToProcess() {
             $thing.addClass('SNDone');
             return;
         }
+        if ($authElem.parent().hasClass('recipient')) return;
+
         if (snUtil.settings.moddedSubs.indexOf(sub.toLowerCase()) > -1) {
             if (snUtil.settings.usersWithNotes.indexOf(author.toLowerCase()) > -1) {
                 if ($('#SnooNote-' + author.toLowerCase()).length == 0) {
