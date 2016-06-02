@@ -36,7 +36,7 @@ function initSnooNotes() {
             if (!users) {
                 return;
             }
-            snUtil.UsersWithNotes = "," + users.join(",") + ","; //I hate stupid arrays and not being able to case-insensitive searches!
+            snUtil.settings.usersWithNotes = users;
 
         };
        
@@ -45,11 +45,15 @@ function initSnooNotes() {
             var user = req.user;
             if (req.remove) {
                 console.log("removed user");
-                snUtil.UsersWithNotes = snUtil.UsersWithNotes.replace("," + user + ",", ","); //E-i-E-i-ooooooo
+                var i = snUtil.settings.usersWithNotes.indexOf(req.user);
+                if (i > -1) {
+                    snUtil.settings.usersWithNotes.splice(i, 1);
+                }
             }
             else if (req.add) {
                 console.log("Added user");
-                snUtil.UsersWithNotes = snUtil.UsersWithNotes + "," + user + ",";
+                //snUtil.UsersWithNotes = snUtil.UsersWithNotes + "," + user + ",";
+                snUtil.settings.usersWithNotes.push(req.user);
             }
         };
         
@@ -133,6 +137,7 @@ function getSettings() {
                     cabalPanel += '</ul></div>';
                     $('#SNContainer').append($(cabalPanel));
                 }
+                snUtil.NoteStyles.innerHTML = settings.noteTypeCSS;
                 var event = new CustomEvent("snUtilDone");
                 window.dispatchEvent(event);
             }
@@ -144,80 +149,6 @@ function getSettings() {
     });
 }
 
-//function setModdedSubs(){
-//    $.ajax({
-//        url: snUtil.RESTApiBase + "Subreddit",
-//        method: "GET",
-//        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-//        success: function (d, s, x) {
-//            var subNames = d.map(function (q) { return q.SubName.toLowerCase(); });
-//            snUtil.ModdedSubs = "," + subNames.join(",") + ",";
-//            //initialize the dropdown list if it doesn't exist
-//            if ($('#SNContainer #SNSubDropdown').length == 0) {
-//                var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
-//                for (var i = 0; i < subNames.length; i++) {
-//                    if (subNames[i].toLowerCase() == snUtil.CabalSub.toLowerCase()) {
-//                        snUtil.MemberOfCabal;
-//                    }
-//                    else {
-//                        $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
-//                    }
-//                }
-//                $('#SNContainer').append($select);
-//            }
-//            snUtil.SubSettings = {};
-
-         
-//            for (var i = 0; i < d.length; i++) {
-//                var name = d[i].SubName.toLowerCase();
-//                //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
-//                snUtil.SubSettings[name] = d[i].Settings;
-//            }
-
-//            var event = new CustomEvent("snUtilDone");
-//            window.dispatchEvent(event);
-//        },
-//        error: handleAjaxError
-//    });
-//    return;
-//}
-
-//function getDirtbagSubs() {
-//    $.ajax({
-//        url: snUtil.RESTApiBase + "Subreddit/admin",
-//        method: "GET",
-//        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-//        success: function (d, s, x) {
-
-//            snUtil.DirtbagSubs = "";
-//            var dbSubs = [];
-//            for (var i = 0; i < d.length; i++) {
-//                var botSettings = d[i].BotSettings;
-//                //check if there is a URL for DirtBag 
-//                if (botSettings && botSettings.DirtbagUrl) dbSubs.push(d[i].SubName);
-//            }
-//            snUtil.DirtbagSubs = "," + dbSubs.join(",") + ",";
-//        },
-//        error: handleAjaxError
-//    });
-//}
-//function checkLoggedIn() {
-//    $.ajax({
-//        url: snUtil.ApiBase + "Account/IsLoggedIn",
-//        method: "GET",
-//        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-//        success: function (d, s, x) {
-//            snUtil.LoggedIn = true;
-//            snBrowser.loggedIn();
-//            window.dispatchEvent(new CustomEvent("snLoggedIn"));
-//            if (!snUtil.ModdedSubs) {
-//                setModdedSubs();
-//                getDirtbagSubs();
-//            }
-//        },
-//        error: handleAjaxError
-//    });
-//}
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     if(jqXHR.status === 401)
     {
@@ -264,7 +195,8 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         "backgroundColor": "#000",
         "-webkit-border-radius": "10px",
         "-moz-border-radius": "10px",
-        "border-radius": "10px"
+        "border-radius": "10px",
+        "z-index":"999999"
     };
     $.blockUI.defaults.css= { 
         padding:        0, 

@@ -2,10 +2,11 @@
 
 var cssReady = false;
 
-var settings = {subSettings:{}, moddedSubs:[], dirtbagSubs:[], isCabal:false, usersWithNotes:[], loggedIn:false};
+var settings = {subSettings:{}, moddedSubs:[], dirtbagSubs:[], isCabal:false, usersWithNotes:[], loggedIn:false, noteTypeCSS:''};
 var errors = [];
 
 var initialized = false;
+var initializing = false;
 
 var socketOpen = false;
 function initSocket() {
@@ -69,7 +70,7 @@ function initSocket() {
         initWorker();
     }
     snUpdate.client.refreshNoteTypes = function () {
-        getNoteTypes();
+        getModdedSubs(true);
     }
     $.connection.hub.disconnected(function () {
         console.log('Socket Disconnected');
@@ -91,21 +92,24 @@ function initSocket() {
     snUtil.RESTApiBase = "https://localhost:44311/restapi/";
     snUtil.CabalSub = "spamcabal"; //lower case this bad boy
 
-    snUtil.NoteStyles = document.createElement('style');
-    document.head.appendChild(snUtil.NoteStyles);
-
     initWorker();
     return;
 }(snUtil = this.snUtil || {}));
 
-function handleAjaxError(jqXHR, textStatus, errorThrown) {
+function handleAjaxError(jqXHR, textStatus, errorThrown, message) {
     if (jqXHR.status === 401) {
-        //do nothing on worker page, wait for user to login
-
+        console.warn("401 received, reinitializing worker");
+        initWorker();
     }
-    console.log("ERROR: " + textStatus);
+    else {
+        //TODO send error through worker
+        console.error("ERROR: " + message + " -- " + textStatus);
+    }
 }
+
 function initWorker() {
+    if (initializing) return; //run away if it's already initializing
+    initializing = true;
     console.log("initWorker");
     $.ajax({
         url: snUtil.ApiBase + "Account/IsLoggedIn",
@@ -113,13 +117,15 @@ function initWorker() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function () {
         settings.loggedIn = true;
-        $.when(getUsersWithNotes(), getNoteTypes(), getModdedSubs(), getDirtbagSubs(), initSocket())
-        .done(function () {
+        return $.when(getUsersWithNotes(), getModdedSubs(), getDirtbagSubs(), initSocket())
+        .then(function () {
+            initializing = false;
             console.log("pageWorker: initialized");
             initialized = true;
             workerInitialized({});
-        })
+        });
     }).fail(function (e) {
+        initializing = false;
         if (e.status === 401) {
             initialized = true;
             settings.loggedIn = false;
@@ -127,6 +133,7 @@ function initWorker() {
         }
         else {
             console.error(e.textStatus);
+            setTimeout(function () { initWorker(); }, 2500);
         }
     })
     
@@ -178,25 +185,25 @@ function getUsersWithNotes() {
         url: snUtil.ApiBase + "Note/GetUsernamesWithNotes",
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
-    }).done(function (d, s, x) {
+    }).then(function (d, s, x) {
         settings.usersWithNotes = d.join("|").toLowerCase().split("|");
-        gotUsersWithNotes(settings.usersWithNotes);
-    }).fail(function (e) {
-        errorLogging("Getting usernames with notes failed", e);
+    }).fail(function (j,t,e) {
+        handleAjaxError(j,t,e,"Getting usernames with notes failed");
     });
 }
 
-function getModdedSubs() {
+function getModdedSubs(broadcast) {
     console.log("Getting moderated subreddits and settings");
     return $.ajax({
         url: snUtil.RESTApiBase + "Subreddit",
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
 
-    }).done(function (d) {
+    }).then(function (d) {
         settings.moddedSubs = d.map(function (sub) { return sub.SubName.toLowerCase() });
         settings.subSettings = {};
         settings.isCabal = false;
+        var cssString = '';
 
         for (var i = 0; i < d.length; i++) {
             var name = d[i].SubName.toLowerCase();
@@ -204,9 +211,26 @@ function getModdedSubs() {
             settings.subSettings[name] = d[i].Settings;
 
             if (name == snUtil.CabalSub) settings.isCabal = true;
+
+            var subCSSString = '/***start ' + name + '***/';
+            for (var x = 0; x < d[i].Settings.NoteTypes.length; x++) {
+                var noteType = d[i].Settings.NoteTypes[x];
+                subCSSString += '#SNContainer .SN' + name + noteType.NoteTypeID + ' .SNMessage, #SNContainer .SNNoteType .SN' + name + noteType.NoteTypeID +
+                    '{' +
+                    'color: #' + noteType.ColorCode + ';';
+                subCSSString += noteType.Bold ? 'font-weight: bold;' : '';
+                subCSSString += noteType.Italic ? 'font-style: italic;' : '';
+                subCSSString += '}';
+            }
+            subCSSString += '/***end ' + name + '***/';
+            cssString += subCSSString
         }
-    }).fail(function (e) {
-        errorLogging("Getting moderated subreddits and settings failed", e);
+        settings.noteTypeCSS = cssString;
+        if (broadcast) {
+            workerInitialized({});
+        }
+    }).fail(function (j, t, e) {
+        handleAjaxError(j, t, e, "Getting moderated subreddits and settings failed");
     });
 }
 
@@ -216,7 +240,7 @@ function getDirtbagSubs() {
         method: "GET",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         error: handleAjaxError
-    }).done(function (d, s, x) {
+    }).then(function (d, s, x) {
 
         settings.dirtbagSubs = [];
         for (var i = 0; i < d.length; i++) {
@@ -224,8 +248,8 @@ function getDirtbagSubs() {
             //check if there is a URL for DirtBag 
             if (botSettings && botSettings.DirtbagUrl) settings.dirtbagSubs.push(d[i].SubName.toLowerCase());
         }
-    }).fail(function(e){
-        errorLogging("Getting admin / dirtbag subreddits failed", e);
+    }).fail(function (j, t, e) {
+        handleAjaxError(j, t, e, "Getting admin / dirtbag subreddits failed");
     });
 }
 
@@ -249,60 +273,27 @@ function requestUserNotes(req) {
         method: "POST",
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         contentType: "application/json",
-        data: JSON.stringify(req.users),
-        success: function (data) {
-            console.log("Building Notes HTML");
-            var usersHTML = "";
-            for (var key in data) {
-                var udata = data[key];
-                var unoterows = "";
+        data: JSON.stringify(req.users)
+    }).then(function (data) {
+        console.log("Building Notes HTML");
+        var usersHTML = "";
+        for (var key in data) {
+            var udata = data[key];
+            var unoterows = "";
 
-                for (var i = 0; i < udata.length; i++) {
-                    var note = udata[i];
-                    unoterows += generateNoteRow(note);
-                }
-                usersHTML += generateNoteContainer(key, unoterows);
+            for (var i = 0; i < udata.length; i++) {
+                var note = udata[i];
+                unoterows += generateNoteRow(note);
             }
-            sendUserNotes({ "notes": usersHTML, "worker": req.worker });
+            usersHTML += generateNoteContainer(key, unoterows);
         }
+        sendUserNotes({ "notes": usersHTML, "worker": req.worker });
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        handleAjaxError(jqXHR, textStatus, errorThrown, "Requesting usernotes failed");
     });
 }
 
-function getNoteTypes() {
-    console.log("Getting purdy things..");
-    return $.ajax({
-        url: snUtil.ApiBase + "NoteType/Get",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).done(function (d, s, x) {
-        initNoteTypeData(d);
-    }).fail(function (e) {
-        errorLogging("Getting NoteTypes failed", e);
-    });
-}
-
-function initNoteTypeData(data) {
-    snUtil.NoteTypes = data;
-    sendNoteTypeJSON(data);
-    var cssString = '';
-    for (var key in data) {
-        var subCSSString = '/***start ' + key + '***/';
-        var subData = data[key];
-        for (var i = 0; i < subData.length; i++) {
-            var noteType = subData[i];
-            subCSSString += '#SNContainer .SN' + key + noteType.NoteTypeID + ' .SNMessage, #SNContainer .SNNoteType .SN' + key + noteType.NoteTypeID +
-                '{' +
-                'color: #' + noteType.ColorCode + ';';
-            subCSSString += noteType.Bold ? 'font-weight: bold;' : '';
-            subCSSString += noteType.Italic ? 'font-style: italic;' : '';
-            subCSSString += '}';
-        }
-        subCSSString += '/***end ' + key + '***/';
-        cssString += subCSSString
-    }
-    snUtil.NoteStyles.innerHTML = cssString;
-    sendNoteTypeCSS(cssString);
-}
 function newNoteNewUser(req) {
     chrome.tabs.query({url:"*://*.reddit.com/*"}, function (tabs) {
         for (var i = 0; i < tabs.length; i++) {
@@ -334,74 +325,33 @@ function deleteNote(req) {
     });
 }
 function workerInitialized(req) {
+    console.log("Broadcast reinitWorker");
     chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
         for (var i = 0; i < tabs.length; i++) {
             chrome.tabs.sendMessage(tabs[i].id, { "method": "reinitWorker", "req": req });
         }
     });
 }
-function gotUsersWithNotes(users) {
-    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
-        for (var i = 0; i < tabs.length; i++) {
-            chrome.tabs.sendMessage(tabs[i].id,{ "method": "gotUsersWithNotes", "users": users });
-        }
-    });
-}
+//function gotUsersWithNotes(users) {
+//    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+//        for (var i = 0; i < tabs.length; i++) {
+//            chrome.tabs.sendMessage(tabs[i].id,{ "method": "gotUsersWithNotes", "users": users });
+//        }
+//    });
+//}
 function sendUserNotes(req) {
     chrome.tabs.sendMessage(req.worker, { "method": "receiveUserNotes", "notes": req.notes });
 }
-function sendNoteTypeCSS(css) {
-    cssReady = true;
-    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
-        for (var i = 0; i < tabs.length; i++) {
-            chrome.tabs.sendMessage(tabs[i].id, { "method": "setNoteTypeCSS", "css": css });
-        }
-    });
-}
-function sendNoteTypeJSON(json) {
-    cssReady = true;
-    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
-        for (var i = 0; i < tabs.length; i++) {
-            chrome.tabs.sendMessage(tabs[i].id, { "method": "setNoteTypeJSON", "json": json });
-        }
-    });
-}
 
-function errorLogging(message, error){
+//function sendNoteTypeJSON(json) {
+//    cssReady = true;
+//    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+//        for (var i = 0; i < tabs.length; i++) {
+//            chrome.tabs.sendMessage(tabs[i].id, { "method": "setNoteTypeJSON", "json": json });
+//        }
+//    });
+//}
 
-}
-
-
-function getNoteTypeCSS(sendResponse, attempts) {
-    attempts = attempts ? attempts + 1 : 1;
-    if (attempts > 100) { return;} //this aint happening
-    if (settings.loggedIn) {
-        if (cssReady) {
-            sendResponse(snUtil.NoteStyles.innerHTML)
-        }
-        else {
-            setTimeout(function () { getNoteTypeCSS(sendResponse, attempts) },250);
-        }
-    }
-    else {
-        setTimeout(function () { getNoteTypeCSS(sendResponse, attempts) }, 500);
-    }
-}
-function getNoteTypeJSON(sendResponse, attempts) {
-    attempts = attempts ? attempts + 1 : 1;
-    if (attempts > 100) { return; } //this aint happening
-    if (settings.loggedIn) {
-        if (cssReady) {
-            sendResponse(snUtil.NoteTypes)
-        }
-        else {
-            setTimeout(getNoteTypeJSON(sendResponse, attempts), 250);
-        }
-    }
-    else {
-        setTimeout(function () { getNoteTypeJSON(sendResponse, attempts) }, 500);
-    }
-}
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.method) {
         case 'loggedIn':
@@ -418,15 +368,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'openSocket':
             initSocket();
-            break;
-        case 'getUsersWithNotes':
-            sendResponse(settings.loggedIn ? settings.usersWithNotes : undefined);
-            break;
-        case 'getNoteTypeCSS':
-            getNoteTypeCSS(sendResponse, 0);
-            break;
-        case 'getNoteTypeJSON':
-            getNoteTypeJSON(sendResponse, 0);
             break;
         case 'reinitAll':
             initWorker();

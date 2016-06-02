@@ -77,10 +77,10 @@ function LoggingInEvent(msg) {
     if (msg.data.LoggingIn) {
         $('#SnooNotesLoginFrame').hide();
         $('.SnooNotesDoneLogin').show();
-        $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); checkLoggedIn(); });
+        $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); snBrowser.reinitAll(); });
     }
     else if (msg.data.LoggedInSuccess) {
-        $('.SnooNotesLoginContainer').hide(); checkLoggedIn();
+        $('.SnooNotesLoginContainer').hide(); snBrowser.reinitAll();
     }
 }
 

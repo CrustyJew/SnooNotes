@@ -78,7 +78,7 @@
                 $('.SNNewNote', $newNote).prepend($sub);
                 if (sub) {
                     $sub.val(sub);
-                var subNoteTypes = snUtil.NoteTypes[sub];
+                var subNoteTypes = snUtil.settings.subSettings[sub].NoteTypes;
                     var $SNNoteType = $('.SNNoteType', $newNote);
                     for (var i = 0; i < subNoteTypes.length; i++) {
                     var noteType = subNoteTypes[i];
@@ -108,7 +108,7 @@
                 $noteTypes.append('<strong>Select a subreddit!</strong>');
             }
             else {
-                var subNoteTypes = snUtil.NoteTypes[sub];
+                var subNoteTypes = snUtil.settings.subSettings[sub].NoteTypes;
                 for (var i = 0; i < subNoteTypes.length; i++) {
                     var noteType = subNoteTypes[i];
                     $noteTypes.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
@@ -220,7 +220,7 @@ function newNoteNewUser(req) {
     var $entries = $("#siteTable .entry .author:Contains(" + req.user + "), .commentarea .entry .author:Contains(" + req.user + ")").closest("div.entry");
     if ($entries.length > 0) {
         $('.SNNoNotes', $entries).remove();
-        $('.author', $entries).after($('<a SNUser="' + req.user + '" class="SNViewNotes">[view note]</a>'));
+        $('.author', $entries).parent().not('.recipient').children('.author').after($('<a SNUser="' + req.user + '" class="SNViewNotes">[view note]</a>'));
     }
     if ($user.length == 0) {
         //new note for a user not added by this page
@@ -235,14 +235,16 @@ function newNoteNewUser(req) {
         var $header = $('.SNHeader', $user);
         $header.after($notecont.children('table').hide().fadeIn("fast"));
         $header.children('a.SNClose').removeClass('SNCloseNewNotes').addClass('SNCloseNote')
-        }
     }
+
+    snUtil.settings.usersWithNotes.push(req.user);
+}
 function deleteNoteAndUser(req) {
     var $user = $('#SnooNote-' + req.user);
     var $entries = $("#siteTable .entry .author:Contains(" + req.user + "), .commentarea .entry .author:Contains(" + req.user + ")").closest("div.entry");
     if ($entries.length > 0) {
         $('.SNViewNotes', $entries).remove();
-        $('.author', $entries).after($('<a SNUser="' + req.user + '" class="SNNoNotes">[add note]</a>'));
+        $('.author', $entries).parent().not('.recipient').children('.author').after($('<a SNUser="' + req.user + '" class="SNNoNotes">[add note]</a>'));
     }
     if ($user.length > 0) {
         if ($user.is(":visible")) {
@@ -257,6 +259,10 @@ function deleteNoteAndUser(req) {
         else {
             $user.remove();
         }
+    }
+    var i = snUtil.settings.usersWithNotes.indexOf(req.user);
+    if (i > -1) {
+        snUtil.settings.usersWithNotes.splice(i, 1);
     }
 }
 function deleteNote(req) {

@@ -8,14 +8,9 @@ function getEntriesToProcess() {
     $SNEntries = $('.sitetable .thing .entry:not(.SNDone), .commentarea .thing .entry:not(.SNDone)');
     
     var SNUsers = [];
-    if (!snUtil.UsersWithNotes) {
-        if (retrynum > 75) return;//fuck on outa here if something is wrong with user;
-        else {
-            retrynum += 1;
-            console.log("Users was undefined " + retrynum + " times!");
-            setTimeout(getEntriesToProcess, retrynum * 5 + 50 );
-            return;
-        }
+    if (!snUtil.settings) {
+        console.warn("Settings was undefined, bailing out and waiting for reinit");
+        return;
     }
     retrynum = 0;
     $('div.thing:not(.SNDone,.SNFetching)').each(function () {
@@ -55,7 +50,7 @@ function getEntriesToProcess() {
     if (snUtil.UserPage) {      
         var $user =  $('body.profile-page .side .titlebox h1')
         var uname = $user[0].textContent.toLowerCase();
-        if (new RegExp("," + uname + ",", "i").test(snUtil.UsersWithNotes)) {
+        if (snUtil.settings.usersWithNotes.indexOf(uname) > -1) {
             if ($('#SnooNote-' + uname).length == 0 && SNUsers.indexOf(uname) == -1) {
                 SNUsers.push(uname);
             }
