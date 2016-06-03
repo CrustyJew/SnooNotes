@@ -328,7 +328,8 @@ function submitNote(user, sub, link, message, type, $noteCont) {
             $('#SnooNote-' + user.toLowerCase() + ' .SNNewMessage').val('');
             $('#SnooNote-' +user.toLowerCase() + ' .SNNewNoteSubmit, #SnooNote-' + user.toLowerCase() + ' .SNNewMessage').removeAttr('disabled');
         },
-        error: function () {
+        error: function (j, t, e) {
+            if (j.status === 401) handleAjaxError(j, t, e);
             $('#SnooNote-' +user.toLowerCase() + ' .SNNewNoteSubmit, #SnooNote-' +user.toLowerCase() + ' .SNNewMessage').removeAttr('disabled');
             $('#SnooNote-' +user.toLowerCase() + ' .SNNewError').append($("<p>Something goofed. You can try resubmitting the note, but I'm not promising anything...</p>"));
         }

@@ -30,6 +30,7 @@ window.addEventListener("snUtilDone", function (e) {
 });
 window.addEventListener("snLoggedOut", function (e) {
     renderOptionsButton("LoggedOut");
+    snBrowser.reinitAll();
 });
 window.addEventListener("snLoggedIn", function (e) {
     if ($('#SNModal').is(":visible")) {

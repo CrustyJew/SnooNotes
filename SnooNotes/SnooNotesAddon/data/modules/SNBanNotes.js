@@ -34,7 +34,7 @@
                         self.addNote(user, sub, link, message, type);
                         //}
                     });
-                    window.setTimeout(self.removeDOMListener,5000);
+                    window.setTimeout(function () { self.removeDOMListener() },5000);
                 }
             });
         }

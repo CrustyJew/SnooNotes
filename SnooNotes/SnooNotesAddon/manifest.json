@@ -43,13 +43,11 @@
         "http://reddit.com/*",
         "https://reddit.com/*",
         "http://*.reddit.com/*",
-        "https://*.reddit.com/*",
-        "https://localhost:44311/*",
-        "https://localhost/*"
+        "https://*.reddit.com/*"
     ],
     "applications": {
         "gecko": {
-            "id": "snoonotes@snoonotes.com",
+            "id": "SnooNotes@snoonotes.com",
             "strict_min_version": "45.0"
         }
     }
