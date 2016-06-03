@@ -30,6 +30,7 @@ window.addEventListener("snUtilDone", function (e) {
 });
 window.addEventListener("snLoggedOut", function (e) {
     renderOptionsButton("LoggedOut");
+    snBrowser.reinitAll();
 });
 window.addEventListener("snLoggedIn", function (e) {
     if ($('#SNModal').is(":visible")) {
@@ -50,7 +51,7 @@ function renderOptionsContainer() {
     snSubAccessDirty = false;
     snSubBanNoteTypeDirty = false;
 
-    if (!snUtil.LoggedIn) {
+    if (!snUtil.settings.loggedIn) {
         modal = '<div class="SnooNotesLoginContainer">' +
         '<div class="SnooNotesDoneLogin" style="display:none;"><h1>All logged in?</h1><button id="SnooNotesConfirmLoggedIn">Click here!</button></div>' +
         '<iframe id="SnooNotesLoginFrame" frameborder="0" scrolling="no" src="' + snUtil.LoginAddress + '"></iframe></div>';
@@ -77,10 +78,10 @@ function LoggingInEvent(msg) {
     if (msg.data.LoggingIn) {
         $('#SnooNotesLoginFrame').hide();
         $('.SnooNotesDoneLogin').show();
-        $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); checkLoggedIn(); });
+        $('#SnooNotesConfirmLoggedIn').on('click', function () { $('.SnooNotesLoginContainer').hide(); snBrowser.reinitAll(); });
     }
     else if (msg.data.LoggedInSuccess) {
-        $('.SnooNotesLoginContainer').hide(); checkLoggedIn();
+        $('.SnooNotesLoginContainer').hide(); snBrowser.reinitAll();
     }
 }
 

@@ -59,5 +59,17 @@ namespace SnooNotesPermissions
                 return result;
             }
         }
+
+        public static ApplicationUser GetUser(string username ) {
+            using ( SqlConnection conn = new SqlConnection( constring ) ) {
+                string query = "select u.RefreshToken, u.UserName, u.LastUpdatedRoles, u.AccessToken, u.TokenExpires, u.HasWikiRead, u.HasRead, u.Id " +
+                               "from " +
+                               "AspNetUsers u where Username = @username";
+
+                var result = conn.Query<ApplicationUser>( query, new { username } ).FirstOrDefault();
+
+                return result;
+            }
+        }
     }
 }

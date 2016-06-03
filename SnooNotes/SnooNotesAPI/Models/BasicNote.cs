@@ -14,5 +14,6 @@ namespace SnooNotesAPI.Models
         public string Message { get; set; }
         public string Url { get; set; }
         public DateTime Timestamp { get; set; }
+        public string ParentSubreddit { get; set; }
     }
 }

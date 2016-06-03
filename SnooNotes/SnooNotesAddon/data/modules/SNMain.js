@@ -8,6 +8,8 @@ function initSnooNotes() {
         //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
         //snUtil.ApiBase = "https://localhost:44311/api/";
         //snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+        snUtil.CabalSub = "spamcabal"; //lower case this bad boy
+
         snUtil.Permissions = {};
         snUtil.Permissions.None = 0x00;
         snUtil.Permissions.Access = 0x01;
@@ -17,6 +19,7 @@ function initSnooNotes() {
         snUtil.Permissions.Posts = 0x10;
         snUtil.Permissions.Wiki = 0x20;
         snUtil.Permissions.All = 0x40 | snUtil.Permissions.Access | snUtil.Permissions.Config | snUtil.Permissions.Flair | snUtil.Permissions.Mail | snUtil.Permissions.Posts | snUtil.Permissions.Wiki;
+        
 
         if ($('#SNContainer').length == 0) {
             $('body').append($('<div id="SNContainer"></div>'));
@@ -27,14 +30,13 @@ function initSnooNotes() {
         snUtil.NoteStyles = document.createElement('style');
         $('#SNContainer').append(snUtil.NoteStyles);
         snUtil.reinitWorker = function () {
-            var event = new CustomEvent("snUtilDone");
-            window.dispatchEvent(event);
+            getSettings();
         }
         snUtil.setUsersWithNotes = function(users){
             if (!users) {
                 return;
             }
-            snUtil.UsersWithNotes = "," + users.join(",") + ","; //I hate stupid arrays and not being able to case-insensitive searches!
+            snUtil.settings.usersWithNotes = users;
 
         };
        
@@ -43,11 +45,15 @@ function initSnooNotes() {
             var user = req.user;
             if (req.remove) {
                 console.log("removed user");
-                snUtil.UsersWithNotes = snUtil.UsersWithNotes.replace("," + user + ",", ","); //E-i-E-i-ooooooo
+                var i = snUtil.settings.usersWithNotes.indexOf(req.user);
+                if (i > -1) {
+                    snUtil.settings.usersWithNotes.splice(i, 1);
+                }
             }
             else if (req.add) {
                 console.log("Added user");
-                snUtil.UsersWithNotes = snUtil.UsersWithNotes + "," + user + ",";
+                //snUtil.UsersWithNotes = snUtil.UsersWithNotes + "," + user + ",";
+                snUtil.settings.usersWithNotes.push(req.user);
             }
         };
         
@@ -59,14 +65,15 @@ function initSnooNotes() {
             $('.SNDone').removeClass('SNDone');
             $('#SNContainer').empty();
             snBrowser.reinitAll();
-            checkLoggedIn();
-            setModdedSubs();
-            getDirtbagSubs();
+            getSettings();
         };
         //have to have the snUtil functions ready >.<
         browserInit(); //init browser first to attach listeners etc
         //do this lateish so we get all the listeners hooked up first
-        if (!snUtil.LoggedIn) checkLoggedIn();
+        //if (!snUtil.settings.loggedIn) checkLoggedIn();
+
+        getSettings();
+
         var sub = /reddit\.com\/r\/[a-z0-9\+]*\/?/i.exec(window.location);
         snUtil.Subreddit = !sub ? "" : sub[0].substring(13).replace(/\//g, '');
         snUtil.Subreddit = snUtil.Subreddit.indexOf('+') != -1  ? "" : snUtil.Subreddit; //if it contains a plus sign, it's a multi reddit, not a mod
@@ -100,78 +107,48 @@ function initSnooNotes() {
         snUtil.ModQueue = window.location.pathname.match(/\/r\/mod\/about\/modqueue/i);
         snUtil.UserPage = window.location.pathname.match(/\/user\//i);
         return;
-    }(snUtil = window.snUtil || {}));
+    }(snUtil = this.snUtil || {}));
 }
 
-function setModdedSubs(){
-    $.ajax({
-        url: snUtil.RESTApiBase + "Subreddit",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
-            var subNames = d.map(function (q) { return q.SubName.toLowerCase(); });
-            snUtil.ModdedSubs = "," + subNames.join(",") + ",";
-            //initialize the dropdown list if it doesn't exist
-            if ($('#SNContainer #SNSubDropdown').length == 0) {
+function getSettings() {
+    chrome.runtime.sendMessage({ "method": "getSettings" }, function (settings) {
+        snUtil.settings = settings;
+        if (settings) {
+            if (settings.loggedIn) {
+                window.dispatchEvent(new CustomEvent("snLoggedIn"));
+
+                $('#SNSubDropdown').remove();
                 var $select = $('<select id="SNSubDropdown" class="SNNewNoteSub"><option value="-1">--Select a Sub--</option></select>');
-                for (var i = 0; i < subNames.length; i++) {
-                    $select.append($('<option value="' + subNames[i] + '">' + subNames[i] + '</option>'));
+                for (var i = 0; i < settings.moddedSubs.length; i++) {
+                    if (settings.moddedSubs[i] != snUtil.CabalSub) {
+                        $select.append($('<option value="' + settings.moddedSubs[i] + '">' + settings.moddedSubs[i] + '</option>'));
+                    }
+                    else {
+                       
+                    }
                 }
                 $('#SNContainer').append($select);
+                if (settings.isCabal) {
+                    var cabalTypes = settings.subSettings[snUtil.CabalSub].NoteTypes;
+                    var cabalPanel = '<div id="SNCabalTypes" style="display:none;"><ul class="SNNoteType">';
+                    for (var x = 0; x < cabalTypes.length; x++) {
+                        cabalPanel += '<li class="SN' + snUtil.CabalSub + cabalTypes[x].NoteTypeID + '" sn-cabal-type="' + cabalTypes[x].NoteTypeID + '">' + cabalTypes[x].DisplayName + '</li>';
+                    }
+                    cabalPanel += '</ul></div>';
+                    $('#SNContainer').append($(cabalPanel));
+                }
+                snUtil.NoteStyles.innerHTML = settings.noteTypeCSS;
+                var event = new CustomEvent("snUtilDone");
+                window.dispatchEvent(event);
             }
-            snUtil.SubSettings = {};
-
-         
-            for (var i = 0; i < d.length; i++) {
-                var name = d[i].SubName.toLowerCase();
-                //this stores the NoteTypes as well so it's a bit redundant, but I'm leaving it in for now.
-                snUtil.SubSettings[name] = d[i].Settings;
+            else {
+                window.dispatchEvent(new CustomEvent("snLoggedOut"));
             }
-
-            var event = new CustomEvent("snUtilDone");
-            window.dispatchEvent(event);
-        },
-        error: handleAjaxError
-    });
-    return;
-}
-
-function getDirtbagSubs() {
-    $.ajax({
-        url: snUtil.RESTApiBase + "Subreddit/admin",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
-
-            snUtil.DirtbagSubs = "";
-            var dbSubs = [];
-            for (var i = 0; i < d.length; i++) {
-                var botSettings = d[i].BotSettings;
-                //check if there is a URL for DirtBag 
-                if (botSettings && botSettings.DirtbagUrl) dbSubs.push(d[i].SubName);
-            }
-            snUtil.DirtbagSubs = "," + dbSubs.join(",") + ",";
-        },
-        error: handleAjaxError
+            
+        }
     });
 }
-function checkLoggedIn() {
-    $.ajax({
-        url: snUtil.ApiBase + "Account/IsLoggedIn",
-        method: "GET",
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function (d, s, x) {
-            snUtil.LoggedIn = true;
-            snBrowser.loggedIn();
-            window.dispatchEvent(new CustomEvent("snLoggedIn"));
-            if (!snUtil.ModdedSubs) {
-                setModdedSubs();
-                getDirtbagSubs();
-            }
-        },
-        error: handleAjaxError
-    });
-}
+
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     if(jqXHR.status === 401)
     {
@@ -218,7 +195,8 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         "backgroundColor": "#000",
         "-webkit-border-radius": "10px",
         "-moz-border-radius": "10px",
-        "border-radius": "10px"
+        "border-radius": "10px",
+        "z-index":"999999"
     };
     $.blockUI.defaults.css= { 
         padding:        0, 

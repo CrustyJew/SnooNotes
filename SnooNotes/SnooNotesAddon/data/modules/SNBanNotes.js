@@ -9,10 +9,10 @@
                 var type = -1;
                 if (dur) {
                     //temp ban
-                    type = snUtil.SubSettings[sub.toLowerCase()].TempBanID;
+                    type = snUtil.settings.subSettings[sub.toLowerCase()].TempBanID;
                 }
                 else {
-                    type = snUtil.SubSettings[sub.toLowerCase()].PermBanID;
+                    type = snUtil.settings.subSettings[sub.toLowerCase()].PermBanID;
                 }
 
                 if (!type || type < 0) {
@@ -34,7 +34,7 @@
                         self.addNote(user, sub, link, message, type);
                         //}
                     });
-                    window.setTimeout(self.removeDOMListener,5000);
+                    window.setTimeout(function () { self.removeDOMListener() },5000);
                 }
             });
         }
@@ -44,16 +44,16 @@
             var action = $('select.mod-action', $popup).val();
             var sub = $('label.subreddit', $meta).text();
 
-            if (action == "ban" && new RegExp(',' + sub + ',', 'i').test(snUtil.ModdedSubs)) {
+            if (action == "ban" && snUtil.settings.moddedSubs.indexOf(sub) > -1) {
                 //mod this sub w/ snoonotes
                 var dur = $('input.ban-duration', $popup).val();
                 var type = -1;
                 if (dur) {
                     //temp ban
-                    type = snUtil.SubSettings[sub.toLowerCase()].TempBanID;
+                    type = snUtil.settings.subSettings[sub.toLowerCase()].TempBanID;
                 }
                 else {
-                    type = snUtil.SubSettings[sub.toLowerCase()].PermBanID;
+                    type = snUtil.settings.subSettings[sub.toLowerCase()].PermBanID;
                 }
 
                 if (!type || type < 0) {

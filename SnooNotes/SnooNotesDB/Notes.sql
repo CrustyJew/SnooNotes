@@ -9,6 +9,7 @@
     [AppliesToUsername] NVARCHAR(50) NOT NULL, 
     [Url] NVARCHAR(250) NULL, 
     [Timestamp] DATETIME NULL, 
+    [ParentSubreddit] NVARCHAR(50) NULL, 
     CONSTRAINT [FK_Notes_Subreddit] FOREIGN KEY ([SubredditID]) REFERENCES Subreddits([SubredditID]),
 	CONSTRAINT [FK_Notes_NoteType] FOREIGN KEY ([NoteTypeID]) REFERENCES NoteTypes([NoteTypeID])
 )

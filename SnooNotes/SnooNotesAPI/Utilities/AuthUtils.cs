@@ -50,6 +50,7 @@ namespace SnooNotesAPI.Utilities {
 		}
 
 		public static async Task UpdateModeratedSubreddits( Models.ApplicationUser ident ) {
+            string cabalSubName = System.Configuration.ConfigurationManager.AppSettings["CabalSubreddit"].ToLower();
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				GetNewToken( ident );
 			}
@@ -123,8 +124,27 @@ namespace SnooNotesAPI.Utilities {
 					ident.Claims.Remove( adminRole );
 				}
 			}
+            string cabalUserName = System.Configuration.ConfigurationManager.AppSettings["CabalUsername"];
+            var cabalUser = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindByName( cabalUserName );
+            if(cabalUser.TokenExpires < DateTime.UtcNow ) {
+                GetNewToken( cabalUser );
+            }
+            agent = new SNWebAgent( cabalUser.AccessToken );
 
-			foreach ( Claim c in rolesToRemove ) {
+            RedditSharp.Reddit reddit = new RedditSharp.Reddit( agent, false );
+
+            var redditSub = reddit.GetSubreddit( cabalSubName );
+            var contribs = redditSub.Contributors;
+
+            if(contribs.Any(c=>c.Name.ToLower() == ident.UserName.ToLower() ) ) {
+                var cabalClaim = new Claim( roleType, cabalSubName );
+                rolesToRemove.Remove( cabalClaim );
+                if ( !currentRoles.Contains( cabalSubName ) ) {
+                    rolesToAdd.Add( cabalClaim );
+                }
+            }
+
+            foreach ( Claim c in rolesToRemove ) {
 				ident.Claims.Remove( ident.Claims.First( uc => uc.UserId == ident.Id && uc.ClaimType == c.Type && uc.ClaimValue == c.Value ) );
 			}
 			foreach ( Claim c in rolesToAdd ) {
@@ -137,6 +157,8 @@ namespace SnooNotesAPI.Utilities {
 			if ( !ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
 				throw new UnauthorizedAccessException( "You don't have 'Full' permissions to this subreddit!" );
 			}
+            if ( sub.SubName.ToLower() == System.Configuration.ConfigurationManager.AppSettings["CabalSubreddit"].ToLower() ) return false;
+
 			sub = (await new BLL.SubredditBLL().GetSubreddits( new string[] { sub.SubName } )).First();
 			if ( sub == null ) {
 				throw new Exception( "Unrecognized subreddit" );

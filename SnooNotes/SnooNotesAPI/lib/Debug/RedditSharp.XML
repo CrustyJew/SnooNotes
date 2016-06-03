@@ -4,6 +4,12 @@
         <name>RedditSharp</name>
     </assembly>
     <members>
+        <member name="M:RedditSharp.ModActionTypeConverter.GetRedditParamName(RedditSharp.ModActionType)">
+            <summary>
+            Replaces "LockPost" with "lock" since "lock" is a reserved word and can't be used in the enum
+            </summary>
+            <returns>String representation of enum value recognized by Reddit's api</returns>
+        </member>
         <member name="M:RedditSharp.Things.Comment.EditText(System.String)">
             <summary>
             Replaces the text in this comment with the input text.
@@ -74,6 +80,31 @@
             </summary>
             <param name="title">The title of the submission</param>
             <param name="text">The raw markdown text of the submission</param>
+        </member>
+        <member name="M:RedditSharp.Things.Subreddit.GetModerationLog">
+            <summary>
+            Gets the moderation log of the current subreddit
+            </summary>
+        </member>
+        <member name="M:RedditSharp.Things.Subreddit.GetModerationLog(RedditSharp.ModActionType)">
+            <summary>
+            Gets the moderation log of the current subreddit filtered by the action taken
+            </summary>
+            <param name="action">ModActionType of action performed</param>
+        </member>
+        <member name="M:RedditSharp.Things.Subreddit.GetModerationLog(System.String[])">
+            <summary>
+            Gets the moderation log of the current subreddit filtered by moderator(s) who performed the action
+            </summary>
+            <param name="mods">String array of mods to filter by</param>
+        </member>
+        <member name="M:RedditSharp.Things.Subreddit.GetModerationLog(RedditSharp.ModActionType,System.String[])">
+            <summary>
+            Gets the moderation log of the current subreddit filtered by the action taken and moderator(s) who performed the action
+            </summary>
+            <param name="action">ModActionType of action performed</param>
+            <param name="mods">String array of mods to filter by</param>
+            <returns></returns>
         </member>
         <member name="P:RedditSharp.Things.Thing.FetchedAt">
             <summary>
@@ -291,6 +322,36 @@
             <param name="email">The optional recovery email for the new account.</param>
             <returns>The newly created user account</returns>
         </member>
+        <member name="M:RedditSharp.Reddit.GetNewSubreddits">
+            <summary>
+            Returns a Listing of newly created subreddits.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RedditSharp.Reddit.GetPopularSubreddits">
+            <summary>
+            Returns a Listing of the most popular subreddits.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RedditSharp.Reddit.GetGoldSubreddits">
+            <summary>
+            Returns a Listing of Gold-only subreddits. This endpoint will not return anything if the authenticated Reddit account does not currently have gold.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RedditSharp.Reddit.GetDefaultSubreddits">
+            <summary>
+            Returns the Listing of default subreddits.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RedditSharp.Reddit.SearchSubreddits(System.String)">
+            <summary>
+            Returns the Listing of subreddits related to a query.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RedditSharp.RedditException">
             <summary>
             Represents an error that occurred during accessing or manipulating data on Reddit.
@@ -384,6 +445,21 @@
         <member name="P:RedditSharp.WebAgent.AccessToken">
             <summary>
             Used to make calls against Reddit's API using OAuth23
+            </summary>
+        </member>
+        <member name="P:RedditSharp.WebAgent.LastRequest">
+            <summary>
+            UTC DateTime of last request made to Reddit API
+            </summary>
+        </member>
+        <member name="P:RedditSharp.WebAgent.BurstStart">
+            <summary>
+            UTC DateTime of when the last burst started
+            </summary>
+        </member>
+        <member name="P:RedditSharp.WebAgent.RequestsThisBurst">
+            <summary>
+            Number of requests made during the current burst 
             </summary>
         </member>
         <member name="M:RedditSharp.WebAgent.ExecuteRequest(System.Net.HttpWebRequest)">

@@ -3,7 +3,7 @@ $('body').on('click', '.remove-button .main > a, .big-mod-buttons > span > .pret
     var $btn = $(this);
     var $thing = $btn.closest('.thing');
     var sub = $thing.attr('data-subreddit');
-    var dbSub = new RegExp("," + sub + ",", "i").test(snUtil.DirtbagSubs);
+    var dbSub = snUtil.settings.dirtbagSubs.indexOf(sub) > -1;
     if (dbSub && $('.dbAutoModBan', $thing).length == 0) {
         var user = $thing.attr('data-author');
         var domain = $thing.attr('data-domain');

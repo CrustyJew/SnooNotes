@@ -1,6 +1,7 @@
 ﻿(function () {
     window.addEventListener("snUtilDone", function (e) {
         $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNViewNotes', function (e) {
+            $('.SNNew:visible,.SNViewContainer:visible,#SNCabalTypes:visible').hide();
             showNotes(e);
         });
         $('#SNContainer').on('click', '.SNCloseNote', function (e) {
@@ -41,7 +42,7 @@
             var ot = e.target;
             var id = $(ot).closest('tr').attr("id").replace("SN", "");
             $.ajax({
-                url: window.snUtil.ApiBase + "note/Delete?id=" + id,
+                url: snUtil.ApiBase + "note/Delete?id=" + id,
                 method: "DELETE",
                 //datatype: "application/json",
                 //data:{"id":id}
@@ -50,6 +51,8 @@
         $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNNoNotes', function (e) {
             var $ot = $(e.target);
 
+            $('.SNNew:visible,.SNViewContainer:visible,#SNCabalTypes:visible').hide();
+
             var user = $ot.attr('SNUser');
             var hasNoLink = $ot.hasClass('SNNoLink');
             var openRight = $ot.hasClass('SNOpenRight');
@@ -57,7 +60,7 @@
             var sub = getSubName(e);
             if ($newNote.length == 0) { //add a new note container if it doesn't exist
                 $newNote = $('' +
-                    '<div id="SnooNote-' + user + '" class="SNNew" style="display:none;">' +
+                    '<div id="SnooNote-' + user + '" class="SNNew SNNoteArea" style="display:none;">' +
                         '<div class="SNHeader"><a class="SNCloseNewNote SNClose">Cancel [x]</a></div>' +
                         '<div class="SNNewNoteContainer">' +
                             '<div class="SNNewNote">' +
@@ -75,7 +78,7 @@
                 $('.SNNewNote', $newNote).prepend($sub);
                 if (sub) {
                     $sub.val(sub);
-                var subNoteTypes = snUtil.NoteTypes[sub];
+                var subNoteTypes = snUtil.settings.subSettings[sub].NoteTypes;
                     var $SNNoteType = $('.SNNoteType', $newNote);
                     for (var i = 0; i < subNoteTypes.length; i++) {
                     var noteType = subNoteTypes[i];
@@ -105,7 +108,7 @@
                 $noteTypes.append('<strong>Select a subreddit!</strong>');
             }
             else {
-                var subNoteTypes = snUtil.NoteTypes[sub];
+                var subNoteTypes = snUtil.settings.subSettings[sub].NoteTypes;
                 for (var i = 0; i < subNoteTypes.length; i++) {
                     var noteType = subNoteTypes[i];
                     $noteTypes.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
@@ -113,17 +116,65 @@
             }
         });
 
+        $('#SNContainer').on('click', '.SNCabalify', function (e) {
+            var $cabalTypes = $('#SNCabalTypes');
+            $cabalTypes.attr('sn-note-id', $(e.target).closest('tr').attr("id").replace("SN", ""));
+            $cabalTypes.css({ 'top': e.pageY - 10, 'left': e.pageX + 10, 'right': '' }).fadeIn('fast');
+        });
+
+        $('#SNContainer').on('click', '#SNCabalTypes li', function (e) {
+            var id = $('#SNCabalTypes').attr('sn-note-id');
+            var type = $(e.target).attr('sn-cabal-type');
+            $('.SNNoteArea:visible .SNCabalify').hide();
+            $('#SNCabalTypes:visible').hide();
+            $.ajax({
+                url: snUtil.ApiBase + 'Note/Cabal?id='+id+'&typeid='+type,
+                method: "POST",
+                //data: {'id':id, 'typeid' : type}
+            })
+            .then(function () {
+
+            })
+            .fail(function (e) {
+                $('body').block({
+                    message: '<div class="growlUI growlUIError"><h1>Error!</h1><h2>Cabalifying the note failed. Maybe it needs more shekels?</h2></div>',
+                    fadeIn: 500, fadeOut: 700, timeout: 2000, centerY: !0, centerX: !0, showOverlay: !1,
+                    css: $.blockUI.defaults.growlCSS
+                });
+                $('.SNNoteArea:visible .SNCabalify').show();
+            })
+        })
+        $(document).click(function (event) {
+            var $tar = $(event.target);
+            if ($tar.is('.SNViewNotes,.SNNoNotes,.SNCabalify')) {
+                //let the view/add click events handle it.
+                return;
+            }
+            if (!$tar.closest('#SNCabalTypes').length && !$tar.is('#SNCabalTypes') && $('#SNCabalTypes').is(":visible")) {
+                $('#SNCabalTypes').hide();
+
+                if (!$tar.closest('.SNNew,.SNViewContainer').length && !$tar.is('.SNNew,.SNViewContainer')) {
+                    $('.SNNew:visible,.SNViewContainer:visible').hide();
+                }
+            }
+            
+
+        });
         e.target.removeEventListener(e.type, arguments.callee);
     });
 })();
 
 function getSubName(e) {
-
-    var sub = window.snUtil.Subreddit;
+    var subName = $(e.target).closest('.thing').attr('data-subreddit');
+    if (subName) {
+        return subName.toLowerCase();
+    }
+    var sub = snUtil.Subreddit;
     if (!sub || snUtil.ModQueue) {
         var $ot = $(e.target);
+        
         //not a comment or browsing a sub you mod
-        if (window.snUtil.Modmail) {
+        if (snUtil.Modmail) {
             var $sub = $ot.closest('.thing.message-parent').find('span.correspondent.reddit a');
             if ($sub.length > 1) {
                 //multiple results here means RES / Mod toolbox is present which messes things up
@@ -169,7 +220,7 @@ function newNoteNewUser(req) {
     var $entries = $("#siteTable .entry .author:Contains(" + req.user + "), .commentarea .entry .author:Contains(" + req.user + ")").closest("div.entry");
     if ($entries.length > 0) {
         $('.SNNoNotes', $entries).remove();
-        $('.author', $entries).after($('<a SNUser="' + req.user + '" class="SNViewNotes">[view note]</a>'));
+        $('.author', $entries).parent().not('.recipient').children('.author').after($('<a SNUser="' + req.user + '" class="SNViewNotes">[view note]</a>'));
     }
     if ($user.length == 0) {
         //new note for a user not added by this page
@@ -184,14 +235,16 @@ function newNoteNewUser(req) {
         var $header = $('.SNHeader', $user);
         $header.after($notecont.children('table').hide().fadeIn("fast"));
         $header.children('a.SNClose').removeClass('SNCloseNewNotes').addClass('SNCloseNote')
-        }
     }
+
+    snUtil.settings.usersWithNotes.push(req.user);
+}
 function deleteNoteAndUser(req) {
     var $user = $('#SnooNote-' + req.user);
     var $entries = $("#siteTable .entry .author:Contains(" + req.user + "), .commentarea .entry .author:Contains(" + req.user + ")").closest("div.entry");
     if ($entries.length > 0) {
         $('.SNViewNotes', $entries).remove();
-        $('.author', $entries).after($('<a SNUser="' + req.user + '" class="SNNoNotes">[add note]</a>'));
+        $('.author', $entries).parent().not('.recipient').children('.author').after($('<a SNUser="' + req.user + '" class="SNNoNotes">[add note]</a>'));
     }
     if ($user.length > 0) {
         if ($user.is(":visible")) {
@@ -206,6 +259,10 @@ function deleteNoteAndUser(req) {
         else {
             $user.remove();
         }
+    }
+    var i = snUtil.settings.usersWithNotes.indexOf(req.user);
+    if (i > -1) {
+        snUtil.settings.usersWithNotes.splice(i, 1);
     }
 }
 function deleteNote(req) {
@@ -263,7 +320,7 @@ function submitNote(user, sub, link, message, type, $noteCont) {
     $noteCont.find('.SNNewError').empty();
     }
     $.ajax({
-        url: window.snUtil.ApiBase + "note",
+        url: snUtil.ApiBase + "note",
         method: "POST",
         datatype: "application/json",
         data: { "NoteTypeID": type, "SubName": sub, "Message": message, "AppliesToUsername": user, "Url": link },
@@ -271,7 +328,8 @@ function submitNote(user, sub, link, message, type, $noteCont) {
             $('#SnooNote-' + user.toLowerCase() + ' .SNNewMessage').val('');
             $('#SnooNote-' +user.toLowerCase() + ' .SNNewNoteSubmit, #SnooNote-' + user.toLowerCase() + ' .SNNewMessage').removeAttr('disabled');
         },
-        error: function () {
+        error: function (j, t, e) {
+            if (j.status === 401) handleAjaxError(j, t, e);
             $('#SnooNote-' +user.toLowerCase() + ' .SNNewNoteSubmit, #SnooNote-' +user.toLowerCase() + ' .SNNewMessage').removeAttr('disabled');
             $('#SnooNote-' +user.toLowerCase() + ' .SNNewError').append($("<p>Something goofed. You can try resubmitting the note, but I'm not promising anything...</p>"));
         }

@@ -1,6 +1,6 @@
 ﻿{
     "name": "SnooNotes",
-    "version": "0.0.8.3",
+    "version": "0.0.9.0",
     "manifest_version": 2,
     "minimum_chrome_version": "26.0",
     "description": "Usernotes plus a whole lot more!",
@@ -12,7 +12,7 @@
             "matches": [
                 "*://*.reddit.com/*"
             ],
-            "exclude_matches": ["*://*.reddit.com/api/v1/authorize*", "*://*.reddit.com/login*"],
+            "exclude_matches": [ "*://*.reddit.com/api/v1/authorize*", "*://*.reddit.com/login*" ],
             "js": [
                 "data/libs/jquery-2.1.3.min.js",
                 "data/libs/jquery.blockUI.js",
@@ -37,13 +37,18 @@
         }
     ],
     "permissions": [
-		"cookies",
-		"tabs",
-		"history",
-		"https://snoonotes.com/*",
-		"http://reddit.com/*",
-		"https://reddit.com/*",
-		"http://*.reddit.com/*",
+        "cookies",
+        "tabs",
+        "https://snoonotes.com/*",
+        "http://reddit.com/*",
+        "https://reddit.com/*",
+        "http://*.reddit.com/*",
         "https://*.reddit.com/*"
-	]
+    ],
+    "applications": {
+        "gecko": {
+            "id": "SnooNotes@snoonotes.com",
+            "strict_min_version": "45.0"
+        }
+    }
 }
