@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Text.RegularExpressions;
 
 namespace SnooNotesAPI.Helpers {
     public class YouTubeHelpers {
@@ -13,10 +11,12 @@ namespace SnooNotesAPI.Helpers {
                 //it's a YouTube link
                 if ( url.Contains( "v=" ) ) {
                     id = url.Substring( url.IndexOf( "v=", StringComparison.Ordinal ) + 2 ).Split( '&' )[0];
+                    id = Regex.Match( id, "[a-zA-Z0-9_-]{11}" ).Value;
                 }
             }
             else if ( lowerUrl.Contains( "youtu.be" ) ) {
                 id = url.Substring( url.IndexOf( ".be/", StringComparison.Ordinal ) + 4 ).Split( '?' )[0];
+                id = Regex.Match( id, "[a-zA-Z0-9_-]{11}" ).Value;
             }
             return id;
         }
