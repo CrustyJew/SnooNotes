@@ -6,6 +6,11 @@ namespace SnooNotesAPI.Helpers {
         public static string ExtractVideoId( string url ) {
             string id = null;
             url = System.Net.WebUtility.UrlDecode( url ); //decode for attribution links
+            string ddecode = System.Net.WebUtility.UrlDecode( url );
+            while ( url != ddecode ) {
+                url = ddecode;
+                ddecode = System.Net.WebUtility.UrlDecode( url );
+            }
             var lowerUrl = url.ToLower();
             if ( lowerUrl.Contains( "youtube" ) ) {
                 //it's a YouTube link
