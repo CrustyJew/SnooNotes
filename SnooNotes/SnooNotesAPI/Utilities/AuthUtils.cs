@@ -49,7 +49,7 @@ namespace SnooNotesAPI.Utilities {
 			}
 		}
 
-		public static async Task UpdateModeratedSubreddits( Models.ApplicationUser ident ) {
+		public static async Task UpdateModeratedSubreddits( Models.ApplicationUser ident, UserManager<Models.ApplicationUser> manager ) {
             string cabalSubName = System.Configuration.ConfigurationManager.AppSettings["CabalSubreddit"].ToLower();
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				GetNewToken( ident );
@@ -138,16 +138,18 @@ namespace SnooNotesAPI.Utilities {
 
             if(contribs.Any(c=>c.Name.ToLower() == ident.UserName.ToLower() ) ) {
                 var cabalClaim = new Claim( roleType, cabalSubName );
-                rolesToRemove.Remove( cabalClaim );
-                if ( !currentRoles.Contains( cabalSubName ) ) {
+                rolesToRemove.RemoveAll( r => r.Type == cabalClaim.Type && r.Value == cabalClaim.Value );
+                if ( !currentRoles.Contains( cabalSubName ) && !rolesToAdd.Any(ar => ar.Value == cabalClaim.Value && ar.Type == cabalClaim.Type)) {
                     rolesToAdd.Add( cabalClaim );
                 }
             }
 
             foreach ( Claim c in rolesToRemove ) {
-				ident.Claims.Remove( ident.Claims.First( uc => uc.UserId == ident.Id && uc.ClaimType == c.Type && uc.ClaimValue == c.Value ) );
+                manager.RemoveClaim( ident.Id, c );
+				//ident.Claims.Remove( ident.Claims.First( uc => uc.UserId == ident.Id && uc.ClaimType == c.Type && uc.ClaimValue == c.Value ) );
 			}
 			foreach ( Claim c in rolesToAdd ) {
+                //manager.AddClaim( ident.Id, c );
 				ident.Claims.Add( new IdentityUserClaim() { ClaimType = c.Type, ClaimValue = c.Value, UserId = ident.Id } );
 			}
 

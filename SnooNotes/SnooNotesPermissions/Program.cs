@@ -144,7 +144,7 @@ namespace SnooNotesPermissions {
             RedditSharp.Reddit reddit = new RedditSharp.Reddit( agent, false );
 
             var redditSub = reddit.GetSubreddit( cabalSub );
-            var contribs = redditSub.Contributors;
+            var contribs = redditSub.Contributors.GetListing(int.MaxValue).ToList();
 
             List<string> userIdsToRemove = new List<string>();
             List<string> userIdsToRemoveAdmin = new List<string>();
@@ -192,7 +192,7 @@ namespace SnooNotesPermissions {
 
                         userIdsToRemove.Remove( users[modName].Id );
 
-                        if ( !claimsToAdd.Any( c => c.ClaimValue == cabalSub ) ) {
+                        if ( !claimsToAdd.Any( c => c.ClaimValue == cabalSub ) && !appSub.Users.Contains(modName )) {
                             claimsToAdd.Add(
                                 new ApplicationUserClaim() {
                                     ClaimType = ClaimsIdentity.DefaultRoleClaimType,

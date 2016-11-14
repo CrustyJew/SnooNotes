@@ -58,9 +58,11 @@ namespace SnooNotesAPI.Controllers {
         public async Task<List<string>> UpdateModeratedSubreddits() {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = userManager.FindByName( User.Identity.Name );
-            await Utilities.AuthUtils.UpdateModeratedSubreddits( user );
 
-            userManager.Update( user );
+                await Utilities.AuthUtils.UpdateModeratedSubreddits( user, userManager );
+
+                userManager.Update( user );
+
 
             var ident = await user.GenerateUserIdentityAsync( userManager );
             HttpContext.Current.GetOwinContext().Authentication.SignIn( new AuthenticationProperties { IsPersistent = true }, ident );

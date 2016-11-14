@@ -27,7 +27,7 @@ namespace SnooNotesAPI.Utilities.Tests {
 			ident.Claims.Add( new IdentityUserClaim() { UserId = ident.Id, ClaimType = "urn:snoonotes:subreddits:goawaynoonelikesyou:admin", ClaimValue = "true" } );
 			ident.Claims.Add( new IdentityUserClaim() { UserId = ident.Id, ClaimType = ClaimsIdentity.DefaultRoleClaimType, ClaimValue = "gooaway" } );
 
-			await AuthUtils.UpdateModeratedSubreddits( ident );
+			await AuthUtils.UpdateModeratedSubreddits( ident, uman );
 
 			if ( ident.Claims.Any( c => c.ClaimType == "urn:snoonotes:subreddits:goawaynoonelikesyou:admin" ) ) Assert.Fail( "Admin claim not removed." );
 			if ( ident.Claims.Any( c => c.ClaimType == ClaimsIdentity.DefaultRoleClaimType && c.ClaimValue == "gooaway" ) ) Assert.Fail( "Invalid sub claim not removed" );
