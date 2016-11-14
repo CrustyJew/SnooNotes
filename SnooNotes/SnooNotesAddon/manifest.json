@@ -1,6 +1,6 @@
 ﻿{
     "name": "SnooNotes",
-    "version": "0.0.9.0",
+    "version": "0.1.0.0",
     "manifest_version": 2,
     "minimum_chrome_version": "26.0",
     "description": "Usernotes plus a whole lot more!",
@@ -32,8 +32,7 @@
                 "data/styles/SNOptions.css",
                 "data/styles/jquery-ui.css",
                 "data/styles/Dirtbag.css"
-            ],
-            "run_at": "document_end"
+            ]
         }
     ],
     "permissions": [

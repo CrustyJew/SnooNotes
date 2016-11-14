@@ -46,7 +46,38 @@ function getEntriesToProcess() {
                 $authElem.after('<a SNUser="' + author.toLowerCase() + '" class="SNNoNotes">[add&nbsp;note]</a>')
             }
         }
-    })
+    });
+    if (snUtil.NewModmail) {
+        $('article div.ThreadPreview:not(.SNDone,.SNFetching), div.ThreadViewer__thread:not(.SNDone,.SNFetching)').each(function () {
+            var $thing = $(this);
+            var sub = $('header div.ThreadTitle__community, div.Thread__title div.ThreadTitle__community', $thing).text();
+            if (snUtil.settings.moddedSubs.indexOf(sub.toLowerCase()) > -1) {
+                $('.ThreadPreview__author:not(.m-mod), .Message__author:not(.m-mod)', $thing).each(function () {
+                    var author = $(this).text().replace(/^u\//i, '');
+                    if (snUtil.settings.usersWithNotes.indexOf(author.toLowerCase()) > -1) {
+                        if ($('#SnooNote-' + author.toLowerCase()).length == 0) {
+                            //we don't have the note loaded yet
+                            if (SNUsers.indexOf(author.toLowerCase()) == -1) {
+                                //the user isn't in the list to request yet
+                                SNUsers.push(author.toLowerCase());
+                            }
+                            $thing.addClass('SNFetching');
+                        }
+                        else {
+                            //already have the notes for the user
+                            $thing.addClass('SNDone');
+                        }
+                        $(this).after('<a SNUser="' + author.toLowerCase() + '" class="SNViewNotes">[view&nbsp;note]</a>');
+                    }
+                    else {
+                        //user doesn't have notes
+                        $thing.addClass('SNDone');
+                        $(this).after('<a SNUser="' + author.toLowerCase() + '" class="SNNoNotes">[add&nbsp;note]</a>')
+                    }
+                });
+            }
+        });
+    }
     if (snUtil.UserPage) {      
         var $user =  $('body.profile-page .side .titlebox h1')
         var uname = $user[0].textContent.toLowerCase();

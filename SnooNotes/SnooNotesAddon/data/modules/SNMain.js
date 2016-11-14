@@ -106,6 +106,7 @@ function initSnooNotes() {
         snUtil.Modmail = window.location.pathname.match(/\/message\/(?:moderator)\/?/i);
         snUtil.ModQueue = window.location.pathname.match(/\/r\/mod\/about\/modqueue/i);
         snUtil.UserPage = window.location.pathname.match(/\/user\//i);
+        snUtil.NewModmail = window.location.hostname.match(/mod\.reddit\.com/i);
         return;
     }(snUtil = this.snUtil || {}));
 }

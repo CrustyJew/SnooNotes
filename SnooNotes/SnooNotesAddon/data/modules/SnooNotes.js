@@ -1,8 +1,9 @@
 ﻿(function () {
     window.addEventListener("snUtilDone", function (e) {
-        $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNViewNotes', function (e) {
+        $('body').on('click', '.SNViewNotes', function (e) {
             $('.SNNew:visible,.SNViewContainer:visible,#SNCabalTypes:visible').hide();
             showNotes(e);
+            return false;
         });
         $('#SNContainer').on('click', '.SNCloseNote', function (e) {
             closeNote(e);
@@ -48,7 +49,7 @@
                 //data:{"id":id}
             });
         });
-        $('#siteTable, .commentarea, body.profile-page div.side').on('click', '.SNNoNotes', function (e) {
+        $('body').on('click', '.SNNoNotes', function (e) {
             var $ot = $(e.target);
 
             $('.SNNew:visible,.SNViewContainer:visible,#SNCabalTypes:visible').hide();
@@ -98,6 +99,9 @@
                 $newNote.css({ 'top': e.pageY, 'left': e.pageX, 'right':'' }).fadeIn('slow');
             }
             $newNote.draggable({ handle: "div.SNHeader" });
+
+            e.preventDefault();
+            return false;
         });
         $('#SNContainer').on('change', '.SNNewNoteSub', function (e) {
             var sub = this.value;
@@ -160,6 +164,24 @@
             
 
         });
+
+        if (snUtil.NewModmail) {
+            var target = document.querySelector('body');
+            var modmailObserver = new MutationObserver(function (mut) {
+                setTimeout(function(){
+                    processSnooNotes();
+                },1000);
+            });
+            var modmailObsConf = {
+                attributes: false,
+                childList: true,
+                characterDate: false,
+                subtree: true
+            }
+
+            modmailObserver.observe(target, modmailObsConf);
+        }
+
         e.target.removeEventListener(e.type, arguments.callee);
     });
 })();
@@ -169,6 +191,15 @@ function getSubName(e) {
     if (subName) {
         return subName.toLowerCase();
     }
+    else {
+        //New modmail?
+        subName = $(e.target).closest('div.ThreadViewer__thread, div.ThreadPreview').find('header div.ThreadTitle__community, div.Thread__title div.ThreadTitle__community').text();
+    }
+    if (subName) {
+        return subName.toLowerCase();
+    }
+
+
     var sub = snUtil.Subreddit;
     if (!sub || snUtil.ModQueue) {
         var $ot = $(e.target);
@@ -299,8 +330,11 @@ function showNotes(e) {
     //    var noteType = subNoteTypes[i];
     //    $SNNoteType.append($('<label class="SNTypeRadio SN' + sub + noteType.NoteTypeID + '"><input type="radio" name="SNType" value="' + noteType.NoteTypeID + '">' + noteType.DisplayName + '</label>'));
     //}
-
-    $submit.attr("SNLink", (hasNoLink ? 'https://reddit.com/' + window.location.pathname : $('ul li.first a', $ot.closest('div.entry')).attr('href') ));
+    if (snUtil.NewModmail && !hasNoLink) {
+        $submit.attr("SNLink", ($ot.closest('div.ThreadViewer__thread, div.ThreadPreview').find('a.Message__date, header a.ThreadPreview__time')[0].href));
+    } else {
+        $submit.attr("SNLink", (hasNoLink ? 'https://reddit.com/' + window.location.pathname : $('ul li.first a', $ot.closest('div.entry')).attr('href')));
+    }
     if (openRight) {
         $sn.css({ 'top': e.pageY, 'right': window.innerWidth - e.pageX, 'left':'' }).fadeIn('slow');
     }
