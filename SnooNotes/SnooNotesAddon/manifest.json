@@ -1,6 +1,6 @@
 ﻿{
   "name": "SnooNotes",
-  "version": "0.1.0.1",
+  "version": "0.1.0.2",
   "manifest_version": 2,
   "minimum_chrome_version": "26.0",
   "description": "Usernotes plus a whole lot more!",
@@ -43,11 +43,5 @@
     "https://reddit.com/*",
     "http://*.reddit.com/*",
     "https://*.reddit.com/*"
-  ],
-  "applications": {
-    "gecko": {
-      "id": "SnooNotes@snoonotes.com",
-      "strict_min_version": "45.0"
-    }
-  }
+  ]
 }

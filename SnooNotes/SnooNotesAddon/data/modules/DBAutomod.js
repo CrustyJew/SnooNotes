@@ -10,7 +10,7 @@ $('body').on('click', '.remove-button .main > a, .big-mod-buttons > span > .pret
         var reason = $btn.attr('data-event-action');
         var thingid = $thing.attr('data-fullname');
         var url = "";
-        if (domain && (domain.toLowerCase() == 'youtube.com' || domain.toLowerCase() == 'youtu.be')) {
+        if (domain && (domain.toLowerCase() == 'youtube.com' || domain.toLowerCase() == 'youtu.be' || domain.toLowerCase == 'm.youtube.com')) {
             url = $thing.attr('data-url');
         }
         if ($btn.hasClass('pretty-button')) {
