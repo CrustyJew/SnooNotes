@@ -193,7 +193,7 @@ function getSubName(e) {
     }
     else {
         //New modmail?
-        subName = $(e.target).closest('div.ThreadViewer__thread, div.ThreadPreview').find('header div.ThreadTitle__community, div.Thread__title div.ThreadTitle__community').text();
+        subName = $(e.target).closest('div.ThreadViewer__thread, div.ThreadPreview').find('header .ThreadTitle__community, div.Thread__title .ThreadTitle__community').text();
     }
     if (subName) {
         return subName.toLowerCase();

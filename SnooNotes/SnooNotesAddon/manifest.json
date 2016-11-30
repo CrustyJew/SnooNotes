@@ -1,53 +1,53 @@
 ﻿{
-    "name": "SnooNotes",
-    "version": "0.1.0.0",
-    "manifest_version": 2,
-    "minimum_chrome_version": "26.0",
-    "description": "Usernotes plus a whole lot more!",
-    "background": {
-        "page": "data/WorkerPageChrome.html"
-    },
-    "content_scripts": [
-        {
-            "matches": [
-                "*://*.reddit.com/*"
-            ],
-            "exclude_matches": [ "*://*.reddit.com/api/v1/authorize*", "*://*.reddit.com/login*" ],
-            "js": [
-                "data/libs/jquery-2.1.3.min.js",
-                "data/libs/jquery.blockUI.js",
-                "data/libs/jquery-ui.js",
-                "data/modules/SNChrome.js",
-                "data/modules/SNLoad.js",
-                "data/modules/SnooNotes.js",
-                "data/modules/SnooLoginPopup.js",
-                "data/modules/SNOptions.js",
-                "data/modules/SNBanNotes.js",
-                "data/modules/SNMain.js",
-                "data/modules/DBAutomod.js"
-            ],
-            "css": [
-                "data/styles/SNContainer.css",
-                "data/styles/SnooLogin.css",
-                "data/styles/SNOptions.css",
-                "data/styles/jquery-ui.css",
-                "data/styles/Dirtbag.css"
-            ]
-        }
-    ],
-    "permissions": [
-        "cookies",
-        "tabs",
-        "https://snoonotes.com/*",
-        "http://reddit.com/*",
-        "https://reddit.com/*",
-        "http://*.reddit.com/*",
-        "https://*.reddit.com/*"
-    ],
-    "applications": {
-        "gecko": {
-            "id": "SnooNotes@snoonotes.com",
-            "strict_min_version": "45.0"
-        }
+  "name": "SnooNotes",
+  "version": "0.1.0.1",
+  "manifest_version": 2,
+  "minimum_chrome_version": "26.0",
+  "description": "Usernotes plus a whole lot more!",
+  "background": {
+    "page": "data/WorkerPageChrome.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.reddit.com/*"
+      ],
+      "exclude_matches": [ "*://*.reddit.com/api/v1/authorize*", "*://*.reddit.com/login*" ],
+      "js": [
+        "data/libs/jquery-2.1.3.min.js",
+        "data/libs/jquery.blockUI.js",
+        "data/libs/jquery-ui.js",
+        "data/modules/SNChrome.js",
+        "data/modules/SNLoad.js",
+        "data/modules/SnooNotes.js",
+        "data/modules/SnooLoginPopup.js",
+        "data/modules/SNOptions.js",
+        "data/modules/SNBanNotes.js",
+        "data/modules/SNMain.js",
+        "data/modules/DBAutomod.js"
+      ],
+      "css": [
+        "data/styles/SNContainer.css",
+        "data/styles/SnooLogin.css",
+        "data/styles/SNOptions.css",
+        "data/styles/jquery-ui.css",
+        "data/styles/Dirtbag.css"
+      ]
     }
+  ],
+  "permissions": [
+    "cookies",
+    "tabs",
+    "https://snoonotes.com/*",
+    "http://reddit.com/*",
+    "https://reddit.com/*",
+    "http://*.reddit.com/*",
+    "https://*.reddit.com/*"
+  ],
+  "applications": {
+    "gecko": {
+      "id": "SnooNotes@snoonotes.com",
+      "strict_min_version": "45.0"
+    }
+  }
 }

@@ -50,7 +50,7 @@ function getEntriesToProcess() {
     if (snUtil.NewModmail) {
         $('article div.ThreadPreview:not(.SNDone,.SNFetching), div.ThreadViewer__thread:not(.SNDone,.SNFetching)').each(function () {
             var $thing = $(this);
-            var sub = $('header div.ThreadTitle__community, div.Thread__title div.ThreadTitle__community', $thing).text();
+            var sub = $('header .ThreadTitle__community, div.Thread__title .ThreadTitle__community', $thing).text();
             if (snUtil.settings.moddedSubs.indexOf(sub.toLowerCase()) > -1) {
                 $('.ThreadPreview__author:not(.m-mod), .Message__author:not(.m-mod)', $thing).each(function () {
                     var author = $(this).text().replace(/^u\//i, '');
