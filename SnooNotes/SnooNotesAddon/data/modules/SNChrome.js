@@ -39,6 +39,9 @@ function browserInit() {
                 case "deleteNote" :
                     deleteNote(request.req); //snoonotes.js
                     break;
+                case "modAction":
+                    receiveModAction(request.req);
+                    break; //SNModActions.js
                 default:
                     break;
             }

@@ -46,6 +46,10 @@ namespace SnooNotesAPI.Signalr
                 Clients.Group(SubName.ToLower()).refreshNoteTypes();
             }
         }
+
+        public void SendModAction(Models.ModAction action ) {
+            Clients.Group( action.Subreddit.ToLower() ).modAction( action.ThingID, action.Mod, action.Action );
+        }
     
     }
     

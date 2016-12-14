@@ -254,6 +254,7 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\DirtbagController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ModActionController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
     <Compile Include="Controllers\NoteTypeController.cs" />
     <Compile Include="Controllers\SubredditController.cs" />
@@ -288,6 +289,7 @@
     <Compile Include="Models\BasicNoteType.cs" />
     <Compile Include="Models\DirtbagSettings.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ModAction.cs" />
     <Compile Include="Models\Note.cs" />
     <Compile Include="Models\NoteType.cs" />
     <Compile Include="Models\Subreddit.cs" />

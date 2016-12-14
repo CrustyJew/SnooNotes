@@ -6,11 +6,21 @@
     border-radius: 2px;
 }
 
-.dbAutoModBan a {
-    cursor: pointer;
-    text-decoration: underline;
+    .dbAutoModBan a {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .dbAutoModBan > span {
+        font-weight: bold;
+    }
+
+.SNModAction {
+    font-weight: bold !important;
+    background-color: yellow;
+    padding: 3px;
 }
 
-.dbAutoModBan > span{
-    font-weight:bold;
+.SNModActionWarning{
+    background-color:yellow;
 }

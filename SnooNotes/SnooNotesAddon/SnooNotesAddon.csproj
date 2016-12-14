@@ -73,6 +73,7 @@
     <Content Include="data\modules\SNBanNotes.js" />
     <Content Include="data\modules\SNChrome.js" />
     <Content Include="data\modules\SNLoad.js" />
+    <Content Include="data\modules\SNModActions.js" />
     <Content Include="data\modules\SnooLoginPopup.js" />
     <Content Include="data\modules\SNOptions.js" />
     <Content Include="data\styles\Dirtbag.css" />
