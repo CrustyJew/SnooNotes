@@ -15,10 +15,15 @@
         font-weight: bold;
     }
 
-.SNModAction {
-    font-weight: bold !important;
-    background-color: yellow;
-    padding: 3px;
+.SNModAction 
+{
+  font-family: Verdana;
+  color: black;
+  background-color: #F0F3FC;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 11px;
+  padding: 4px;
 }
 
 .SNModActionWarning{
