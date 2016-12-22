@@ -33,13 +33,15 @@ $(function () {
         }
     });
 })
-function actionClick(sub,thingid,reason) {
-    $.ajax({
-        url: snUtil.ApiBase + 'ModAction/' + sub,
-        method: 'POST',
-        data: { ThingID: thingid, Action: reason },
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    });
+function actionClick(sub, thingid, reason) {
+    if (snUtil.settings.moddedSubs.indexOf(sub) > -1) {
+        $.ajax({
+            url: snUtil.ApiBase + 'ModAction/' + sub,
+            method: 'POST',
+            data: { ThingID: thingid, Action: reason },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+    }
 }
 function receiveModAction(req) {
     var $thing = $('.id-' + req.thingID);

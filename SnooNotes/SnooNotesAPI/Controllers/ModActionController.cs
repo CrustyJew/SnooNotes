@@ -7,6 +7,7 @@ using System.Web.Http;
 
 namespace SnooNotesAPI.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/ModAction")]
     public class ModActionController : ApiController
     {
