@@ -3,6 +3,9 @@
   "WebJobs": [
     {
       "filePath": "../SnooNotesPermissions/SnooNotesPermissions.csproj"
+    },
+    {
+      "filePath": "../SnooNotesPermissions/SnooNotesPermissions.csproj"
     }
   ]
 }

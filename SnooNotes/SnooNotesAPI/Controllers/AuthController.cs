@@ -88,6 +88,7 @@ namespace SnooNotesAPI.Controllers
             string addScopes = "";
             if (wiki) addScopes += "wikiread,";
             if (read) addScopes += "read,";
+            return new ChallengeResult( "oidc", Url.Content( "/oidc-signin" ) );
             // Request a redirect to the external login provider
             return new ChallengeResult("Reddit",
               Url.Action("ExternalLoginCallbackRedirect", "Auth", new { ReturnUrl = returnUrl }), addScopes);

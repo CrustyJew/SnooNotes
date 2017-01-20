@@ -1,9 +1,9 @@
 ﻿{
   "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json",
   "webJobName": "SnooNotesPermissions",
-  "startTime": "2015-10-04T00:00:00-06:00",
+  "startTime": "2016-11-14T00:00:00-06:00",
   "endTime": null,
-  "jobRecurrenceFrequency": "Minute",
-  "interval": 15,
+  "jobRecurrenceFrequency": "Hour",
+  "interval": 1,
   "runMode": "Scheduled"
 }
