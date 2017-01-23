@@ -198,21 +198,45 @@ namespace IdentProvider.Controllers
             }
             else
             {
+                string scope = info.Principal.Claims.FirstOrDefault( c => c.Type == "urn:reddit_scope" ).Value;
+                var scopes = scope.Split( ' ' );
+                bool hasWiki = scopes.Contains( "wikiread" );
+                bool hasRead = scopes.Contains( "read" );
+                string accessToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "access_token" ).Value;
+                string refreshToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "refresh_token" ).Value;
+                string tokenExpires = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "expires_at" ).Value;
                 // If the user does not have an account, then ask the user to create an account.
-                var user = new ApplicationUser { UserName = info.Principal.Identity.Name};
+                var user = new ApplicationUser {
+                    UserName = info.Principal.Identity.Name,
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                    TokenExpires = DateTime.Parse(tokenExpires),
+                    HasRead = hasRead,
+                    HasWiki = hasWiki
+                };
                 var signresult = await _userManager.CreateAsync( user );
-                if ( result.Succeeded ) {
+                if ( signresult.Succeeded ) {
                     signresult = await _userManager.AddLoginAsync( user, info );
                     if ( signresult.Succeeded ) {
                         await _signInManager.SignInAsync( user, isPersistent: false );
                         _logger.LogInformation( 6, "User created an account using {Name} provider.", info.LoginProvider );
-                        return RedirectToLocal( returnUrl );
+                        return RedirectToAction( "PopulateClaims",new { ReturnUrl = returnUrl } );
                     }
                 }
                 AddErrors( signresult );
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
             }
+        }
+        [HttpGet]
+        public IActionResult PopulateClaims(string returnUrl = null) {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult PopulateClaims(string returnUrl = null, bool newUser = true) {
+            return RedirectToLocal( returnUrl );
         }
 
         //

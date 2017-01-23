@@ -14,9 +14,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
+using System.Security.Claims;
 
-namespace IdentProvider
-{
+namespace IdentProvider {
     public class ExtendedRedditAuthenticationMiddleware : OAuthMiddleware<RedditAuthenticationOptions> {
         public ExtendedRedditAuthenticationMiddleware(
             RequestDelegate next,
@@ -79,6 +79,7 @@ namespace IdentProvider
         }
     }
     public class ExtendedRedditAuthHandler : AspNet.Security.OAuth.Reddit.RedditAuthenticationHandler {
+        private const string TokenEndpoint = "https://ssl.reddit.com/api/v1/access_token";
         public ExtendedRedditAuthHandler( HttpClient client ) : base( client ) {
         }
         protected override string BuildChallengeUrl( AuthenticationProperties properties, string redirectUri ) {
@@ -87,7 +88,7 @@ namespace IdentProvider
                 scope = properties.Items["Scope"];
             }
             else {
-                scope = string.Join(",",Options.Scope);
+                scope = string.Join( ",", Options.Scope );
             }
             var state = Options.StateDataFormat.Protect( properties );
             var parameters = new Dictionary<string, string>
@@ -97,8 +98,14 @@ namespace IdentProvider
                 { "response_type", "code" },
                 { "redirect_uri", redirectUri },
                 { "state", state },
+                { "duration", "permanent" }
             };
             return QueryHelpers.AddQueryString( Options.AuthorizationEndpoint, parameters );
+        }
+        protected override Task<AuthenticationTicket> CreateTicketAsync( ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens ) {
+            identity.AddClaim( new Claim( "urn:reddit_scope", tokens.Response.Value<string>( "scope" ) ) );
+            return base.CreateTicketAsync( identity, properties, tokens );
+
         }
         private static void AddQueryString(
             IDictionary<string, string> queryStrings,

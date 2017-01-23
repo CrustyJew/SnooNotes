@@ -96,8 +96,14 @@ namespace IdentProvider
                 AuthenticationScheme = "Reddit",
                 ClientId = Configuration["RedditClientID"],
                 ClientSecret = Configuration["RedditClientSecret"],
-                CallbackPath = "/signin-reddit",
-                Scope = { "identity", "mysubreddits" }
+                CallbackPath = "/signin-reddit", SaveTokens = true,
+                Scope = { "identity", "mysubreddits" }, Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents() {
+                     OnTicketReceived = ( t => {
+                         return Task.FromResult( 0 );
+                     }
+                     
+                     )
+                }
             } );
 
             app.UseMvc(routes =>

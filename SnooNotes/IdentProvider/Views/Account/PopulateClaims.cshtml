@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Populating Claims";
+}
+
+<h2>@ViewData["Title"].</h2>
+<form id="claimsForm" asp-controller="Account" asp-action="PopulateClaims" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+    </form>
+
+<script>
+    document.getElementById("claimsForm").submit();
+</script>
