@@ -144,21 +144,23 @@ namespace IdentProvider.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ExternalLogin(string provider, string returnUrl = null, bool read = false, bool wiki = false)
         {
+            string scope = "";
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            if ( properties.Items.ContainsKey("Scope") ) {
-               if(read) { properties.Items["Scope"] += ",read"; }
-                if ( wiki ) { properties.Items["Scope"] += ",wiki"; }
+            if ( wiki && read ) {
+                scope = "identity,mysubreddits,wikiread,read";
+            }
+            else if ( wiki ) {
+                scope = "identity,mysubreddits,wikiread";
+            }
+            else if ( read ) {
+                scope = "identity,mysubreddits,read";
             }
             else {
-                List<string> scopes = new List<string>();
-                if ( read ) { scopes.Add( "read" ); }
-                if ( wiki ) { scopes.Add( "wiki" ); }
-                if(scopes.Count > 0 ) {
-                    properties.Items.Add( "Scope", string.Join( ",", scopes ) );
-                }
+                scope = "identity,mysubreddits";
             }
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            properties.Items.Add( "Scope", scope );
             return Challenge(properties, provider);
         }
 
@@ -197,7 +199,7 @@ namespace IdentProvider.Controllers
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
-                var user = new ApplicationUser { UserName = info.ProviderKey };
+                var user = new ApplicationUser { UserName = info.Principal.Identity.Name};
                 var signresult = await _userManager.CreateAsync( user );
                 if ( result.Succeeded ) {
                     signresult = await _userManager.AddLoginAsync( user, info );

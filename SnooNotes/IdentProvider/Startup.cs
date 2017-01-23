@@ -92,10 +92,12 @@ namespace IdentProvider
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
-            app.UseRedditAuthentication( new RedditAuthenticationOptions() {
+            app.UseExtendedRedditAuthentication( new RedditAuthenticationOptions() {
+                AuthenticationScheme = "Reddit",
                 ClientId = Configuration["RedditClientID"],
                 ClientSecret = Configuration["RedditClientSecret"],
-                CallbackPath = "/signin-reddit"
+                CallbackPath = "/signin-reddit",
+                Scope = { "identity", "mysubreddits" }
             } );
 
             app.UseMvc(routes =>

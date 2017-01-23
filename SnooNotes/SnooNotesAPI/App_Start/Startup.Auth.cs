@@ -109,7 +109,7 @@ namespace SnooNotesAPI
                 ClientSecret = "secret",
                 ResponseType = "code id_token",
                 Scope = "api1 offline_access openid"
-                , RedirectUri="https://localhost:44311/signin-oidc"
+                , RedirectUri="http://localhost:44322/signin-oidc"
 
             } );
         }
