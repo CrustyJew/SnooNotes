@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Runtime.Caching;
 using System.Net.Http;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SnooNotesAPI.BLL {
     public class DirtbagBLL {
-        private static MemoryCache cache = MemoryCache.Default;
+        private IMemoryCache cache;
         private const string CACHE_PREFIX = "BotSettings:";
+
+        public DirtbagBLL(IMemoryCache memoryCache ) {
+            cache = memoryCache;
+        }
 
         public async Task<bool> SaveSettings(Models.DirtbagSettings settings, string subName ) {
             DAL.SubredditDAL subDAL = new DAL.SubredditDAL();
@@ -59,8 +63,9 @@ namespace SnooNotesAPI.BLL {
 
         private async Task<Models.DirtbagSettings> GetSettings(string subName ) {
             DAL.SubredditDAL subDAL = new DAL.SubredditDAL();
-            var cacheVal = cache[CACHE_PREFIX + subName];
-            if(cacheVal == null ) {
+            object cacheVal;
+             
+            if( !cache.TryGetValue( CACHE_PREFIX + subName, out cacheVal ) ) {
                 var botSets = await subDAL.GetBotSettings( subName );
                 cache.Set( CACHE_PREFIX + subName, botSets, DateTimeOffset.Now.AddMinutes( 30 ) );
                 return botSets;

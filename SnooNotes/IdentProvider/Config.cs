@@ -66,8 +66,8 @@ namespace IdentProvider {
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { "http://localhost:44322/signin-oidc" },
-                    PostLogoutRedirectUris = { "http://localhost:44322" },
+                    RedirectUris = { "http://localhost:44322/signin-oidc","http://localhost:5000/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:44322","http://localhost:5000/" },
 
                     AllowedScopes =
                     {

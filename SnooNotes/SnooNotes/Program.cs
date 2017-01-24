@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 
-namespace IdentProvider
+namespace SnooNotes
 {
     public class Program
     {
@@ -13,7 +14,7 @@ namespace IdentProvider
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls( "http://localhost:5000/Auth/" )
+                .UseUrls( "http://localhost:5000" )
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
