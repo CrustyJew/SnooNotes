@@ -1,18 +1,20 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SnooNotesAPI.Controllers {
     [Authorize]
-    public class NoteController : ApiController {
+    public class NoteController : Controller {
         private BLL.NotesBLL notesBLL;
-        public NoteController() {
+        private IConfigurationRoot Configuration;
+        public NoteController( IConfigurationRoot config) {
             notesBLL = new BLL.NotesBLL();
+            Configuration = config;
         }
 
         [HttpGet]
@@ -57,7 +59,7 @@ namespace SnooNotesAPI.Controllers {
         [HttpPost]
         [Route( "api/Note/Cabal" )]
         public async Task AddNoteToCabal( int id, int typeid ) {
-            string cabalSub = System.Configuration.ConfigurationManager.AppSettings["CabalSubreddit"].ToLower();
+            string cabalSub = Configuration["CabalSubreddit"].ToLower();
             Models.Note note = await notesBLL.GetNoteByID( id );
             if( !User.IsInRole( note.SubName.ToLower() ) ) {
                 throw new UnauthorizedAccessException( "That note ID doesn't belong to you. Go on! GIT!" );

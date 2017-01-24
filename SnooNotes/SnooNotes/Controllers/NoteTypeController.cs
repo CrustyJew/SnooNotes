@@ -4,11 +4,13 @@ using System.Linq;
 using System.Web.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SnooNotesAPI.Controllers
 {
     [Authorize]
-    public class NoteTypeController : ApiController
+    public class NoteTypeController : Controller
     {
         private BLL.NoteTypesBLL noteTypeBLL;
         public NoteTypeController() {
@@ -18,7 +20,7 @@ namespace SnooNotesAPI.Controllers
         public Task<Dictionary<string, IEnumerable<Models.BasicNoteType>>> Get()
         {
             List<string> roles = new List<string>();
-            ClaimsIdentity id = (User.Identity as ClaimsIdentity);
+            ClaimsIdentity id = (ClaimsPrincipal.Current.Identity as ClaimsIdentity);
             roles = id.Claims.Where(c => c.Type == id.RoleClaimType).Select(c => c.Value).ToList();
             return noteTypeBLL.GetNoteTypesForSubs(roles);
             

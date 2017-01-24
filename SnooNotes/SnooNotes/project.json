@@ -19,7 +19,9 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "Dapper": "1.50.2",
-    "IdentProvider": "1.0.0-*"
+    "IdentProvider": "1.0.0-*",
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "RedditSharp": "2.0.0-CI00005"
   },
 
   "tools": {

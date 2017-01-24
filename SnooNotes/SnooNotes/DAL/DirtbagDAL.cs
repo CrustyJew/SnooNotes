@@ -21,8 +21,8 @@ namespace SnooNotesAPI.DAL {
         }
 
         public async Task<bool> TestConnection( string dirtbagUrl, string dirtbagUsername, string dirtbagPassword, string subreddit ) {
-            using ( var handler = new WebRequestHandler() ) {
-                handler.ServerCertificateValidationCallback = ValidateCert;
+            using ( var handler = new HttpClientHandler() ) {
+                handler.ServerCertificateCustomValidationCallback = ValidateCert;
                 using ( var client = new HttpClient(handler) ) {
                     string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{dirtbagUsername}:{dirtbagPassword}" ) );
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
@@ -38,8 +38,8 @@ namespace SnooNotesAPI.DAL {
         }
 
         public async Task<IEnumerable<BannedEntity>> GetBanList( DirtbagSettings conn, string subreddit ) {
-            using ( var handler = new WebRequestHandler() ) {
-                handler.ServerCertificateValidationCallback = ValidateCert;
+            using ( var handler = new HttpClientHandler() ) {
+                handler.ServerCertificateCustomValidationCallback = ValidateCert;
                 using ( var client = new HttpClient( handler ) ) {
                     string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{conn.DirtbagUsername}:{conn.DirtbagPassword}" ) );
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
@@ -58,8 +58,8 @@ namespace SnooNotesAPI.DAL {
         }
 
         public async Task<bool> RemoveFromBanList( DirtbagSettings conn, int id, string modName, string subreddit ) {
-            using ( var handler = new WebRequestHandler() ) {
-                handler.ServerCertificateValidationCallback = ValidateCert;
+            using ( var handler = new HttpClientHandler() ) {
+                handler.ServerCertificateCustomValidationCallback = ValidateCert;
                 using ( var client = new HttpClient( handler ) ) {
                     string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{conn.DirtbagUsername}:{conn.DirtbagPassword}" ) );
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
@@ -75,8 +75,8 @@ namespace SnooNotesAPI.DAL {
         }
 
         public async Task AddToBanList( DirtbagSettings conn, List<BannedEntity> list ) {
-            using ( var handler = new WebRequestHandler() ) {
-                handler.ServerCertificateValidationCallback = ValidateCert;
+            using ( var handler = new HttpClientHandler() ) {
+                handler.ServerCertificateCustomValidationCallback = ValidateCert;
                 using ( var client = new HttpClient( handler ) ) {
                     string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{conn.DirtbagUsername}:{conn.DirtbagPassword}" ) );
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
@@ -90,12 +90,11 @@ namespace SnooNotesAPI.DAL {
         }
 
         public async Task UpdateBanReason( DirtbagSettings conn, string subName, int id, string reason, string modname ) {
-            using ( var handler = new WebRequestHandler() ) {
-                handler.ServerCertificateValidationCallback = ValidateCert;
+            using ( var handler = new HttpClientHandler() ) {
+                handler.ServerCertificateCustomValidationCallback = ValidateCert;
                 using ( var client = new HttpClient( handler ) ) {
                     string auth = Convert.ToBase64String( Encoding.ASCII.GetBytes( $"{conn.DirtbagUsername}:{conn.DirtbagPassword}" ) );
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Basic", auth );
-
                     var response = await client.PutAsJsonAsync( string.Format( conn.DirtbagUrl + UPDATE_BAN_REASON_ENDPOINT, subName, id, modname ), reason );
                     if ( !response.IsSuccessStatusCode ) {
                         throw new HttpRequestException( response.StatusCode + ": " + await response.Content.ReadAsStringAsync() );

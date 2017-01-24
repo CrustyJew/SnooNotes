@@ -1,22 +1,22 @@
-﻿using System;
+﻿using IdentProvider.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SnooNotesAPI.Controllers
-{
+namespace SnooNotesAPI.Controllers {
     [Authorize]
-    [WikiRead]
-    public class ToolBoxNotesController : ApiController
-    {
+    //[WikiRead] ///TODO
+    public class ToolBoxNotesController : Controller {
+
+        private UserManager<ApplicationUser> userManager;
+        public ToolBoxNotesController(UserManager<ApplicationUser> userManager ) {
+            this.userManager = userManager;
+        }
         // GET: api/ToolBoxNotes
         public IEnumerable<string> Get()
         {
@@ -25,20 +25,20 @@ namespace SnooNotesAPI.Controllers
 
         // GET: api/ToolBoxNotes/5
         
-        public IEnumerable<RedditSharp.TBUserNote> Get(string id)
+        public async Task<IEnumerable<RedditSharp.TBUserNote>> Get(string id)
         {
-            var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            if (!(User as ClaimsPrincipal).HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
+            if (!ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
             {
                 throw new Exception("Not an admin of this subreddit"); //TODO Fix exception type
             }
-            var user = userManager.FindByName(User.Identity.Name);
+            var user = await userManager.FindByNameAsync( ClaimsPrincipal.Current.Identity.Name);
             if (user.TokenExpires < DateTime.UtcNow)
             {
-                Utilities.AuthUtils.GetNewToken(user);
+                await Utilities.AuthUtils.GetNewTokenAsync(user);
             }
-            Utilities.SNWebAgent agent = new Utilities.SNWebAgent(user.AccessToken);
-            var notes = RedditSharp.ToolBoxUserNotes.GetUserNotes(agent, id);
+            RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
+            agent.AccessToken = user.AccessToken;
+            var notes = await RedditSharp.ToolBoxUserNotes.GetUserNotesAsync(agent, id);
             return notes;
         }
 

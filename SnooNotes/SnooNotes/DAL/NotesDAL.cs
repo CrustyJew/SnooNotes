@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Dapper;
 using System.Data.SqlClient;
-using System.Configuration;
 using System.Threading.Tasks;
 using SnooNotesAPI.Models;
 
