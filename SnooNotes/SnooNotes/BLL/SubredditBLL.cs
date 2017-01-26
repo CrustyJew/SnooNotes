@@ -6,14 +6,22 @@ using System.Security.Claims;
 using System.Net.Http;
 using System.Net;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
+using IdentProvider.Models;
+using Microsoft.Extensions.Logging;
 
-namespace SnooNotesAPI.BLL {
-    public class SubredditBLL {
+namespace SnooNotes.BLL {
+    public class SubredditBLL : ISubredditBLL {
         private DAL.SubredditDAL subDAL;
         private IMemoryCache cache;
-        public SubredditBLL(IMemoryCache memoryCache) {
-            subDAL = new DAL.SubredditDAL();
+        private DAL.NoteTypesDAL ntDAL;
+        private Utilities.AuthUtils authUtils;
+        public SubredditBLL(IMemoryCache memoryCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, ILoggerFactory logFactory) {
+            subDAL = new DAL.SubredditDAL(config);
             cache = memoryCache;
+            ntDAL = new DAL.NoteTypesDAL( config );
+            authUtils = new Utilities.AuthUtils( config, userManager, logFactory, memoryCache );
         }
 
         public Task<IEnumerable<Models.Subreddit>> GetSubreddits(IEnumerable<string> subs ) {
@@ -46,7 +54,6 @@ namespace SnooNotesAPI.BLL {
                 throw new Exception( "Subreddit already exists!" );
             }
             try {
-                DAL.NoteTypesDAL ntDAL = new DAL.NoteTypesDAL();
                 //loads default note types, currently same types as Toolbox
                 newSub.Settings.NoteTypes = Models.SubredditSettings.DefaultNoteTypes( newSub.SubName );
 
@@ -68,7 +75,7 @@ namespace SnooNotesAPI.BLL {
                 throw new Exception( "Access Mask was invalid" ) ;
             }
             else if ( ClaimsPrincipal.Current.IsInRole( sub.SubName.ToLower() ) && ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
-                DAL.NoteTypesDAL ntDAL = new DAL.NoteTypesDAL();
+                
                 var noteTypes = await ntDAL.GetNoteTypesForSubs( new List<string>() { sub.SubName } );
 
                 if ( sub.Settings.PermBanID.HasValue && !noteTypes.Any( nt => nt.NoteTypeID == sub.Settings.PermBanID.Value ) ) {
@@ -80,7 +87,7 @@ namespace SnooNotesAPI.BLL {
 
                 await subDAL.UpdateSubredditSettings( sub );
 
-                bool updated = await Utilities.AuthUtils.UpdateModsForSub( sub );
+                bool updated = await authUtils.UpdateModsForSubAsync( sub );
                 if ( updated ) {
                     return new { error = false, message = "Settings have been saved and moderator list has been updated!" };
                 }

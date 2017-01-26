@@ -6,15 +6,16 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.Controllers
+namespace SnooNotes.Controllers
 {
     [Authorize]
     public class NoteTypeController : Controller
     {
         private BLL.NoteTypesBLL noteTypeBLL;
-        public NoteTypeController() {
-            noteTypeBLL = new BLL.NoteTypesBLL();
+        public NoteTypeController(IConfigurationRoot config, Signalr.ISnooNoteUpdates snooNoteUpdates) {
+            noteTypeBLL = new BLL.NoteTypesBLL(config, snooNoteUpdates);
         }
         // GET: api/NoteType
         public Task<Dictionary<string, IEnumerable<Models.BasicNoteType>>> Get()

@@ -1,5 +1,5 @@
 ﻿using System;
-using SnooNotesAPI.Models;
+using SnooNotes.Models;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text;
@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 
-namespace SnooNotesAPI.DAL {
+namespace SnooNotes.DAL {
     public class DirtbagDAL {
         private const string TEST_CONNECTION_ENDPOINT = "api/Info/TestConnection?subreddit={0}";
         private const string BAN_LIST_ENDPOINT = "api/AutomodBanned?subname={0}"; //TODO: dear god why can't I name shit consistently

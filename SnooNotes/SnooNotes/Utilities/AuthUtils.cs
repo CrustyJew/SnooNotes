@@ -8,44 +8,46 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentProvider.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace SnooNotesAPI.Utilities {
+namespace SnooNotes.Utilities {
     public class AuthUtils {
 		public static readonly string roleType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-        private static IConfigurationRoot Configuration;
-        private static UserManager<ApplicationUser> _userManager;
-        private static ILogger _logger;
-
+        private IConfigurationRoot Configuration;
+        private UserManager<ApplicationUser> _userManager;
+        private ILogger _logger;
+        private BLL.SubredditBLL subBLL;
         public AuthUtils( IConfigurationRoot config,
             UserManager<ApplicationUser> userManager,
-            ILoggerFactory loggerFactory ) {
+            ILoggerFactory loggerFactory, IMemoryCache memCache ) {
             _userManager = userManager;
             _logger = loggerFactory.CreateLogger<AuthUtils>();
 
             Configuration = config;
+            subBLL = new BLL.SubredditBLL(memCache, config,userManager,loggerFactory );
         }
-        public static async Task GetNewTokenAsync( ApplicationUser ident ) {
+        public  async Task GetNewTokenAsync( ApplicationUser ident ) {
 			string ClientId = Configuration["RedditClientID"];
 			string ClientSecret = Configuration["RedditClientSecret"];
 			string RediretURI = Configuration["RedditRedirectURI"];
 
-			SNWebAgent agent = new SNWebAgent();
+			RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
 			RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider( ClientId, ClientSecret, RediretURI, agent );
 
 			string newaccesstoken = await ap.GetOAuthTokenAsync( ident.RefreshToken, true );
 			ident.AccessToken = newaccesstoken;
 			ident.TokenExpires = DateTime.UtcNow.AddMinutes( 50 );
 		}
-		public static async Task RevokeRefreshTokenAsync( string token ) {
+		public  async Task RevokeRefreshTokenAsync( string token ) {
 			string ClientId = Configuration["RedditClientID"];
 			string ClientSecret = Configuration["RedditClientSecret"];
 			string RediretURI = Configuration["RedditRedirectURI"];
-			SNWebAgent agent = new SNWebAgent();
+            RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
 			RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider( ClientId, ClientSecret, RediretURI, agent );
 			await ap.RevokeTokenAsync( token, true );
 
 		}
-		public static async Task CheckTokenExpirationAsync( ClaimsPrincipal user ) {
+		public  async Task CheckTokenExpirationAsync( ClaimsPrincipal user ) {
 			
 			var ident = await _userManager.FindByNameAsync( user.Identity.Name );
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
@@ -53,24 +55,24 @@ namespace SnooNotesAPI.Utilities {
 			}
 		}
 
-		public static async Task CheckTokenExpiration( ApplicationUser ident ) {
+		public  async Task CheckTokenExpiration( ApplicationUser ident ) {
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				await GetNewTokenAsync( ident );
 			}
 		}
 
-		public static async Task UpdateModeratedSubredditsAsync( ApplicationUser ident, UserManager<ApplicationUser> manager ) {
+		public async Task UpdateModeratedSubredditsAsync( ApplicationUser ident, UserManager<ApplicationUser> manager ) {
             string cabalSubName = Configuration["CabalSubreddit"].ToLower();
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				await GetNewTokenAsync( ident );
 			}
-			Utilities.SNWebAgent agent = new SNWebAgent( ident.AccessToken );
+            RedditSharp.WebAgent agent = new RedditSharp.WebAgent( ident.AccessToken );
 			RedditSharp.Reddit rd = new RedditSharp.Reddit( agent, true );
 			var subs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
 
 			List<string> currentRoles = ident.Claims.Where( x => x.ClaimType == roleType ).Select( r => r.ClaimValue ).ToList<string>();
 
-			List<Models.Subreddit> activeSubs = await new BLL.SubredditBLL().GetActiveSubs();
+			List<Models.Subreddit> activeSubs = await subBLL.GetActiveSubs();
 			List<string> activeSubNames = activeSubs.Select( s => s.SubName.ToLower() ).ToList();
 
 			List<IdentityUserClaim<string>> currentAdminRoles = ident.Claims.Where( c => c.ClaimType.StartsWith( "urn:snoonotes:subreddits:" ) ).ToList();
@@ -139,7 +141,7 @@ namespace SnooNotesAPI.Utilities {
             if(cabalUser.TokenExpires < DateTime.UtcNow ) {
                 await GetNewTokenAsync( cabalUser );
             }
-            agent = new SNWebAgent( cabalUser.AccessToken );
+            agent = new RedditSharp.WebAgent( cabalUser.AccessToken );
 
             RedditSharp.Reddit reddit = new RedditSharp.Reddit( agent, false );
 
@@ -165,13 +167,13 @@ namespace SnooNotesAPI.Utilities {
 
 		}
 
-		public async static Task<bool> UpdateModsForSub( Models.Subreddit sub ) {
+		public async Task<bool> UpdateModsForSubAsync( Models.Subreddit sub ) {
 			if ( !ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
 				throw new UnauthorizedAccessException( "You don't have 'Full' permissions to this subreddit!" );
 			}
             if ( sub.SubName.ToLower() == Configuration["CabalSubreddit"].ToLower() ) return false;
 
-			sub = (await new BLL.SubredditBLL().GetSubreddits( new string[] { sub.SubName } )).First();
+			sub = (await subBLL.GetSubreddits( new string[] { sub.SubName } )).First();
 			if ( sub == null ) {
 				throw new Exception( "Unrecognized subreddit" );
 			}
@@ -190,12 +192,12 @@ namespace SnooNotesAPI.Utilities {
 				await _userManager.UpdateAsync( ident );
 			}
 			ClaimsIdentity curuser = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
-			SNWebAgent agent;
+            RedditSharp.WebAgent agent;
 			if ( curuser.HasClaim( "urn:snoonotes:scope", "read" ) ) {
-				agent = new SNWebAgent( ident.AccessToken );
+				agent = new RedditSharp.WebAgent( ident.AccessToken );
 			}
 			else {
-				agent = new SNWebAgent();
+				agent = new RedditSharp.WebAgent();
 			}
 			RedditSharp.Reddit rd = new RedditSharp.Reddit( agent );
 			RedditSharp.Things.Subreddit subinfo;

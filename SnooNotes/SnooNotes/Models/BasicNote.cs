@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace SnooNotesAPI.Models
+namespace SnooNotes.Models
 {
     public class BasicNote
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.SignalR.Hubs;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.SignalR.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using System.Security.Claims;
 
-namespace SnooNotesAPI.Signalr
+namespace SnooNotes.Signalr
 {
     [Authorize]
     [HubName("SnooNoteUpdates")]
@@ -14,11 +14,6 @@ namespace SnooNotesAPI.Signalr
     {
         private readonly SnooNoteUpdates _snUpdates;
 
-        public SnooNotesHub()
-            : this(SnooNoteUpdates.Instance)
-        {
-
-        }
         public SnooNotesHub(SnooNoteUpdates snUpdates)
         {
             _snUpdates = snUpdates;

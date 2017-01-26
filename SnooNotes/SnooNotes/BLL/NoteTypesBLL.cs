@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SnooNotesAPI.Models;
+using SnooNotes.Models;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.BLL {
+namespace SnooNotes.BLL {
     public class NoteTypesBLL {
         private DAL.NoteTypesDAL noteTypesDAL;
-        public NoteTypesBLL() {
-            noteTypesDAL = new DAL.NoteTypesDAL();
+        private Signalr.ISnooNoteUpdates snUpdates;
+        public NoteTypesBLL(IConfigurationRoot config, Signalr.ISnooNoteUpdates snooNoteUpdates ) {
+            noteTypesDAL = new DAL.NoteTypesDAL(config);
+            snUpdates = snooNoteUpdates;
         }
         public async Task<Dictionary<string, IEnumerable<BasicNoteType>>> GetNoteTypesForSubs( IEnumerable<string> subs ) {
             Dictionary<string, IEnumerable<BasicNoteType>> toReturn = new Dictionary<string, IEnumerable<BasicNoteType>>();
@@ -33,7 +36,7 @@ namespace SnooNotesAPI.BLL {
             }
 
             var ret = await noteTypesDAL.AddMultipleNoteTypes( values, name );
-            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
+            snUpdates.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
             return ret;
         }
 
@@ -48,7 +51,7 @@ namespace SnooNotesAPI.BLL {
 
             }
             await noteTypesDAL.DeleteMultipleNoteTypes( values, name );
-            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
+            snUpdates.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
             return values.Select( nt => nt.NoteTypeID );
         }
 
@@ -60,7 +63,7 @@ namespace SnooNotesAPI.BLL {
 
             }
             await noteTypesDAL.UpdateMultipleNoteTypes( values, name );
-            Signalr.SnooNoteUpdates.Instance.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
+            snUpdates.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
             return values;
         }
 

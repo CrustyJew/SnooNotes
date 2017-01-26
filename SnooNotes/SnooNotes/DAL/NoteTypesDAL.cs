@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Dapper;
 using System.Data.SqlClient;
-using System.Configuration;
 using System.Threading.Tasks;
-using SnooNotesAPI.Models;
+using SnooNotes.Models;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.DAL {
+namespace SnooNotes.DAL {
     public class NoteTypesDAL {
-        private static string constring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private string constring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private IConfigurationRoot Configuration;
+        public NoteTypesDAL( IConfigurationRoot config ) {
+            Configuration = config;
+            constring = Configuration.GetConnectionString( "DefaultConnection" );
+        }
 
         public async Task<bool> DeleteMultipleNoteTypes( IEnumerable<NoteType> ntypes, string uname ) {
             List<Dictionary<string, object>> ntypeParams = new List<Dictionary<string, object>>();

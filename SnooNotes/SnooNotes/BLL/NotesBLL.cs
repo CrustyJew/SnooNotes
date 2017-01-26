@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SnooNotesAPI.Models;
+using SnooNotes.Models;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.BLL {
+namespace SnooNotes.BLL {
     public class NotesBLL {
         private DAL.NotesDAL notesDAL;
-        public NotesBLL() {
-            notesDAL = new DAL.NotesDAL();
+        public NotesBLL(IConfigurationRoot config) {
+            notesDAL = new DAL.NotesDAL(config);
         }
 
         public Task<IEnumerable<string>> GetUsersWithNotes( IEnumerable<string> subnames ) {

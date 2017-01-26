@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Threading.Tasks;
-using System.Configuration;
 using Google.Apis.YouTube.v3;
 using Google.Apis.Services;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.DAL {
+namespace SnooNotes.DAL {
     public class YouTubeDAL {
         public string YouTubeAPIKey { get; set; }
 
-        public YouTubeDAL() {
-            var key = ConfigurationManager.AppSettings["YouTubeAPIKey"];
+        public YouTubeDAL(IConfigurationRoot config ) {
+            var key = config["YouTubeAPIKey"];
             if ( string.IsNullOrEmpty( key ) ) throw new Exception( "Provide setting 'YouTubeAPIKey' in AppConfig" );
             YouTubeAPIKey = key;
         }

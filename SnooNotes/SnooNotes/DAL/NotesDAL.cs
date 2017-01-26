@@ -3,12 +3,17 @@ using System.Linq;
 using Dapper;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using SnooNotesAPI.Models;
+using SnooNotes.Models;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.DAL {
+namespace SnooNotes.DAL {
     public class NotesDAL {
-        private static string connstring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
-
+        private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private IConfigurationRoot Configuration;
+        public NotesDAL( IConfigurationRoot config ) {
+            Configuration = config;
+            connstring = Configuration.GetConnectionString( "DefaultConnection" );
+        }
         public async Task<IEnumerable<Note>> GetNotesForUsers( string subname, IEnumerable<string> usernames ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit "
@@ -134,7 +139,7 @@ n.AppliesToUsername = @AppliesToUsername and sr.SubName = @subname;
             }
         }
 
-        public async Task<int> AddNewToolBoxNotes( List<Note> tbNotes ) {
+        public async Task<int> AddNewToolBoxNotesAsync( List<Note> tbNotes ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, Url, Timestamp) "
                     + "select @NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp "

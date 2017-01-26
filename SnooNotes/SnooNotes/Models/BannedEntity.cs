@@ -5,7 +5,7 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace SnooNotesAPI.Models {
+namespace SnooNotes.Models {
     public class BannedEntity {
         //copy pasta from Dirtbag source, could shove it in some DLL in the future. Probably should even..
         public int ID { get; set; }

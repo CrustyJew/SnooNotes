@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.BLL {
+namespace SnooNotes.BLL {
     public class DirtbagBLL {
         private IMemoryCache cache;
         private const string CACHE_PREFIX = "BotSettings:";
-
-        public DirtbagBLL(IMemoryCache memoryCache ) {
+        private DAL.DirtbagDAL dirtbag;
+        private DAL.SubredditDAL subDAL;
+        private DAL.YouTubeDAL ytDAL;
+        public DirtbagBLL(IMemoryCache memoryCache, IConfigurationRoot config ) {
             cache = memoryCache;
+            dirtbag = new DAL.DirtbagDAL();
+            subDAL = new DAL.SubredditDAL( config );
+            ytDAL = new DAL.YouTubeDAL( config );
         }
 
         public async Task<bool> SaveSettings(Models.DirtbagSettings settings, string subName ) {
-            DAL.SubredditDAL subDAL = new DAL.SubredditDAL();
             await subDAL.UpdateBotSettings( settings, subName );
             cache.Set( CACHE_PREFIX + subName, settings, DateTimeOffset.Now.AddMinutes( 30 ) );
             return true;
@@ -22,8 +27,6 @@ namespace SnooNotesAPI.BLL {
 
         public async Task<bool> TestConnection(Models.DirtbagSettings newSettings, string subName ) {
             Models.DirtbagSettings curSettings = await GetSettings( subName );
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
-            
             if( curSettings == null || curSettings.DirtbagUrl != newSettings.DirtbagUrl ) {
                 //no current settings OR url changed, don't allow using saved password.
                 return await dirtbag.TestConnection( newSettings, subName );
@@ -38,7 +41,6 @@ namespace SnooNotesAPI.BLL {
         }
 
         public async Task<bool> TestConnection(string subName ) {
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
             var curSettings = await GetSettings( subName );
             return await dirtbag.TestConnection( curSettings, subName );
         }
@@ -47,8 +49,7 @@ namespace SnooNotesAPI.BLL {
             var curSettings = await GetSettings( subName );
             if ( curSettings == null || string.IsNullOrWhiteSpace( curSettings.DirtbagUrl ) )
                 throw new HttpRequestException( $"No valid settings for {subName} could be found!" );
-
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            
             return await dirtbag.GetBanList( curSettings, subName );
         }
 
@@ -56,13 +57,11 @@ namespace SnooNotesAPI.BLL {
             var curSettings = await GetSettings( subName );
             if ( curSettings == null || string.IsNullOrWhiteSpace( curSettings.DirtbagUrl ) )
                 throw new HttpRequestException( $"No valid settings for {subName} could be found!" );
-
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
+            
             return await dirtbag.RemoveFromBanList( curSettings, id, modName, subName );
         }
 
         private async Task<Models.DirtbagSettings> GetSettings(string subName ) {
-            DAL.SubredditDAL subDAL = new DAL.SubredditDAL();
             object cacheVal;
              
             if( !cache.TryGetValue( CACHE_PREFIX + subName, out cacheVal ) ) {
@@ -75,12 +74,10 @@ namespace SnooNotesAPI.BLL {
 
         public async Task UpdateBanReason( string subName, int id, string reason, string modname ) {
             var conn = await GetSettings( subName );
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
             await dirtbag.UpdateBanReason(conn, subName, id, reason, modname );
         }
 
         public async Task BanChannel( string subName, string url, string reason, string thingID, string bannedBy ) {
-            DAL.YouTubeDAL ytDAL = new DAL.YouTubeDAL();
             string ytVidID = Helpers.YouTubeHelpers.ExtractVideoId( url );
             if ( string.IsNullOrWhiteSpace( ytVidID ) )
                 throw new ArgumentException( $"Couldn't extract YouTube video ID from url: {url}" );
@@ -95,7 +92,6 @@ namespace SnooNotesAPI.BLL {
                 Type = Models.BannedEntity.EntityType.Channel
             };
             var conn = await GetSettings( subName );
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
             await dirtbag.AddToBanList(conn, new List<Models.BannedEntity>() { toBan } );
         }
 
@@ -110,7 +106,6 @@ namespace SnooNotesAPI.BLL {
                 Type = Models.BannedEntity.EntityType.User
             };
             var conn = await GetSettings( subName );
-            DAL.DirtbagDAL dirtbag = new DAL.DirtbagDAL();
             await dirtbag.AddToBanList( conn, new List<Models.BannedEntity>() { toBan } );
         }
     }

@@ -1,25 +1,23 @@
-﻿using System;
+﻿using IdentProvider.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Runtime.Caching;
-using Microsoft.Owin;
-using Microsoft.AspNet.Identity.Owin;
-using System.Web;
-using Microsoft.AspNet.Identity;
-using System.Web.Http;
 using System.Threading.Tasks;
 
-namespace SnooNotesAPI.Controllers
-{
+namespace SnooNotes.Controllers {
     [Authorize]
-    public class SubredditController : ApiController
+    public class SubredditController : Controller
     {
         private BLL.SubredditBLL subBLL;
-        public SubredditController() {
-            subBLL = new BLL.SubredditBLL();
+        public SubredditController(IMemoryCache memCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, ILoggerFactory logFactory) {
+            subBLL = new BLL.SubredditBLL(memCache,config,userManager,logFactory);
         }
         // GET: api/Subreddit
         public Task<IEnumerable<Models.Subreddit>> Get()
@@ -54,7 +52,8 @@ namespace SnooNotesAPI.Controllers
         public Task Post([FromBody]Models.Subreddit newSub)
         {
             string name = ClaimsPrincipal.Current.Identity.Name;
-            var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
+            //var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
+            string ip = "0.0.0.0";
             return subBLL.AddSubreddit( newSub, name, ip );
         }
 

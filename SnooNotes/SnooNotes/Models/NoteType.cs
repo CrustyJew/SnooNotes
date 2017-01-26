@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 
 
-namespace SnooNotesAPI.Models
+namespace SnooNotes.Models
 {
     public class NoteType
     {

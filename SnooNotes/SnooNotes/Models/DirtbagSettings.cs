@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-namespace SnooNotesAPI.Models {
+namespace SnooNotes.Models {
     public class DirtbagSettings {
         public string DirtbagUrl { get; set; }
         public string DirtbagUsername { get; set; }

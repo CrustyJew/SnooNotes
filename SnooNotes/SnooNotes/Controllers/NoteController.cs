@@ -7,14 +7,16 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SnooNotesAPI.Controllers {
+namespace SnooNotes.Controllers {
     [Authorize]
     public class NoteController : Controller {
         private BLL.NotesBLL notesBLL;
         private IConfigurationRoot Configuration;
-        public NoteController( IConfigurationRoot config) {
-            notesBLL = new BLL.NotesBLL();
+        private Signalr.ISnooNoteUpdates snUpdates;
+        public NoteController( IConfigurationRoot config,Signalr.ISnooNoteUpdates snooNoteUpdates) {
+            notesBLL = new BLL.NotesBLL(config);
             Configuration = config;
+            snUpdates = snooNoteUpdates;
         }
 
         [HttpGet]
@@ -49,7 +51,7 @@ namespace SnooNotesAPI.Controllers {
                 value.Timestamp = DateTime.UtcNow;
                 Models.Note insertedNote = await notesBLL.AddNoteForUser( value );
 
-                Signalr.SnooNoteUpdates.Instance.SendNewNote( insertedNote );
+                snUpdates.SendNewNote( insertedNote );
             }
             else {
                 throw new UnauthorizedAccessException( "You are not a moderator of that subreddit!" );
@@ -69,7 +71,7 @@ namespace SnooNotesAPI.Controllers {
                 note.Submitter = ClaimsPrincipal.Current.Identity.Name;
                 note.NoteTypeID = typeid;
                 var insertedNote = await notesBLL.AddNoteToCabal( note, cabalSub );
-                Signalr.SnooNoteUpdates.Instance.SendNewNote( insertedNote );
+                snUpdates.SendNewNote( insertedNote );
             }
             else {
                 throw new UnauthorizedAccessException( "You aren't a part of the cabal! Shoo!" );
@@ -81,7 +83,7 @@ namespace SnooNotesAPI.Controllers {
             Models.Note note = await notesBLL.GetNoteByID( id );
             if ( User.IsInRole( note.SubName.ToLower() ) || ( !string.IsNullOrWhiteSpace( note.ParentSubreddit ) && User.IsInRole( note.ParentSubreddit.ToLower() ) ) ) {
                 bool outOfNotes = await notesBLL.DeleteNoteForUser( note, User.Identity.Name );
-                Signalr.SnooNoteUpdates.Instance.DeleteNote( note, outOfNotes );
+                snUpdates.DeleteNote( note, outOfNotes );
             }
             else {
                 throw new UnauthorizedAccessException( "You are not a moderator of that subreddit!" );

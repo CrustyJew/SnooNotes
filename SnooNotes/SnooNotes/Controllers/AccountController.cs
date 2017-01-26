@@ -8,21 +8,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using IdentProvider.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace SnooNotesAPI.Controllers {
+namespace SnooNotes.Controllers {
     [Authorize]
     public class AccountController : Controller {
         private BLL.SubredditBLL subBLL;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
+        private Utilities.AuthUtils authUtils;
         public AccountController( UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILoggerFactory loggerFactory ) {
-            subBLL = new BLL.SubredditBLL();
+            ILoggerFactory loggerFactory, IConfigurationRoot config, IMemoryCache memoryCache ) {
+            subBLL = new BLL.SubredditBLL(memoryCache,config,userManager,loggerFactory);
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            authUtils = new Utilities.AuthUtils( config, userManager, loggerFactory, memoryCache );
         }
 
         [HttpGet]
@@ -49,10 +53,10 @@ namespace SnooNotesAPI.Controllers {
             
             var ident = await _userManager.FindByNameAsync( User.Identity.Name );
             if ( ident.TokenExpires < DateTime.UtcNow ) {
-                await Utilities.AuthUtils.GetNewTokenAsync( ident );
+                await authUtils.GetNewTokenAsync( ident );
                 await _userManager.UpdateAsync( ident );
             }
-            Utilities.SNWebAgent agent = new Utilities.SNWebAgent( ident.AccessToken );
+            RedditSharp.WebAgent agent = new RedditSharp.WebAgent( ident.AccessToken );
             RedditSharp.Reddit rd = new RedditSharp.Reddit( agent, true );
 
             List<Models.Subreddit> activeSubs = await subBLL.GetActiveSubs();
@@ -66,7 +70,7 @@ namespace SnooNotesAPI.Controllers {
             
             var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-                await Utilities.AuthUtils.UpdateModeratedSubredditsAsync( user, _userManager );
+                await authUtils.UpdateModeratedSubredditsAsync( user, _userManager );
 
                 await _userManager.UpdateAsync( user );
             

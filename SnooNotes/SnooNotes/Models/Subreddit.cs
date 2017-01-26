@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SnooNotesAPI.Models
+namespace SnooNotes.Models
 {
     public class Subreddit
     {

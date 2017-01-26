@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace SnooNotesAPI.Utilities
+namespace SnooNotes.Utilities
 {
     public static class TBNoteUtils
     {

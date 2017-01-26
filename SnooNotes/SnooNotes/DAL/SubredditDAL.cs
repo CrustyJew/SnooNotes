@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Dapper;
-using System.Configuration;
 using System.Data.SqlClient;
-using SnooNotesAPI.Models;
+using SnooNotes.Models;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
-namespace SnooNotesAPI.DAL {
+namespace SnooNotes.DAL {
     public class SubredditDAL {
-        private static string connstring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
-
+        private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private IConfigurationRoot Configuration;
+        public SubredditDAL( IConfigurationRoot config ) {
+            Configuration = config;
+            connstring = Configuration.GetConnectionString( "DefaultConnection" );
+        }
         public async Task<string> AddSubreddit( Subreddit sub ) {
             sub.SubName = sub.SubName;
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace SnooNotes
 {
@@ -27,7 +28,22 @@ namespace SnooNotes
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var settings = new JsonSerializerSettings();
+            settings.ContractResolver = new SignalRContractResolver();
+
+            var serializer = JsonSerializer.Create( settings );
+
+            services.Add( new ServiceDescriptor( typeof( JsonSerializer ),
+                         provider => serializer,
+                         ServiceLifetime.Transient ) );
+
+            services.AddSingleton<Signalr.ISnooNoteUpdates, Signalr.SnooNoteUpdates>();
             // Add framework services.
+            
+            services.AddSignalR( options => {
+                options.Hubs.EnableDetailedErrors = true;
+            } );
+
             services.AddMvc();
         }
 
@@ -41,6 +57,8 @@ namespace SnooNotes
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseWebSockets();
+            app.UseSignalR();
         }
     }
 }

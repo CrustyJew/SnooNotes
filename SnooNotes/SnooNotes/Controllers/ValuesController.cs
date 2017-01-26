@@ -4,7 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-namespace SnooNotesAPI.Controllers {
+namespace SnooNotes.Controllers {
     [Authorize]
 	public class ValuesController : Controller {
 		// GET api/values

@@ -3,47 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Threading;
-using Microsoft.AspNet.SignalR.Hubs;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.SignalR.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
 
-namespace SnooNotesAPI.Signalr
+namespace SnooNotes.Signalr
 {
-    public class SnooNoteUpdates
+    public class SnooNoteUpdates : ISnooNoteUpdates
     {
-        private readonly static Lazy<SnooNoteUpdates> _instance = new Lazy<SnooNoteUpdates>(
-            () => new SnooNoteUpdates(GlobalHost.ConnectionManager.GetHubContext<SnooNotesHub>().Clients));
-    
-        public static SnooNoteUpdates Instance{
-            get{
-                return _instance.Value;
-            }
+        private IConnectionManager connManager;
+        public SnooNoteUpdates(IConnectionManager connectionManager ) {
+            connManager = connectionManager;
         }
 
-         private IHubConnectionContext<dynamic> Clients
-        {
-            get;
-            set;
-        }
 
-         private SnooNoteUpdates(IHubConnectionContext<dynamic> clients)
-         {
-             Clients = clients;
-         }
-
-        public void SendNewNote(Models.Note anote){
-            Clients.Group(anote.SubName.ToLower()).addNewNote(anote);
+        public void SendNewNote(Models.Note anote) {
+            connManager.GetHubContext<SnooNotesHub>().Clients.Group(anote.SubName.ToLower()).addNewNote(anote);
         }
 
         public void DeleteNote(Models.Note anote, bool outOfNotes)
         {
-            Clients.Group(anote.SubName.ToLower()).deleteNote(anote.AppliesToUsername,anote.NoteID, outOfNotes);
+            connManager.GetHubContext<SnooNotesHub>().Clients.Group(anote.SubName.ToLower()).deleteNote(anote.AppliesToUsername,anote.NoteID, outOfNotes);
         }
 
         public void RefreshNoteTypes(IEnumerable<string> SubNames)
         {
             foreach (string SubName in SubNames)
             {
-                Clients.Group(SubName.ToLower()).refreshNoteTypes();
+                connManager.GetHubContext<SnooNotesHub>().Clients.Group(SubName.ToLower()).refreshNoteTypes();
             }
         }
     

@@ -21,7 +21,10 @@
     "Dapper": "1.50.2",
     "IdentProvider": "1.0.0-*",
     "Microsoft.AspNet.WebApi.Client": "5.2.3",
-    "RedditSharp": "2.0.0-CI00005"
+    "RedditSharp": "2.0.0-CI00006",
+    "Google.Apis.YouTube.v3": "1.20.0.701",
+    "Microsoft.AspNetCore.SignalR.Server": "0.2.0-*",
+    "Microsoft.AspNetCore.WebSockets": "0.2.0-*"
   },
 
   "tools": {

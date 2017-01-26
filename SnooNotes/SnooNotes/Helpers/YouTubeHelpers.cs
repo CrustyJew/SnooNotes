@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace SnooNotesAPI.Helpers {
+namespace SnooNotes.Helpers {
     public class YouTubeHelpers {
         public static string ExtractVideoId( string url ) {
             string id = null;
