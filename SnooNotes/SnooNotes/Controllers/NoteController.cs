@@ -21,7 +21,7 @@ namespace SnooNotes.Controllers {
 
         [HttpGet]
         public Task<IEnumerable<string>> GetUsernamesWithNotes() {
-            ClaimsPrincipal ident = ClaimsPrincipal.Current;
+            ClaimsPrincipal ident = User;
             return notesBLL.GetUsersWithNotes( ident.FindAll( ( ident.Identity as ClaimsIdentity ).RoleClaimType ).Select( c => c.Value ) );
 
         }
@@ -34,14 +34,14 @@ namespace SnooNotes.Controllers {
         [HttpPost]
         [Route( "api/Note/GetNotes" )]
         public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes( [FromBody]IEnumerable<string> users ) {
-            ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+            ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             return notesBLL.GetNotesForSubs( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), users );
         }
 
         [HttpGet]
         [Route( "api/Note/{username}/HasNotes" )]
         public Task<bool> UserHasNotes( string username ) {
-            ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+            ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             return notesBLL.UserHasNotes( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), username );
         }
         // POST: api/Note
@@ -68,7 +68,7 @@ namespace SnooNotes.Controllers {
             }
             if ( User.IsInRole( cabalSub ) ) {
                 note.Timestamp = DateTime.UtcNow;
-                note.Submitter = ClaimsPrincipal.Current.Identity.Name;
+                note.Submitter = User.Identity.Name;
                 note.NoteTypeID = typeid;
                 var insertedNote = await notesBLL.AddNoteToCabal( note, cabalSub );
                 snUpdates.SendNewNote( insertedNote );

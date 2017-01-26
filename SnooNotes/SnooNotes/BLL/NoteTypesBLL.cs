@@ -28,9 +28,9 @@ namespace SnooNotes.BLL {
             return noteTypesDAL.GetNoteType( id );
         }
 
-        public async Task<IEnumerable<NoteType>> AddMultipleNoteTypes( IEnumerable<NoteType> values, string name ) {
+        public async Task<IEnumerable<NoteType>> AddMultipleNoteTypes( IEnumerable<NoteType> values, string name, ClaimsPrincipal user ) {
             foreach ( Models.NoteType nt in values ) {
-                if ( !await ValidateNoteType( nt ) ) {
+                if ( !await ValidateNoteType( nt, user ) ) {
                     throw new Exception("bad request"); //TODO
                 }
             }
@@ -40,13 +40,14 @@ namespace SnooNotes.BLL {
             return ret;
         }
 
-        public async Task<IEnumerable<int>> DeleteMultipleNoteTypes( NoteType[] values, string name ) {
+        //TODO refactor out ClaimsPrincipal
+        public async Task<IEnumerable<int>> DeleteMultipleNoteTypes( NoteType[] values, string name, ClaimsPrincipal user ) {
             if ( !await noteTypesDAL.ValidateNoteTypesInSubs( values ) ) {
                 throw new Exception(  "You gone and changed a NoteType to a different Subreddit ya goof!" );
             }
             foreach ( NoteType nt in values ) {
 
-                if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{nt.SubName.ToLower()}:admin", "true" ) )
+                if ( !user.HasClaim( $"urn:snoonotes:subreddits:{nt.SubName.ToLower()}:admin", "true" ) )
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
 
             }
@@ -55,9 +56,9 @@ namespace SnooNotes.BLL {
             return values.Select( nt => nt.NoteTypeID );
         }
 
-        public async Task<IEnumerable<Models.NoteType>> UpdateMultipleNoteTypes( NoteType[] values, string name ) {
+        public async Task<IEnumerable<Models.NoteType>> UpdateMultipleNoteTypes( NoteType[] values, string name, ClaimsPrincipal user ) {
             foreach ( Models.NoteType nt in values ) {
-                if ( !await ValidateNoteType( nt ) ) {
+                if ( !await ValidateNoteType( nt, user ) ) {
                     throw new Exception( "Bad Request" ); //TODO
                 }
 
@@ -67,9 +68,9 @@ namespace SnooNotes.BLL {
             return values;
         }
 
-        private async Task<bool> ValidateNoteType( Models.NoteType ntype ) {
+        private async Task<bool> ValidateNoteType( Models.NoteType ntype, ClaimsPrincipal user ) {
 
-            if ( String.IsNullOrEmpty( ntype.SubName ) || !ClaimsPrincipal.Current.IsInRole( ntype.SubName.ToLower() ) ) {
+            if ( String.IsNullOrEmpty( ntype.SubName ) || !user.IsInRole( ntype.SubName.ToLower() ) ) {
                 return false; //doesn't mod sub or empty/null sub, insta FAIL
             }
             if ( ntype.NoteTypeID == -1 ) {

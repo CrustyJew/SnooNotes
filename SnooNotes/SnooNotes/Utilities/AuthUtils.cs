@@ -61,7 +61,7 @@ namespace SnooNotes.Utilities {
 			}
 		}
 
-		public async Task UpdateModeratedSubredditsAsync( ApplicationUser ident, UserManager<ApplicationUser> manager ) {
+		public async Task UpdateModeratedSubredditsAsync( ApplicationUser ident, UserManager<ApplicationUser> manager, ClaimsPrincipal user ) {
             string cabalSubName = Configuration["CabalSubreddit"].ToLower();
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				await GetNewTokenAsync( ident );
@@ -86,11 +86,11 @@ namespace SnooNotes.Utilities {
 						//if they already have the role and they still have the correct access
 						if ( sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) || ( (int) sub.ModPermissions & activeSubs.Where( s => s.SubName.ToLower() == role ).Select( s => s.Settings.AccessMask ).First() ) > 0 ) {
 							//Check if "full" permissions
-							if ( sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) {
+							if ( sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !user.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) {
 								//has admin permissions but doesn't have role, so add it
 								rolesToAdd.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
 							}
-							else if ( !sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) {
+							else if ( !sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && user.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) {
 								//doesn't have admin permission, but does have role, so remove it
 								rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
 							}
@@ -98,7 +98,7 @@ namespace SnooNotes.Utilities {
 						else {
 							//lost da permissions
 							rolesToRemove.Add( new Claim( roleType, role ) );
-							if ( !sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
+							if ( !sub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && user.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
 						}
 
 						//User already has sub as a role and is still a mod
@@ -111,7 +111,7 @@ namespace SnooNotes.Utilities {
 				else {
 					//sub was deactivated, add it to remove.
 					rolesToRemove.Add( new Claim( roleType, role ) );
-					if ( ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
+					if ( user.HasClaim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) ) rolesToRemove.Add( new Claim( "urn:snoonotes:subreddits:" + role + ":admin", "true" ) );
 				}
 
 			}
@@ -167,8 +167,8 @@ namespace SnooNotes.Utilities {
 
 		}
 
-		public async Task<bool> UpdateModsForSubAsync( Models.Subreddit sub ) {
-			if ( !ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
+		public async Task<bool> UpdateModsForSubAsync( Models.Subreddit sub, ClaimsPrincipal user ) {
+			if ( !user.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
 				throw new UnauthorizedAccessException( "You don't have 'Full' permissions to this subreddit!" );
 			}
             if ( sub.SubName.ToLower() == Configuration["CabalSubreddit"].ToLower() ) return false;
@@ -185,13 +185,13 @@ namespace SnooNotes.Utilities {
 
 			//var x = userManager.Users.Where(u=>u.Claims.Select(c => c.ClaimValue).Contains("videos")).ToList();
 			//var y = userManager.Users.Select(u => u.Claims);
-			var ident = await _userManager.FindByNameAsync( ClaimsPrincipal.Current.Identity.Name );
+			var ident = await _userManager.FindByNameAsync( user.Identity.Name );
 
 			if ( ident.TokenExpires < DateTime.UtcNow ) {
 				await GetNewTokenAsync( ident );
 				await _userManager.UpdateAsync( ident );
 			}
-			ClaimsIdentity curuser = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+			ClaimsIdentity curuser = user.Identity as ClaimsIdentity;
             RedditSharp.WebAgent agent;
 			if ( curuser.HasClaim( "urn:snoonotes:scope", "read" ) ) {
 				agent = new RedditSharp.WebAgent( ident.AccessToken );
@@ -210,27 +210,27 @@ namespace SnooNotes.Utilities {
 			var modsWithAccess = (await subinfo.GetModeratorsAsync()).Where( m => ( (int) m.Permissions & sub.Settings.AccessMask ) > 0 );
 			// get list of users to remove perms from
 			var usersToRemove = usersWithAccess.Where( u => !modsWithAccess.Select( m => m.Name.ToLower() ).Contains( u.UserName.ToLower() ) ).ToList();
-			foreach ( var user in usersToRemove ) {
-				await _userManager.RemoveClaimAsync( user, new Claim( ClaimTypes.Role, subName ) );
-				if ( user.Claims.Where( c => c.ClaimType == "urn:snoonotes:subreddits:" + subName + ":admin" ).Count() > 0 ) {
-					await _userManager.RemoveClaimAsync( user, new Claim( "urn:snoonotes:subreddits:" + subName + ":admin", "true" ) );
+			foreach ( var appuser in usersToRemove ) {
+				await _userManager.RemoveClaimAsync( appuser, new Claim( ClaimTypes.Role, subName ) );
+				if ( appuser.Claims.Where( c => c.ClaimType == "urn:snoonotes:subreddits:" + subName + ":admin" ).Count() > 0 ) {
+					await _userManager.RemoveClaimAsync( appuser, new Claim( "urn:snoonotes:subreddits:" + subName + ":admin", "true" ) );
 
 				}
 			}
 
 			var usersToAdd = modsWithAccess.Where( m => ( (int) m.Permissions & sub.Settings.AccessMask ) > 0 && !usersWithAccess.Select( u => u.UserName.ToLower() ).Contains( m.Name.ToLower() ) );
 
-			foreach ( var user in usersToAdd ) {
+			foreach ( var appuser in usersToAdd ) {
 				try {
-					var u = await _userManager.FindByNameAsync( user.Name );
+					var u = await _userManager.FindByNameAsync( appuser.Name );
 					if ( u != null ) {
 
 						//assume it won't be adding a duplicate *holds breath*
-						if ( user.Permissions.HasFlag( RedditSharp.ModeratorPermission.All ) ) {
+						if ( appuser.Permissions.HasFlag( RedditSharp.ModeratorPermission.All ) ) {
 							await _userManager.AddClaimAsync( u, new Claim( ClaimTypes.Role, subName ) );
 							await _userManager.AddClaimAsync( u, new Claim( "urn:snoonotes:subreddits:" + subName + ":admin", "true" ) );
 						}
-						else if ( ( (int) user.Permissions & sub.Settings.AccessMask ) > 0 ) {
+						else if ( ( (int) appuser.Permissions & sub.Settings.AccessMask ) > 0 ) {
 							await _userManager.AddClaimAsync( u, new Claim( ClaimTypes.Role, subName ) );
 						}
 					}

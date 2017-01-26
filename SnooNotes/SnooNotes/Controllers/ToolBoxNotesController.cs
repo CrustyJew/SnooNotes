@@ -34,11 +34,11 @@ namespace SnooNotes.Controllers {
         
         public async Task<IEnumerable<RedditSharp.TBUserNote>> Get(string id)
         {
-            if (!ClaimsPrincipal.Current.HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
+            if (!User.HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
             {
                 throw new Exception("Not an admin of this subreddit"); //TODO Fix exception type
             }
-            var user = await userManager.FindByNameAsync( ClaimsPrincipal.Current.Identity.Name);
+            var user = await userManager.FindByNameAsync( User.Identity.Name);
             if (user.TokenExpires < DateTime.UtcNow)
             {
                 await authUtils.GetNewTokenAsync(user);

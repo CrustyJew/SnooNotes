@@ -24,7 +24,8 @@
     "RedditSharp": "2.0.0-CI00006",
     "Google.Apis.YouTube.v3": "1.20.0.701",
     "Microsoft.AspNetCore.SignalR.Server": "0.2.0-*",
-    "Microsoft.AspNetCore.WebSockets": "0.2.0-*"
+    "Microsoft.AspNetCore.WebSockets": "0.2.0-*",
+    "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.1"
   },
 
   "tools": {
@@ -62,5 +63,6 @@
 
   "scripts": {
     "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
-  }
+  },
+  "userSecretsId": "aspnet-SnooNotes-20170126010343"
 }

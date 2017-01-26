@@ -8,28 +8,53 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
+using IdentProvider;
+using AspNet.Security.OAuth.Reddit;
+using IdentProvider.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using IdentProvider.Data;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
 
-namespace SnooNotes
-{
-    public class Startup
-    {
-        public Startup(IHostingEnvironment env)
-        {
+namespace SnooNotes {
+    public class Startup {
+        public Startup( IHostingEnvironment env ) {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .SetBasePath( env.ContentRootPath )
+                .AddJsonFile( "appsettings.json", optional: true, reloadOnChange: true )
+                .AddJsonFile( $"appsettings.{env.EnvironmentName}.json", optional: true )
                 .AddEnvironmentVariables();
+
+            if ( env.IsDevelopment() ) {
+                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets();
+            }
+
             Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices( IServiceCollection services ) {
             var settings = new JsonSerializerSettings();
             settings.ContractResolver = new SignalRContractResolver();
+
+            services.AddDbContext<ApplicationDbContext>( options =>
+                 options.UseSqlServer( Configuration.GetConnectionString( "DefaultConnection" ) ) );
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddMvc();
+
+            services.Configure<IdentityOptions>( options => {
+                options.User.RequireUniqueEmail = false;
+                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays( 150 );
+                options.Cookies.ApplicationCookie.SlidingExpiration = true;
+            } );
 
             var serializer = JsonSerializer.Create( settings );
 
@@ -39,24 +64,69 @@ namespace SnooNotes
 
             services.AddSingleton<Signalr.ISnooNoteUpdates, Signalr.SnooNoteUpdates>();
             // Add framework services.
-            
+            services.AddSingleton<IConfigurationRoot>( Configuration );
             services.AddSignalR( options => {
                 options.Hubs.EnableDetailedErrors = true;
             } );
 
-            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+        public void Configure( IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory ) {
+            loggerFactory.AddConsole( Configuration.GetSection( "Logging" ) );
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            //app.UseIdentity();
+
+
+            var cookieOptions = new CookieAuthenticationOptions {
+                AuthenticationScheme = "cookie",
+                //LoginPath = new PathString( "/Auth/Login" ),
+                //CookieName = "bog",
+                //ExpireTimeSpan = new TimeSpan( 10000, 0, 0, 0, 0 ), 
+                //AutomaticChallenge=true,
+                //AutomaticAuthenticate = true
+            };
+
+            app.UseCookieAuthentication( cookieOptions );
+
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            app.UseOpenIdConnectAuthentication( new OpenIdConnectOptions {
+                AuthenticationScheme = "oidc",
+                SignInScheme = "cookie",
+
+                Authority = "http://localhost:5000/Auth",
+                RequireHttpsMetadata = false,
+
+                ClientId = "mvc",
+                ClientSecret = "secret",
+
+                ResponseType = "code id_token",
+                Scope = { "api1", "offline_access" },
+
+                GetClaimsFromUserInfoEndpoint = true,
+                SaveTokens = true
+            } );
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            app.UseMvc( routes => {
+                
+                routes.MapRoute(
+                    name: "api",
+                    template: "api/{controller=Home}/{action=Index}/{id?}" );
+                routes.MapRoute(
+                name: "DefaultRESTApi",
+                template: "restapi/{controller}/{id?}" );
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}" );
+
+            } );
+
             app.UseWebSockets();
             app.UseSignalR();
         }

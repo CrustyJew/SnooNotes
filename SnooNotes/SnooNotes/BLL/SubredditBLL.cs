@@ -16,12 +16,12 @@ namespace SnooNotes.BLL {
         private DAL.SubredditDAL subDAL;
         private IMemoryCache cache;
         private DAL.NoteTypesDAL ntDAL;
-        private Utilities.AuthUtils authUtils;
+        //private Utilities.AuthUtils authUtils;
         public SubredditBLL(IMemoryCache memoryCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, ILoggerFactory logFactory) {
             subDAL = new DAL.SubredditDAL(config);
             cache = memoryCache;
             ntDAL = new DAL.NoteTypesDAL( config );
-            authUtils = new Utilities.AuthUtils( config, userManager, logFactory, memoryCache );
+            //authUtils = new Utilities.AuthUtils( config, userManager, logFactory, memoryCache );
         }
 
         public Task<IEnumerable<Models.Subreddit>> GetSubreddits(IEnumerable<string> subs ) {
@@ -87,8 +87,8 @@ namespace SnooNotes.BLL {
 
                 await subDAL.UpdateSubredditSettings( sub );
 
-                bool updated = await authUtils.UpdateModsForSubAsync( sub );
-                if ( updated ) {
+                //bool updated = await authUtils.UpdateModsForSubAsync( sub );
+                if ( false ) {
                     return new { error = false, message = "Settings have been saved and moderator list has been updated!" };
                 }
                 else {

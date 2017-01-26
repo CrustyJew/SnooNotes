@@ -17,7 +17,7 @@ namespace SnooNotes.Controllers {
         [HttpPost]
         [Route( "{subname}/TestConnection" )]
         public async Task<bool> TestConnection( Models.DirtbagSettings settings, string subname ) {
-            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+            if ( !User.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
 
             if ( !settings.DirtbagUrl.EndsWith( "/" ) ) settings.DirtbagUrl = settings.DirtbagUrl + "/";
@@ -30,7 +30,7 @@ namespace SnooNotes.Controllers {
         [HttpPut]
         [Route( "{subname}" )]
         public async Task<Models.DirtbagSettings> Update( Models.DirtbagSettings settings, string subname ) {
-            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+            if ( !User.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
 
             if ( !settings.DirtbagUrl.EndsWith( "/" ) ) settings.DirtbagUrl = settings.DirtbagUrl + "/";
@@ -41,7 +41,7 @@ namespace SnooNotes.Controllers {
         [HttpGet]
         [Route( "{subname}/BanList" )]
         public Task<IEnumerable<Models.BannedEntity>> GetBanList( string subname ) {
-            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+            if ( !User.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             
             return dirtbag.GetBanList( subname );
@@ -50,7 +50,7 @@ namespace SnooNotes.Controllers {
         [HttpDelete]
         [Route( "{subname}/BanList/{id}" )]
         public Task<bool> RemoveBan( string subname, int id ) {
-            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+            if ( !User.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             
             return dirtbag.RemoveBan( id, ClaimsPrincipal.Current.Identity.Name, subname );
@@ -68,7 +68,7 @@ namespace SnooNotes.Controllers {
         [HttpPost]
         [Route( "{subname}/BanList/Channels" )]
         public Task BanChannel( Models.BannedEntity entity, string subname ) {
-            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+            if ( !User.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             
             return dirtbag.BanChannel( subname, entity.EntityString, entity.BanReason, entity.ThingID, ClaimsPrincipal.Current.Identity.Name );
@@ -77,7 +77,7 @@ namespace SnooNotes.Controllers {
         [HttpPost]
         [Route( "{subname}/BanList/Users" )]
         public Task BanUser( Models.BannedEntity entity, string subname ) {
-            if ( !ClaimsPrincipal.Current.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
+            if ( !User.HasClaim( $"urn:snoonotes:subreddits:{subname.ToLower()}:admin", "true" ) )
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             
             return dirtbag.BanUser( subname, entity.EntityString, entity.BanReason, entity.ThingID, ClaimsPrincipal.Current.Identity.Name );

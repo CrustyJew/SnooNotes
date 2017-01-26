@@ -40,7 +40,7 @@ namespace SnooNotes.Controllers {
 
         [HttpGet]
         public ApplicationUser GetCurrentUser() {
-            ClaimsIdentity ident = ClaimsPrincipal.Current.Identity as ClaimsIdentity;
+            ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             return new ApplicationUser {
                 HasRead = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "read" ),
                 HasWiki = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "wikiread" ),
@@ -70,7 +70,7 @@ namespace SnooNotes.Controllers {
             
             var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-                await authUtils.UpdateModeratedSubredditsAsync( user, _userManager );
+                await authUtils.UpdateModeratedSubredditsAsync( user, _userManager, User );
 
                 await _userManager.UpdateAsync( user );
             

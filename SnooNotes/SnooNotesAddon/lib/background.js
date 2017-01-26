@@ -84,12 +84,12 @@ function initSocket() {
 
 }
 (function (snUtil) {
-    snUtil.ApiBase = "https://snoonotes.com/api/";
-    snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
-    snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
-    //snUtil.LoginAddress = "https://localhost:44311/Auth/Login";
-    //snUtil.ApiBase = "https://localhost:44311/api/";
-    //snUtil.RESTApiBase = "https://localhost:44311/restapi/";
+    //snUtil.ApiBase = "https://snoonotes.com/api/";
+    //snUtil.LoginAddress = "https://snoonotes.com/Auth/Login";
+    //snUtil.RESTApiBase = "https://snoonotes.com/restapi/";
+    snUtil.LoginAddress = "http://localhost:5001/Auth/Login";
+    snUtil.ApiBase = "http://localhost:5001/api/";
+    snUtil.RESTApiBase = "http://localhost:5001/restapi/";
     snUtil.CabalSub = "spamcabal"; //lower case this bad boy
 
     initWorker();
