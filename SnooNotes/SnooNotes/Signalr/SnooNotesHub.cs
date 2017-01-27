@@ -12,11 +12,11 @@ namespace SnooNotes.Signalr
     [HubName("SnooNoteUpdates")]
     public class SnooNotesHub : Hub
     {
-        private readonly SnooNoteUpdates _snUpdates;
+        //private readonly SnooNoteUpdates _snUpdates;
 
-        public SnooNotesHub(SnooNoteUpdates snUpdates)
+        public SnooNotesHub()//SnooNoteUpdates snUpdates)
         {
-            _snUpdates = snUpdates;
+            //_snUpdates = snUpdates;
         }
 
         public override Task OnConnected()

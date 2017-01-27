@@ -67,16 +67,17 @@ namespace SnooNotes {
 
             var serializer = JsonSerializer.Create( settings );
 
-            services.Add( new ServiceDescriptor( typeof( JsonSerializer ),
-                         provider => serializer,
-                         ServiceLifetime.Transient ) );
+            //services.Add( new ServiceDescriptor( typeof( JsonSerializer ),
+            //             provider => serializer,
+            //             ServiceLifetime.Transient ) );
 
-            services.AddSingleton<Signalr.ISnooNoteUpdates, Signalr.SnooNoteUpdates>();
             // Add framework services.
             services.AddSingleton<IConfigurationRoot>( Configuration );
             services.AddSignalR( options => {
                 options.Hubs.EnableDetailedErrors = true;
             } );
+
+            services.AddSingleton<Signalr.ISnooNoteUpdates, Signalr.SnooNoteUpdates>();
 
         }
 
@@ -133,10 +134,7 @@ namespace SnooNotes {
                 
                 routes.MapRoute(
                     name: "api",
-                    template: "api/{controller=Home}/{action=Index}/{id?}" );
-                routes.MapRoute(
-                name: "DefaultRESTApi",
-                template: "restapi/{controller}/{id?}" );
+                    template: "api/{controller}/{action}/{id?}" );
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}" );

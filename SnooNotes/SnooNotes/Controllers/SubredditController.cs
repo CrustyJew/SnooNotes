@@ -1,6 +1,7 @@
 ﻿using IdentProvider.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -13,12 +14,13 @@ using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
     [Authorize]
-    [Route("restapi/Subreddit")]
+    [Route("restapi/[controller]")]
     public class SubredditController : Controller
     {
         private BLL.SubredditBLL subBLL;
-        public SubredditController(IMemoryCache memCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, ILoggerFactory logFactory) {
-            subBLL = new BLL.SubredditBLL(memCache,config,userManager,logFactory);
+        public SubredditController(IMemoryCache memCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager
+            , ILoggerFactory logFactory, RoleManager<IdentityRole> roleManager) {
+            subBLL = new BLL.SubredditBLL(memCache,config,userManager,logFactory,roleManager);
         }
         [HttpGet("", Name ="GetAll")]
         // GET: api/Subreddit
@@ -34,15 +36,16 @@ namespace SnooNotes.Controllers {
         {
 
             if ( id.ToLower() == "admin" ) {
-                var subs = ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == ClaimsIdentity.DefaultRoleClaimType ).Select( c => c.Value );
-                subs = subs.Where( s => User.HasClaim( "urn:snoonotes:subreddits:" + s + ":admin", "true" ) );
+                var subs = ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == "urn:snoonotes:admin" ).Select( c => c.Value );
+                //subs = subs.Where( s => User.HasClaim( "urn:snoonotes:subreddits:" + s + ":admin", "true" ) );
                 return subBLL.GetSubreddits( subs );
             }
+            //TODO figure out what the hell I was trying to do here
             else {
                 List<Models.Subreddit> toReturn = new List<Models.Subreddit>();
                 foreach ( string sub in id.Split( ',' ) ) {
-                    if (!( User.IsInRole( id.ToLower() ) && User.HasClaim( "urn:snoonotes:subreddits:" + id + ":admin", "true" )) ) {
-                        throw new UnauthorizedAccessException( "You are not a moderator of that subreddit, or you don't have full permissions!" );
+                    if ( !User.HasClaim( "urn:snoonotes:admin", id.ToLower() ) ) {
+                        throw new UnauthorizedAccessException( $"You are not a moderator of \"{id}\" , or you don't have full permissions!" );
                     }
                     
                 }
@@ -55,15 +58,21 @@ namespace SnooNotes.Controllers {
         {
             string name = User.Identity.Name;
             //var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
-            string ip = "0.0.0.0";
+            
+            string ip = HttpContext.Connection.RemoteIpAddress.ToString();
             return subBLL.AddSubreddit( newSub, name, ip );
         }
         [HttpPut("{id}")]
         // PUT: api/Subreddit/5
-        public Task<object> Put(string id, [FromBody]Models.Subreddit sub)
+        public Task<object> Put(string id, [FromForm]Models.Subreddit sub)
         {
             sub.SubName = id;
-            return subBLL.UpdateSubreddit( sub );
+            if ( User.HasClaim( "urn:snoonotes:admin", sub.SubName.ToLower() ) ) {
+                return subBLL.UpdateSubreddit( sub );
+            }
+            else {
+                throw new UnauthorizedAccessException( "You are not a moderator of that subreddit, or you don't have full permissions!" );
+            }
         }
         [HttpDelete("{id:int}")]
         // DELETE: api/Subreddit/5

@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SnooNotes.Controllers {
     [Authorize]
-	public class ValuesController : Controller {
+
+    [Route( "api/[controller]" )]
+    public class ValuesController : Controller {
 		// GET api/values
+        [HttpGet]
 		public IEnumerable<string> Get() {
             ClaimsIdentity id = (ClaimsIdentity)User.Identity;
             return id.Claims.Select(x => x.Type + ":" + x.Value).ToArray();

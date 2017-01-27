@@ -10,17 +10,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using IdentProvider.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace SnooNotes.BLL {
     public class SubredditBLL : ISubredditBLL {
         private DAL.SubredditDAL subDAL;
         private IMemoryCache cache;
         private DAL.NoteTypesDAL ntDAL;
+        private RoleManager<IdentityRole> _roleManager;
         //private Utilities.AuthUtils authUtils;
-        public SubredditBLL(IMemoryCache memoryCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, ILoggerFactory logFactory) {
+        public SubredditBLL(IMemoryCache memoryCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, 
+            ILoggerFactory logFactory, RoleManager<IdentityRole> roleManager) {
             subDAL = new DAL.SubredditDAL(config);
             cache = memoryCache;
             ntDAL = new DAL.NoteTypesDAL( config );
+            _roleManager = roleManager;
             //authUtils = new Utilities.AuthUtils( config, userManager, logFactory, memoryCache );
         }
 
@@ -56,9 +60,16 @@ namespace SnooNotes.BLL {
             try {
                 //loads default note types, currently same types as Toolbox
                 newSub.Settings.NoteTypes = Models.SubredditSettings.DefaultNoteTypes( newSub.SubName );
-
                 await subDAL.AddSubreddit( newSub );
-                await ntDAL.AddMultipleNoteTypes( newSub.Settings.NoteTypes, modname );
+                newSub.Settings.NoteTypes = (await ntDAL.AddMultipleNoteTypes( newSub.Settings.NoteTypes, modname )).ToList();
+
+                newSub.Settings.PermBanID = newSub.Settings.NoteTypes.FirstOrDefault( nt => nt.DisplayName == "Perma Ban" ).NoteTypeID;
+                newSub.Settings.TempBanID = newSub.Settings.NoteTypes.FirstOrDefault( nt => nt.DisplayName == "Ban" ).NoteTypeID;
+
+                await subDAL.UpdateSubredditSettings( newSub );
+
+                await _roleManager.CreateAsync( new IdentityRole( newSub.SubName.ToLower() ) );
+                await _roleManager.CreateAsync( new IdentityRole( newSub.SubName.ToLower() + ":admin" ) );
 
                 ucache.Value += 1;
                 icache.Value += 1;
@@ -74,7 +85,7 @@ namespace SnooNotes.BLL {
             if ( sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128 ) {
                 throw new Exception( "Access Mask was invalid" ) ;
             }
-            else if ( ClaimsPrincipal.Current.IsInRole( sub.SubName.ToLower() ) && ClaimsPrincipal.Current.HasClaim( "urn:snoonotes:subreddits:" + sub.SubName.ToLower() + ":admin", "true" ) ) {
+            else {
                 
                 var noteTypes = await ntDAL.GetNoteTypesForSubs( new List<string>() { sub.SubName } );
 
@@ -94,9 +105,6 @@ namespace SnooNotes.BLL {
                 else {
                     return new { error = false, message = "Settings have been saved and moderator list will be refreshed within 2 hours!" };
                 }
-            }
-            else {
-                throw new UnauthorizedAccessException( "You are not a moderator of that subreddit, or you don't have full permissions!" );
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using IdentProvider.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -14,16 +15,20 @@ using System.Threading.Tasks;
 namespace SnooNotes.Controllers {
     [Authorize]
     //[WikiRead] ///TODO
+
+    [Route( "api/[controller]" )]
     public class ToolBoxNotesController : Controller {
 
         private UserManager<ApplicationUser> userManager;
         private DAL.NotesDAL notesDAL;
         private Utilities.AuthUtils authUtils;
-        public ToolBoxNotesController(UserManager<ApplicationUser> userManager, IConfigurationRoot config, ILoggerFactory loggerFactory, IMemoryCache memCache ) {
+        public ToolBoxNotesController(UserManager<ApplicationUser> userManager, IConfigurationRoot config, 
+            ILoggerFactory loggerFactory, IMemoryCache memCache, RoleManager<IdentityRole> roleManager ) {
             this.userManager = userManager;
             notesDAL = new DAL.NotesDAL( config );
-            authUtils = new Utilities.AuthUtils( config, userManager, loggerFactory, memCache );
+            authUtils = new Utilities.AuthUtils( config, userManager, roleManager, loggerFactory, memCache );
         }
+        [HttpGet]
         // GET: api/ToolBoxNotes
         public IEnumerable<string> Get()
         {
@@ -31,12 +36,11 @@ namespace SnooNotes.Controllers {
         }
 
         // GET: api/ToolBoxNotes/5
-        
+        [HttpGet("{id}")]
         public async Task<IEnumerable<RedditSharp.TBUserNote>> Get(string id)
         {
-            if (!User.HasClaim("urn:snoonotes:subreddits:" + id.ToLower() + ":admin", "true"))
-            {
-                throw new Exception("Not an admin of this subreddit"); //TODO Fix exception type
+            if ( !User.HasClaim( "urn:snoonotes:admin", id.ToLower() ) ) {
+                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             }
             var user = await userManager.FindByNameAsync( User.Identity.Name);
             if (user.TokenExpires < DateTime.UtcNow)
@@ -48,13 +52,12 @@ namespace SnooNotes.Controllers {
             var notes = await RedditSharp.ToolBoxUserNotes.GetUserNotesAsync(agent, id);
             return notes;
         }
-
+        [HttpPost]
         // POST: api/ToolBoxNotes
         public async Task<int> Post([FromBody]Models.RequestObjects.TBImportMapping value)
         {
-            if (!(User as ClaimsPrincipal).HasClaim("urn:snoonotes:subreddits:" + value.subName.ToLower() + ":admin", "true"))
-            {
-                throw new Exception("Not an admin of this subreddit"); //TODO Fix exception type
+            if ( !User.HasClaim( "urn:snoonotes:admin", value.subName.ToLower() ) ) {
+                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             }
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             if (user.TokenExpires < DateTime.UtcNow)
@@ -71,16 +74,6 @@ namespace SnooNotes.Controllers {
             List<Models.Note> convertedNotes = Utilities.TBNoteUtils.ConvertTBNotesToSnooNotes(value.subName, value.GetNoteTypeMapping(), notes.ToList());
 
             return await notesDAL.AddNewToolBoxNotesAsync(convertedNotes);
-        }
-
-        // PUT: api/ToolBoxNotes/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE: api/ToolBoxNotes/5
-        public void Delete(int id)
-        {
         }
     }
 }

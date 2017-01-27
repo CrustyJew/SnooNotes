@@ -10,35 +10,37 @@ using IdentProvider.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace SnooNotes.Controllers {
     [Authorize]
+    [Route( "api/[controller]" )]
     public class AccountController : Controller {
         private BLL.SubredditBLL subBLL;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
         private Utilities.AuthUtils authUtils;
-        public AccountController( UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            ILoggerFactory loggerFactory, IConfigurationRoot config, IMemoryCache memoryCache ) {
-            subBLL = new BLL.SubredditBLL(memoryCache,config,userManager,loggerFactory);
+        public AccountController( UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            ILoggerFactory loggerFactory, IConfigurationRoot config, 
+            IMemoryCache memoryCache, RoleManager<IdentityRole> roleManager ) {
+            subBLL = new BLL.SubredditBLL(memoryCache,config,userManager,loggerFactory, roleManager);
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
-            authUtils = new Utilities.AuthUtils( config, userManager, loggerFactory, memoryCache );
+            authUtils = new Utilities.AuthUtils( config, userManager,roleManager, loggerFactory, memoryCache );
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public bool IsLoggedIn() {
             return true;
         }
-        [HttpGet]
+        [HttpGet( "[action]" )]
         public List<string> GetModeratedSubreddits() {
             return ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == ( User.Identity as ClaimsIdentity ).RoleClaimType ).Select( c => c.Value ).ToList<string>();
         }
 
-        [HttpGet]
+        [HttpGet( "[action]" )]
         public ApplicationUser GetCurrentUser() {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             return new ApplicationUser {
@@ -48,7 +50,7 @@ namespace SnooNotes.Controllers {
             };
         }
 
-        [HttpGet]
+        [HttpGet( "[action]" )]
         public async Task<IEnumerable<string>> GetInactiveModeratedSubreddits() {
             
             var ident = await _userManager.FindByNameAsync( User.Identity.Name );
@@ -65,12 +67,12 @@ namespace SnooNotes.Controllers {
             var subs = rd.User.ModeratorSubreddits.Where( s => s.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !activeSubNames.Contains( s.Name.ToLower() ) ).Select( s => s.Name );
             return subs.OrderBy( s => s );
         }
-        [HttpGet]
+        [HttpGet( "[action]" )]
         public async Task<List<string>> UpdateModeratedSubreddits() {
             
             var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-                await authUtils.UpdateModeratedSubredditsAsync( user, _userManager, User );
+                await authUtils.UpdateModeratedSubredditsAsync( user, User );
 
                 await _userManager.UpdateAsync( user );
             
