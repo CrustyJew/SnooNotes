@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using IdentProvider.Data;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 
 namespace SnooNotes {
     public class Startup {
@@ -44,14 +45,22 @@ namespace SnooNotes {
             services.AddDbContext<ApplicationDbContext>( options =>
                  options.UseSqlServer( Configuration.GetConnectionString( "DefaultConnection" ) ) );
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options=>options.Cookies.ApplicationCookie.AuthenticationScheme = "cookie")
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions( opt =>
+            {
+                var resolver = opt.SerializerSettings.ContractResolver;
+                if ( resolver != null ) {
+                    var res = resolver as DefaultContractResolver;
+                    res.NamingStrategy = null;  // <<!-- this removes the camelcasing
+                }
+            } ); 
 
             services.Configure<IdentityOptions>( options => {
                 options.User.RequireUniqueEmail = false;
+                options.Cookies.ApplicationCookie.AuthenticationScheme = "cookie";
                 options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays( 150 );
                 options.Cookies.ApplicationCookie.SlidingExpiration = true;
             } );
@@ -76,22 +85,26 @@ namespace SnooNotes {
             loggerFactory.AddConsole( Configuration.GetSection( "Logging" ) );
             loggerFactory.AddDebug();
 
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             //app.UseIdentity();
 
+            app.UseCors( builder => 
+                builder.AllowAnyHeader()
+                       .AllowAnyOrigin()
+            );
 
             var cookieOptions = new CookieAuthenticationOptions {
                 AuthenticationScheme = "cookie",
                 //LoginPath = new PathString( "/Auth/Login" ),
                 //CookieName = "bog",
                 //ExpireTimeSpan = new TimeSpan( 10000, 0, 0, 0, 0 ), 
-                //AutomaticChallenge=true,
+                AutomaticChallenge=false,
                 //AutomaticAuthenticate = true
             };
 
             app.UseCookieAuthentication( cookieOptions );
 
 
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             app.UseOpenIdConnectAuthentication( new OpenIdConnectOptions {
                 AuthenticationScheme = "oidc",
@@ -105,9 +118,12 @@ namespace SnooNotes {
 
                 ResponseType = "code id_token",
                 Scope = { "api1", "offline_access" },
-
                 GetClaimsFromUserInfoEndpoint = true,
-                SaveTokens = true
+                TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                },
+                SaveTokens = true, AutomaticAuthenticate = false
             } );
 
             app.UseDefaultFiles();

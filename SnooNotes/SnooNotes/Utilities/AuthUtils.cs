@@ -138,21 +138,23 @@ namespace SnooNotes.Utilities {
 			}
             string cabalUserName = Configuration["CabalUsername"];
             var cabalUser = await _userManager.FindByNameAsync( cabalUserName );
-            if(cabalUser.TokenExpires < DateTime.UtcNow ) {
-                await GetNewTokenAsync( cabalUser );
-            }
-            agent = new RedditSharp.WebAgent( cabalUser.AccessToken );
+            if ( cabalUser != null ) {
+                if ( cabalUser.TokenExpires < DateTime.UtcNow ) {
+                    await GetNewTokenAsync( cabalUser );
+                }
+                agent = new RedditSharp.WebAgent( cabalUser.AccessToken );
 
-            RedditSharp.Reddit reddit = new RedditSharp.Reddit( agent, false );
+                RedditSharp.Reddit reddit = new RedditSharp.Reddit( agent, false );
 
-            var redditSub = await reddit.GetSubredditAsync( cabalSubName );
-            var contribs = redditSub.Contributors;
+                var redditSub = await reddit.GetSubredditAsync( cabalSubName );
+                var contribs = redditSub.Contributors;
 
-            if(contribs.Any(c=>c.Name.ToLower() == ident.UserName.ToLower() ) ) {
-                var cabalClaim = new Claim( roleType, cabalSubName );
-                rolesToRemove.RemoveAll( r => r.Type == cabalClaim.Type && r.Value == cabalClaim.Value );
-                if ( !currentRoles.Contains( cabalSubName ) && !rolesToAdd.Any(ar => ar.Value == cabalClaim.Value && ar.Type == cabalClaim.Type)) {
-                    rolesToAdd.Add( cabalClaim );
+                if ( contribs.Any( c => c.Name.ToLower() == ident.UserName.ToLower() ) ) {
+                    var cabalClaim = new Claim( roleType, cabalSubName );
+                    rolesToRemove.RemoveAll( r => r.Type == cabalClaim.Type && r.Value == cabalClaim.Value );
+                    if ( !currentRoles.Contains( cabalSubName ) && !rolesToAdd.Any( ar => ar.Value == cabalClaim.Value && ar.Type == cabalClaim.Type ) ) {
+                        rolesToAdd.Add( cabalClaim );
+                    }
                 }
             }
 

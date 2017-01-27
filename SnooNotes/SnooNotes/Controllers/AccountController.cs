@@ -74,7 +74,7 @@ namespace SnooNotes.Controllers {
 
                 await _userManager.UpdateAsync( user );
             
-            await _signInManager.SignInAsync(user,true );
+            await _signInManager.SignInAsync(user,true, authenticationMethod:"cookie");
             return user.Claims.Where( c => c.ClaimType == ( User.Identity as ClaimsIdentity ).RoleClaimType ).ToList().Select( c => c.ClaimValue ).ToList<string>();
 
         }

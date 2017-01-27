@@ -51,7 +51,7 @@ namespace SnooNotes.Controllers {
         }
         [HttpPost]
         // POST: api/Subreddit
-        public Task Post([FromBody]Models.Subreddit newSub)
+        public Task Post([FromForm]Models.Subreddit newSub)
         {
             string name = User.Identity.Name;
             //var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
