@@ -1,6 +1,8 @@
 ﻿{
   "name": "SnooNotes",
-  "version": "0.1.1.2",
+
+  "version": "0.1.2.0",
+
   "manifest_version": 2,
   "minimum_chrome_version": "26.0",
   "description": "Usernotes plus a whole lot more!",
@@ -43,6 +45,8 @@
     "http://reddit.com/*",
     "https://reddit.com/*",
     "http://*.reddit.com/*",
-    "https://*.reddit.com/*"
+    "https://*.reddit.com/*",
+    "http://localhost:5001/*",
+    "http://localhost:5000/*"
   ]
 }

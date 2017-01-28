@@ -99,7 +99,19 @@ namespace SnooNotesAPI
             opts.Scope.Clear();
             opts.Scope.Add("identity");
             opts.Scope.Add("mysubreddits");
-            app.UseRedditAuthentication(opts);
+            //app.UseRedditAuthentication(opts);
+
+            app.UseOpenIdConnectAuthentication( new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions() {
+                AuthenticationType = "oidc",
+                SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                Authority = "http://localhost:5000",
+                ClientId = "mvc",
+                ClientSecret = "secret",
+                ResponseType = "code id_token",
+                Scope = "api1 offline_access openid"
+                , RedirectUri="http://localhost:44322/signin-oidc"
+
+            } );
         }
         /*private void GetNewToken(CookieValidateIdentityContext context)
         {
