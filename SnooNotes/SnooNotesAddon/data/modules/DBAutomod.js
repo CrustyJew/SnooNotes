@@ -4,11 +4,14 @@ $('body').on('click', '.remove-button .main > a, .big-mod-buttons > span > .pret
     var $thing = $btn.closest('.thing');
     var sub = $thing.attr('data-subreddit');
     var dbSub = snUtil.settings.dirtbagSubs.indexOf(sub) > -1;
+
+    
+
     if (dbSub && $('.dbAutoModBan', $thing).length == 0) {
         var user = $thing.attr('data-author');
         var domain = $thing.attr('data-domain');
-        var reason = $btn.attr('data-event-action');
         var thingid = $thing.attr('data-fullname');
+        var reason = $btn.attr('data-event-action');
         var url = "";
         if (domain && (domain.toLowerCase() == 'youtube.com' || domain.toLowerCase() == 'youtu.be' || domain.toLowerCase == 'm.youtube.com')) {
             url = $thing.attr('data-url');
@@ -20,6 +23,7 @@ $('body').on('click', '.remove-button .main > a, .big-mod-buttons > span > .pret
         }
 
     }
+    
 });
 
 $('body').on('click', '.dbAutoModBan > a', function () {

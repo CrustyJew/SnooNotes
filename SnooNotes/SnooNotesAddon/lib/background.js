@@ -72,6 +72,11 @@ function initSocket() {
     snUpdate.client.refreshNoteTypes = function () {
         getModdedSubs(true);
     }
+
+    snUpdate.client.modAction = function (thingID, mod, action) {
+        console.log("Received mod action: " + thingID + " - " + mod + " - " + action);
+        sendModAction({ "thingID": thingID, "mod": mod, "action": action });
+    }
     $.connection.hub.disconnected(function () {
         console.log('Socket Disconnected');
         if (socketOpen) {
@@ -341,6 +346,15 @@ function workerInitialized(req) {
 //}
 function sendUserNotes(req) {
     chrome.tabs.sendMessage(req.worker, { "method": "receiveUserNotes", "notes": req.notes });
+}
+
+function sendModAction(req) {
+    console.log("Broadcast mod action");
+    chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": req });
+        }
+    });
 }
 
 //function sendNoteTypeJSON(json) {

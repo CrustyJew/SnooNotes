@@ -1,6 +1,8 @@
 ﻿{
   "name": "SnooNotes",
+
   "version": "0.1.2.0",
+
   "manifest_version": 2,
   "minimum_chrome_version": "26.0",
   "description": "Usernotes plus a whole lot more!",
@@ -24,7 +26,8 @@
         "data/modules/SNOptions.js",
         "data/modules/SNBanNotes.js",
         "data/modules/SNMain.js",
-        "data/modules/DBAutomod.js"
+        "data/modules/DBAutomod.js",
+        "data/modules/SNModActions.js"
       ],
       "css": [
         "data/styles/SNContainer.css",

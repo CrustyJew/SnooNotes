@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SnooNotesAPI.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/Dirtbag")]
     public class DirtbagController : ApiController
     {

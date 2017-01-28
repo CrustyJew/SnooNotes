@@ -6,11 +6,26 @@
     border-radius: 2px;
 }
 
-.dbAutoModBan a {
-    cursor: pointer;
-    text-decoration: underline;
+    .dbAutoModBan a {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .dbAutoModBan > span {
+        font-weight: bold;
+    }
+
+.SNModAction 
+{
+  font-family: Verdana;
+  color: black;
+  background-color: #F0F3FC;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 11px;
+  padding: 4px;
 }
 
-.dbAutoModBan > span{
-    font-weight:bold;
+.SNModActionWarning{
+    background-color:yellow;
 }

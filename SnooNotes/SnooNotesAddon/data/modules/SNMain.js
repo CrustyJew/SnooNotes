@@ -143,7 +143,8 @@ function getSettings() {
                 window.dispatchEvent(event);
             }
             else {
-                window.dispatchEvent(new CustomEvent("snLoggedOut"));
+                renderOptionsButton("LoggedOut");
+                //window.dispatchEvent(new CustomEvent("snLoggedOut"));
             }
             
         }
