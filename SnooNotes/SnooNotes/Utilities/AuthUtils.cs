@@ -72,7 +72,7 @@ namespace SnooNotes.Utilities {
             var modSubs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
 
             List<string> currentRoles = ( await _userManager.GetRolesAsync( ident ) ).ToList();//ident.Roles.ToList();//ident.Claims.Where( x => x.ClaimType == roleType ).Select( r => r.ClaimValue ).ToList<string>();
-            
+            List<Claim> currentClaims = ( await _userManager.GetClaimsAsync( ident ) ).ToList();
             List<Models.Subreddit> activeSubs = await subBLL.GetActiveSubs();
             //remove subs from the activeSubs list that user isn't a mod of.
             activeSubs = activeSubs.Where( sub => modSubs.Exists( modsub => modsub.Name.ToLower() == sub.SubName.ToLower() ) ).ToList();
@@ -120,7 +120,7 @@ namespace SnooNotes.Utilities {
             );
             //clean out roles that the user already has
             rolesToAdd = rolesToAdd.Where( rta => !currentRoles.Contains( rta ) ).ToList();
-            adminClaimsToAdd = adminClaimsToAdd.Where( aclaim => !user.Claims.Contains( aclaim ) ).ToList();
+            adminClaimsToAdd = adminClaimsToAdd.Where( aclaim => !currentClaims.Any(cclaim=>cclaim.Value == aclaim.Value && cclaim.Type == aclaim.Type  ) ).ToList();
             /*
             foreach ( IdentityUserRole<string> identrole in currentRoles ) {
                 string role = _roleManager.Roles.Where( r => r.Id == identrole.RoleId ).FirstOrDefault().Name.ToLower();

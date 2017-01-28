@@ -17,6 +17,7 @@ using IdentProvider.Data;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SnooNotes {
     public class Startup {
@@ -98,9 +99,12 @@ namespace SnooNotes {
                 AuthenticationScheme = "cookie",
                 //LoginPath = new PathString( "/Auth/Login" ),
                 //CookieName = "bog",
-                //ExpireTimeSpan = new TimeSpan( 10000, 0, 0, 0, 0 ), 
-                AutomaticChallenge=false,
-                //AutomaticAuthenticate = true
+                ExpireTimeSpan = new TimeSpan( 10000, 0, 0, 0, 0 ), 
+                AutomaticChallenge=false,  
+                AutomaticAuthenticate = true,
+                Events = new CookieAuthenticationEvents {
+                     OnValidatePrincipal = CookiePrincipalUpdater.ValidateAsync
+                }
             };
 
             app.UseCookieAuthentication( cookieOptions );

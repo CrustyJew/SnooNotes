@@ -33,7 +33,10 @@ namespace SnooNotes.Signalr
                 connManager.GetHubContext<SnooNotesHub>().Clients.Group(SubName.ToLower()).refreshNoteTypes();
             }
         }
-    
+        public void SendModAction( Models.ModAction action ) {
+            connManager.GetHubContext<SnooNotesHub>().Clients.Group( action.Subreddit.ToLower() ).modAction( action.ThingID, action.Mod, action.Action );
+        }
+
     }
     
 }

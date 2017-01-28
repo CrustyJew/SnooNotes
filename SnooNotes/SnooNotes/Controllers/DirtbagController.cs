@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SnooNotes.Controllers {
+    [Authorize]
     [Route( "api/Dirtbag" )]
     public class DirtbagController : Controller {
 
