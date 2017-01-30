@@ -1,5 +1,6 @@
 ﻿using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,12 @@ namespace IdentProvider {
         }
 
         // clients want to access resources (aka scopes)
-        public static IEnumerable<Client> GetClients() {
+        public static IEnumerable<Client> GetClients(IConfigurationRoot config) {
+            string[] clientSecrets = config.GetSection( "ID4_Client_Secrets" ).Get<string[]>();
+            List<Secret> secrets = new List<Secret>();
+            foreach (string secret in clientSecrets ) {
+                secrets.Add( new Secret( secret.Sha256() ) );
+            }
             // client credentials client
             return new List<Client>
             {
@@ -32,10 +38,7 @@ namespace IdentProvider {
                     ClientId = "client",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
+                    ClientSecrets = secrets,
                     AllowedScopes = { "api1" }
                 },
 
@@ -45,10 +48,7 @@ namespace IdentProvider {
                     ClientId = "ro.client",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
+                    ClientSecrets = secrets,
                     AllowedScopes = { "api1" }
                 },
 
@@ -65,13 +65,10 @@ namespace IdentProvider {
                     RefreshTokenUsage = TokenUsage.ReUse,
 
 
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
+                    ClientSecrets = secrets,
 
-                    RedirectUris = { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
-                    PostLogoutRedirectUris = { "http://localhost:44322","http://localhost:5001/" },
+                    RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
+                    PostLogoutRedirectUris = config.GetSection("ID4_Client_LogoutURIs").Get<string[]>() ,
 
                     AllowedScopes =
                     {

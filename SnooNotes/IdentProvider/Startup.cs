@@ -63,7 +63,7 @@ namespace IdentProvider
                 .AddTemporarySigningCredential()
                 .AddInMemoryIdentityResources( Config.GetIdentityResources() )
                 .AddInMemoryApiResources( Config.GetApiResources() )
-                .AddInMemoryClients( Config.GetClients() )
+                .AddInMemoryClients( Config.GetClients( Configuration ) )
                 .AddAspNetIdentity<ApplicationUser>();
         }
 

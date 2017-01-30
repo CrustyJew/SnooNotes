@@ -14,5 +14,7 @@ namespace IdentProvider.Models
         public DateTime TokenExpires { get; set; }
         public bool HasRead { get; set; }
         public bool HasWiki { get; set; }
+
+        public DateTime LastUpdatedRoles { get; set; }
     }
 }
