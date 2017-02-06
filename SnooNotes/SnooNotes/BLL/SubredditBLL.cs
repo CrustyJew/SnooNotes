@@ -14,18 +14,19 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace SnooNotes.BLL {
     public class SubredditBLL : ISubredditBLL {
-        private DAL.SubredditDAL subDAL;
+        private DAL.ISubredditDAL subDAL;
         private IMemoryCache cache;
-        private DAL.NoteTypesDAL ntDAL;
+        private DAL.INoteTypesDAL ntDAL;
         private RoleManager<IdentityRole> _roleManager;
+        private Utilities.IAuthUtils authUtils;
         //private Utilities.AuthUtils authUtils;
-        public SubredditBLL(IMemoryCache memoryCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager, 
-            ILoggerFactory logFactory, RoleManager<IdentityRole> roleManager) {
-            subDAL = new DAL.SubredditDAL(config);
+        public SubredditBLL(IMemoryCache memoryCache, DAL.ISubredditDAL subredditDAL, UserManager<ApplicationUser> userManager, 
+            DAL.INoteTypesDAL noteTypesDAL, RoleManager<IdentityRole> roleManager, Utilities.IAuthUtils authUtils) {
+            subDAL = subredditDAL;
             cache = memoryCache;
-            ntDAL = new DAL.NoteTypesDAL( config );
+            ntDAL = noteTypesDAL;
             _roleManager = roleManager;
-            //authUtils = new Utilities.AuthUtils( config, userManager, logFactory, memoryCache );
+            this.authUtils = authUtils;
         }
 
         public Task<IEnumerable<Models.Subreddit>> GetSubreddits(IEnumerable<string> subs ) {
@@ -81,7 +82,7 @@ namespace SnooNotes.BLL {
             }
         }
 
-        public async Task<object> UpdateSubreddit( Models.Subreddit sub ) {
+        public async Task<object> UpdateSubreddit( Models.Subreddit sub, ClaimsPrincipal user ) {
             if ( sub.Settings.AccessMask < 64 || sub.Settings.AccessMask <= 0 || sub.Settings.AccessMask >= 128 ) {
                 throw new Exception( "Access Mask was invalid" ) ;
             }
@@ -98,8 +99,8 @@ namespace SnooNotes.BLL {
 
                 await subDAL.UpdateSubredditSettings( sub );
 
-                //bool updated = await authUtils.UpdateModsForSubAsync( sub );
-                if ( false ) {
+                bool updated = await authUtils.UpdateModsForSubAsync( sub, user );
+                if ( updated ) {
                     return new { error = false, message = "Settings have been saved and moderator list has been updated!" };
                 }
                 else {

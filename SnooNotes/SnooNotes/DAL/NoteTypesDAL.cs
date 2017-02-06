@@ -7,7 +7,7 @@ using SnooNotes.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
-    public class NoteTypesDAL {
+    public class NoteTypesDAL : INoteTypesDAL {
         private string constring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
         private IConfigurationRoot Configuration;
         public NoteTypesDAL( IConfigurationRoot config ) {

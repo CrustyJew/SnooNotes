@@ -7,11 +7,11 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.BLL {
-    public class NoteTypesBLL {
-        private DAL.NoteTypesDAL noteTypesDAL;
+    public class NoteTypesBLL : INoteTypesBLL {
+        private DAL.INoteTypesDAL noteTypesDAL;
         private Signalr.ISnooNoteUpdates snUpdates;
-        public NoteTypesBLL(IConfigurationRoot config, Signalr.ISnooNoteUpdates snooNoteUpdates ) {
-            noteTypesDAL = new DAL.NoteTypesDAL(config);
+        public NoteTypesBLL(DAL.INoteTypesDAL noteTypesDAL, Signalr.ISnooNoteUpdates snooNoteUpdates ) {
+            this.noteTypesDAL = noteTypesDAL;
             snUpdates = snooNoteUpdates;
         }
         public async Task<Dictionary<string, IEnumerable<BasicNoteType>>> GetNoteTypesForSubs( IEnumerable<string> subs ) {

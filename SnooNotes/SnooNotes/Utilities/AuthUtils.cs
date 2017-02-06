@@ -11,21 +11,21 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace SnooNotes.Utilities {
-    public class AuthUtils {
+    public class AuthUtils : IAuthUtils {
         public static readonly string roleType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private IConfigurationRoot Configuration;
         private UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private ILogger _logger;
-        private BLL.SubredditBLL subBLL;
+        private DAL.ISubredditDAL subDAL;
         public AuthUtils( IConfigurationRoot config,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            ILoggerFactory loggerFactory, IMemoryCache memCache ) {
+            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL ) {
             _userManager = userManager;
-            _logger = loggerFactory.CreateLogger<AuthUtils>();
+            //_logger = loggerFactory.CreateLogger<AuthUtils>();
             _roleManager = roleManager;
             Configuration = config;
-            subBLL = new BLL.SubredditBLL( memCache, config, userManager, loggerFactory, roleManager );
+            subDAL = subredditDAL;
         }
         public async Task GetNewTokenAsync( ApplicationUser ident ) {
             string ClientId = Configuration["RedditClientID"];
@@ -73,7 +73,7 @@ namespace SnooNotes.Utilities {
 
             List<string> currentRoles = ( await _userManager.GetRolesAsync( ident ) ).ToList();//ident.Roles.ToList();//ident.Claims.Where( x => x.ClaimType == roleType ).Select( r => r.ClaimValue ).ToList<string>();
             List<Claim> currentClaims = ( await _userManager.GetClaimsAsync( ident ) ).ToList();
-            List<Models.Subreddit> activeSubs = await subBLL.GetActiveSubs();
+            List<Models.Subreddit> activeSubs = await subDAL.GetActiveSubs();
             //remove subs from the activeSubs list that user isn't a mod of.
             activeSubs = activeSubs.Where( sub => modSubs.Exists( modsub => modsub.Name.ToLower() == sub.SubName.ToLower() ) ).ToList();
 
@@ -218,7 +218,7 @@ namespace SnooNotes.Utilities {
             }
             if ( sub.SubName.ToLower() == Configuration["CabalSubreddit"].ToLower() ) return false;
 
-            sub = ( await subBLL.GetSubreddits( new string[] { sub.SubName } ) ).First();
+            sub = ( await subDAL.GetSubreddits( new string[] { sub.SubName } ) ).First();
             if ( sub == null ) {
                 throw new Exception( "Unrecognized subreddit" );
             }

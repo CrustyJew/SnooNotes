@@ -5,10 +5,10 @@ using SnooNotes.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.BLL {
-    public class NotesBLL {
-        private DAL.NotesDAL notesDAL;
-        public NotesBLL(IConfigurationRoot config) {
-            notesDAL = new DAL.NotesDAL(config);
+    public class NotesBLL : INotesBLL {
+        private DAL.INotesDAL notesDAL;
+        public NotesBLL(DAL.INotesDAL notesDAL) {
+            this.notesDAL = notesDAL; ;
         }
 
         public Task<IEnumerable<string>> GetUsersWithNotes( IEnumerable<string> subnames ) {

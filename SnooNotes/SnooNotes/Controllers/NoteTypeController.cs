@@ -14,9 +14,9 @@ namespace SnooNotes.Controllers
     [Route("restapi/[controller]")]
     public class NoteTypeController : Controller
     {
-        private BLL.NoteTypesBLL noteTypeBLL;
-        public NoteTypeController(IConfigurationRoot config, Signalr.ISnooNoteUpdates snooNoteUpdates) {
-            noteTypeBLL = new BLL.NoteTypesBLL(config, snooNoteUpdates);
+        private BLL.INoteTypesBLL noteTypeBLL;
+        public NoteTypeController(BLL.INoteTypesBLL noteTypesBLL) {
+            noteTypeBLL = noteTypesBLL;
         }
         [HttpGet]
         // GET: api/NoteType

@@ -5,7 +5,7 @@ using Google.Apis.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
-    public class YouTubeDAL {
+    public class YouTubeDAL : IYouTubeDAL {
         public string YouTubeAPIKey { get; set; }
 
         public YouTubeDAL(IConfigurationRoot config ) {

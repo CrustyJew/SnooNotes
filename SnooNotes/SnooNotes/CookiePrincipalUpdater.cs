@@ -26,7 +26,7 @@ namespace SnooNotes {
                 RoleManager<IdentityRole> roleManager = context.HttpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
                 ILoggerFactory logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
                 IMemoryCache cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
-                Utilities.AuthUtils authutils = new Utilities.AuthUtils( config, userManager, roleManager, logger, cache );
+                Utilities.IAuthUtils authutils = context.HttpContext.RequestServices.GetRequiredService<Utilities.IAuthUtils>();
                 var user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
                 await authutils.UpdateModeratedSubredditsAsync( user, context.Principal );
                 var newPrincipal = await signinManager.CreateUserPrincipalAsync( user );

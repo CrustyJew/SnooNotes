@@ -11,11 +11,11 @@ namespace SnooNotes.Controllers {
     [Authorize]
     [Route("api/[controller]")]
     public class NoteController : Controller {
-        private BLL.NotesBLL notesBLL;
+        private BLL.INotesBLL notesBLL;
         private IConfigurationRoot Configuration;
         private Signalr.ISnooNoteUpdates snUpdates;
-        public NoteController( IConfigurationRoot config,Signalr.ISnooNoteUpdates snooNoteUpdates) {
-            notesBLL = new BLL.NotesBLL(config);
+        public NoteController( IConfigurationRoot config, BLL.INotesBLL notesBLL, Signalr.ISnooNoteUpdates snooNoteUpdates) {
+            this.notesBLL = notesBLL;
             Configuration = config;
             snUpdates = snooNoteUpdates;
         }

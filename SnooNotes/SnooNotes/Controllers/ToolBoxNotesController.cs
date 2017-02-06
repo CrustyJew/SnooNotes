@@ -20,13 +20,12 @@ namespace SnooNotes.Controllers {
     public class ToolBoxNotesController : Controller {
 
         private UserManager<ApplicationUser> userManager;
-        private DAL.NotesDAL notesDAL;
-        private Utilities.AuthUtils authUtils;
-        public ToolBoxNotesController(UserManager<ApplicationUser> userManager, IConfigurationRoot config, 
-            ILoggerFactory loggerFactory, IMemoryCache memCache, RoleManager<IdentityRole> roleManager ) {
+        private DAL.INotesDAL notesDAL;
+        private Utilities.IAuthUtils authUtils;
+        public ToolBoxNotesController(UserManager<ApplicationUser> userManager, DAL.INotesDAL notesDAL, Utilities.IAuthUtils authUtils ) {
             this.userManager = userManager;
-            notesDAL = new DAL.NotesDAL( config );
-            authUtils = new Utilities.AuthUtils( config, userManager, roleManager, loggerFactory, memCache );
+            this.notesDAL = notesDAL;
+            this.authUtils = authUtils;
         }
         [HttpGet]
         // GET: api/ToolBoxNotes

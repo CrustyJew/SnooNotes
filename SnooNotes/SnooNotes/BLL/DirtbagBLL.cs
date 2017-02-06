@@ -6,17 +6,17 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.BLL {
-    public class DirtbagBLL {
+    public class DirtbagBLL : IDirtbagBLL {
         private IMemoryCache cache;
         private const string CACHE_PREFIX = "BotSettings:";
-        private DAL.DirtbagDAL dirtbag;
-        private DAL.SubredditDAL subDAL;
-        private DAL.YouTubeDAL ytDAL;
-        public DirtbagBLL(IMemoryCache memoryCache, IConfigurationRoot config ) {
+        private DAL.IDirtbagDAL dirtbag;
+        private DAL.ISubredditDAL subDAL;
+        private DAL.IYouTubeDAL ytDAL;
+        public DirtbagBLL(IMemoryCache memoryCache, DAL.IDirtbagDAL dirtbagDAL, DAL.ISubredditDAL subredditDAL, DAL.IYouTubeDAL youTubeDAL) {
             cache = memoryCache;
-            dirtbag = new DAL.DirtbagDAL();
-            subDAL = new DAL.SubredditDAL( config );
-            ytDAL = new DAL.YouTubeDAL( config );
+            dirtbag = dirtbagDAL;
+            subDAL = subredditDAL;
+            ytDAL = youTubeDAL;
         }
 
         public async Task<bool> SaveSettings(Models.DirtbagSettings settings, string subName ) {

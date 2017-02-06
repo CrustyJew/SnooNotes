@@ -16,19 +16,19 @@ namespace SnooNotes.Controllers {
     [Authorize]
     [Route( "api/[controller]" )]
     public class AccountController : Controller {
-        private BLL.SubredditBLL subBLL;
+        private BLL.ISubredditBLL subBLL;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
-        private Utilities.AuthUtils authUtils;
+        private Utilities.IAuthUtils authUtils;
         public AccountController( UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            ILoggerFactory loggerFactory, IConfigurationRoot config, 
+            ILoggerFactory loggerFactory, BLL.ISubredditBLL subredditBLL, Utilities.IAuthUtils authUtils,
             IMemoryCache memoryCache, RoleManager<IdentityRole> roleManager ) {
-            subBLL = new BLL.SubredditBLL(memoryCache,config,userManager,loggerFactory, roleManager);
+            subBLL = subredditBLL;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
-            authUtils = new Utilities.AuthUtils( config, userManager,roleManager, loggerFactory, memoryCache );
+            this.authUtils = authUtils;
         }
 
         [HttpGet("[action]")]

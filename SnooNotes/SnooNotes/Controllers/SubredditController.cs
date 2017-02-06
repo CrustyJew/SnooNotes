@@ -17,10 +17,9 @@ namespace SnooNotes.Controllers {
     [Route("restapi/[controller]")]
     public class SubredditController : Controller
     {
-        private BLL.SubredditBLL subBLL;
-        public SubredditController(IMemoryCache memCache, IConfigurationRoot config, UserManager<ApplicationUser> userManager
-            , ILoggerFactory logFactory, RoleManager<IdentityRole> roleManager) {
-            subBLL = new BLL.SubredditBLL(memCache,config,userManager,logFactory,roleManager);
+        private BLL.ISubredditBLL subBLL;
+        public SubredditController(BLL.ISubredditBLL subredditBLL) {
+            subBLL = subredditBLL;
         }
         [HttpGet("", Name ="GetAll")]
         // GET: api/Subreddit
@@ -68,7 +67,7 @@ namespace SnooNotes.Controllers {
         {
             sub.SubName = id;
             if ( User.HasClaim( "urn:snoonotes:admin", sub.SubName.ToLower() ) ) {
-                return subBLL.UpdateSubreddit( sub );
+                return subBLL.UpdateSubreddit( sub, User );
             }
             else {
                 throw new UnauthorizedAccessException( "You are not a moderator of that subreddit, or you don't have full permissions!" );

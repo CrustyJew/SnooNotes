@@ -11,9 +11,9 @@ namespace SnooNotes.Controllers {
     [Route( "api/Dirtbag" )]
     public class DirtbagController : Controller {
 
-        private BLL.DirtbagBLL dirtbag;
-        public DirtbagController(IMemoryCache memCache, IConfigurationRoot config ) {
-            dirtbag = new BLL.DirtbagBLL( memCache, config );
+        private BLL.IDirtbagBLL dirtbag;
+        public DirtbagController(BLL.IDirtbagBLL dirtbagBLL ) {
+            dirtbag = dirtbagBLL;
         }
         [HttpPost( "{subname}/TestConnection" )]
         public async Task<bool> TestConnection( Models.DirtbagSettings settings, string subname ) {

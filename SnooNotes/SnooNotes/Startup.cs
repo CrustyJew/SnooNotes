@@ -79,7 +79,16 @@ namespace SnooNotes {
             } );
 
             services.AddSingleton<Signalr.ISnooNoteUpdates, Signalr.SnooNoteUpdates>();
-
+            services.AddScoped<DAL.IDirtbagDAL, DAL.DirtbagDAL>();
+            services.AddScoped<DAL.INotesDAL, DAL.NotesDAL>();
+            services.AddScoped<DAL.INoteTypesDAL, DAL.NoteTypesDAL>();
+            services.AddScoped<DAL.ISubredditDAL, DAL.SubredditDAL>();
+            services.AddScoped<DAL.IYouTubeDAL, DAL.YouTubeDAL>();
+            services.AddTransient<Utilities.IAuthUtils, Utilities.AuthUtils>();
+            services.AddTransient<BLL.IDirtbagBLL, BLL.DirtbagBLL>();
+            services.AddTransient<BLL.INotesBLL, BLL.NotesBLL>();
+            services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();
+            services.AddTransient<BLL.ISubredditBLL, BLL.SubredditBLL>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,7 +124,7 @@ namespace SnooNotes {
                 AuthenticationScheme = "oidc",
                 SignInScheme = "cookie",
 
-                Authority = "http://localhost:5000/Auth",
+                Authority = Configuration["OIDC_Authority"],//"http://localhost:5000/Auth",
                 RequireHttpsMetadata = false,
 
                 ClientId = "mvc",

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
-    public class SubredditDAL {
+    public class SubredditDAL : ISubredditDAL {
         private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
         private IConfigurationRoot Configuration;
         public SubredditDAL( IConfigurationRoot config ) {
