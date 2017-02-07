@@ -31,7 +31,7 @@ namespace SnooNotes.Controllers {
             this.authUtils = authUtils;
         }
 
-        [HttpGet("[action]")]
+        [HttpGet( "[action]" )]
         public bool IsLoggedIn() {
             return true;
         }
@@ -52,7 +52,7 @@ namespace SnooNotes.Controllers {
 
         [HttpGet( "[action]" )]
         public async Task<IEnumerable<string>> GetInactiveModeratedSubreddits() {
-            
+
             var ident = await _userManager.FindByNameAsync( User.Identity.Name );
             if ( ident.TokenExpires < DateTime.UtcNow ) {
                 await authUtils.GetNewTokenAsync( ident );
@@ -69,19 +69,18 @@ namespace SnooNotes.Controllers {
         }
         [HttpGet( "[action]" )]
         public async Task<List<string>> UpdateModeratedSubreddits() {
-            
+
             var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-                await authUtils.UpdateModeratedSubredditsAsync( user, User );
+            await authUtils.UpdateModeratedSubredditsAsync( user, User );
+            user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-                await _userManager.UpdateAsync( user );
-            
-            await _signInManager.SignInAsync(user,true, authenticationMethod:"cookie");
+            await _signInManager.SignInAsync( user, true, authenticationMethod: "cookie" );
             return user.Claims.Where( c => c.ClaimType == ( User.Identity as ClaimsIdentity ).RoleClaimType ).ToList().Select( c => c.ClaimValue ).ToList<string>();
 
         }
 
-        
+
 
     }
 }

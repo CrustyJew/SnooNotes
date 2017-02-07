@@ -29,6 +29,7 @@ namespace SnooNotes {
                 Utilities.IAuthUtils authutils = context.HttpContext.RequestServices.GetRequiredService<Utilities.IAuthUtils>();
                 var user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
                 await authutils.UpdateModeratedSubredditsAsync( user, context.Principal );
+                user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
                 var newPrincipal = await signinManager.CreateUserPrincipalAsync( user );
                 ( (ClaimsIdentity)newPrincipal.Identity).AddClaim( new Claim( "lastupdated", DateTime.UtcNow.ToString() ) );
                 context.ReplacePrincipal( newPrincipal );

@@ -70,7 +70,7 @@ namespace SnooNotes.BLL {
                 await subDAL.UpdateSubredditSettings( newSub );
 
                 await _roleManager.CreateAsync( new IdentityRole( newSub.SubName.ToLower() ) );
-                await _roleManager.CreateAsync( new IdentityRole( newSub.SubName.ToLower() + ":admin" ) );
+                //await _roleManager.CreateAsync( new IdentityRole( newSub.SubName.ToLower() + ":admin" ) );
 
                 ucache.Value += 1;
                 icache.Value += 1;
