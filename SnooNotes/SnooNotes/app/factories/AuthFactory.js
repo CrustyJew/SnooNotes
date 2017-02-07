@@ -49,18 +49,14 @@
         return deferred.promise;
     }
     exports.logout = function () {
-        $http.post('Auth/Logout').then(
-        function () {
+        
             localStorageService.remove('currentUser');
             exports.currentUser.userName = "";
             exports.currentUser.hasRead = false;
             exports.currentUser.hasWikiRead = false;
             exports.currentUser.isAuth = false;
-        },
-        function () {
-            //todo catch dat error
-        })
-
+        
+            $location.url("/Logout");
 
         //$cookies.remove('bog');
     }

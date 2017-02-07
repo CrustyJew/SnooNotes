@@ -11,6 +11,10 @@ using Microsoft.Extensions.Logging;
 using IdentProvider.Models;
 using IdentProvider.Models.AccountViewModels;
 using IdentProvider.Services;
+using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace IdentProvider.Controllers
 {
@@ -22,19 +26,24 @@ namespace IdentProvider.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly AccountService _account;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IIdentityServerInteractionService interaction,
+            IHttpContextAccessor httpContext,
+            IClientStore clientStore )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _account = new AccountService( interaction, httpContext, clientStore );
         }
 
         //
@@ -52,14 +61,14 @@ namespace IdentProvider.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginInputModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberLogin, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
@@ -67,7 +76,7 @@ namespace IdentProvider.Controllers
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberLogin } );
                 }
                 if (result.IsLockedOut)
                 {
@@ -125,16 +134,48 @@ namespace IdentProvider.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Logout( string logoutId ) {
+            var vm = await _account.BuildLogoutViewModelAsync( logoutId );
 
-        //
-        // POST: /Account/LogOff
+            if ( vm.ShowLogoutPrompt == false ) {
+                // no need to show prompt
+                return await Logout( vm );
+            }
+
+            return View( vm );
+        }
+        /// <summary>
+        /// Handle logout page postback
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOff()
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout(LogoutInputModel model)
         {
+            var vm = await _account.BuildLoggedOutViewModelAsync(model.LogoutId);
+            if (vm.TriggerExternalSignout)
+            {
+                string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+                try
+                {
+                    // hack: try/catch to handle social providers that throw
+                    await HttpContext.Authentication.SignOutAsync(vm.ExternalAuthenticationScheme,
+                        new AuthenticationProperties { RedirectUri = url });
+                }
+                catch (NotSupportedException) // this is for the external providers that don't have signout
+                {
+                }
+                catch (InvalidOperationException) // this is for Windows/Negotiate
+                {
+                }
+            }
+
+            // delete authentication cookie
             await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+
+            return View("LoggedOut", vm);
         }
 
         //

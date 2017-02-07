@@ -11,9 +11,10 @@
         AuthFactory.logout();
     }
     $scope.login = function () {
-        var loginModal = $uibModal.open({
-            templateUrl: "loginModal.html",
-            controller: 'AuthCtrl'
-        });
+        //var loginModal = $uibModal.open({
+        //    templateUrl: "loginModal.html",
+        //    controller: 'AuthCtrl'
+        //});
+        $location.url("/signin")
     }
 }

@@ -25,7 +25,7 @@
     "Google.Apis.YouTube.v3": "1.20.0.701",
     "Microsoft.AspNetCore.SignalR.Server": "0.2.0-*",
     "Microsoft.AspNetCore.WebSockets": "0.2.0-*",
-    "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.1"
+    "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.1.0"
   },
 
   "tools": {

@@ -128,7 +128,7 @@ namespace SnooNotes {
                 RequireHttpsMetadata = false,
 
                 ClientId = "mvc",
-                ClientSecret = "secret",
+                ClientSecret = "secret", PostLogoutRedirectUri = "/",
 
                 ResponseType = "code id_token",
                 Scope = { "api1", "offline_access" },

@@ -24,7 +24,7 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "IdentityServer4": "1.0.2",
+    "IdentityServer4": "1.1.0",
     "IdentityServer4.AspNetIdentity": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.1.0",
@@ -44,7 +44,7 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "AspNet.Security.OAuth.Reddit": "1.0.0-beta2-final",
-    "RedditSharp": "2.0.0-CI00004"
+    "RedditSharp": "2.0.0-CI00006"
   },
 
   "tools": {

@@ -14,19 +14,15 @@ using IdentProvider.Models;
 using IdentProvider.Services;
 using AspNet.Security.OAuth.Reddit;
 
-namespace IdentProvider
-{
-    public class Startup
-    {
-        public Startup(IHostingEnvironment env)
-        {
+namespace IdentProvider {
+    public class Startup {
+        public Startup( IHostingEnvironment env ) {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .SetBasePath( env.ContentRootPath )
+                .AddJsonFile( "appsettings.json", optional: true, reloadOnChange: true )
+                .AddJsonFile( $"appsettings.{env.EnvironmentName}.json", optional: true );
 
-            if (env.IsDevelopment())
-            {
+            if ( env.IsDevelopment() ) {
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets();
             }
@@ -38,11 +34,10 @@ namespace IdentProvider
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices( IServiceCollection services ) {
             // Add framework services.
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>( options =>
+                 options.UseSqlServer( Configuration.GetConnectionString( "DefaultConnection" ) ) );
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -59,7 +54,9 @@ namespace IdentProvider
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
-            services.AddIdentityServer()
+            services.AddIdentityServer( options =>
+                     options.Cors.CorsPaths.Add( Configuration["CorsPath"] )
+                )
                 .AddTemporarySigningCredential()
                 .AddInMemoryIdentityResources( Config.GetIdentityResources() )
                 .AddInMemoryApiResources( Config.GetApiResources() )
@@ -68,20 +65,17 @@ namespace IdentProvider
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+        public void Configure( IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory ) {
+            loggerFactory.AddConsole( Configuration.GetSection( "Logging" ) );
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
+            if ( env.IsDevelopment() ) {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
+            else {
+                app.UseExceptionHandler( "/Home/Error" );
             }
 
             app.UseStaticFiles();
@@ -96,22 +90,23 @@ namespace IdentProvider
                 AuthenticationScheme = "Reddit",
                 ClientId = Configuration["RedditClientID"],
                 ClientSecret = Configuration["RedditClientSecret"],
-                CallbackPath = "/signin-reddit", SaveTokens = true,
-                Scope = { "identity", "mysubreddits" }, Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents() {
-                     OnTicketReceived = ( t => {
-                         return Task.FromResult( 0 );
-                     }
-                     
+                CallbackPath = "/signin-reddit",
+                SaveTokens = true,
+                Scope = { "identity", "mysubreddits" },
+                Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents() {
+                    OnTicketReceived = ( t => {
+                        return Task.FromResult( 0 );
+                    }
+
                      )
                 }
             } );
 
-            app.UseMvc(routes =>
-            {
+            app.UseMvc( routes => {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+                    template: "{controller=Home}/{action=Index}/{id?}" );
+            } );
         }
     }
 }
