@@ -1,4 +1,4 @@
-﻿module.exports = /*@ngInject*/ function ($scope, AuthFactory, $uibModal, SubFactory, $location, $stateParams, $state) {
+﻿module.exports = /*@ngInject*/ function ($scope, AuthFactory, $uibModal, SubFactory, $window, $stateParams, $state) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.curSub = $stateParams.subName;
 
@@ -15,6 +15,6 @@
         //    templateUrl: "loginModal.html",
         //    controller: 'AuthCtrl'
         //});
-        $location.url("/signin")
+        $window.location.href = "/signin"
     }
 }

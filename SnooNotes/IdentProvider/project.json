@@ -44,13 +44,14 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "AspNet.Security.OAuth.Reddit": "1.0.0-beta2-final",
-    "RedditSharp": "2.0.0-CI00006"
+    "RedditSharp": "2.0.0-CI00006",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final"
   },
 
   "tools": {
     "BundlerMinifier.Core": "2.0.238",
     "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final",
     "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final",
     "Microsoft.Extensions.SecretManager.Tools": "1.0.0-preview2-final",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
@@ -59,7 +60,7 @@
         "portable-net45+win8"
       ]
     }
-  },
+  }, 
 
   "frameworks": {
     "netcoreapp1.1": {

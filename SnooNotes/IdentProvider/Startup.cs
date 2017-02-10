@@ -51,11 +51,13 @@ namespace IdentProvider {
                 options.Cookies.ApplicationCookie.SlidingExpiration = true;
             } );
             // Add application services.
+
+            services.AddSingleton<IConfigurationRoot>( Configuration );
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-
+            services.AddCors( opt => opt.AddPolicy( "AllowAll", pol=>pol.AllowAnyHeader().AllowAnyOrigin()) );
             services.AddIdentityServer( options =>
-                     options.Cors.CorsPaths.Add( Configuration["CorsPath"] )
+                     options.Cors.CorsPolicyName ="AllowAll"
                 )
                 .AddTemporarySigningCredential()
                 .AddInMemoryIdentityResources( Config.GetIdentityResources() )
@@ -77,7 +79,7 @@ namespace IdentProvider {
             else {
                 app.UseExceptionHandler( "/Home/Error" );
             }
-
+            app.UseCors( "AllowAll" );
             app.UseStaticFiles();
 
             app.UseIdentity();

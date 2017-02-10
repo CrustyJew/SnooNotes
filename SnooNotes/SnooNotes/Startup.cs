@@ -128,7 +128,9 @@ namespace SnooNotes {
                 RequireHttpsMetadata = false,
 
                 ClientId = "mvc",
-                ClientSecret = "secret", PostLogoutRedirectUri = "/",
+                ClientSecret = Configuration["OIDC_ClientSecret"],
+
+                PostLogoutRedirectUri = "/",
 
                 ResponseType = "code id_token",
                 Scope = { "api1", "offline_access" },
@@ -137,7 +139,7 @@ namespace SnooNotes {
                     NameClaimType = "name",
                     RoleClaimType = "role"
                 },
-                SaveTokens = true, AutomaticAuthenticate = false
+                SaveTokens = false, AutomaticAuthenticate = false, AutomaticChallenge = false
             } );
 
             app.UseDefaultFiles();

@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Construction Underway";
+}
+<h1>Panic!</h1>
+
+<h2>Okay, don't really.. </h2>
+    
+<p>The login procedures are changing and /u/meepster23 is breaking shit per usual so you are going to have to go to <a href="https://snoonotes.com">https://snoonotes.com</a> in a new window to log in.</p>
+
+<p>Sorry about that.</p>
+
+<p>Not real sorry.. But a little at least..</p>
+
+<script type="text/javascript">
+    window.setTimeout(checkLogIn, 5000);
+
+    function checkLogIn() {
+        $.getJSON("../api/Account/IsLoggedIn")
+       .then(function (d) {
+           window.parent.postMessage({ LoggingIn: true }, '*');
+       }, function (e) {
+           setTimeout(checkLogIn, 2000);
+       });
+
+    }
+</script>

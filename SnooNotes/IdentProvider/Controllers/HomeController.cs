@@ -31,5 +31,10 @@ namespace IdentProvider.Controllers
         {
             return View();
         }
+
+        [Route("Login")]
+        public IActionResult Login() {
+            return View();
+        }
     }
 }
