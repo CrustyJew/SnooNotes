@@ -82,10 +82,10 @@ namespace SnooNotes.Utilities {
 
             //List<IdentityUserClaim<string>> currentAdminRoles = ident.Claims.Where( c => c.ClaimType == ident. ).ToList();
             List<string> rolesToAdd = new List<string>();
-            List<Claim> adminClaimsToAdd = new List<Claim>();
+            List<Claim> claimsToAdd = new List<Claim>();
             List<string> rolesToRemove = new List<string>();
-            List<Claim> adminClaimsToRemove = new List<Claim>();
-            
+            List<Claim> claimsToRemove = new List<Claim>();
+
             rolesToAdd.AddRange(
                 activeSubs.Where( sub =>
                     modSubs.Exists( modsub =>
@@ -94,13 +94,13 @@ namespace SnooNotes.Utilities {
                     )
                 ).Select( sub => sub.SubName.ToLower() )
             );
-            adminClaimsToAdd.AddRange(
+            claimsToAdd.AddRange(
                 activeSubs.Where( sub =>
                     modSubs.Exists( modsub =>
                           modsub.Name.ToLower() == sub.SubName.ToLower()
                           && modsub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All )
                     )
-                ).Select( sub => new Claim("urn:snoonotes:admin",sub.SubName.ToLower() ))
+                ).Select( sub => new Claim( "urn:snoonotes:admin", sub.SubName.ToLower() ) )
             );
             //rolesToRemove = set of current roles - roles in rolesToAdd
             rolesToRemove.AddRange(
@@ -109,10 +109,10 @@ namespace SnooNotes.Utilities {
                 )
             );
 
-            adminClaimsToRemove.AddRange(
+            claimsToRemove.AddRange(
                 ident.Claims.Where( curClaim =>
                      curClaim.ClaimType == "urn:snoonotes:admin" &&
-                     !adminClaimsToAdd.Exists( addClaim =>
+                     !claimsToAdd.Exists( addClaim =>
                           addClaim.Value == curClaim.ClaimValue
                           && addClaim.Type == curClaim.ClaimType
                      )
@@ -120,12 +120,33 @@ namespace SnooNotes.Utilities {
             );
             //clean out roles that the user already has
             rolesToAdd = rolesToAdd.Where( rta => !currentRoles.Contains( rta ) ).ToList();
-            adminClaimsToAdd = adminClaimsToAdd.Where( aclaim => !currentClaims.Any(cclaim=>cclaim.Value == aclaim.Value && cclaim.Type == aclaim.Type  ) ).ToList();
+            claimsToAdd = claimsToAdd.Where( aclaim => !currentClaims.Any( cclaim => cclaim.Value == aclaim.Value && cclaim.Type == aclaim.Type ) ).ToList();
 
+            string cabalUsername = Configuration["CabalUsername"];
+            ApplicationUser cabalUser = await _userManager.FindByNameAsync( cabalUsername );
+            if ( cabalUser != null && !string.IsNullOrWhiteSpace( cabalUsername) && !string.IsNullOrWhiteSpace(cabalSubName)) {
+               
+                if ( cabalUser.TokenExpires >= DateTime.UtcNow.AddMinutes( 5 ) ) {
+                    await GetNewTokenAsync( cabalUser );
+                }
+                RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit( new RedditSharp.WebAgent( ident.AccessToken ), true );
+                var cabalSub = await cabalReddit.GetSubredditAsync( cabalSubName );
+                bool hasCabal = cabalSub.Contributors.Any( c => c.Name.ToLower() == ident.UserName.ToLower() );
+                if ( hasCabal && !currentClaims.Any( c => c.Type == "uri:snoonotes:cabal" && c.Value == "true" ) ) {
+                    claimsToAdd.Add( new Claim( "uri:snoonotes:cabal", "true" ) );
+                }
+                else if ( !hasCabal && !currentClaims.Any( c => c.Type == "uri:snoonotes:cabal" && c.Value == "true" ) ) {
+                    claimsToRemove.Add( new Claim( "uri:snoonotes:cabal", "true" ) );
+                }
+            }
+            
             await _userManager.RemoveFromRolesAsync( ident, rolesToRemove );
-            await _userManager.RemoveClaimsAsync( ident, adminClaimsToRemove );
-            await _userManager.AddClaimsAsync( ident, adminClaimsToAdd );
+            await _userManager.RemoveClaimsAsync( ident, claimsToRemove );
+            await _userManager.AddClaimsAsync( ident, claimsToAdd );
             await _userManager.AddToRolesAsync( ident, rolesToAdd );
+
+            ident.LastUpdatedRoles = DateTime.UtcNow;
+            await _userManager.UpdateAsync( ident );
         }
 
         public async Task<bool> UpdateModsForSubAsync( Models.Subreddit sub, ClaimsPrincipal user ) {
@@ -147,13 +168,14 @@ namespace SnooNotes.Utilities {
             //var y = userManager.Users.Select(u => u.Claims);
             var ident = await _userManager.FindByNameAsync( user.Identity.Name );
 
-            if ( ident.TokenExpires < DateTime.UtcNow ) {
-                await GetNewTokenAsync( ident );
-                await _userManager.UpdateAsync( ident );
-            }
+            
             ClaimsIdentity curuser = user.Identity as ClaimsIdentity;
             RedditSharp.WebAgent agent;
-            if ( curuser.HasClaim( "urn:snoonotes:scope", "read" ) ) {
+            if ( ident.HasRead ) {
+                if ( ident.TokenExpires < DateTime.UtcNow ) {
+                    await GetNewTokenAsync( ident );
+                    await _userManager.UpdateAsync( ident );
+                }
                 agent = new RedditSharp.WebAgent( ident.AccessToken );
             }
             else {
@@ -171,9 +193,9 @@ namespace SnooNotes.Utilities {
             // get list of users to remove perms from
             var usersToRemove = usersWithAccess.Where( u => !modsWithAccess.Select( m => m.Name.ToLower() ).Contains( u.UserName.ToLower() ) ).ToList();
             foreach ( var appuser in usersToRemove ) {
-                await _userManager.RemoveFromRoleAsync( appuser,  subName );
+                await _userManager.RemoveFromRoleAsync( appuser, subName );
                 //if ( appuser.Claims.Where( c => c.ClaimType == "urn:snoonotes:admin" && c.ClaimValue == subName ).Count() > 0 ) {
-                    await _userManager.RemoveClaimAsync( appuser, new Claim( "urn:snoonotes:admin", subName  ) );
+                await _userManager.RemoveClaimAsync( appuser, new Claim( "urn:snoonotes:admin", subName ) );
 
                 //}
             }
@@ -185,7 +207,7 @@ namespace SnooNotes.Utilities {
                     var u = await _userManager.FindByNameAsync( appuser.Name );
                     if ( u != null ) {
 
-                        
+
                         //assume it won't be adding a duplicate *holds breath*
                         if ( appuser.Permissions.HasFlag( RedditSharp.ModeratorPermission.All ) ) {
                             await _userManager.AddToRoleAsync( u, subName );
@@ -205,7 +227,7 @@ namespace SnooNotes.Utilities {
             usersWithAccess = usersWithAccess.Union( await _userManager.GetUsersForClaimAsync( new Claim( "urn:snoonotes:admin", subName ) ) ).ToList();
 
             var usersToCheckUpdates = usersWithAccess.Where( u => modsWithAccess.Select( m => m.Name.ToLower() ).Contains( u.UserName.ToLower() ) ).ToList();
-            foreach (var appuser in usersToCheckUpdates ) {
+            foreach ( var appuser in usersToCheckUpdates ) {
                 var access = modsWithAccess.Where( m => m.Name.ToLower() == appuser.UserName.ToLower() ).Single().Permissions;
                 if ( access == RedditSharp.ModeratorPermission.All ) {
                     if ( !appuser.Claims.Any( c => c.ClaimType == "urn:snoonotes:admin" && c.ClaimValue == subName ) ) {
@@ -215,7 +237,7 @@ namespace SnooNotes.Utilities {
                 else {
                     //if( appuser.Claims.Any( c => c.ClaimType == "urn:snoonotes:admin" && c.ClaimValue == subName ) ) {
 
-                        await _userManager.RemoveClaimAsync( appuser, new Claim( "urn:snoonotes:admin", subName ) );
+                    await _userManager.RemoveClaimAsync( appuser, new Claim( "urn:snoonotes:admin", subName ) );
                     //}
                 }
             }

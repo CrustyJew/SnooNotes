@@ -73,6 +73,7 @@ namespace SnooNotes.Controllers {
             var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
             await authUtils.UpdateModeratedSubredditsAsync( user, User );
+            //search again for user to make sure it pulls claims correctly especially if using claims attached to a specific Role
             user = await _userManager.FindByNameAsync( User.Identity.Name );
 
             await _signInManager.SignInAsync( user, true, authenticationMethod: "cookie" );
