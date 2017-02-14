@@ -112,7 +112,7 @@ namespace SnooNotes {
                 AutomaticChallenge=false,  
                 AutomaticAuthenticate = true,
                 Events = new CookieAuthenticationEvents {
-                     OnValidatePrincipal = CookiePrincipalUpdater.ValidateAsync
+                     OnValidatePrincipal = CookiePrincipalUpdater.ValidateAsync, OnSigningIn = CookiePrincipalUpdater.CookieSignin
                 }
             };
 

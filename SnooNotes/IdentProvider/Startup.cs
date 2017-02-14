@@ -55,9 +55,10 @@ namespace IdentProvider {
             services.AddSingleton<IConfigurationRoot>( Configuration );
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddCors( opt => opt.AddPolicy( "AllowAll", pol=>pol.AllowAnyHeader().AllowAnyOrigin()) );
-            services.AddIdentityServer( options =>
-                     options.Cors.CorsPolicyName ="AllowAll"
+            services.AddCors( opt => opt.AddPolicy( "AllowAll", pol => pol.AllowAnyHeader().AllowAnyOrigin() ) );
+            services.AddIdentityServer( options => {
+                options.Cors.CorsPolicyName = "AllowAll";
+            }
                 )
                 .AddTemporarySigningCredential()
                 .AddInMemoryIdentityResources( Config.GetIdentityResources() )
