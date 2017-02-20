@@ -74,7 +74,7 @@ namespace IdentProvider {
                         IdentityServerConstants.StandardScopes.Profile,
                         "api1"
                     },
-                    AllowOfflineAccess = true
+                    AllowOfflineAccess = true 
                 }
             };
         }
