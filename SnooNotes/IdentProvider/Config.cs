@@ -64,7 +64,6 @@ namespace IdentProvider {
                     UpdateAccessTokenClaimsOnRefresh = true,
                     RefreshTokenUsage = TokenUsage.ReUse,
 
-
                     ClientSecrets = secrets,
 
                     RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },

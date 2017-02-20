@@ -1,4 +1,4 @@
-﻿using IdentProvider.Models;
+﻿using SnooNotes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using IdentProvider.Models;
+using SnooNotes.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
@@ -65,14 +65,14 @@ namespace SnooNotes.Controllers {
             List<string> activeSubNames = activeSubs.Select( s => s.SubName.ToLower() ).ToList();
 
             var subs = rd.User.ModeratorSubreddits.Where( s => s.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !activeSubNames.Contains( s.Name.ToLower() ) ).Select( s => s.Name );
-            return subs.OrderBy( s => s );
+            return subs.OrderBy( s => s ).ToEnumerable();
         }
         [HttpGet( "[action]" )]
         public async Task<List<string>> UpdateModeratedSubreddits() {
 
             var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-            await authUtils.UpdateModeratedSubredditsAsync( user, User );
+            await authUtils.UpdateModeratedSubredditsAsync( user );
             //search again for user to make sure it pulls claims correctly especially if using claims attached to a specific Role
             user = await _userManager.FindByNameAsync( User.Identity.Name );
 

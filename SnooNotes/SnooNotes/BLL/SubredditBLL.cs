@@ -8,7 +8,7 @@ using System.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
-using IdentProvider.Models;
+using SnooNotes.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 

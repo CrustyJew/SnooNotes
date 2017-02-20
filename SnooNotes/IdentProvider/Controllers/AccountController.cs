@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using IdentProvider.Models;
+using SnooNotes.Models;
 using IdentProvider.Models.AccountViewModels;
 using IdentProvider.Services;
 using IdentityServer4.Services;

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using IdentProvider.Data;
-using IdentProvider.Models;
+using SnooNotes.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Security.Claims;
@@ -55,8 +55,6 @@ namespace SnooNotesTests.Utilities {
                 Settings = new SnooNotes.Models.SubredditSettings { AccessMask = 64, NoteTypes = null },
                 SubName = "GooAway", SubredditID = 1
             } };
-            var claimsIdent = new ClaimsIdentity( "mock" );
-            claimsIdent.AddClaim( new Claim( claimsIdent.NameClaimType, testUser.UserName ) );
 
             var um = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             await serviceProvider.GetRequiredService<RoleManager<IdentityRole>>().CreateAsync( new IdentityRole( "gooaway" ) );
@@ -65,10 +63,9 @@ namespace SnooNotesTests.Utilities {
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
             var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
-            var userPrincipal = new ClaimsPrincipal( claimsIdent );
 
             //act
-            await util.UpdateModeratedSubredditsAsync( testUser, userPrincipal );
+            await util.UpdateModeratedSubredditsAsync( testUser );
 
             //assert
             var endUser = await um.FindByNameAsync( testUser.UserName );
@@ -93,8 +90,6 @@ namespace SnooNotesTests.Utilities {
                 Settings = new SnooNotes.Models.SubredditSettings { AccessMask = 64 + (int)RedditSharp.ModeratorPermission.Wiki, NoteTypes = null },
                 SubName = "NotTheBestTest", SubredditID = 1
             } };
-            var claimsIdent = new ClaimsIdentity( "mock" );
-            claimsIdent.AddClaim( new Claim( claimsIdent.NameClaimType, testUser.UserName ) );
 
             var um = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             await serviceProvider.GetRequiredService<RoleManager<IdentityRole>>().CreateAsync( new IdentityRole( "notthebesttest" ) );
@@ -106,10 +101,9 @@ namespace SnooNotesTests.Utilities {
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
             var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
-            var userPrincipal = new ClaimsPrincipal( claimsIdent );
 
             //act
-            await util.UpdateModeratedSubredditsAsync( testUser, userPrincipal );
+            await util.UpdateModeratedSubredditsAsync( testUser );
 
             //assert
             var endUser = await um.FindByNameAsync( testUser.UserName );
@@ -130,8 +124,6 @@ namespace SnooNotesTests.Utilities {
                 Settings = new SnooNotes.Models.SubredditSettings { AccessMask = 64 + (int)RedditSharp.ModeratorPermission.Wiki, NoteTypes = null },
                 SubName = "asubbie", SubredditID = 1
             } };
-            var claimsIdent = new ClaimsIdentity( "mock" );
-            claimsIdent.AddClaim( new Claim( claimsIdent.NameClaimType, testUser.UserName ) );
 
             var um = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             await serviceProvider.GetRequiredService<RoleManager<IdentityRole>>().CreateAsync( new IdentityRole( "asubbie" ) );
@@ -143,10 +135,9 @@ namespace SnooNotesTests.Utilities {
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
             var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
-            var userPrincipal = new ClaimsPrincipal( claimsIdent );
 
             //act
-            await util.UpdateModeratedSubredditsAsync( testUser, userPrincipal );
+            await util.UpdateModeratedSubredditsAsync( testUser );
 
             //assert
             var endUser = await um.FindByNameAsync( testUser.UserName );
@@ -179,12 +170,12 @@ namespace SnooNotesTests.Utilities {
 
             await um.AddToRoleAsync( testUser, "gooaway" );
 
-            var badUser = new IdentProvider.Models.ApplicationUser {
+            var badUser = new ApplicationUser {
                 Id = "badUser",
                 UserName = "badUser"
             };
 
-            var okUser = new IdentProvider.Models.ApplicationUser {
+            var okUser = new ApplicationUser {
                 Id = "okUser",
                 UserName = "bigdurp"
             };

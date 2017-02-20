@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 using IdentProvider;
 using AspNet.Security.OAuth.Reddit;
-using IdentProvider.Models;
+using SnooNotes.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using IdentProvider.Data;
 using System.IdentityModel.Tokens.Jwt;

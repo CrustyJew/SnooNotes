@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentProvider.Models;
 using SnooNotes.Models;
 
 namespace SnooNotes.Utilities {
@@ -9,7 +8,7 @@ namespace SnooNotes.Utilities {
         Task CheckTokenExpirationAsync( ClaimsPrincipal user );
         Task GetNewTokenAsync( ApplicationUser ident );
         Task RevokeRefreshTokenAsync( string token );
-        Task UpdateModeratedSubredditsAsync( ApplicationUser ident, ClaimsPrincipal user );
+        Task UpdateModeratedSubredditsAsync( ApplicationUser ident );
         Task<bool> UpdateModsForSubAsync( Subreddit sub, ClaimsPrincipal user );
     }
 }
