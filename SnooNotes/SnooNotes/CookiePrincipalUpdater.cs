@@ -21,8 +21,8 @@ namespace SnooNotes {
             }
             else if ( DateTime.Parse( lastUpdated ).AddHours( 1 ) < DateTime.UtcNow ) {
                 //IConfigurationRoot config = context.HttpContext.RequestServices.GetRequiredService<IConfigurationRoot>();
-                UserManager<IdentProvider.Models.ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<IdentProvider.Models.ApplicationUser>>();
-                SignInManager<IdentProvider.Models.ApplicationUser> signinManager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<IdentProvider.Models.ApplicationUser>>();
+                UserManager<Models.ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<Models.ApplicationUser>>();
+                SignInManager<Models.ApplicationUser> signinManager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<Models.ApplicationUser>>();
                 RoleManager<IdentityRole> roleManager = context.HttpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
                 ILoggerFactory logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
                 IMemoryCache cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
@@ -38,14 +38,14 @@ namespace SnooNotes {
         }
 
         public static async Task CookieSignin( CookieSigningInContext context ) {
-            UserManager<IdentProvider.Models.ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<IdentProvider.Models.ApplicationUser>>();
-            SignInManager<IdentProvider.Models.ApplicationUser> signinManager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<IdentProvider.Models.ApplicationUser>>();
+            UserManager<Models.ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<Models.ApplicationUser>>();
+            SignInManager<Models.ApplicationUser> signinManager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<Models.ApplicationUser>>();
             RoleManager<IdentityRole> roleManager = context.HttpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
             ILoggerFactory logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
             IMemoryCache cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
             Utilities.IAuthUtils authutils = context.HttpContext.RequestServices.GetRequiredService<Utilities.IAuthUtils>();
             var user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
-            await authutils.UpdateModeratedSubredditsAsync( user, context.Principal );
+            await authutils.UpdateModeratedSubredditsAsync( user );
             user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
             var newPrincipal = await signinManager.CreateUserPrincipalAsync( user );
             ( (ClaimsIdentity) newPrincipal.Identity ).AddClaim( new Claim( "lastupdated", DateTime.UtcNow.ToString() ) );

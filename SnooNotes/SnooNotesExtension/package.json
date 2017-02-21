@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "css-loader": "^0.25.0",
+    "del": "^2.2.2",
+    "file-loader": "^0.9.0",
+    "gulp": "^3.9.1",
+    "gulp-debug": "^3.1.0",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^5.0.1",
+    "source-map-loader": "^0.1.6",
+    "ts-loader": "^2.0.0",
+    "typescript": "^2.1.6",
+    "vue": "^2.1.10",
+    "vue-class-component": "^4.4.0",
+    "vue-loader": "^10.0.0",
+    "vue-template-compiler": "^2.1.0",
+    "webpack-stream": "^3.2.0"
+  },
+  "dependencies": {
+    "webpack": "^2.2.1"
+  }
+}
