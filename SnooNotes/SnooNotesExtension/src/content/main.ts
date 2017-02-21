@@ -1,7 +1,9 @@
-﻿
+﻿import Vue = require('vue')
+import {TestComponent} from './test'
+
 var elem = document.createElement('div');
 elem.id = 'SnooNotes';
 elem.innerHTML = '<h1>oh shit son</h1>';
-document.getElementsByTagName('body')[0].appendChild(elem);
+document.body.appendChild(elem);
 
-export class Main { }
+var v = new TestComponent({ el: '#SnooNotes' });

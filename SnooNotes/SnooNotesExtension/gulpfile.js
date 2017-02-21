@@ -18,7 +18,8 @@ gulp.task('default', function () {
 });
 
 gulp.task('build', ['clean'], function () {
-    gulp.src(['src/**/*.ts','src/**/*.html','src/**/*.scss'])
+    gulp.src(['src/content/main.ts','src/**/*.html','src/**/*.scss','src/**/*.vue'])
+    //gulp.src('src/content/main.ts')
     .pipe(webpackGulp(config,webpack))
     .pipe(gulp.dest('./dist/'));
 

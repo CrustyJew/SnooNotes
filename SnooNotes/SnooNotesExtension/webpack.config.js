@@ -16,8 +16,11 @@ module.exports = {
                       // the "scss" and "sass" values for the lang attribute to the right configs here.
                       // other preprocessors should work out of the box, no loader config like this necessary.
                       'scss': 'vue-style-loader!css-loader!sass-loader',
-                      'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-                  }
+                      'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+                      'js': 'vue-ts-loader'
+                  },
+                  esModule: true,
+                  exclude: /node_modules/
                   // other vue-loader options go here
               }
           },
@@ -27,8 +30,8 @@ module.exports = {
               loader: "source-map-loader"
           },
           {
-              test: /\.tsx?$/,
-              loader: 'ts-loader',
+              test: /\.ts$/,
+              loader: 'vue-ts-loader',
               exclude: /node_modules/
           },
           {
