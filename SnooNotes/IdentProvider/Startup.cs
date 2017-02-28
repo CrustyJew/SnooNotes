@@ -61,6 +61,7 @@ namespace IdentProvider {
             services.AddSingleton<IConfigurationRoot>( Configuration );
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<SnooNotes.DAL.ISubredditDAL, SnooNotes.DAL.BaseSubredditDAL>();
             services.AddTransient<SnooNotes.Utilities.IAuthUtils, SnooNotes.Utilities.BaseAuthUtils>();
             services.AddCors( opt => opt.AddPolicy( "AllowAll", pol => pol.AllowAnyHeader().AllowAnyOrigin() ) );
             var identServer = services.AddIdentityServer( options =>

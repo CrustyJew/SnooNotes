@@ -19,7 +19,7 @@ namespace IdentProvider {
         public static IEnumerable<ApiResource> GetApiResources() {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource("api1", "My API"), new ApiResource("dirtbag", "Dirtbag API")
             };
         }
 
@@ -39,7 +39,7 @@ namespace IdentProvider {
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     ClientSecrets = secrets,
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "api1", "dirtbag" }
                 },
 
                 // resource owner password grant client
@@ -49,7 +49,22 @@ namespace IdentProvider {
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     ClientSecrets = secrets,
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "api1", "dirtbag" }
+                },
+
+                new Client {
+                    ClientId = "js",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    ClientName = "js",
+                    RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
+                    PostLogoutRedirectUris = config.GetSection("ID4_Client_LogoutURIs").Get<string[]>() ,
+                    RequireConsent = false,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "dirtbag"
+                    }, AllowAccessTokensViaBrowser = true
                 },
 
                 // OpenID Connect hybrid flow and client credentials client (MVC)
@@ -72,9 +87,9 @@ namespace IdentProvider {
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        "api1", "dirtbag"
                     },
-                    AllowOfflineAccess = true 
+                    AllowOfflineAccess = true , 
                 }
             };
         }
