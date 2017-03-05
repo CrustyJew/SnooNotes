@@ -7,7 +7,7 @@
         name: 'test',
         data(){
             return{
-             message: "omg omg omgoahsmdfsjdl"
+             message: "omg omg omgoahsmdfsjdlasdffafaaaf"
             }
         }
     }
