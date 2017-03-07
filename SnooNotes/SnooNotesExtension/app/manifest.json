@@ -36,7 +36,7 @@
         "styles/contentscript.css"
       ],
       "js": [
-        "scripts/contentscript.js", "scripts/test.js"
+        "scripts/contentscript.js"
       ],
       "run_at": "document_end",
       "all_frames": false
