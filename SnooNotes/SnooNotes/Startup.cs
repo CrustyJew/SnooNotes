@@ -139,7 +139,7 @@ namespace SnooNotes {
                     NameClaimType = "name",
                     RoleClaimType = "role"
                 },
-                SaveTokens = false, AutomaticAuthenticate = false, AutomaticChallenge = false
+                SaveTokens = true, AutomaticAuthenticate = false, AutomaticChallenge = false
             } );
 
             app.UseDefaultFiles();

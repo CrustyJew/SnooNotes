@@ -63,9 +63,9 @@ namespace SnooNotes.Controllers {
 
             List<Models.Subreddit> activeSubs = await subBLL.GetActiveSubs();
             List<string> activeSubNames = activeSubs.Select( s => s.SubName.ToLower() ).ToList();
-
-            var subs = rd.User.ModeratorSubreddits.Where( s => s.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !activeSubNames.Contains( s.Name.ToLower() ) ).Select( s => s.Name );
-            return subs.OrderBy( s => s ).ToEnumerable();
+            List<string> inactiveSubs = new List<string>();
+            await rd.User.ModeratorSubreddits.ForEachAsync( s => { if ( s.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !activeSubNames.Contains( s.Name.ToLower() ) ) inactiveSubs.Add( s.Name ); } );
+            return inactiveSubs.OrderBy( s => s );
         }
         [HttpGet( "[action]" )]
         public async Task<List<string>> UpdateModeratedSubreddits() {

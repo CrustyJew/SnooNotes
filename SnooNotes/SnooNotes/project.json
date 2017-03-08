@@ -25,8 +25,8 @@
     "Microsoft.AspNetCore.SignalR.Server": "0.2.0-*",
     "Microsoft.AspNetCore.WebSockets": "0.2.0-*",
     "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.1.0",
-    "RedditSharp": "2.0.0-*",
-    "SnooNotesSharedLibrary": "1.0.0-*"
+    "SnooNotesSharedLibrary": "1.0.0-*",
+    "RedditSharp": "2.0.0-CI00020"
   },
 
   "tools": {

@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { createOidcMiddleware }  from './middleware/oidcMiddleware';
 import { UserManager } from 'oidc-client';
-import {userManager} from '../config';
+import {userManager} from '../utilities/userManager';
 import composeWithDevTools from 'remote-redux-devtools'
 
 import reducer from './reducers/index';

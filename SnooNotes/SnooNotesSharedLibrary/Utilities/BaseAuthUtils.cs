@@ -69,7 +69,8 @@ namespace SnooNotes.Utilities {
             }
             RedditSharp.WebAgent agent = new RedditSharp.WebAgent( ident.AccessToken );
             RedditSharp.Reddit rd = new RedditSharp.Reddit( agent, true );
-            var modSubs = rd.User.ModeratorSubreddits.ToList<RedditSharp.Things.Subreddit>();
+            var modSubs = new List<RedditSharp.Things.Subreddit>();
+            await rd.User.ModeratorSubreddits.ForEachAsync( s => modSubs.Add( s ) );
 
             List<string> currentRoles = ( await _userManager.GetRolesAsync( ident ) ).ToList();//ident.Roles.ToList();//ident.Claims.Where( x => x.ClaimType == roleType ).Select( r => r.ClaimValue ).ToList<string>();
             List<Claim> currentClaims = ( await _userManager.GetClaimsAsync( ident ) ).ToList();
@@ -131,7 +132,7 @@ namespace SnooNotes.Utilities {
                 }
                 RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit( new RedditSharp.WebAgent( ident.AccessToken ), true );
                 var cabalSub = await cabalReddit.GetSubredditAsync( cabalSubName );
-                bool hasCabal = cabalSub.Contributors.Any( c => c.Name.ToLower() == ident.UserName.ToLower() );
+                bool hasCabal = await cabalSub.Contributors.Any( c => c.Name.ToLower() == ident.UserName.ToLower() );
                 if ( hasCabal && !currentClaims.Any( c => c.Type == "uri:snoonotes:cabal" && c.Value == "true" ) ) {
                     claimsToAdd.Add( new Claim( "uri:snoonotes:cabal", "true" ) );
                 }

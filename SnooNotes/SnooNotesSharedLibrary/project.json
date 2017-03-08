@@ -4,11 +4,11 @@
   "dependencies": {
     "NETStandard.Library": "1.6.1",
     "System.Security.Claims": "4.3.0",
-    "RedditSharp": "2.0.0-CI00012",
     "Microsoft.AspNetCore.Identity": "1.1.0",
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0",
     "System.Data.SqlClient": "4.3.0",
-    "Dapper": "1.50.2"
+    "Dapper": "1.50.2",
+    "RedditSharp": "2.0.0-CI00020"
   },
 
   "frameworks": {
