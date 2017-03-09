@@ -1,4 +1,4 @@
-
+﻿
 var args  = require ('./tasks/lib/args');
 var webpack = require( 'webpack');
 var path = require("path");
@@ -30,7 +30,7 @@ var config = {
                 options:{
                     
             presets: ['es2015'],
-            plugins: ['transform-runtime']
+            plugins: ['transform-runtime','transform-class-properties']
                 }
             },
             {

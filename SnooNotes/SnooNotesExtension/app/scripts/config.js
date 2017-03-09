@@ -1,4 +1,4 @@
-
+﻿
 export const baseUrl = 'http://localhost:5001/';
 
 export const userManagerConfig = {
@@ -11,6 +11,6 @@ export const userManagerConfig = {
   automaticSilentRenew: true,
   filterProtocolClaims: true,
   loadUserInfo: true,
+  signin_url: 'http://localhost:5000/Auth/connect/authorize/login?client_id=snoonotes&response_type=token&scope=profile%20api1&redirect_uri='
 };
 
-export const userManager = new UserManager(userManagerConfig);

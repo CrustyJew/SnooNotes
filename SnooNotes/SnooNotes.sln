@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SnooNotesDB", "SnooNotesDB\SnooNotesDB.sqlproj", "{EDFD1C5B-ABED-46C1-9A58-62FC21E8D979}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{097C3BC3-0EC0-4B80-916D-894A4F1739EA}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -13,21 +11,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{097C3B
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesAddon", "SnooNotesAddon\SnooNotesAddon.csproj", "{3FE301FA-C095-438A-AFA1-DF459B275B2B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7D62A04F-5807-42DC-B4C6-8FBEECD8F582}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SnooNotesDB", "SnooNotesDB\SnooNotesDB.sqlproj", "{EDFD1C5B-ABED-46C1-9A58-62FC21E8D979}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesAddon", "SnooNotesAddon\SnooNotesAddon.csproj", "{3FE301FA-C095-438A-AFA1-DF459B275B2B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesPermissions", "SnooNotesPermissions\SnooNotesPermissions.csproj", "{32C23D32-A453-4AFF-9998-017ADE3A0503}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentProvider", "IdentProvider\IdentProvider.xproj", "{FA52FFC5-CBCF-42FE-832B-2E018B229A23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentProvider", "IdentProvider\IdentProvider.csproj", "{FA52FFC5-CBCF-42FE-832B-2E018B229A23}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SnooNotes", "SnooNotes\SnooNotes.xproj", "{8DF09BDD-2B6A-46B9-8FC4-72507312C284}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnooNotes", "SnooNotes\SnooNotes.csproj", "{8DF09BDD-2B6A-46B9-8FC4-72507312C284}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SnooNotesTests", "SnooNotesTests\SnooNotesTests.xproj", "{652F2D92-C9E6-4E26-AAAE-DCCAD65AF7D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnooNotesTests", "SnooNotesTests\SnooNotesTests.csproj", "{652F2D92-C9E6-4E26-AAAE-DCCAD65AF7D2}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SnooNotesSharedLibrary", "SnooNotesSharedLibrary\SnooNotesSharedLibrary.xproj", "{E2773B67-8554-4DC3-8648-84F154F4182F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnooNotesSharedLibrary", "SnooNotesSharedLibrary\SnooNotesSharedLibrary.csproj", "{E2773B67-8554-4DC3-8648-84F154F4182F}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SnooNotesExtension", "SnooNotesExtension\SnooNotesExtension.xproj", "{027DD034-3A41-4CC9-BDD2-C8EF50178A0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnooNotesExtension", "SnooNotesExtension\SnooNotesExtension.csproj", "{027DD034-3A41-4CC9-BDD2-C8EF50178A0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

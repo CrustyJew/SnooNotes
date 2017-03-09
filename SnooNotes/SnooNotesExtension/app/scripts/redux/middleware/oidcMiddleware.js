@@ -1,4 +1,4 @@
-//https://github.com/maxmantz/redux-oidc
+﻿//https://github.com/maxmantz/redux-oidc
 //https://github.com/maxmantz/redux-oidc/blob/master/LICENSE
 // The MIT License (MIT)
 
@@ -42,17 +42,11 @@ export function errorCallback(error) {
 }
 
 export function middlewareHandler(next, action, userManager) {
-  if (!storedUser || storedUser.expired) {
-    next(loadingUser());
-    userManager.getUser().then(user => {
-    if (!user || user.expired) {
-      next(userExpired());
-    } else {
-      storedUser = user;
-      next(userFound(user));
+    let token = userManager.getAccessToken();
+  if (!token) {
+    next(userExpired());
     }
-    });
-  }
+  
   return next(action);
 }
 
