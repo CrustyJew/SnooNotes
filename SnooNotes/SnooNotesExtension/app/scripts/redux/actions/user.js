@@ -1,4 +1,4 @@
-//https://github.com/maxmantz/redux-oidc
+﻿//https://github.com/maxmantz/redux-oidc
 //https://github.com/maxmantz/redux-oidc/blob/master/LICENSE
 // The MIT License (MIT)
 
@@ -22,15 +22,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-export const USER_EXPIRED = 'redux-oidc/USER_EXPIRED';
-export const REDIRECT_SUCCESS = 'redux-oidc/REDIRECT_SUCCESS';
-export const USER_LOADED = 'redux-oidc/USER_LOADED';
-export const SILENT_RENEW_ERROR = 'redux-oidc/SILENT_RENEW_ERROR';
-export const SESSION_TERMINATED = 'redux-oidc/SESSION_TERMINATED';
-export const USER_EXPIRING = 'redux-oidc/USER_EXPIRING';
-export const USER_FOUND = 'redux-oidc/USER_FOUND';
-export const LOADING_USER = 'redux-oidc/LOADING_USER';
-export const USER_SIGNED_OUT = 'redux-oidc/USER_SIGNED_OUT';
+export const USER_EXPIRED = 'USER_EXPIRED';
+export const REDIRECT_SUCCESS = 'REDIRECT_SUCCESS';
+export const USER_LOADED = 'USER_LOADED';
+export const SILENT_RENEW_ERROR = 'SILENT_RENEW_ERROR';
+export const SESSION_TERMINATED = 'SESSION_TERMINATED';
+export const USER_EXPIRING = 'USER_EXPIRING';
+export const USER_FOUND = 'USER_FOUND';
+export const LOADING_USER = 'LOADING_USER';
+export const USER_SIGNED_OUT = 'USER_SIGNED_OUT';
+export const LOGIN = "login";
+import userManager from '../../utilities/userManager';
 
 // dispatched when the existing user expired
 export function userExpired() {
@@ -89,4 +91,12 @@ export function userSignedOut() {
   return {
     type: USER_SIGNED_OUT
   };
+}
+
+export function login(contentScript = true) {
+  if(contentScript){
+    return {
+      type: LOGIN
+    };
+  }
 }

@@ -11,7 +11,7 @@ var webpackConfig = require( '../webpack.config');
 const ENV = args.production ? 'production' : 'development';
 
 gulp.task('scripts', (cb) => {
-    return gulp.src(['app/scripts/**/*.js','app/**/*.vue'])
+    return gulp.src(['app/scripts/background.js','app/scripts/contentscript.js'])
       .pipe(plumber({
           errorHandler: function() {
               // Webpack will log the errors

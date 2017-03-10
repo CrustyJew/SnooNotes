@@ -62,7 +62,8 @@
     "node-sass": "^4.5.0",
     "oidc-client": "^1.3.0-beta.3",
     "phantomjs-prebuilt": "^2.1.14",
-    "remote-redux-devtools": "^0.5.7",
+    "remote-redux-devtools": "0.5.0",
+    "remotedev-server": "^0.3.0-beta-3",
     "require-dir": "0.x.x",
     "sass-loader": "^5.0.1",
     "sinon": "^1.17.7",
@@ -77,6 +78,8 @@
   "dependencies": {
     "moment": "^2.17.1",
     "react-chrome-redux": "^1.3.1",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0",
+    "revue": "^3.0.0"
   }
 }

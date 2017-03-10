@@ -1,26 +1,37 @@
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+﻿import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { createOidcMiddleware }  from './middleware/oidcMiddleware';
 import { UserManager } from 'oidc-client';
 import {userManager} from '../utilities/userManager';
-import composeWithDevTools from 'remote-redux-devtools'
-
+import {composeWithDevTools} from 'remote-redux-devtools'
+import thunk from 'redux-thunk'
+import { wrapStore, alias } from 'react-chrome-redux';
+import {login, LOGIN} from './actions/user';
 import reducer from './reducers/index';
+import {loadingUser, userFound, silentRenewError} from './actions/user';
 
-const initialState = {};
-/*
-const createStoreWithMiddleware = compose(
-    applyMiddleware(createOidcMiddleware(new UserManager(userManagerConfig)))
-)(createStore(
-window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()));
-
-const store = createStoreWithMiddleware(reducer, initialState);
-*/
+const initialState = {user:{user:null,isLoadingUser:false}};
 
 
-const store = createStore(reducer,composeWithDevTools(
-    applyMiddleware(createOidcMiddleware(userManager))
-    )
-)
+const bg_aliases = {
+    [LOGIN]: ()=>{
+        return (dispatch)=>{
+            dispatch(loadingUser());
+        userManager.login()
+            .then((user) => {
+                dispatch(userFound(user));
+            }, (error)=>{
+                dispatch(silentRenewError(error));
+            })
+        
+        }
+    }
+}
+//const enhancer = applyMiddleware(alias(bg_aliases),thunk, createOidcMiddleware(userManager));
+//const store = createStore(reducer,initialState,enhancer);
 
+const store = createStore(reducer,initialState,composeWithDevTools(
+    applyMiddleware(alias(bg_aliases),thunk)//, createOidcMiddleware(userManager))
+     )
+ )
 
-export default store;
+wrapStore(store, { portName: "SnooNotesExtension" });

@@ -86,7 +86,7 @@ namespace IdentProvider {
             loggerFactory.AddConsole( Configuration.GetSection( "Logging" ) );
             loggerFactory.AddDebug();
 
-            InitializeDatabase( app );
+            InitializeDatabase( app, env );
             
 
             if ( env.IsDevelopment() ) {
@@ -129,12 +129,19 @@ namespace IdentProvider {
             } );
         }
 
-        private void InitializeDatabase( IApplicationBuilder app) {
+        private void InitializeDatabase( IApplicationBuilder app, IHostingEnvironment env) {
             using ( var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope() ) {
                 serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
                 var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 context.Database.Migrate();
+
+                if (env.IsDevelopment()) {
+                    context.Clients.RemoveRange(context.Clients);
+                    context.ApiResources.RemoveRange(context.ApiResources);
+                    context.IdentityResources.RemoveRange(context.IdentityResources);
+                }
+
                 if ( !context.Clients.Any() ) {
                     foreach ( var client in Config.GetClients(Configuration) ) {
                         context.Clients.Add( client.ToEntity() );

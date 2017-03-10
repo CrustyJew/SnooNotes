@@ -1,5 +1,4 @@
-{
-  "name": "__MSG_appName__",
+{  "name": "__MSG_appName__",
   "short_name": "__MSG_appShortName__",
   "description": "__MSG_appDescription__",
   "version": "0.0.0",
@@ -43,7 +42,7 @@
     }
   ],
   "permissions": [
-    "tabs",
+    "tabs","identity","storage","unlimitedStorage",
     "<all_urls>"
   ]
 }

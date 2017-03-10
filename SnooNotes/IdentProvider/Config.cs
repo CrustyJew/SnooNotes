@@ -53,9 +53,9 @@ namespace IdentProvider {
                 },
 
                 new Client {
-                    ClientId = "js",
+                    ClientId = "snoonotes",
                     AllowedGrantTypes = GrantTypes.Implicit,
-                    ClientName = "js",
+                    ClientName = "SnooNotes Extension",
                     RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
                     PostLogoutRedirectUris = config.GetSection("ID4_Client_LogoutURIs").Get<string[]>() ,
                     RequireConsent = false,

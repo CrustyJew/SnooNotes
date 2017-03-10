@@ -58,6 +58,6 @@ export function createOidcMiddleware(userManager) {
 
   // the middleware
   return (store) => (next) => (action) => {
-    middlewareHandler(next, action, userManager).catch(errorCallback);
+    middlewareHandler(next, action, userManager);
   }
 };
