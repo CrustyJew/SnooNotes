@@ -11,6 +11,6 @@ export const userManagerConfig = {
   automaticSilentRenew: true,
   filterProtocolClaims: true,
   loadUserInfo: true,
-  signin_url: 'http://localhost:5000/Auth/connect/authorize?client_id=snoonotes&response_type=token&scope=profile%20openid&redirect_uri=http://localhost:5001/ExtensionRedirect'
+  signin_url: 'http://localhost:5000/Auth/connect/authorize?client_id=snoonotes&response_type=token&scope=snoonotes&redirect_uri=http://localhost:5001/ExtensionRedirect'
 };
 

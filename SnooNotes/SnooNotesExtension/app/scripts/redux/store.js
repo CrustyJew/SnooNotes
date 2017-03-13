@@ -17,11 +17,11 @@ const bg_aliases = {
         return (dispatch)=>{
             dispatch(loadingUser());
         userManager.login()
-            .then((user) => {
+            /*.then((user) => {
                 dispatch(userFound(user));
             }, (error)=>{
                 dispatch(silentRenewError(error));
-            })
+            })*/
         
         }
     }

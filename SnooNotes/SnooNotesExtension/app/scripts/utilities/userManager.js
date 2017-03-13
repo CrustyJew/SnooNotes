@@ -11,18 +11,21 @@ class UserManager{
     
 
     getAccessToken(silent = true) {
-        
+        return new Promise((resolve,reject)=>{
         chrome.identity.launchWebAuthFlow({ url: this.signin_url, interactive: !silent }, (url) => {
             console.log(url);
             if(!url){
-                Promise.reject("Not Logged In");
+                reject("Not Logged In");
             }
-            accessToken = (url.split('#')[1].split('=')[1]);
-        });
+            else{
+                resolve( url.split('#')[1].split('=')[1]);
+            }
+            });
+        })
     }
 
     login() {
-       return Promise.resolve(this.getAccessToken(false));/*.then((token) => {
+       return this.getAccessToken(false).then((token) => {
             fetch(baseUrl + 'Account', {
                 method: 'get',
                 headers: {
@@ -34,7 +37,7 @@ class UserManager{
                     saveUser(data);
                     Promise.resolve(data);
                 });
-        });*/
+        });
     }
 
     getUser() {

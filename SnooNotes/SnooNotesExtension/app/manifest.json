@@ -42,7 +42,7 @@
     }
   ],
   "permissions": [
-    "tabs","identity","storage","unlimitedStorage",
+    "tabs","identity","storage","unlimitedStorage","cookies",
     "<all_urls>"
   ]
 }

@@ -19,7 +19,9 @@ namespace IdentProvider {
         public static IEnumerable<ApiResource> GetApiResources() {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API"), new ApiResource("dirtbag", "Dirtbag API")
+                new ApiResource("api1", "My API"),
+                new ApiResource("dirtbag", "Dirtbag API"),
+                new ApiResource("snoonotes","SnooNotes")
             };
         }
 
@@ -63,7 +65,7 @@ namespace IdentProvider {
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "dirtbag"
+                        "dirtbag", "snoonotes"
                     }, AllowAccessTokensViaBrowser = true
                 },
 
@@ -87,7 +89,7 @@ namespace IdentProvider {
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1", "dirtbag"
+                        "api1", "dirtbag", "snoonotes"
                     },
                     AllowOfflineAccess = true , 
                 }
