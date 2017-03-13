@@ -28,8 +28,7 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "<all_urls>"
       ],
       "css": [
         "styles/contentscript.css"
@@ -39,6 +38,14 @@
       ],
       "run_at": "document_end",
       "all_frames": false
+    },
+    {
+      "matches":[
+        "http://localhost:5001/redux_callback.html"
+      ],
+      "js":[
+        "scripts/signinCallback.js"
+      ]
     }
   ],
   "permissions": [

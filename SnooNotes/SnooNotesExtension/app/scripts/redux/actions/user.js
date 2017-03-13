@@ -42,10 +42,10 @@ export function userExpired() {
 }
 
 // dispatched after a successful redirect callback
-export function redirectSuccess(user) {
+export function redirectSuccess(url) {
   return {
     type: REDIRECT_SUCCESS,
-    payload: user
+    payload: url
   };
 }
 

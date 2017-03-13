@@ -55,7 +55,8 @@ var config = {
         },
         resolve: {
             alias: {
-                'vue$': 'vue/dist/vue.esm.js'
+                'vue$': 'vue/dist/vue.esm.js',
+                'oidc-client':'oidc-client/lib/oidc-client.js'
             }
         },
       };

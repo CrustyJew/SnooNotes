@@ -20,7 +20,7 @@
         },
         methods:{
           testClick(){
-            store.dispatch(login()).then(()=>console.log('winning'));
+            store.dispatch(login());
           }
         }
     }
