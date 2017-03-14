@@ -1,6 +1,9 @@
 ﻿import CustomRedirectManager from './utilities/customRedirectNavigator';
+import CustomWebStorageStateStore from './utilities/customWebStorageStateStore';
+
 export const baseUrl = 'http://localhost:5001/';
 const redirectNav = new CustomRedirectManager();
+const customStore = new CustomWebStorageStateStore();
 
 export const userManagerConfig = {
   client_id: 'snoonotes',
@@ -12,6 +15,8 @@ export const userManagerConfig = {
   automaticSilentRenew: true,
   filterProtocolClaims: true,
   loadUserInfo: true,
-  redirectNavigator: redirectNav
+  redirectNavigator: redirectNav,
+  monitorSession: true,
+  //userStore: customStore
 };
 

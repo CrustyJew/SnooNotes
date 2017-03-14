@@ -1,6 +1,6 @@
 ﻿import { userManagerConfig, baseUrl } from '../config';
 import moment from 'moment';
-import { UserManager, OidcClient } from 'oidc-client';
+import { UserManager } from 'oidc-client';
 
 // class UserManager{
 
@@ -54,3 +54,4 @@ import { UserManager, OidcClient } from 'oidc-client';
 //     }
 // }
 export let userManager = new UserManager(userManagerConfig);
+//export let oidcClient = new OidcClient(userManagerConfig);

@@ -33,7 +33,6 @@ export const LOADING_USER = 'LOADING_USER';
 export const USER_SIGNED_OUT = 'USER_SIGNED_OUT';
 export const LOGIN = "login";
 export const SILENT_RENEW_SUCCESS = "SILENT_RENEW_SUCCESS";
-import userManager from '../../utilities/userManager';
 
 // dispatched when the existing user expired
 export function userExpired() {

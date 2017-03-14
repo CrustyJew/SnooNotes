@@ -1,7 +1,6 @@
 ﻿import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { createOidcMiddleware }  from './middleware/oidcMiddleware';
-import { UserManager } from 'oidc-client';
-import {userManager, oidcClient} from '../utilities/userManager';
+import {userManager} from '../utilities/userManager';
 import {composeWithDevTools} from 'remote-redux-devtools'
 import thunk from 'redux-thunk'
 import { wrapStore, alias } from 'react-chrome-redux';
@@ -18,7 +17,13 @@ const bg_aliases = {
     [LOGIN]: ()=>{
         return (dispatch)=>{
             dispatch(loadingUser());
-        return userManager.signinRedirect();
+        return userManager.getUser().then((u)=>{
+            if(u){
+                dispatch(userFound(u));
+            }else{
+                userManager.signinRedirect();
+            }
+        })
             /*.then((user) => {
                 dispatch(userFound(user));
             }, (error)=>{
@@ -29,14 +34,9 @@ const bg_aliases = {
     },
     [REDIRECT_SUCCESS]: (req)=>{
         return (dispatch)=>{
-        userManager.signinRedirectCallback(req.payload).then((success)=>{
-            console.log('loggedin');
+        userManager.signinRedirectCallback(req.payload).then((user)=>{
+            dispatch(userFound(user))
         },(err)=>{console.warn(err)});
-        }
-    },
-    [SILENT_RENEW_SUCCESS]: (req)=>{
-        return (dispatch)=>{
-            userManager.signinSilentCallback(req.payload).then((success)=>console.log('token renewed'));
         }
     }
 }

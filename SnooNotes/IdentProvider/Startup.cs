@@ -49,6 +49,8 @@ namespace IdentProvider {
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddCors(opt => opt.AddPolicy("AllowAll", pol => pol.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod().AllowCredentials()));
+
             services.AddMvc();
 
             services.Configure<IdentityOptions>( options => {
@@ -63,9 +65,10 @@ namespace IdentProvider {
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<SnooNotes.DAL.ISubredditDAL, SnooNotes.DAL.BaseSubredditDAL>();
             services.AddTransient<SnooNotes.Utilities.IAuthUtils, SnooNotes.Utilities.BaseAuthUtils>();
-            services.AddCors( opt => opt.AddPolicy( "AllowAll", pol => pol.AllowAnyHeader().AllowAnyOrigin() ) );
             var identServer = services.AddIdentityServer( options =>
-                     options.Cors.CorsPolicyName = "AllowAll"
+            {
+                options.Cors.CorsPolicyName = "AllowAll";
+            }
                 )
                 .AddTemporarySigningCredential()
                 .AddConfigurationStore( builder =>
@@ -75,7 +78,9 @@ namespace IdentProvider {
                     builder.UseSqlServer( connectionString, options =>
                         options.MigrationsAssembly( migrationsAssembly ) ) )
                 .AddAspNetIdentity<ApplicationUser>()
+                .AddEndpoint<Controllers.CustomCheckSessionEndpoint>(IdentityServer4.Hosting.EndpointName.CheckSession)
                 .Services.AddTransient<IdentityServer4.ResponseHandling.ITokenResponseGenerator, TokenResponseGenerator>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,12 +97,11 @@ namespace IdentProvider {
             if ( env.IsDevelopment() ) {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseBrowserLink();
             }
             else {
                 app.UseExceptionHandler( "/Home/Error" );
             }
-            app.UseCors( "AllowAll" );
+            app.UseCors(opt=>opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
             app.UseStaticFiles();
 
             app.UseIdentity();

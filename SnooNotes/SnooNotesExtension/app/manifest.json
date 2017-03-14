@@ -25,12 +25,15 @@
     "page": "pages/options.html",
     "chrome_style": true
   },
+  "sandbox":{
+    "pages":["http://localhost:5000/Auth/connect/checksession"]
+  },"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
       ],
-      "exclude_matches":["http://localhost:5001/*"],
+      "exclude_matches":["http://localhost:5001/*","http://localhost:5000/*"],
       "css": [
         "styles/contentscript.css"
       ],
@@ -42,8 +45,7 @@
     },
     {
       "matches":[
-        "http://localhost:5001/redux_callback.html",
-        "http://localhost:5001/redux_silent_renew.html"
+        "http://localhost:5001/redux_callback.html"
       ],
       "js":[
         "scripts/signinCallback.js"

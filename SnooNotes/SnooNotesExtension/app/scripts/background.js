@@ -14,12 +14,13 @@ chrome.browserAction.setBadgeText({text: '\'Allo'});
 
 console.log('\'Allo \'Allo! Event Page for Browser Action');
 
-userManager.events.addUserLoaded(onUserLoaded);
-    userManager.events.addSilentRenewError(onSilentRenewError);
-    userManager.events.addAccessTokenExpired(onAccessTokenExpired);
-    userManager.events.addAccessTokenExpiring(onAccessTokenExpiring);
-    userManager.events.addUserUnloaded(onUserUnloaded);
-    userManager.events.addUserSignedOut(onUserSignedOut);
+userManager.clearStaleState();
+// userManager.events.addUserLoaded(onUserLoaded);
+//     userManager.events.addSilentRenewError(onSilentRenewError);
+//     userManager.events.addAccessTokenExpired(onAccessTokenExpired);
+//     userManager.events.addAccessTokenExpiring(onAccessTokenExpiring);
+//     userManager.events.addUserUnloaded(onUserUnloaded);
+//     userManager.events.addUserSignedOut(onUserSignedOut);
 
   const onUserLoaded = (user) => {
     store.dispatch(userFound(user));

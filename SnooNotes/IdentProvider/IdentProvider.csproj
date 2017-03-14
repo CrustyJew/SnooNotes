@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\CheckSession.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="wwwroot\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
@@ -27,7 +31,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.0.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.0.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

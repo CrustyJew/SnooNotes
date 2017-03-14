@@ -102,6 +102,7 @@ namespace SnooNotes {
             app.UseCors( builder => 
                 builder.AllowAnyHeader()
                        .AllowAnyOrigin()
+                       .AllowAnyMethod()
             );
 
             var cookieOptions = new CookieAuthenticationOptions {

@@ -66,7 +66,7 @@ namespace IdentProvider {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "dirtbag", "snoonotes"
-                    }, AllowAccessTokensViaBrowser = true
+                    }, AllowAccessTokensViaBrowser = true, AccessTokenLifetime = 300
                 },
 
                 // OpenID Connect hybrid flow and client credentials client (MVC)
