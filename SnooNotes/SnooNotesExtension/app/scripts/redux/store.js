@@ -5,10 +5,12 @@ import {userManager, oidcClient} from '../utilities/userManager';
 import {composeWithDevTools} from 'remote-redux-devtools'
 import thunk from 'redux-thunk'
 import { wrapStore, alias } from 'react-chrome-redux';
-import {login, LOGIN, REDIRECT_SUCCESS} from './actions/user';
+import {login, LOGIN, REDIRECT_SUCCESS, SILENT_RENEW_SUCCESS} from './actions/user';
 import reducer from './reducers/index';
 import {loadingUser, userFound, silentRenewError} from './actions/user';
-
+import {Log} from 'oidc-client';
+Log.logger = console;
+Log.level = Log.DEBUG;
 const initialState = {user:{user:null,isLoadingUser:false}};
 
 
@@ -30,6 +32,11 @@ const bg_aliases = {
         userManager.signinRedirectCallback(req.payload).then((success)=>{
             console.log('loggedin');
         },(err)=>{console.warn(err)});
+        }
+    },
+    [SILENT_RENEW_SUCCESS]: (req)=>{
+        return (dispatch)=>{
+            userManager.signinSilentCallback(req.payload).then((success)=>console.log('token renewed'));
         }
     }
 }

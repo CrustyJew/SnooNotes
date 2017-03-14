@@ -30,6 +30,7 @@
       "matches": [
         "<all_urls>"
       ],
+      "exclude_matches":["http://localhost:5001/*"],
       "css": [
         "styles/contentscript.css"
       ],
@@ -41,7 +42,8 @@
     },
     {
       "matches":[
-        "http://localhost:5001/redux_callback.html"
+        "http://localhost:5001/redux_callback.html",
+        "http://localhost:5001/redux_silent_renew.html"
       ],
       "js":[
         "scripts/signinCallback.js"

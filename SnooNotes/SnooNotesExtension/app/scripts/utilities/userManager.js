@@ -53,7 +53,4 @@ import { UserManager, OidcClient } from 'oidc-client';
 //         });
 //     }
 // }
-
 export let userManager = new UserManager(userManagerConfig);
-
-export let oidcClient = new OidcClient(userManagerConfig);

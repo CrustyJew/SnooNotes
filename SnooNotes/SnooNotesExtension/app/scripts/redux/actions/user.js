@@ -32,6 +32,7 @@ export const USER_FOUND = 'USER_FOUND';
 export const LOADING_USER = 'LOADING_USER';
 export const USER_SIGNED_OUT = 'USER_SIGNED_OUT';
 export const LOGIN = "login";
+export const SILENT_RENEW_SUCCESS = "SILENT_RENEW_SUCCESS";
 import userManager from '../../utilities/userManager';
 
 // dispatched when the existing user expired
@@ -64,6 +65,13 @@ export function silentRenewError(error) {
     type: SILENT_RENEW_ERROR,
     payload: error
   };
+}
+
+export function silentRenewSuccess(url){
+  return {
+    type: SILENT_RENEW_SUCCESS,
+    payload: url
+  }
 }
 
 // dispatched when the user is logged out

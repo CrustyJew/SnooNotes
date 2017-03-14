@@ -1,6 +1,7 @@
-﻿import {CustomRedirectManager} from './utilities/customRedirectNavigator';
+﻿import CustomRedirectManager from './utilities/customRedirectNavigator';
 export const baseUrl = 'http://localhost:5001/';
 const redirectNav = new CustomRedirectManager();
+
 export const userManagerConfig = {
   client_id: 'snoonotes',
   redirect_uri: baseUrl + 'redux_callback.html',

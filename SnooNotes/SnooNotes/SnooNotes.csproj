@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\redux_silent_renew.html" />
     <Content Include="wwwroot\redux_callback.html" />
   </ItemGroup>
 
