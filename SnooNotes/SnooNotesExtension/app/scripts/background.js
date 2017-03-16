@@ -4,8 +4,6 @@ import { userExpired, userFound, silentRenewError, sessionTerminated, userExpiri
 import store from './redux/store';
 import {userManager} from './utilities/userManager';
 
-
-
 chrome.runtime.onInstalled.addListener(function (details) {
   console.log('previousVersion', details.previousVersion);
 });

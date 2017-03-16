@@ -234,7 +234,12 @@ if (cookieNameElem) {
 }
 if (cookieName && window.parent !== window) {
     window.addEventListener('message', function (e) {
-        var result = calculateSessionStateResult(e.origin, e.data);
+        var origin = e.origin;
+        if ((/chrome-extension:/i).test(origin)) {
+            var extensionOriginElem = document.getElementById('extension-origin');
+            origin = extensionOriginElem.textContent.trim();
+        }
+        var result = calculateSessionStateResult(origin, e.data);
         e.source.postMessage(result, e.origin);
     }, false);
 }

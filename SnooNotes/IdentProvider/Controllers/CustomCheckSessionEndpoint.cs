@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using IdentityServer4.Endpoints.Results;
+using Microsoft.Extensions.Configuration;
 
 namespace IdentProvider.Controllers
 {
@@ -40,17 +41,19 @@ namespace IdentProvider.Controllers
     public class CustomCheckSessionResult : IEndpointResult
     {
         private ISessionIdService _sessionId;
-
+        private string _extensionOrigin;
         void Init(HttpContext context)
         {
             _sessionId = _sessionId ?? context.RequestServices.GetRequiredService<ISessionIdService>();
+            _extensionOrigin = _extensionOrigin ?? context.RequestServices.GetRequiredService<IConfigurationRoot>()["ExtensionOrigin"];
         }
 
     
     public Task ExecuteAsync(HttpContext context)
         {
             Init(context);
-            string htmlResp = HTML.Replace("{cookieName}", _sessionId.GetCookieName());
+            string htmlResp = HTML.Replace("{cookieName}", _sessionId.GetCookieName()).Replace("{extensionOrigin}",_extensionOrigin);
+
             return context.Response.WriteHtmlAsync(htmlResp);
            
         }
@@ -65,7 +68,8 @@ namespace IdentProvider.Controllers
 </head>
 <body>
 <span id='cookie-name' style='display:none;'>{cookieName}</span>
-<script src='/js/CheckSession.js' type='text/javascript' />
+<span id='extension-origin' style='display:none;'>{extensionOrigin}</span>
+<script src='/js/CheckSession.js' type='text/javascript'></script>
 </body>
 </html>
 ";

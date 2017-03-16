@@ -1,22 +1,26 @@
 ﻿import CustomRedirectManager from './utilities/customRedirectNavigator';
 import CustomWebStorageStateStore from './utilities/customWebStorageStateStore';
+import CustomIFrameNavigator from './utilities/customIFrameNavigator'; 
 
-export const baseUrl = 'http://localhost:5001/';
+export const authBaseUrl = 'http://localhost:5000/Auth/';
+export const apiBaseUrl = 'http://localhost:5001/'
 const redirectNav = new CustomRedirectManager();
 const customStore = new CustomWebStorageStateStore();
+const customiframeNavigator = new CustomIFrameNavigator();
 
 export const userManagerConfig = {
   client_id: 'snoonotes',
-  redirect_uri: baseUrl + 'redux_callback.html',
+  redirect_uri: authBaseUrl + 'redux_callback.html',
   response_type: 'token id_token',
   scope: 'openid profile snoonotes',
-  authority: 'http://localhost:5000/Auth',
-  silent_redirect_uri: baseUrl + 'redux_silent_renew.html',
+  authority: authBaseUrl,
+  silent_redirect_uri: authBaseUrl + 'redux_silent_renew.html',
   automaticSilentRenew: true,
   filterProtocolClaims: true,
   loadUserInfo: true,
   redirectNavigator: redirectNav,
   monitorSession: true,
+  iframeNavigator: customiframeNavigator
   //userStore: customStore
 };
 

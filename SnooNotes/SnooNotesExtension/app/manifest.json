@@ -2,6 +2,7 @@
   "short_name": "__MSG_appShortName__",
   "description": "__MSG_appDescription__",
   "version": "0.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm3N67NR8Mxuh/OtYz/yFQzd5kq1iGUfTYvTbWTAAuwIaYYMu2OWvhzRxn3IHvO0mtre1LTjicsAUbamEle8EGBIPxZk+6cuQF3cQNTBN6JTTQ6NVL/tAGN8yDhBcID6lmCC6H3GakS6BdVmPAAzq6GrtCEHOA/a8sQ56Fip/NvqvlGGtHBTVMmNDt0MKzlFTW4PIqMyEePbWD6jTUxcWjyeypAT+Fsu7Qhef3kmqHFPze7HpTOYcgx3uaQEclytGJSuMNljmmd78+dQPFXUp51dA5IpVoMxtJBDYEJE8Gt0n2+J31b/qtxDmITtEL82WZ9ooWI8nc0m1R+R7HswLswIDAQAB",
   "manifest_version": 2,
   "icons": {
     "16": "images/icon-16.png",
@@ -45,11 +46,11 @@
     },
     {
       "matches":[
-        "http://localhost:5001/redux_callback.html"
+        "http://localhost:5000/Auth/redux_callback.html", "http://localhost:5000/Auth/redux_silent_renew.html"
       ],
       "js":[
         "scripts/signinCallback.js"
-      ]
+      ],"all_frames": true
     }
   ],
   "permissions": [

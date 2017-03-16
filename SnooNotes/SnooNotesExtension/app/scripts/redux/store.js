@@ -24,12 +24,6 @@ const bg_aliases = {
                 userManager.signinRedirect();
             }
         })
-            /*.then((user) => {
-                dispatch(userFound(user));
-            }, (error)=>{
-                dispatch(silentRenewError(error));
-            })*/
-        
         }
     },
     [REDIRECT_SUCCESS]: (req)=>{

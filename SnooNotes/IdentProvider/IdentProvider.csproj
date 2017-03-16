@@ -14,6 +14,10 @@
 
   <ItemGroup>
     <Content Include="wwwroot\js\CheckSession.js" />
+    <Content Include="wwwroot\redux_callback.html" />
+    <Content Include="wwwroot\redux_silent_renew.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
