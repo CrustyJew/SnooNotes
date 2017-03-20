@@ -2,6 +2,7 @@ console.log('\'Allo \'Allo! Content script');
 
 import Vue from 'vue'
 import Test from './test.vue'
+import UserNotes from './userNotes.vue';
 import {reduxStore} from './redux/contentScriptStore';
 
 var elem = document.createElement('div');
@@ -12,5 +13,14 @@ document.body.appendChild(elem);
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(()=>{
     unsub();
+    var NotesComponent = Vue.extend({template:'<user-notes></user-notes>'})
     var v = new Vue({ el: '#SnooNotes', render: h => h(Test) });
+    var things = document.querySelectorAll('.thing');
+    for (var i = 0; i < things.length; i++){
+        var notes = new Vue({render: h => h(UserNotes)}).$mount();
+        var authElem = things[i].querySelector('a.author');
+        if(authElem){
+        authElem.parentNode.insertBefore(notes.$el,authElem.nextSibling);
+        }
+    }
 })
