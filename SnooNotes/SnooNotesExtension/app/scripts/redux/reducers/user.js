@@ -52,7 +52,7 @@ export default function userReducer(state = initialState, action) {
     case USER_FOUND:
       return Object.assign({}, { 
             access_token: action.payload.access_token,
-            name: action.payload.profile.name,
+            name: action.payload.profile.name, //todo move this to action creator, specific logic shouldn't be here
             isLoadingUser: false 
         });
     case LOADING_USER:

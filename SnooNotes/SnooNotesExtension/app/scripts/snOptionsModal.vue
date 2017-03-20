@@ -1,7 +1,10 @@
 <template>
     <modal :show.sync="show" :on-close.sync="close">
-        <div class="modal-body">
+        <div class="modal-body" v-if="!snOptions.loading">
         <h1>test</h1>
+        <ul>
+            <li v-for="sub in snOptions.inactiveSubs">{{sub}}</li>
+            </ul>
         </div>
     </modal>
 </template>
@@ -9,7 +12,7 @@
 import SNModal from './snModal.vue';
 export default {
     components:{'modal': SNModal},
-    props: ['show','onClose'],
+    props: ['show','onClose', 'snOptions'],
     methods:{
         close(){
             this.onClose();

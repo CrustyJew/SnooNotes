@@ -4,6 +4,9 @@ import Vue from 'vue'
 import Test from './test.vue'
 import UserNotes from './userNotes.vue';
 import SNOptions from './snOptions.vue';
+import axios from 'axios';
+import {snInterceptor} from './utilities/snAxiosInterceptor';
+import {apiBaseUrl} from './config';
 
 import {reduxStore} from './redux/contentScriptStore';
 
@@ -11,6 +14,9 @@ var elem = document.createElement('div');
 elem.id = 'SnooNotes';
 elem.innerHTML = '<h1>oh shit son</h1>';
 document.body.appendChild(elem);
+
+axios.defaults.baseURL = apiBaseUrl;
+axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req);});
 
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(()=>{

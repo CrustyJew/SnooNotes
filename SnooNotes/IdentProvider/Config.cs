@@ -26,8 +26,8 @@ namespace IdentProvider {
             }
             return new List<ApiResource>
             {
-                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets},
-                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets}
+                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "urn:snoonotes:admin" } },
+                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "urn:snoonotes:admin" }}
             };
         }
 

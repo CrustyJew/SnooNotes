@@ -147,10 +147,10 @@ namespace SnooNotes {
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
                 Authority = Configuration["OIDC_Authority"],
-                RequireHttpsMetadata = false,
+                RequireHttpsMetadata = false, 
 
-                EnableCaching = false,
-
+                EnableCaching = false, 
+                 
                 ApiName = "snoonotes",
                 ApiSecret = Configuration["OIDC_APISecret"]
             });
