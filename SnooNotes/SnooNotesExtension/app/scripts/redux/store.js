@@ -16,14 +16,19 @@ const initialState = {user:{user:null,isLoadingUser:false}};
 
 
 const bg_aliases = {
-    [LOGIN]: ()=>{
+    [LOGIN]: (action)=>{
         return (dispatch)=>{
             dispatch(loadingUser());
         return userManager.getUser().then((u)=>{
             if(u){
-                dispatch(userFound(u));
+                initUser(dispatch,u);
             }else{
-                userManager.signinRedirect();
+                userManager.signinSilent().then((user)=>{
+                    initUser(dispatch,user);
+                },(error)=>{
+                    dispatch(loadingUser(action._sender.tab.id));
+                    userManager.signinRedirect();
+                })
             }
         })
         }
@@ -31,6 +36,10 @@ const bg_aliases = {
     [REDIRECT_SUCCESS]: (req)=>{
         return (dispatch)=>{
         userManager.signinRedirectCallback(req.payload).then((user)=>{
+            let state = store.getState();
+            chrome.tabs.update(state.user.last_tab_id, {active:true},()=>{
+                chrome.tabs.remove(req._sender.tab.id);
+            });
             dispatch(userFound(user));
             dispatch(getModSubs());
         },(err)=>{console.warn(err)});
@@ -47,3 +56,18 @@ export const store = createStore(reducer,initialState,composeWithDevTools(
 
 wrapStore(store, { portName: "SnooNotesExtension" });
 
+userManager.getUser().then((u)=>{
+    if(u){
+        initUser(store.dispatch,u);
+    }
+    else{
+        userManager.signinSilent().then((user)=>{
+            initUser(store.dispatch,user);
+        },(error)=>{console.log('user not logged in')});
+    }
+})
+
+const initUser = (dispatch, user) =>{
+    dispatch(userFound(user));
+    dispatch(getModSubs());
+}

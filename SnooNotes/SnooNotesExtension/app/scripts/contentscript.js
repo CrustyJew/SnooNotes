@@ -3,6 +3,8 @@ console.log('\'Allo \'Allo! Content script');
 import Vue from 'vue'
 import Test from './test.vue'
 import UserNotes from './userNotes.vue';
+import SNOptions from './snOptions.vue';
+
 import {reduxStore} from './redux/contentScriptStore';
 
 var elem = document.createElement('div');
@@ -20,7 +22,11 @@ const unsub = reduxStore.subscribe(()=>{
         var notes = new Vue({render: h => h(UserNotes)}).$mount();
         var authElem = things[i].querySelector('a.author');
         if(authElem){
-        authElem.parentNode.insertBefore(notes.$el,authElem.nextSibling);
+            authElem.parentNode.insertBefore(notes.$el,authElem.nextSibling);
         }
     }
+
+    var options = new Vue({render: h=>h(SNOptions)}).$mount();
+    var userElem = document.querySelector('#header-bottom-right > .user');
+    userElem.parentNode.insertBefore(options.$el,userElem.nextSibling);
 })

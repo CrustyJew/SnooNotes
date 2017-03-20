@@ -88,9 +88,10 @@ export function userExpiring() {
 }
 
 // dispatched when a new user is loading
-export function loadingUser() {
+export function loadingUser(tabid = "") {
   return {
-    type: LOADING_USER
+    type: LOADING_USER,
+    payload: tabid
   };
 }
 

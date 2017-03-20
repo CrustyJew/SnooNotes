@@ -50,13 +50,13 @@ export default function userReducer(state = initialState, action) {
       return Object.assign({}, initialState);
     case REDIRECT_SUCCESS:
     case USER_FOUND:
-      return Object.assign({}, { ...state }, { 
+      return Object.assign({}, { 
             access_token: action.payload.access_token,
             name: action.payload.profile.name,
             isLoadingUser: false 
         });
     case LOADING_USER:
-      return Object.assign({}, {...state}, { isLoadingUser: true });
+      return Object.assign({}, {...state}, { isLoadingUser: true, last_tab_id: action.payload  });
     default:
       return state;
   }
