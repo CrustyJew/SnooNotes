@@ -17,6 +17,7 @@ using IdentProvider.Data;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
+using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SnooNotes {
@@ -142,6 +143,17 @@ namespace SnooNotes {
                 },
                 SaveTokens = true, AutomaticAuthenticate = false, AutomaticChallenge = false
             } );
+
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            {
+                Authority = Configuration["OIDC_Authority"],
+                RequireHttpsMetadata = false,
+
+                EnableCaching = false,
+
+                ApiName = "snoonotes",
+                ApiSecret = Configuration["OIDC_APISecret"]
+            });
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

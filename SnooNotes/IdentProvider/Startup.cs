@@ -162,7 +162,7 @@ namespace IdentProvider {
                 }
 
                 if ( !context.ApiResources.Any() ) {
-                    foreach ( var resource in Config.GetApiResources() ) {
+                    foreach ( var resource in Config.GetApiResources(Configuration) ) {
                         context.ApiResources.Add( resource.ToEntity() );
                     }
                     context.SaveChanges();

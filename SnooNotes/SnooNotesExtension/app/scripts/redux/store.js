@@ -7,9 +7,11 @@ import { wrapStore, alias } from 'react-chrome-redux';
 import {login, LOGIN, REDIRECT_SUCCESS, SILENT_RENEW_SUCCESS} from './actions/user';
 import reducer from './reducers/index';
 import {loadingUser, userFound, silentRenewError} from './actions/user';
+import {getModSubs} from './actions/snoonotesInfo';
 import {Log} from 'oidc-client';
-Log.logger = console;
-Log.level = Log.DEBUG;
+import {apiMiddleware} from 'redux-api-middleware';
+import {apiHeadersMiddleware} from './middleware/apiHeadersMiddleware';
+
 const initialState = {user:{user:null,isLoadingUser:false}};
 
 
@@ -29,7 +31,8 @@ const bg_aliases = {
     [REDIRECT_SUCCESS]: (req)=>{
         return (dispatch)=>{
         userManager.signinRedirectCallback(req.payload).then((user)=>{
-            dispatch(userFound(user))
+            dispatch(userFound(user));
+            dispatch(getModSubs());
         },(err)=>{console.warn(err)});
         }
     }
@@ -38,7 +41,7 @@ const bg_aliases = {
 //const store = createStore(reducer,initialState,enhancer);
 
 export const store = createStore(reducer,initialState,composeWithDevTools(
-    applyMiddleware(alias(bg_aliases),thunk)//, createOidcMiddleware(userManager))
+    applyMiddleware(alias(bg_aliases),thunk,apiHeadersMiddleware,apiMiddleware)//, createOidcMiddleware(userManager))
      )
  )
 

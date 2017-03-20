@@ -34,22 +34,27 @@ import {
 
 
 const initialState = {
-  user: null,
+  access_token: null,
+  name: "",
   isLoadingUser: false
 };
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case USER_EXPIRED:
-        return Object.assign({}, { ...state }, { user: null, isLoadingUser: false });
+        return Object.assign({}, initialState);
     case SILENT_RENEW_ERROR:
         return Object.assign({}, { ...state }, { isLoadingUser: false });
     case SESSION_TERMINATED:
     case USER_SIGNED_OUT:
-      return Object.assign({}, { ...state }, { user: null, isLoadingUser: false });
+      return Object.assign({}, initialState);
     case REDIRECT_SUCCESS:
     case USER_FOUND:
-      return Object.assign({}, { ...state }, { user: action.payload, isLoadingUser: false });
+      return Object.assign({}, { ...state }, { 
+            access_token: action.payload.access_token,
+            name: action.payload.profile.name,
+            isLoadingUser: false 
+        });
     case LOADING_USER:
       return Object.assign({}, {...state}, { isLoadingUser: true });
     default:

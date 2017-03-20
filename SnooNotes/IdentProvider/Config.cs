@@ -16,12 +16,18 @@ namespace IdentProvider {
             };
         }
 
-        public static IEnumerable<ApiResource> GetApiResources() {
+        public static IEnumerable<ApiResource> GetApiResources(IConfigurationRoot config) {
+
+            string[] apiSecrets = config.GetSection("ID4_API_Secrets").Get<string[]>();
+            List<Secret> secrets = new List<Secret>();
+            foreach (string secret in apiSecrets)
+            {
+                secrets.Add(new Secret(secret.Sha256()));
+            }
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API"),
-                new ApiResource("dirtbag", "Dirtbag API"),
-                new ApiResource("snoonotes","SnooNotes")
+                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets},
+                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets}
             };
         }
 
@@ -41,7 +47,7 @@ namespace IdentProvider {
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     ClientSecrets = secrets,
-                    AllowedScopes = { "api1", "dirtbag" }
+                    AllowedScopes = { "dirtbag" }
                 },
 
                 // resource owner password grant client
@@ -51,7 +57,7 @@ namespace IdentProvider {
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     ClientSecrets = secrets,
-                    AllowedScopes = { "api1", "dirtbag" }
+                    AllowedScopes = { "dirtbag" }
                 },
 
                 new Client {
@@ -66,7 +72,7 @@ namespace IdentProvider {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "dirtbag", "snoonotes"
-                    }, AllowAccessTokensViaBrowser = true, AccessTokenLifetime = 66
+                    }, AllowAccessTokensViaBrowser = true
                 },
 
                 // OpenID Connect hybrid flow and client credentials client (MVC)
@@ -89,7 +95,7 @@ namespace IdentProvider {
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1", "dirtbag", "snoonotes"
+                        "dirtbag", "snoonotes"
                     },
                     AllowOfflineAccess = true , 
                 }

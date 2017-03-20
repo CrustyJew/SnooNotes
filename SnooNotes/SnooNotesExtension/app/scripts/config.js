@@ -3,7 +3,7 @@ import CustomWebStorageStateStore from './utilities/customWebStorageStateStore';
 import CustomIFrameNavigator from './utilities/customIFrameNavigator'; 
 
 export const authBaseUrl = 'http://localhost:5000/Auth/';
-export const apiBaseUrl = 'http://localhost:5001/'
+export const apiBaseUrl = 'http://localhost:5001/api/'
 const redirectNav = new CustomRedirectManager();
 const customStore = new CustomWebStorageStateStore();
 const customiframeNavigator = new CustomIFrameNavigator();
