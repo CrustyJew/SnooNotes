@@ -55,7 +55,8 @@ namespace SnooNotes.BLL {
             if ( Math.Max( ureqs, ireqs ) > 5 ) {
                 throw new Exception( "You are doing that too much! Limited to created 5 subreddits per 24 hours, sorry!" );
             }
-            if ( (await subDAL.GetActiveSubs()).Select( s => s.SubName.ToLower() ).Contains( newSub.SubName.ToLower() ) ) {
+            var activeSubs = await subDAL.GetActiveSubs();
+            if ( activeSubs.Count > 0 && activeSubs.Select( s => s.SubName.ToLower() ).Contains( newSub.SubName.ToLower() ) ) {
                 throw new Exception( "Subreddit already exists!" );
             }
             try {

@@ -56,7 +56,7 @@ var config = {
         resolve: {
             alias: {
                 'vue$': 'vue/dist/vue.esm.js',
-                'oidc-client':'oidc-client/lib/oidc-client.js'
+                'styles': path.resolve(__dirname, './app/styles')
             }
         },
       };

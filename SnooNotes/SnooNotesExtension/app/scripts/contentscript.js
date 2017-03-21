@@ -1,7 +1,6 @@
 console.log('\'Allo \'Allo! Content script');
 
 import Vue from 'vue'
-import Test from './test.vue'
 import UserNotes from './userNotes.vue';
 import SNOptions from './snOptions.vue';
 import axios from 'axios';
@@ -10,11 +9,6 @@ import {apiBaseUrl} from './config';
 
 import {reduxStore} from './redux/contentScriptStore';
 
-var elem = document.createElement('div');
-elem.id = 'SnooNotes';
-elem.innerHTML = '<h1>oh shit son</h1>';
-document.body.appendChild(elem);
-
 axios.defaults.baseURL = apiBaseUrl;
 axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req);});
 
@@ -22,7 +16,6 @@ axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req
 const unsub = reduxStore.subscribe(()=>{
     unsub();
     var NotesComponent = Vue.extend({template:'<user-notes></user-notes>'})
-    var v = new Vue({ el: '#SnooNotes', render: h => h(Test) });
     var things = document.querySelectorAll('.thing');
     for (var i = 0; i < things.length; i++){
         var notes = new Vue({render: h => h(UserNotes)}).$mount();

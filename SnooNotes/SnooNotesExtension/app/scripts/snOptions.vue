@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span id="SNOptions">
         <a id="sn-login" @click="login" v-if="!user.name">{{user.isLoadingUser ? 'loading...' : 'Login'}}</a>
         <a id="sn-show-options" v-if="user.name" @click="openOptions">SN Options</a>
         <sn-options-modal :show.sync="showOptions" :sn-options.sync="snOptions" :on-close.sync="closeModal"></sn-options-modal>

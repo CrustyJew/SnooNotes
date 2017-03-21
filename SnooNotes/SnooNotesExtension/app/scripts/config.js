@@ -20,6 +20,7 @@ export const userManagerConfig = {
   loadUserInfo: true,
   redirectNavigator: redirectNav,
   monitorSession: true,
+  checkSessionInterval: 15000,
   iframeNavigator: customiframeNavigator
   //userStore: customStore
 };

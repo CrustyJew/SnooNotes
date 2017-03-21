@@ -1,6 +1,7 @@
 <template>
 <div class="modal-mask" v-show="show" transition="modal" @click="close">
-    <div class="modal-container" @click.stop>
+    <div id="SNModal" class="modal-container" @click.stop>
+      <div class="SNHeader"><a class="SNCloseModal SNClose" @click="close">X</a></div>
         <slot></slot>
     </div>
 </div>
@@ -15,7 +16,21 @@ export default {
     }
 }
 </script>
-<style>
+<style lang="scss">
+@import "~styles/_vars.scss";
+.SNCloseModal{
+  display:inline-block;
+  cursor: pointer;
+  color:white;
+  background-color: $accent;
+  font-weight:bold;
+  padding: 2px 10px;
+  margin-top: -1px;
+  border-top-right-radius: 10px;
+  &:hover{
+        background-image: linear-gradient(to bottom, darken($accent,10%),darken($accent,25%));
+    }
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -23,7 +38,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, .7);
   display: table;
   transition: opacity .3s ease;
 }
@@ -34,14 +49,22 @@ export default {
 }
 
 .modal-container {
-  width: 300px;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;
-  border-radius: 2px;
+  border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;
-  font-family: Helvetica, Arial, sans-serif;
+  position: fixed;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    padding-top: 10px;
+    z-index: 2147483647 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 1200px;
 }
 
 .modal-header h3 {
@@ -69,5 +92,9 @@ export default {
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
+}
+
+body.res .side .titlebox div[data-res-css]:first, #tb-bottombar{
+  z-index: auto !important;
 }
 </style>

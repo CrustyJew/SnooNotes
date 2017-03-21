@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
     [Authorize]
-    [Route("restapi/[controller]")]
+    [Route("restapi/[controller]")][Route("api/[controller]")]
     public class SubredditController : Controller
     {
         private BLL.ISubredditBLL subBLL;
         public SubredditController(BLL.ISubredditBLL subredditBLL) {
             subBLL = subredditBLL;
         }
-        [HttpGet("", Name ="GetAll")]
+        [HttpGet("")]
         // GET: api/Subreddit
         public Task<IEnumerable<Models.Subreddit>> Get()
         {
@@ -47,7 +47,7 @@ namespace SnooNotes.Controllers {
         }
         [HttpPost]
         // POST: api/Subreddit
-        public Task Post([FromForm]Models.Subreddit newSub)
+        public Task Post([FromBody]Models.Subreddit newSub)
         {
             string name = User.Identity.Name;
             //var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
