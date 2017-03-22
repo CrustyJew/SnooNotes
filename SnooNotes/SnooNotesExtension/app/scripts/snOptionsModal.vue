@@ -1,23 +1,34 @@
 <template>
     <modal :show.sync="show" :on-close.sync="close">
         <div id="SNOptionsContainer" class="modal-body">
-            <div v-if="!snOptions.loading">
-                <div id="SNRefreshContainer">
-                    <h1>Has something gone rogue?<br />Change subreddits you moderate?<br />Activate a new sub?</h1>
-                    <button type="button" id="SNRestart" class="SNBtnWarn">Refresh SnooNotes</button>    
+            
+            <div id="SNRefreshContainer">
+                <h1>Has something gone rogue?<br />Change subreddits you moderate?<br />Activate a new sub?</h1>
+                <button type="button" id="SNRestart" class="SNBtnWarn">Refresh SnooNotes</button>    
                 <br class="clearfix" />
-                </div>
-                <div id="SNActivateContainer">
+            </div>
+            <div id="SNActivateContainer">
+                <div  v-if="!snOptions.loadingInactiveSubs">
                     <select id="SNActivateSub" v-model="activateSubName">
                         <option value="-1">---Activate a new Subreddit---</option>
                         <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
                     </select>
                     <button type="button" id="SNBtnActivateSub" class="SNBtnSubmit" @click="activateSub">Activate</button>
-                <br class="clearfix" />
+                    <br class="clearfix" />
+                </div>
+                <div  v-show="snOptions.loadingInactiveSubs">
+                    <sn-loading></sn-loading>
                 </div>
             </div>
-            <div v-if="snOptions.loading">
-                <sn-loading></sn-loading>
+            <div id="SNSubSettingsContainer">
+                <div v-if="snOptions.loadingSubSettings">
+                    <sn-loading></sn-loading>
+                </div>
+                <div v-if="!snOptions.loadingSubSettings">
+                    <div class="SNSubSettingsBtnWrapper">
+                        <button type="button" class="SNBtnAction" v-for="(sub,index) in snOptions.subSettings" @click="showSettings(index)">/r/{{sub.SubName}}</button>
+                    </div>
+                </div>
             </div>
         </div>
     </modal>
@@ -45,6 +56,9 @@ export default {
                     subName:this.activateSubName
                 });
             }
+        },
+        showSettings(index){
+            console.log(index);
         }
     },
     name:'sn-options-modal'
@@ -55,6 +69,7 @@ export default {
     width:510px;
     margin:0 auto;
     height:74px;
+    text-align:left;
     h1{
         float:left;
         font-size: 18px;
@@ -65,6 +80,15 @@ export default {
     margin:0 auto;
     width:310px;
 }
+
+#header{
+  //force header index higher for options modal
+    z-index: 2147483646;
+}
+.sn-loading{
+    margin:0 auto;
+}
+
 #SNActivateSub {
     height: 32px;
     border-radius: 5px;
@@ -90,5 +114,13 @@ export default {
     overflow: auto;
     width: 100%;
     box-sizing: border-box;
+}
+
+.SNSubSettingsBtnWrapper{
+    width: 250px;
+    padding: 20px 20px 0px 20px;
+    margin: 0 auto;
+    display: inline-block;
+    text-align: center;
 }
 </style>

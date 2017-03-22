@@ -26,7 +26,7 @@ h1{
 }
 
 //*** BUTTONS *** //
-.SNBtnCancel, .SNBtnSettings, .SNBtnSubmit, .SNBtnWarn {
+.SNBtnCancel, .SNBtnAction, .SNBtnSubmit, .SNBtnWarn {
     border: 1px solid $grey;
     font-family: Verdana,Arial,sans-serif;
     margin: 4px 16px 4px 0;
@@ -49,7 +49,7 @@ h1{
     }
 }
 
-.SNBtnSettings {
+.SNBtnAction {
     background-image: linear-gradient(to bottom, $secondary, darken($secondary,15%));
     &:hover{
         background-image: linear-gradient(to bottom, darken($secondary,10%),darken($secondary,25%));

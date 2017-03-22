@@ -17,7 +17,12 @@ export default {
         return {
             user: this.$select('user'),
             showOptions: false,
-            snOptions: {loading:true,inactiveSubs:[]}
+            snOptions: {
+                loadingInactiveSubs:true,
+                loadingSubSettings:true,
+                inactiveSubs:[],
+                subSettings:{}
+            }
         }
     },
     methods:{
@@ -28,11 +33,15 @@ export default {
             this.showOptions = false;
         },
         openOptions(){
-            this.snOptions.loading = true;
+            this.snOptions.loadingInactiveSubs = true;
+            this.snOptions.loadingSubSettings = true;
             this.showOptions = true;
 
             axios.get('Account/GetInactiveModeratedSubreddits')
-                .then(response => {this.snOptions.inactiveSubs = response.data; this.snOptions.loading = false;});
+                .then(response => {this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false;});
+                
+            axios.get('Subreddit/admin')
+                .then(response =>{this.snOptions.subSettings = response.data; this.snOptions.loadingSubSettings = false;});
         }
     }
 }

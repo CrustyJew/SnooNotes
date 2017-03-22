@@ -25,6 +25,11 @@ export default{
     animation-iteration-count: infinite;
     animation-fill-mode: both;
 }
+.sn-loading{
+    padding:2px;
+    height:19px;
+    width:57px;
+}
 
 @keyframes sn-pulse{
     0%,
