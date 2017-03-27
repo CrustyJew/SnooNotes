@@ -6,8 +6,8 @@
     </span>
 </template>
 <script>
-import {login} from './redux/actions/user';
-import {store} from './redux/contentScriptStore';
+import {login} from '../../redux/actions/user';
+import {store} from '../../redux/contentScriptStore';
 import SNOptionsModal from './snOptionsModal.vue';
 import axios from 'axios';
 export default {

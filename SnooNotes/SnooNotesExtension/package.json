@@ -82,6 +82,7 @@
     "redux": "^3.6.0",
     "redux-api-middleware": "^1.0.2",
     "redux-thunk": "^2.2.0",
-    "revue": "^3.0.0"
+    "revue": "^3.0.0",
+    "vuelidate": "^0.4.2"
   }
 }

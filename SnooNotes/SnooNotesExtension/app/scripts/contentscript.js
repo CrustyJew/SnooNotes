@@ -2,7 +2,7 @@ console.log('\'Allo \'Allo! Content script');
 
 import Vue from 'vue'
 import UserNotes from './userNotes.vue';
-import SNOptions from './snOptions.vue';
+import SNOptions from './components/options/snOptions.vue';
 import axios from 'axios';
 import {snInterceptor} from './utilities/snAxiosInterceptor';
 import {apiBaseUrl} from './config';

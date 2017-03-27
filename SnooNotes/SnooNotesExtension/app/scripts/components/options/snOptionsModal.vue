@@ -10,7 +10,7 @@
             <div id="SNActivateContainer">
                 <div  v-if="!snOptions.loadingInactiveSubs">
                     <select id="SNActivateSub" v-model="activateSubName">
-                        <option value="-1">---Activate a new Subreddit---</option>
+                        <option value="-1" disabled>---Activate a new Subreddit---</option>
                         <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
                     </select>
                     <button type="button" id="SNBtnActivateSub" class="SNBtnSubmit" @click="activateSub">Activate</button>
@@ -24,30 +24,37 @@
                 <div v-if="snOptions.loadingSubSettings">
                     <sn-loading></sn-loading>
                 </div>
-                <div v-if="!snOptions.loadingSubSettings">
-                    <div class="SNSubSettingsBtnWrapper">
-                        <button type="button" class="SNBtnAction" v-for="(sub,index) in snOptions.subSettings" @click="showSettings(index)">/r/{{sub.SubName}}</button>
+                <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
+                    <div class="SNSubSettingsBtnWrapper" >
+                        <button type="button" class="SNBtnAction" @click="showSettings(index)" v-for="(sub,index) in snOptions.subSettings">/r/{{sub.SubName}}</button>
                     </div>
+                </div>
+                <div v-if="!snOptions.loadingSubSettings && editingSubIndex > -1">
+                    <sn-sub-options :sub="snOptions.subSettings[editingSubIndex]" :cancel="cancelSubOptSave"></sn-sub-options>
                 </div>
             </div>
         </div>
     </modal>
 </template>
 <script>
-import SNModal from './snModal.vue';
-import LoadingSpinner from './components/loadingSpinner.vue';
+import SNModal from '../snModal.vue';
+import LoadingSpinner from '../loadingSpinner.vue';
+import SNSubOptions from './snSubOptions.vue';
 import axios from 'axios';
 
 export default {
-    components:{'modal': SNModal, 'sn-loading': LoadingSpinner},
+    components:{'modal': SNModal, 'sn-loading': LoadingSpinner,'sn-sub-options': SNSubOptions},
     props: ['show','onClose', 'snOptions'],
     data(){
         return {
-            activateSubName: "-1"
+            activateSubName: "-1",
+            editingSubIndex: -1
         }
     },
     methods:{
         close(){
+            this.editingSubIndex = -1;
+            this.activateSubName = "-1";
             this.onClose();
         },
         activateSub(){
@@ -57,8 +64,12 @@ export default {
                 });
             }
         },
+        cancelSubOptSave(){
+            this.editingSubIndex = -1;
+        },
         showSettings(index){
-            console.log(index);
+            this.editingSubIndex = index;
+
         }
     },
     name:'sn-options-modal'
