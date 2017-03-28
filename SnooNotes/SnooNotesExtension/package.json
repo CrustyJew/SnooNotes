@@ -83,6 +83,8 @@
     "redux-api-middleware": "^1.0.2",
     "redux-thunk": "^2.2.0",
     "revue": "^3.0.0",
+    "vue-toasted": "^1.0.24",
+    "vuedraggable": "^2.9.0",
     "vuelidate": "^0.4.2"
   }
 }

@@ -27,7 +27,7 @@ h1{
 
 //*** BUTTONS *** //
 .SNBtnCancel, .SNBtnAction, .SNBtnSubmit, .SNBtnWarn {
-    border: 1px solid $grey;
+    border: 1px solid $gray;
     font-family: Verdana,Arial,sans-serif;
     margin: 4px 16px 4px 0;
     padding: 2px 18px;
@@ -65,5 +65,21 @@ h1{
 }
 
 .SNBtnCancel {
-    background: linear-gradient(to bottom, #a8a8a8,#878787 );
+    background: linear-gradient(to bottom, $gray,darken($gray,15%) );
+}
+
+#toasted-container, .SNToast{
+    z-index: 2147483648 !important;
+    .toasted.primary.error{
+        background-color:$accent !important;
+    }
+    .toasted.primary.success{
+        background-color:$primary !important;
+    }
+    .toasted.primary.warn{
+        background-color:$warning !important;
+    }
+    .toasted.primary.info{
+        background-color:$secondary !important;
+    }
 }

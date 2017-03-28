@@ -55,11 +55,11 @@ namespace SnooNotes.Controllers {
             string ip = HttpContext.Connection.RemoteIpAddress.ToString();
             return subBLL.AddSubreddit( newSub, name, ip );
         }
-        [HttpPut("{id}")]
+        [HttpPut("{subname}")]
         // PUT: api/Subreddit/5
-        public Task<object> Put(string id, [FromForm]Models.Subreddit sub)
+        public Task<object> Put([FromRoute]string subname, [FromBody]Models.Subreddit sub)
         {
-            sub.SubName = id;
+            sub.SubName = subname;
             if ( User.HasClaim( "urn:snoonotes:admin", sub.SubName.ToLower() ) ) {
                 return subBLL.UpdateSubreddit( sub, User );
             }

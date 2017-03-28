@@ -6,7 +6,7 @@ import SNOptions from './components/options/snOptions.vue';
 import axios from 'axios';
 import {snInterceptor} from './utilities/snAxiosInterceptor';
 import {apiBaseUrl} from './config';
-
+import Toasted from 'vue-toasted';
 import {reduxStore} from './redux/contentScriptStore';
 
 axios.defaults.baseURL = apiBaseUrl;
@@ -15,6 +15,7 @@ axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(()=>{
     unsub();
+    Vue.use(Toasted,{position:'bottom-right',duration:2500});
     var NotesComponent = Vue.extend({template:'<user-notes></user-notes>'})
     var things = document.querySelectorAll('.thing');
     for (var i = 0; i < things.length; i++){

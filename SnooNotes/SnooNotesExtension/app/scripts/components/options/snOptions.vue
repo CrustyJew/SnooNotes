@@ -2,7 +2,7 @@
     <span id="SNOptions">
         <a id="sn-login" @click="login" v-if="!user.name">{{user.isLoadingUser ? 'loading...' : 'Login'}}</a>
         <a id="sn-show-options" v-if="user.name" @click="openOptions">SN Options</a>
-        <sn-options-modal :show.sync="showOptions" :sn-options.sync="snOptions" :on-close.sync="closeModal"></sn-options-modal>
+        <sn-options-modal v-if="showOptions" :show.sync="showOptions" :on-close.sync="closeModal"></sn-options-modal>
     </span>
 </template>
 <script>
@@ -20,8 +20,6 @@ export default {
             snOptions: {
                 loadingInactiveSubs:true,
                 loadingSubSettings:true,
-                inactiveSubs:[],
-                subSettings:{}
             }
         }
     },
@@ -37,11 +35,6 @@ export default {
             this.snOptions.loadingSubSettings = true;
             this.showOptions = true;
 
-            axios.get('Account/GetInactiveModeratedSubreddits')
-                .then(response => {this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false;});
-                
-            axios.get('Subreddit/admin')
-                .then(response =>{this.snOptions.subSettings = response.data; this.snOptions.loadingSubSettings = false;});
         }
     }
 }

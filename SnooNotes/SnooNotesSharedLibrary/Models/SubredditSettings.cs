@@ -22,7 +22,7 @@ namespace SnooNotes.Models
         {
             var ret = new List<NoteType>()
             {
-                new NoteType() { DisplayName="None", ColorCode="369", DisplayOrder=0, Bold = false, Italic=false,SubName=subName  },
+                new NoteType() { DisplayName="None", ColorCode="336699", DisplayOrder=0, Bold = false, Italic=false,SubName=subName  },
                 new NoteType() { DisplayName="Good Contributor", ColorCode="008000", DisplayOrder=1, Bold = false, Italic=false,SubName=subName  },
                 new NoteType() { DisplayName="Spam Watch", ColorCode="FF00FF", DisplayOrder=2, Bold = false, Italic=false,SubName=subName  },
                 new NoteType() { DisplayName="Spam Warning", ColorCode="800080", DisplayOrder=3, Bold = false, Italic=false,SubName=subName  },

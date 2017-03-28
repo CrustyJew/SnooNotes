@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div v-if="!snOptions.loadingSubSettings && editingSubIndex > -1">
-                    <sn-sub-options :sub="snOptions.subSettings[editingSubIndex]" :cancel="cancelSubOptSave"></sn-sub-options>
+                    <sn-sub-options :sub="snOptions.subSettings[editingSubIndex]" :cancel="cancelSubOptSave" :finish="getSubSettings"></sn-sub-options>
                 </div>
             </div>
         </div>
@@ -44,11 +44,15 @@ import axios from 'axios';
 
 export default {
     components:{'modal': SNModal, 'sn-loading': LoadingSpinner,'sn-sub-options': SNSubOptions},
-    props: ['show','onClose', 'snOptions'],
+    props: ['show','onClose'],
     data(){
         return {
             activateSubName: "-1",
-            editingSubIndex: -1
+            editingSubIndex: -1,
+            snOptions: {
+                loadingInactiveSubs: true,
+                loadingSubSettings: true
+            }
         }
     },
     methods:{
@@ -70,7 +74,25 @@ export default {
         showSettings(index){
             this.editingSubIndex = index;
 
+        },
+        getSubSettings(){
+            this.snOptions.loadingSubSettings = true;
+            this.editingSubIndex = -1;
+            this.snOptions.subSettings = {};
+            axios.get('Subreddit/admin')
+                .then(response => {this.snOptions.subSettings = response.data; this.snOptions.loadingSubSettings = false;});
+        },
+        getInactiveSubs(){
+            this.activateSubName = "-1";
+            this.snOptions.loadingInactiveSubs = true;
+            this.snOptions.inactiveSubs = [];
+            axios.get('Account/GetInactiveModeratedSubreddits')
+                .then(response => {this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false;});
         }
+    },
+    created: function(){
+               this.getSubSettings();
+               this.getInactiveSubs();
     },
     name:'sn-options-modal'
 }
