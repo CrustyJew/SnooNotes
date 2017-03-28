@@ -26,13 +26,16 @@ namespace SnooNotes.DAL {
 
         public override async Task<IEnumerable<Subreddit>> GetSubreddits( IEnumerable<string> subnames ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select s.SubredditID, s.SubName, s.Active, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, "+
-                               "ss.AccessMask, ss.TempBanID, ss.PermBanID, " +
-                               "nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic " +
-                               "from Subreddits s " +
-                               "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
-                               "left join NoteTypes nt on nt.SubredditID = s.SubredditID " +
-                               "where s.SubName in @subnames and nt.Disabled = 0";
+                string query = @"
+select s.SubredditID, s.SubName, s.Active, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, 
+ss.AccessMask, ss.TempBanID, ss.PermBanID,
+nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic 
+from Subreddits s 
+left join SubredditSettings ss on ss.SubRedditID = s.SubredditID 
+left join NoteTypes nt on nt.SubredditID = s.SubredditID 
+where s.SubName in @subnames and nt.Disabled = 0
+ORDER BY nt.DisplayOrder asc
+";
 
                 var lookup = new Dictionary<int, Subreddit>();
                 var result = await conn.QueryAsync<Subreddit, DirtbagSettings, SubredditSettings, NoteType, Subreddit>( query, ( s, bs, ss, nt ) => {

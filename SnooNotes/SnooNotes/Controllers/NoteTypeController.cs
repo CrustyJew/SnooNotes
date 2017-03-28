@@ -12,6 +12,7 @@ namespace SnooNotes.Controllers
 {
     [Authorize]
     [Route("restapi/[controller]")]
+    [Route("api/[controller]")]
     public class NoteTypeController : Controller
     {
         private BLL.INoteTypesBLL noteTypeBLL;

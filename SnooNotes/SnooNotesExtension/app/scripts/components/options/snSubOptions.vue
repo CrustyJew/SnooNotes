@@ -81,7 +81,8 @@ export default {
                 DisplayName:'',
                 ColorCode: '#000000',
                 Bold: false,
-                Italic: false
+                Italic: false,
+                SubName: this.initialSettings.SubName
             })
         },
         removeNoteType(nt){
@@ -93,19 +94,46 @@ export default {
             for(let i = 0; i < this.selectedAccess.length; i++){
                 newAccessMask += this.selectedAccess[i];
             }
-
+            let subSets = Promise.resolve();
             if(newAccessMask != this.initialSettings.Settings.AccessMask
                || this.initialSettings.Settings.PermBanID != this.permBanID[0]
                || this.initialSettings.Settings.TempBanID != this.tempBanID[0]){
                 
                 //access mask, or auto ban note id changed
-                axios.put('subreddit/'+ this.initialSettings.SubName,{
+                subSets = axios.put('subreddit/'+ this.initialSettings.SubName,{
                     Settings:{
                         AccessMask: newAccessMask,
                         TempBanID: this.tempBanID[0],
                         PermBanID: this.permBanID[0]
                     }
-                }).then(()=>{
+                });
+            }
+            var ntAddData = [];
+            var ntDelData = [];
+            var ntUpdData = [];
+            for(let i = 0; i < this.newSettings.Settings.NoteTypes.length; i++){
+                let nt = this.newSettings.Settings.NoteTypes[i];
+                nt.ColorCode = nt.ColorCode.replace('#','');
+                nt.DisplayOrder = i;
+                if(nt.NoteTypeID && nt.NoteTypeID > -1){
+                    ntUpdData.push(nt);
+                }
+                else{
+                    ntAddData.push(nt);
+                }
+            }
+            let updIds = ntUpdData.map(n=>n.NoteTypeID);
+            for(let i = 0; i < this.initialSettings.Settings.NoteTypes.length; i++){
+                let nt = this.initialSettings.Settings.NoteTypes[i];
+                if(updIds.indexOf(nt.NoteTypeID)==-1){
+                    ntDelData.push(nt);
+                }
+            }
+            let ntAdd = !(ntAddData.length) ? Promise.resolve() : axios.post('NoteType',ntAddData);
+            let ntDel = !(ntDelData.length) ? Promise.resolve() : axios({method: 'delete', url: 'NoteType',data:ntDelData});
+            let ntUpd = !(ntUpdData.length) ? Promise.resolve() : axios.put('NoteType',ntUpdData);
+            
+            Promise.all([ntAdd,ntDel,ntUpd,subSets]).then(()=>{
                     this.$toasted.success("Saved Settings!");
                     this.saving = false;
                     this.finish();
@@ -113,7 +141,6 @@ export default {
                     this.$toasted.error("Failed to save settings!",{duration:null});
                     this.saving = false;
                 })
-            }
         }
     },
     computed:{

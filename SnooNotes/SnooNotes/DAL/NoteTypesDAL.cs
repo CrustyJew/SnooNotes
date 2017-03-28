@@ -42,9 +42,12 @@ namespace SnooNotes.DAL {
 
         public async Task<IEnumerable<NoteType>> GetNoteTypesForSubs( IEnumerable<string> subredditNames ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
-                string query = "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt "
-                        + " inner join Subreddits s on s.SubredditID = nt.SubredditID"
-                        + " where s.SubName in @subs and nt.Disabled = 0";
+                string query = @"
+select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt
+inner join Subreddits s on s.SubredditID = nt.SubredditID
+where s.SubName in @subs and nt.Disabled = 0 
+ORDER BY nt.DisplayOrder asc
+";
 
                 return await con.QueryAsync<NoteType>( query, new { subs = subredditNames } );
             }
