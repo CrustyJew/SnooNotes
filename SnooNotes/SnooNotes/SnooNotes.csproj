@@ -13,8 +13,6 @@
 
   <ItemGroup>
     <Content Include="UpgradeScripts.sql" />
-    <Content Include="wwwroot\redux_silent_renew.html" />
-    <Content Include="wwwroot\redux_callback.html" />
   </ItemGroup>
 
   <ItemGroup>

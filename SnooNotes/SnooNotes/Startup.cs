@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using IdentityModel.AspNetCore.OAuth2Introspection;
 
 namespace SnooNotes {
     public class Startup {
@@ -148,7 +149,14 @@ namespace SnooNotes {
             {
                 Authority = Configuration["OIDC_Authority"],
                 RequireHttpsMetadata = false, 
-
+                TokenRetriever = (context) =>{
+                    string token = TokenRetrieval.FromAuthorizationHeader()(context);
+                    if (string.IsNullOrWhiteSpace(token))
+                    {
+                        return context.Query["token"];
+                    }
+                    return token;
+                },
                 EnableCaching = false, 
                  
                 ApiName = "snoonotes",

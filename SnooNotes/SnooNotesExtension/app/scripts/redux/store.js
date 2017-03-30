@@ -49,6 +49,11 @@ const bg_aliases = {
 //const enhancer = applyMiddleware(alias(bg_aliases),thunk, createOidcMiddleware(userManager));
 //const store = createStore(reducer,initialState,enhancer);
 
+const initUser = (dispatch, user) =>{
+    dispatch(userFound(user));
+    dispatch(getModSubs());
+}
+
 export const store = createStore(reducer,initialState,composeWithDevTools(
     applyMiddleware(alias(bg_aliases),thunk,apiHeadersMiddleware,apiMiddleware)//, createOidcMiddleware(userManager))
      )
@@ -63,11 +68,8 @@ userManager.getUser().then((u)=>{
     else{
         userManager.signinSilent().then((user)=>{
             initUser(store.dispatch,user);
-        },(error)=>{console.log('user not logged in')});
+        },(error)=>{
+            console.log('user not logged in')
+        });
     }
 })
-
-const initUser = (dispatch, user) =>{
-    dispatch(userFound(user));
-    dispatch(getModSubs());
-}

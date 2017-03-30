@@ -4,6 +4,7 @@ import CustomIFrameNavigator from './utilities/customIFrameNavigator';
 
 export const authBaseUrl = 'http://localhost:5000/Auth/';
 export const apiBaseUrl = 'http://localhost:5001/api/';
+export const signalrBaseUrl = 'http://localhost:5001/signalr';
 const redirectNav = new CustomRedirectManager();
 const customStore = new CustomWebStorageStateStore();
 const customiframeNavigator = new CustomIFrameNavigator();

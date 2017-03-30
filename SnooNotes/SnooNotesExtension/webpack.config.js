@@ -50,7 +50,7 @@ var config = {
           }
           // other vue-loader options go here
         }
-            }
+            },
             ]
         },
         resolve: {
@@ -59,6 +59,10 @@ var config = {
                 'styles': path.resolve(__dirname, './app/styles')
             }
         },
+        plugins:[
+            new webpack.ProvidePlugin({ jQuery: 'jquery', $: 'jquery', jquery: 'jquery' })
+
+        ]
       };
 
       module.exports = config;

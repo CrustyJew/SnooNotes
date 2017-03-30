@@ -1,9 +1,13 @@
 // Enable chromereload by uncommenting this line:
- import 'chromereload/devonly';
+import 'chromereload/devonly';
+
 
 import { userExpired, userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
-import store from './redux/store';
+import {store} from './redux/store';
 import {userManager} from './utilities/userManager';
+import {snUpdate, hubConnection} from './libs/snUpdatesHub';
+//import {hubConnection} from 'signalr-no-jquery';
+import {signalrBaseUrl} from './config';
 
 chrome.runtime.onInstalled.addListener(function (details) {
   console.log('previousVersion', details.previousVersion);
@@ -12,14 +16,6 @@ chrome.runtime.onInstalled.addListener(function (details) {
 chrome.browserAction.setBadgeText({text: '\'Allo'});
 
 console.log('\'Allo \'Allo! Event Page for Browser Action');
-
-userManager.clearStaleState();
-// userManager.events.addUserLoaded(onUserLoaded);
-//     userManager.events.addSilentRenewError(onSilentRenewError);
-//     userManager.events.addAccessTokenExpired(onAccessTokenExpired);
-//     userManager.events.addAccessTokenExpiring(onAccessTokenExpiring);
-//     userManager.events.addUserUnloaded(onUserUnloaded);
-//     userManager.events.addUserSignedOut(onUserSignedOut);
 
   const onUserLoaded = (user) => {
     store.dispatch(userFound(user));
@@ -49,3 +45,45 @@ userManager.clearStaleState();
   const onUserSignedOut = () => {
     store.dispatch(userSignedOut());
   }
+
+userManager.clearStaleState();
+userManager.events.addUserLoaded(onUserLoaded);
+userManager.events.addSilentRenewError(onSilentRenewError);
+userManager.events.addAccessTokenExpired(onAccessTokenExpired);
+userManager.events.addAccessTokenExpiring(onAccessTokenExpiring);
+userManager.events.addUserUnloaded(onUserUnloaded);
+userManager.events.addUserSignedOut(onUserSignedOut);
+
+
+// const hubConn = hubConnection(signalrBaseUrl, { useDefaultPath: false });
+// const snUpdate = hubConn.createHubProxy('SnooNoteUpdates');
+var curToken = "";
+snUpdate.on('message', function(message) {
+    console.log(message);
+});
+store.subscribe(()=>{
+  let newToken = store.getState().user.access_token;
+  if(newToken != curToken){
+    hubConnection.qs = {token: newToken};
+    curToken = newToken;
+    if(snUpdate.connection.state == 4){ //4 = disconnected
+      hubConnection.start({ jsonp: false })
+        .done(function(){ console.log('SignalR connected, connection ID=' + hubConnection.id); })
+        .fail(function(){ console.log('SignalR could not connect'); });
+    }
+  }
+});
+hubConnection.disconnected(()=>{
+  console.warn('Socket disconnected');
+  if(curToken){
+    setTimeout(()=>{
+      hubConnection.start()
+        .done(function(){ console.log('SignalR reconnected, connection ID=' + hubConnection.id); })
+        .fail(function(){ console.log('SignalR could not connect'); });
+    },5000)
+  }
+})
+// snUpdate.start({ jsonp: true })
+// .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
+// .fail(function(){ console.log('SignalR could not connect'); });
+    //$.connection.hub.start().then(function () { console.log('Connected socket'); }, function (e) { console.log(e.toString()) });

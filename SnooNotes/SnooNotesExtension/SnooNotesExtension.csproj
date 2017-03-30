@@ -20,6 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="app\scripts\libs\jquery-2.1.3.min.js" />
+    <Content Include="app\scripts\libs\jquery-ui.js" />
+    <Content Include="app\scripts\libs\jquery.blockUI.js" />
+    <Content Include="app\scripts\libs\jquery.signalR-2.2.0.js" />
+    <Content Include="app\scripts\libs\snUpdatesHub.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="wwwroot;web.config">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
