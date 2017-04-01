@@ -29,6 +29,7 @@
     "chromereload": "0.x.x",
     "css-loader": "^0.26.2",
     "debounce": "1.x.x",
+    "deep-freeze": "0.0.1",
     "del": "2.x.x",
     "eslint": "3.x.x",
     "eslint-loader": "1.x.x",

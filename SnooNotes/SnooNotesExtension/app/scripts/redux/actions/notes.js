@@ -3,6 +3,7 @@ import {apiBaseUrl} from '../../config';
 
 export const GET_NOTES_FOR_USERS = "GET_NOTES_FOR_USERS";
 export const GOT_NEW_NOTE = "GOT_NEW_NOTE";
+export const DELETE_NOTE = "DELETE_NOTE";
 
 export const getNotesForUsers = (usernames) =>{
     return {
@@ -25,7 +26,8 @@ export const gotNewNote = (note) =>{
     return{
         type: GOT_NEW_NOTE,
         payload:{
-            [note.AppliesToUsername]:{
+            appliesToUsername:note.AppliesToUsername,
+            note: {
                 NoteID: note.NoteID,
                 NoteTypeID: note.NoteTypeID,
                 SubName: note.SubName,

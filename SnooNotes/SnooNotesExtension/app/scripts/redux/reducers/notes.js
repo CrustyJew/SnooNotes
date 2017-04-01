@@ -1,5 +1,5 @@
-import {GET_NOTES_FOR_USERS, GOT_NEW_NOTE} from '../actions/notes';
-
+import {GET_NOTES_FOR_USERS, GOT_NEW_NOTE, DELETE_NOTE} from '../actions/notes';
+import {removeProperty} from '../../utilities/immutableFunctions';
 const initialState = {};
 
 export const notesReducer = (state = initialState, action) => {
@@ -8,7 +8,17 @@ export const notesReducer = (state = initialState, action) => {
             return Object.assign({}, state, action.payload);
         }
         case GOT_NEW_NOTE:
-            return Object.assign({}, state, {[action.payload.appliesToUsername]: [...state[action.payload.appliesToUsername],action.payload.note]});
+            return Object.assign({}, state, {[action.payload.appliesToUsername]: state[action.payload.appliesToUsername].concat(action.payload.note)});
+        case DELETE_NOTE:{
+            if(action.payload.outOfNotes){
+                return removeProperty(state, action.payload.appliesToUsername);
+            }else{
+                return Object.assign({},state, 
+                    {[action.payload.appliesToUsername]: 
+                        state[action.payload.appliesToUsername].filter(note=> note.NoteID != action.payload.noteID)
+                    })
+            }
+        }
         default: return state;
     }
 }
