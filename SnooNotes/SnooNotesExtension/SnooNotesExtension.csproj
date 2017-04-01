@@ -33,4 +33,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="tests\redux\reducers\" />
+  </ItemGroup>
+
 </Project>

@@ -8,6 +8,7 @@ import {login, LOGIN, REDIRECT_SUCCESS, SILENT_RENEW_SUCCESS} from './actions/us
 import reducer from './reducers/index';
 import {loadingUser, userFound, silentRenewError} from './actions/user';
 import {getModSubs} from './actions/snoonotesInfo';
+import {getNotesForUsers} from './actions/notes';
 import {Log} from 'oidc-client';
 import {apiMiddleware} from 'redux-api-middleware';
 import {apiHeadersMiddleware} from './middleware/apiHeadersMiddleware';
@@ -52,6 +53,7 @@ const bg_aliases = {
 const initUser = (dispatch, user) =>{
     dispatch(userFound(user));
     dispatch(getModSubs());
+    dispatch(getNotesForUsers(['meepster23']));
 }
 
 export const store = createStore(reducer,initialState,composeWithDevTools(
