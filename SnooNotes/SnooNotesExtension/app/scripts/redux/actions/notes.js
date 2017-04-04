@@ -1,24 +1,18 @@
 import {CALL_API, getJSON} from 'redux-api-middleware';
 import {apiBaseUrl} from '../../config';
+import axios from 'axios';
 
 export const GET_NOTES_FOR_USERS = "GET_NOTES_FOR_USERS";
 export const GOT_NEW_NOTE = "GOT_NEW_NOTE";
 export const DELETE_NOTE = "DELETE_NOTE";
 
 export const getNotesForUsers = (usernames) =>{
-    return {
-        [CALL_API]:{
-            endpoint : apiBaseUrl + 'Note/GetNotes',
-            method: 'POST',
-            types: [{type:'REQUEST', payload:{request:"GetNotesForUsers",users:usernames}},
-            {
-                type: GET_NOTES_FOR_USERS,
-                payload: (action,state,res)=>{
-                   return getJSON(res);
-                }
-            },'FAILURE'],
-            body: JSON.stringify(usernames)
-        }
+    return (dispatch)=>{
+        axios.post('Note/GetNotes',usernames)
+            .then(res=>{
+                dispatch({type: GET_NOTES_FOR_USERS, payload:res.data
+                });
+            });
     }
 }
 

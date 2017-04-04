@@ -4,11 +4,13 @@ import Vue from 'vue'
 import UserNotes from './components/userNotes.vue';
 import SNOptions from './components/options/snOptions.vue';
 import axios from 'axios';
-import {snInterceptor} from './utilities/snAxiosInterceptor';
+import {SNAxiosInterceptor} from './utilities/snAxiosInterceptor';
 import {apiBaseUrl} from './config';
 import Toasted from 'vue-toasted';
 import {reduxStore} from './redux/contentScriptStore';
 
+
+export const snInterceptor = new SNAxiosInterceptor(reduxStore);
 axios.defaults.baseURL = apiBaseUrl;
 axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req);});
 

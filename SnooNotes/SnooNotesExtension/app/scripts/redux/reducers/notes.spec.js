@@ -79,11 +79,16 @@ describe('Notes Reducer',()=>{
             expect(results)
             .has.property("videosmods")
             .to.have.lengthOf(2)
-            console.warn(JSON.stringify(results));
             expect(results.videosmods[0]).to.eql(notes.videosmods[0])
             expect(results.videosmods[1]).to.eql(newNote.videosmods[0])
             //expect(results)
-            
+        })
+        it('Should create a new user entry if empty',()=>{
+            deepFreeze(newNote);
+            let results = notesReducer({},{type:GOT_NEW_NOTE,payload:{appliesToUsername:"videosmods",note:newNote.videosmods}});
+            expect(results)
+            .has.property("videosmods")
+            .to.have.lengthOf(1);
         })
     })
     describe('DELETE_NOTE',()=>{

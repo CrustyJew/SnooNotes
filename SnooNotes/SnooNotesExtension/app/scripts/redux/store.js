@@ -7,11 +7,9 @@ import { wrapStore, alias } from 'react-chrome-redux';
 import {login, LOGIN, REDIRECT_SUCCESS, SILENT_RENEW_SUCCESS} from './actions/user';
 import reducer from './reducers/index';
 import {loadingUser, userFound, silentRenewError} from './actions/user';
-import {getModSubs} from './actions/snoonotesInfo';
+import {getModSubs, getUsersWithNotes} from './actions/snoonotesInfo';
 import {getNotesForUsers} from './actions/notes';
 import {Log} from 'oidc-client';
-import {apiMiddleware} from 'redux-api-middleware';
-import {apiHeadersMiddleware} from './middleware/apiHeadersMiddleware';
 
 const initialState = {user:{user:null,isLoadingUser:false}};
 
@@ -53,11 +51,12 @@ const bg_aliases = {
 const initUser = (dispatch, user) =>{
     dispatch(userFound(user));
     dispatch(getModSubs());
+    dispatch(getUsersWithNotes());
     dispatch(getNotesForUsers(['meepster23']));
 }
 
 export const store = createStore(reducer,initialState,composeWithDevTools(
-    applyMiddleware(alias(bg_aliases),thunk,apiHeadersMiddleware,apiMiddleware)//, createOidcMiddleware(userManager))
+    applyMiddleware(alias(bg_aliases),thunk)//, createOidcMiddleware(userManager))
      )
  )
 

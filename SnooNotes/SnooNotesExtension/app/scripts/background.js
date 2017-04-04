@@ -7,7 +7,13 @@ import {store} from './redux/store';
 import {userManager} from './utilities/userManager';
 import {snUpdate, hubConnection} from './libs/snUpdatesHub';
 //import {hubConnection} from 'signalr-no-jquery';
-import {signalrBaseUrl} from './config';
+import {signalrBaseUrl, apiBaseUrl} from './config';
+import axios from 'axios';
+import {SNAxiosInterceptor} from './utilities/snAxiosInterceptor';
+
+export const snInterceptor = new SNAxiosInterceptor(store);
+axios.defaults.baseURL = apiBaseUrl;
+axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req);});
 
 chrome.runtime.onInstalled.addListener(function (details) {
   console.log('previousVersion', details.previousVersion);

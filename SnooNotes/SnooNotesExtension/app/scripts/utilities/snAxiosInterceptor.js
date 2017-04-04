@@ -1,11 +1,10 @@
-import {reduxStore} from '../redux/contentScriptStore';
 
-class SNAxiosInterceptor{
+export class SNAxiosInterceptor{
     accessToken = "";
     
-    constructor(){
-        reduxStore.subscribe(()=>{
-            let user = reduxStore.getState().user;
+    constructor(store){
+        store.subscribe(()=>{
+            let user = store.getState().user;
             if(user && user.access_token){
                 this.accessToken = user.access_token;
             }
@@ -17,5 +16,3 @@ class SNAxiosInterceptor{
         return config;
     }
 }
-
-export let snInterceptor = new SNAxiosInterceptor();

@@ -8,7 +8,7 @@ export const notesReducer = (state = initialState, action) => {
             return Object.assign({}, state, action.payload);
         }
         case GOT_NEW_NOTE:
-            return Object.assign({}, state, {[action.payload.appliesToUsername]: state[action.payload.appliesToUsername].concat(action.payload.note)});
+            return Object.assign({}, state, {[action.payload.appliesToUsername]: (state[action.payload.appliesToUsername] || [] ).concat(action.payload.note)});
         case DELETE_NOTE:{
             if(action.payload.outOfNotes){
                 return removeProperty(state, action.payload.appliesToUsername);
