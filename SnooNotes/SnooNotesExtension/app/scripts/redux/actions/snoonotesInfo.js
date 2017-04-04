@@ -7,7 +7,7 @@ export const SET_USERS_WITH_NOTES = "SET_USERS_WITH_NOTES";
 export const getModSubs = () => {
     return {
         [CALL_API]:{
-            endpoint : apiBaseUrl + 'Account/GetModeratedSubreddits',
+            endpoint : apiBaseUrl + 'Subreddit',
             method: 'GET',
             types: ['REQUEST',
             {

@@ -19,7 +19,7 @@ namespace SnooNotes.Controllers {
         // GET: api/Subreddit
         public Task<IEnumerable<Models.Subreddit>> Get()
         {
-            var subs = (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Select(c => c.Value);
+            var subs = (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value);
             //subs = subs.Where(s => User.HasClaim("urn:snoonotes:subreddits:" + s + ":admin", "true"));
             return subBLL.GetSubreddits(subs);
         }

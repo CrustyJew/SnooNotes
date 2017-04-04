@@ -1,7 +1,7 @@
 console.log('\'Allo \'Allo! Content script');
 
 import Vue from 'vue'
-import UserNotes from './userNotes.vue';
+import UserNotes from './components/userNotes.vue';
 import SNOptions from './components/options/snOptions.vue';
 import axios from 'axios';
 import {snInterceptor} from './utilities/snAxiosInterceptor';
@@ -16,13 +16,24 @@ axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req
 const unsub = reduxStore.subscribe(()=>{
     unsub();
     Vue.use(Toasted,{position:'bottom-right',duration:2500});
-    var NotesComponent = Vue.extend({template:'<user-notes></user-notes>'})
+    
     var things = document.querySelectorAll('.thing');
     for (var i = 0; i < things.length; i++){
-        var notes = new Vue({render: h => h(UserNotes)}).$mount();
         var authElem = things[i].querySelector('a.author');
         if(authElem){
-            authElem.parentNode.insertBefore(notes.$el,authElem.nextSibling);
+            let author = things[i].attributes['data-author'].value;
+            if(!author){
+                author = authElem.textContent;
+            }
+            var noteElem = document.createElement('user-notes');
+            noteElem.setAttribute('username',author);
+            noteElem.setAttribute('subreddit',things[i].attributes['data-subreddit'].value);
+            noteElem.setAttribute('type',things[i].attributes['data-type'].value);
+            noteElem.setAttribute('thingid',things[i].attributes['data-fullname'].value);
+            authElem.parentNode.insertBefore(noteElem,authElem.nextSibling);
+            var notes = new Vue({components:{'user-notes':UserNotes}}).$mount(things[i]);
+            
+            
         }
     }
 

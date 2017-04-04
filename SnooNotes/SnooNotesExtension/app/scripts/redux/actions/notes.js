@@ -40,3 +40,14 @@ export const gotNewNote = (note) =>{
         }
     }
 }
+
+export const gotDeleteNote = (username,id,outOfNotes) =>{
+    return {
+        type: DELETE_NOTE,
+        payload:{
+            appliesToUsername: username,
+            noteID:id,
+            'outOfNotes': outOfNotes
+        }
+    }
+}
