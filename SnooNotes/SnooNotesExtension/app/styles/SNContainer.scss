@@ -1,0 +1,111 @@
+@import "./_vars.scss";
+
+.SNNotesDisplay{
+    position: absolute;
+    z-index: 90000;
+    background-color: white;
+    border: $gray 1px solid;
+    min-width: 700px;
+    max-width: 750px;
+    border-radius: 10px;
+    min-height: 150px;
+    padding: 10px;
+    overflow: hidden;
+
+    table {
+        background-color: white;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    td {
+        border: 1px grey solid;
+        padding: 5px;
+    }
+    tr {
+        display: table-row;
+    }
+    
+    .SNNewNoteSubmit{
+        vertical-align: middle;
+        top:50%;
+        float:left;
+        position:relative;
+        height:32px;
+        margin-top:-16px;
+        margin-left: 15px;
+    }
+}
+
+.SNSubName, .SNSubmitter {
+    text-align: center;
+    width: 135px;
+    word-wrap: break-word;
+}
+
+.SNSubName {
+    border-radius: 10px 0 0 10px;
+}
+
+.SNMessage {
+    border-radius: 0 10px 10px 0; 
+    position:relative;
+    white-space:pre-wrap;
+}
+
+
+.SNNewNote {
+    margin-left: -340px;
+    padding-left: 50%;
+    padding-top: 10px;
+    height: 81px;
+}
+
+.SNNewNoteSub{
+    float:left;
+    margin-right:15px;
+    margin-top:-10px;
+    height:20px;
+    position:relative;
+    top:50%;
+    width:125px;
+}
+
+.SNNewMessage {
+    height: 100%;
+    resize: none;
+    width: 400px;
+    box-sizing:border-box;
+    float:left;
+
+    &:disabled {
+        background: $gray none repeat scroll 0 0;
+        color:whitesmoke;
+    }
+}
+
+
+.SNNoteType{
+    text-align:center;
+    margin-top:5px;
+    padding:5px;
+    border-radius:10px;
+    input[type="radio"]{
+        vertical-align:top;
+    }
+    label{
+        display:inline-block;
+        margin-right:10px;
+    }
+}
+
+.SNNewError{
+    margin-top:10px;
+    font-weight:bold;
+    font-size:1.2em;
+    color:$accent;
+}
+
+.SNError{
+    border:3px solid $accent;
+}

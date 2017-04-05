@@ -1,4 +1,6 @@
 @import "./_vars.scss";
+@import "./SNContainer.scss";
+
 .clearfix{
     clear:both;
 }
@@ -14,7 +16,7 @@ h1{
         cursor: default;
     }
 
-    .SNHeader {
+.SNHeader {
     height: 15px;
     margin-right: -30px;
     margin-left: -30px;
@@ -82,4 +84,11 @@ h1{
     .toasted.primary.info{
         background-color:$secondary !important;
     }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .4s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0
 }

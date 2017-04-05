@@ -1,6 +1,6 @@
 import deepFreeze from 'deep-freeze';6
 import {notesReducer} from './notes';
-import {GET_NOTES_FOR_USERS, GOT_NEW_NOTE, DELETE_NOTE} from '../actions/notes';
+import {GET_NOTES_FOR_USERS, GOT_NEW_NOTE, DELETE_NOTE, LOADING_NOTES_FOR_USERS} from '../actions/notes';
 
 
 var notes={
@@ -100,7 +100,6 @@ describe('Notes Reducer',()=>{
         })
         it('Should remove note from array',()=>{
             let state = Object.assign({},notes, {"videosmods": notes.videosmods.concat(newNote.videosmods)});
-            console.info(JSON.stringify(state.videosmods.filter(note=> note.NoteID != 45778)))
             deepFreeze(state);
             expect(
                 notesReducer(state,{type:DELETE_NOTE,payload:{appliesToUsername:"videosmods",noteID:45778,outOfNotes: false}})
@@ -108,5 +107,21 @@ describe('Notes Reducer',()=>{
             .has.property("videosmods")
             .eql(newNote.videosmods);
         })
+    })
+    describe('LOADING_NOTES_FOR_USERS',()=>{
+        it('Should add user with loading status if they do not exist in notes object',()=>{
+            expect(
+                notesReducer({},{type:LOADING_NOTES_FOR_USERS,payload:{videosmods:{loading:true}}})
+            )
+            .has.property('videosmods')
+            .has.property('loading')
+        })
+        if('Should remove existing notes from loading user'){
+            expect(
+                notesReducer(notes,{type:LOADING_NOTES_FOR_USERS,payload:{videosmods:{loading:true}}})
+            )
+            .has.property('videosmods')
+            .has.property('loading');
+        }
     })
 })

@@ -52,7 +52,6 @@ const initUser = (dispatch, user) =>{
     dispatch(userFound(user));
     dispatch(getModSubs());
     dispatch(getUsersWithNotes());
-    dispatch(getNotesForUsers(['meepster23']));
 }
 
 export const store = createStore(reducer,initialState,composeWithDevTools(

@@ -1,10 +1,12 @@
 <template>
-<div class="modal-mask" v-show="show" transition="modal" @click="close">
+<transition name="modal">
+<div class="modal-mask" v-show="show"  @click="close">
     <div id="SNModal" class="modal-container" @click.stop>
       <div class="SNHeader"><a class="SNCloseModal SNClose" @click="close">X</a></div>
         <slot></slot>
     </div>
 </div>
+</transition>
 </template>
 <script>
 export default {
@@ -26,7 +28,6 @@ export default {
   font-weight:bold;
   padding: 2px 10px;
   margin-top: -1px;
-  border-top-right-radius: 10px;
   &:hover{
         background-image: linear-gradient(to bottom, darken($accent,10%),darken($accent,25%));
     }

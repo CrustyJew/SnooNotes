@@ -3,17 +3,22 @@ import {apiBaseUrl} from '../../config';
 import axios from 'axios';
 
 export const GET_NOTES_FOR_USERS = "GET_NOTES_FOR_USERS";
+export const ALIAS_GET_NOTES_FOR_USERS = "ALIAS"+ GET_NOTES_FOR_USERS;
 export const GOT_NEW_NOTE = "GOT_NEW_NOTE";
 export const DELETE_NOTE = "DELETE_NOTE";
+export const LOADING_NOTES_FOR_USERS = "LOADING_NOTES_FOR_USERS"; 
 
-export const getNotesForUsers = (usernames) =>{
-    return (dispatch)=>{
+export const getNotesForUsers = (dispatch, usernames) =>{
+    let users = usernames.map((u)=>{return {[u]:{loading:true}}});
+        let loadingPayload = Object.assign({},...users);
+        dispatch({type: LOADING_NOTES_FOR_USERS, payload:loadingPayload});
+
         axios.post('Note/GetNotes',usernames)
             .then(res=>{
                 dispatch({type: GET_NOTES_FOR_USERS, payload:res.data
                 });
             });
-    }
+    
 }
 
 export const gotNewNote = (note) =>{
