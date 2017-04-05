@@ -10,6 +10,7 @@ import {snUpdate, hubConnection} from './libs/snUpdatesHub';
 import {signalrBaseUrl, apiBaseUrl} from './config';
 import axios from 'axios';
 import {SNAxiosInterceptor} from './utilities/snAxiosInterceptor';
+import {gotNewNote, gotDeleteNote} from './redux/actions/notes';
 
 export const snInterceptor = new SNAxiosInterceptor(store);
 axios.defaults.baseURL = apiBaseUrl;
@@ -64,9 +65,12 @@ userManager.events.addUserSignedOut(onUserSignedOut);
 // const hubConn = hubConnection(signalrBaseUrl, { useDefaultPath: false });
 // const snUpdate = hubConn.createHubProxy('SnooNoteUpdates');
 var curToken = "";
-snUpdate.on('message', function(message) {
-    console.log(message);
-});
+snUpdate.client.addNewNote = (note) =>{
+  store.dispatch(gotNewNote(note));
+}
+snUpdate.client.deleteNote = (user, noteID, outOfNotes) =>{
+  store.dispatch(gotDeleteNote(user,noteID, outOfNotes));
+}
 store.subscribe(()=>{
   let newToken = store.getState().user.access_token;
   if(newToken != curToken){

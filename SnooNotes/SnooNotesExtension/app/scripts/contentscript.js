@@ -24,6 +24,7 @@ const unsub = reduxStore.subscribe(()=>{
     
     let authorsReq = [];
     var things = document.querySelectorAll('.thing');
+    let commentRootURL;
     for (var i = 0; i < things.length; i++){
         var authElem = things[i].querySelector('a.author');
         if(authElem){
@@ -34,15 +35,20 @@ const unsub = reduxStore.subscribe(()=>{
             if(usersWithNotes.indexOf(author) != -1){
                 authorsReq.push(author);
             }
+            let url = "";
+            if (things[i].attributes['data-type'].value == 'link'){
+                url = "https://reddit.com/r/" + things[i].attributes['data-subreddit'].value + '/' + things[i].attributes['data-fullname'].value.replace('t3_','');
+            }
+            else{
+                if(!commentRootURL) commentRootURL = 'https://reddit.com/r/'+ things[i].attributes['data-subreddit'].value + '/comments/' + things[i].parentElement.id.replace('siteTable_t3_','') + '/.../';
+                url = commentRootURL + things[i].attributes['data-fullname'].value.replace('t1_','');
+            }
             var noteElem = document.createElement('user-notes');
             noteElem.setAttribute('username',author);
             noteElem.setAttribute('subreddit',things[i].attributes['data-subreddit'].value);
-            noteElem.setAttribute('type',things[i].attributes['data-type'].value);
-            noteElem.setAttribute('thingid',things[i].attributes['data-fullname'].value);
+            noteElem.setAttribute('url',url);
             authElem.parentNode.insertBefore(noteElem,authElem.nextSibling);
             var notes = new Vue({components:{'user-notes':UserNotes}}).$mount(things[i]);
-            
-            
         }
     }
     if (authorsReq.length > 0){

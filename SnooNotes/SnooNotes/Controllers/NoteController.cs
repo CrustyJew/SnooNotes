@@ -45,7 +45,7 @@ namespace SnooNotes.Controllers {
         }
         [HttpPost]
         // POST: api/Note
-        public async Task Post( [FromForm]Models.Note value ) {
+        public async Task Post( [FromBody]Models.Note value ) {
             if ( User.IsInRole( value.SubName.ToLower() ) ) {
                 value.Submitter = User.Identity.Name;
                 value.Timestamp = DateTime.UtcNow;

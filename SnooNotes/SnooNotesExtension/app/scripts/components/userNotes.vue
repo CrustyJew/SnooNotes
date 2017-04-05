@@ -5,8 +5,8 @@
     <transition name="fade">
     <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
         <div class="SNHeader"><a class="SNCloseNote SNClose" @click="close">[x]</a></div>
-        <table v-if="!notes.noNotes">
-            <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)">
+        <table v-if="!notes.noNotes && !notes.loading">
+            <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)" transition="fade">
                 <td class="SNSubName">
                     <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
                     <span v-if="note.ParentSubreddit">
@@ -21,7 +21,7 @@
                 </td>
                 <td class="SNMessage">
                     <p>{{note.Message}}</p>
-                    <a class="SNDeleteNote" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.SubName == note.ParentSubreddit) > -1">[x]</a>
+                    <a class="SNDeleteNote" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.SubName == note.ParentSubreddit) > -1">[x]</a>
                 </td>
             </tr>
         </table>
@@ -51,9 +51,11 @@
 <script>
 import {store} from '../redux/contentScriptStore';
 import {draggable} from './directives/draggable';
+import axios from 'axios';
+
     export default {
         name: 'user-notes',
-        props:['username','subreddit','type','thingid'],
+        props:['username','subreddit','url'],
         directives:{'draggable':draggable},
         data(){
             return{
@@ -131,6 +133,12 @@ import {draggable} from './directives/draggable';
             },
             clickWatch: function(e){
                 if(!this.$el.contains(e.target)) this.close();
+            },
+            submit: function(){
+                axios.post('Note',{NoteTypeID:this.newNoteTypeID, SubName:this.modSubs[this.newNoteSubIndex].name, Message:this.newNote, AppliesToUsername:this.username, Url: this.url})
+            },
+            deleteNote: function(id){
+                axios.delete('Note?id='+id);
             }
         },
         beforeDestroy:function(){
@@ -158,5 +166,11 @@ import {draggable} from './directives/draggable';
     }
 }
 }
+}
+.SNDeleteNote{
+    position:absolute;
+    top:1px;
+    right:5px;
+    cursor:pointer;
 }
 </style>
