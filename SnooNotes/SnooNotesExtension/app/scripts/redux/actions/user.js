@@ -31,8 +31,10 @@ export const USER_EXPIRING = 'USER_EXPIRING';
 export const USER_FOUND = 'USER_FOUND';
 export const LOADING_USER = 'LOADING_USER';
 export const USER_SIGNED_OUT = 'USER_SIGNED_OUT';
-export const LOGIN = "login";
+export const LOGIN = "LOGIN";
 export const SILENT_RENEW_SUCCESS = "SILENT_RENEW_SUCCESS";
+export const REFRESH_USER = "REFRESH_USER";
+export const REFRESH_USER_ALIAS = "REFRESH_USER_ALIAS";
 
 // dispatched when the existing user expired
 export function userExpired() {
@@ -101,10 +103,19 @@ export function userSignedOut() {
   };
 }
 
-export function login(contentScript = true) {
+export function login() {
+  return {
+    type: LOGIN
+  };
+}
+
+export function refreshUser(contentScript = false){
   if(contentScript){
     return {
-      type: LOGIN
-    };
+      type: REFRESH_USER_ALIAS
+    }
   }
+  return {
+    type: REFRESH_USER
+  };
 }

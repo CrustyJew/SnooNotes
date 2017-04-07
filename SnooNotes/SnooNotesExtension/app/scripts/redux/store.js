@@ -4,7 +4,7 @@ import {userManager} from '../utilities/userManager';
 import {composeWithDevTools} from 'remote-redux-devtools'
 import thunk from 'redux-thunk'
 import { wrapStore, alias } from 'react-chrome-redux';
-import {login, LOGIN, REDIRECT_SUCCESS, SILENT_RENEW_SUCCESS} from './actions/user';
+import {refreshUser,REFRESH_USER_ALIAS, login, LOGIN, REDIRECT_SUCCESS, SILENT_RENEW_SUCCESS, sessionTerminated} from './actions/user';
 import reducer from './reducers/index';
 import {loadingUser, userFound, silentRenewError} from './actions/user';
 import {getModSubs, getUsersWithNotes} from './actions/snoonotesInfo';
@@ -42,6 +42,18 @@ const bg_aliases = {
             dispatch(userFound(user));
             dispatch(getModSubs());
         },(err)=>{console.warn(err)});
+        }
+    },
+    [REFRESH_USER_ALIAS]: (req)=>{
+        return(dispatch)=>{
+            dispatch(refreshUser());
+            userManager.signinSilent()
+            .then((user)=>{
+                initUser(dispatch,user);
+            },(error)=>{
+                console.error('Error getting new token');
+                dispatch(sessionTerminated());
+            })
         }
     }
 }

@@ -4,7 +4,7 @@
             
             <div id="SNRefreshContainer">
                 <h1>Has something gone rogue?<br />Change subreddits you moderate?<br />Activate a new sub?</h1>
-                <button type="button" id="SNRestart" class="SNBtnWarn">Refresh SnooNotes</button>    
+                <button type="button" id="SNRestart" class="SNBtnWarn" @click="refresh">Refresh SnooNotes</button>    
                 <br class="clearfix" />
             </div>
             <div id="SNActivateContainer">
@@ -41,6 +41,9 @@ import SNModal from '../snModal.vue';
 import LoadingSpinner from '../loadingSpinner.vue';
 import SNSubOptions from './snSubOptions.vue';
 import axios from 'axios';
+import {store} from '../../redux/contentScriptStore';
+import {refreshUser} from '../../redux/actions/user';
+import Toasted from 'vue-toasted';
 
 export default {
     components:{'modal': SNModal, 'sn-loading': LoadingSpinner,'sn-sub-options': SNSubOptions},
@@ -88,6 +91,13 @@ export default {
             this.snOptions.inactiveSubs = [];
             axios.get('Account/GetInactiveModeratedSubreddits')
                 .then(response => {this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false;});
+        },
+        refresh(){
+            store.dispatch(refreshUser(true))
+            .then(()=>{
+                this.$toasted.success("Got a new freakin token!!");
+                this.$root.$emit('refresh');
+            });
         }
     },
     created: function(){

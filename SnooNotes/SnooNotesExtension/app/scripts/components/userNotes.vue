@@ -1,12 +1,12 @@
 <template>
-<span>
+<span v-if="snInfo.modded_subs.length > 0">
 
     <span @click="show">[SN]</span>
     <transition name="fade">
     <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
         <div class="SNHeader"><a class="SNCloseNote SNClose" @click="close">[x]</a></div>
         <table v-if="!notes.noNotes && !notes.loading">
-            <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)" transition="fade">
+            <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)" transition="fade" :key="note.NoteID">
                 <td class="SNSubName">
                     <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
                     <span v-if="note.ParentSubreddit">
