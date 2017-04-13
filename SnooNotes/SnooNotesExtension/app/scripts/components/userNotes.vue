@@ -6,6 +6,7 @@
     <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
         <div class="SNHeader"><a class="SNCloseNote SNClose" @click="close">[x]</a></div>
         <table v-if="!notes.noNotes && !notes.loading">
+            <tbody is="transition-group" name="fade">
             <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)" transition="fade" :key="note.NoteID">
                 <td class="SNSubName">
                     <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
@@ -24,6 +25,7 @@
                     <a class="SNDeleteNote" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.SubName == note.ParentSubreddit) > -1">[x]</a>
                 </td>
             </tr>
+            </tbody>
         </table>
         <div class="SNNewNoteContainer">
             <div class="SNNewNote">
@@ -166,6 +168,18 @@ import axios from 'axios';
     }
 }
 }
+table { border-collapse: separate; border-spacing: 0; }
+td {
+    border: solid 1px $gray;
+    border-style: none solid solid none;
+    padding: 10px;
+}
+tr:first-child td:first-child { border-top-left-radius: 10px; }
+tr:first-child td:last-child { border-top-right-radius: 10px; }
+tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+tr:last-child td:last-child { border-bottom-right-radius: 10px; }
+tr:first-child td { border-top-style: solid; }
+tr td:first-child { border-left-style: solid; }
 }
 .SNDeleteNote{
     position:absolute;
