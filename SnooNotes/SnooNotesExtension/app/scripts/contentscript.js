@@ -28,7 +28,7 @@ const unsub = reduxStore.subscribe(()=>{
         let authorsReq = [];
         let things = document.querySelector('.thing');
         for (let i = 0; i < things.length; i++){
-            let authElem = things[i].querySelector('a.author');
+            let authElem = things[i].querySelector('p.tagline a.author');
             if(authElem){
                 let author = things[i].attributes['data-author'].value;
                 if(!author){
@@ -48,18 +48,28 @@ const unsub = reduxStore.subscribe(()=>{
 
     let usersWithNotes = state.snoonotes_info.users_with_notes;
     
-    let authorsReq = [];
-    var things = document.querySelectorAll('.thing');
+    let authorsReq = InjectIntoThingsClass(usersWithNotes);
+    authorsReq = concatUnique(authorsReq, InjectIntoUserPage(usersWithNotes));
+
+    if (authorsReq.length > 0){
+        getNotesForUsers(reduxStore.dispatch,authorsReq);
+    }
+})
+
+const InjectIntoThingsClass = (usersWithNotes) => {
+    let things = document.querySelectorAll('.thing');
     let commentRootURL;
+
+    let authors = [];
     for (let i = 0; i < things.length; i++){
-        let authElem = things[i].querySelector('a.author');
+        let authElem = things[i].querySelector('p.tagline a.author');
         if(authElem){
             let author = things[i].attributes['data-author'].value;
             if(!author){
                 author = authElem.textContent;
             }
-            if(usersWithNotes.indexOf(author) != -1){
-                authorsReq.push(author);
+            if(usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1){
+                authors.push(author);
             }
             let url = "";
             if (things[i].attributes['data-type'].value == 'link'){
@@ -74,11 +84,36 @@ const unsub = reduxStore.subscribe(()=>{
             noteElem.setAttribute('subreddit',things[i].attributes['data-subreddit'].value);
             noteElem.setAttribute('url',url);
             authElem.parentNode.insertBefore(noteElem,authElem.nextSibling);
-            let notes = new Vue({components:{'user-notes':UserNotes}}).$mount(things[i]);
+            new Vue({components:{'user-notes':UserNotes}}).$mount(things[i]);
         }
     }
-    if (authorsReq.length > 0){
-        getNotesForUsers(reduxStore.dispatch,authorsReq);
-    }
-})
+    return authors;
+}
 
+const InjectIntoUserPage = (usersWithNotes) => {
+    let authors = [];
+    let userHeader = document.querySelector('body.profile-page div.side div.titlebox>h1');
+    if(userHeader){
+        if(usersWithNotes.indexOf(userHeader.textContent)!= -1){
+            authors.push(userHeader.textContent)
+        }
+        let noteElem = document.createElement('user-notes');
+            noteElem.setAttribute('username',userHeader.textContent);
+            noteElem.setAttribute('url','https://reddit.com/u/'+userHeader.textContent)
+            noteElem.setAttribute('class','SNUserpageNote');
+        userHeader.parentNode.insertBefore(noteElem,userHeader.nextSibling);
+        new Vue({components:{'user-notes':UserNotes}}).$mount(userHeader.parentElement);
+    }
+    return authors;
+}
+
+const concatUnique = (array1, array2 )=>{
+    let toReturn = [];
+    toReturn = toReturn.concat(array1);
+    for(let i=0; i<array2.length; i++){
+        if(toReturn.indexOf(array2[i]) == -1){
+            toReturn.push(array2[i]);
+        }
+    }
+    return toReturn;
+}

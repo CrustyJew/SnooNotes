@@ -29,22 +29,25 @@
         </table>
         <div class="SNNewNoteContainer">
             <div class="SNNewNote">
-                <select class="SNNewNoteSub" v-model="newNoteSubIndex">
+                <select class="SNNewNoteSub" v-model="newNote.newNoteSubIndex" :class="{SNError:$v.newNote.newNoteSubIndex.$error }">
                     <option value="-1" disabled>--Select a Sub--</option>
-                    <option :value="newNoteSubIndex" v-if="isModdedSub">{{subreddit}}</option>
+                    <option :value="newNote.newNoteSubIndex" v-if="isModdedSub">{{subreddit}}</option>
                     <option value="-2" v-if="isModdedSub" disabled>---------</option>
                     <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index">{{sub.name}}</option>
                 </select>
-                <textarea placeholder="Add a new note for user..." class="SNNewMessage" v-model="newNote" />
-                <button type="button" class="SNBtnSubmit SNNewNoteSubmit" @click="submit">Submit</button>
+                <textarea placeholder="Add a new note for user..." class="SNNewMessage" v-model="newNote.message" />
+                <button type="button" class="SNBtnSubmit SNNewNoteSubmit" @click="submit" :disabled="submitting">Submit</button>
             </div>
-            <div class="SNNoteType">
+            <div class="SNNoteType" :class="{SNError:$v.newNote.newNoteTypeID.$error }">
                 <label class="SNTypeRadio" 
                     v-for="nt in noteTypes" 
-                    :style="noteTypeStyle(newNoteSubIndex,nt.NoteTypeID)"
-                ><input type="radio" name="SNType" :value="nt.NoteTypeID" v-model="newNoteTypeID">{{nt.DisplayName}}</label>
+                    :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)"
+                ><input type="radio" name="SNType" :value="nt.NoteTypeID" v-model="newNote.newNoteTypeID">{{nt.DisplayName}}</label>
             </div>
-            <div class="SNNewError"></div>
+            <div class="SNNewError">
+                <p v-if="$v.newNote.newNoteTypeID.$error">Shucks! You forgot the note type...</p>
+                <p v-if="$v.newNote.newNoteSubIndex.$error">Select a subby you fool!</p>
+            </div>
         </div>
     </div>
 </transition>
@@ -53,15 +56,17 @@
 <script>
 import {store} from '../redux/contentScriptStore';
 import {draggable} from './directives/draggable';
+import { validationMixin } from 'vuelidate'
+import { required, between } from 'vuelidate/lib/validators'
 import axios from 'axios';
 
     export default {
         name: 'user-notes',
         props:['username','subreddit','url'],
         directives:{'draggable':draggable},
+        mixins:[validationMixin],
         data(){
             return{
-                message: this.username,
                 snInfo: this.$select('snoonotes_info as snInfo'),
                 userNotes: this.$select('notes.'+this.username+' as userNotes'),
                 showNotes: false,
@@ -72,9 +77,25 @@ import axios from 'axios';
                     right:'0px',
 
                 },
-                newNote:"",
-                newNoteTypeID: -1,
-                newNoteSubIndex: -1
+                newNote:{
+                    message: "",
+                    newNoteTypeID: null,
+                    newNoteSubIndex: null,
+                },
+                submitting: false
+            }
+        },
+        validations:{
+            newNote:{
+                newNoteSubIndex:{
+                    required,
+                    'notNegative':function(value){
+                        return value > -1;
+                    }
+                },
+                newNoteTypeID:{
+                    required
+                }
             }
         },
         computed:{
@@ -94,8 +115,8 @@ import axios from 'axios';
                 return this.userNotes || {noNotes:true}
             },
             noteTypes: function(){
-                if(this.newNoteSubIndex == -1) return {}
-                return this.snInfo.modded_subs[this.newNoteSubIndex].Settings.NoteTypes;
+                if(this.newNote.newNoteSubIndex == -1) return {}
+                return this.snInfo.modded_subs[this.newNote.newNoteSubIndex].Settings.NoteTypes;
             },
             isModdedSub:function(){
                 if(this.subreddit && !this.modSubs.findIndex(sub=> sub.name == this.subreddit) > -1){
@@ -107,7 +128,7 @@ import axios from 'axios';
         methods:{
             close: function(){
                 this.showNotes = false;
-                this.newNote="";
+                this.newNote.message="";
                 this.newNoteTypeID = -1;
                 document.removeEventListener('click',this.clickWatch,true);
             },
@@ -127,9 +148,9 @@ import axios from 'axios';
                 this.displayStyle.display = 'block';
                 this.showNotes = true;
                 if(this.subreddit){
-                    this.newNoteSubIndex = this.modSubs.findIndex(sub => sub.name == this.subreddit)
+                    this.newNote.newNoteSubIndex = this.modSubs.findIndex(sub => sub.name == this.subreddit)
                 }else{
-                   this.newNoteSubIndex = -1
+                   this.newNote.newNoteSubIndex = -1
                 }
                 document.addEventListener('click',this.clickWatch,true);
             },
@@ -137,10 +158,26 @@ import axios from 'axios';
                 if(!this.$el.contains(e.target)) this.close();
             },
             submit: function(){
-                axios.post('Note',{NoteTypeID:this.newNoteTypeID, SubName:this.modSubs[this.newNoteSubIndex].name, Message:this.newNote, AppliesToUsername:this.username, Url: this.url})
+                this.$v.newNote.$touch();
+                if(this.$v.newNote.$invalid){return;}
+                this.submitting = true;
+                axios.post('Note',{NoteTypeID:this.newNote.newNoteTypeID, SubName:this.modSubs[this.newNote.newNoteSubIndex].name, Message:this.newNote.message, AppliesToUsername:this.username, Url: this.url})
+                .then(()=>{
+                    this.submitting = false;
+                    this.newNote.message = "";
+                }, (e)=>{
+                    this.submitting = false;
+                    this.$toasted.error("Failed to submit new note.");
+                })
             },
             deleteNote: function(id){
                 axios.delete('Note?id='+id);
+            }
+        },
+        watch:{
+            'newNote.newNoteSubIndex': function(newIndex){
+                this.newNote.newNoteTypeID = null;
+                this.$v.newNote.$reset();
             }
         },
         beforeDestroy:function(){

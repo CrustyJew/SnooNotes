@@ -60,7 +60,7 @@ const bg_aliases = {
 //const enhancer = applyMiddleware(alias(bg_aliases),thunk, createOidcMiddleware(userManager));
 //const store = createStore(reducer,initialState,enhancer);
 
-const initUser = (dispatch, user) =>{
+export const initUser = (dispatch, user) =>{
     dispatch(userFound(user));
     dispatch(getModSubs());
     dispatch(getUsersWithNotes());

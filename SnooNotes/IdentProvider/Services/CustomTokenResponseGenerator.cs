@@ -14,23 +14,24 @@ using SnooNotes.Models;
 
 namespace IdentProvider.Services
 {
-    public class TokenResponseGenerator : IdentityServer4.ResponseHandling.TokenResponseGenerator {
+    public class CustomTokenResponseGenerator : IdentityServer4.ResponseHandling.ITokenResponseGenerator {
         private UserManager<ApplicationUser> _userManager;
         private SnooNotes.Utilities.IAuthUtils _authUtils;
-        public TokenResponseGenerator( 
+        private IdentityServer4.ResponseHandling.TokenResponseGenerator _defaultGenerator;
+        public CustomTokenResponseGenerator( 
             ITokenService tokenService, 
             IRefreshTokenService refreshTokenService, 
             IResourceStore resources, 
             IClientStore clients, 
             ILoggerFactory loggerFactory, 
             UserManager<ApplicationUser> userManager, 
-            SnooNotes.Utilities.IAuthUtils authUtils ) : base( tokenService, refreshTokenService, resources, clients, loggerFactory ) {
-
+            SnooNotes.Utilities.IAuthUtils authUtils ) {
+            _defaultGenerator = new IdentityServer4.ResponseHandling.TokenResponseGenerator(tokenService, refreshTokenService, resources, clients, loggerFactory);
             _userManager = userManager;
             _authUtils = authUtils;
         }
 
-        public new async Task<TokenResponse> ProcessAsync( TokenRequestValidationResult validationResult ) {
+        public async Task<TokenResponse> ProcessAsync( TokenRequestValidationResult validationResult ) {
             if ( validationResult.ValidatedRequest.GrantType == OidcConstants.GrantTypes.RefreshToken ) {
                 var user = await _userManager.FindByNameAsync( validationResult.ValidatedRequest.UserName );
                 if ( user.LastUpdatedRoles.AddMinutes( 30 ) < DateTime.UtcNow ) {
@@ -38,7 +39,7 @@ namespace IdentProvider.Services
                 }
             }
 
-            return await base.ProcessAsync( validationResult );
+            return await _defaultGenerator.ProcessAsync( validationResult );
         }
     }
 }

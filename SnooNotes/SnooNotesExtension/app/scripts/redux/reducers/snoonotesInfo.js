@@ -1,5 +1,6 @@
 import {SET_MOD_SUBS, SET_USERS_WITH_NOTES} from '../actions/snoonotesInfo';
 import {GOT_NEW_NOTE, DELETE_NOTE} from '../actions/notes';
+import {USER_SIGNED_OUT} from '../actions/user';
 
 const initialState = {
     modded_subs: [],
@@ -24,6 +25,8 @@ export default function snoonotesInfoReducer(state = initialState, action) {
         }
         return state;
     }
+    case USER_SIGNED_OUT:
+      return Object.assign({}, initialState);
     default:
         return state;
   }

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\RedditSharp\RedditSharp\RedditSharp.csproj" />
     <ProjectReference Include="..\IdentProvider\IdentProvider.csproj" />
     <ProjectReference Include="..\SnooNotesSharedLibrary\SnooNotesSharedLibrary.csproj" />
   </ItemGroup>
@@ -49,7 +50,7 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.20.0.701" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="1.1.1" />
-    <PackageReference Include="RedditSharp" Version="2.0.0-CI00021" />
+    <PackageReference Include="RedditSharp" Version="2.0.0-CI00025" />
   </ItemGroup>
 
 </Project>

@@ -91,6 +91,9 @@ namespace SnooNotes {
             services.AddTransient<BLL.INotesBLL, BLL.NotesBLL>();
             services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();
             services.AddTransient<BLL.ISubredditBLL, BLL.SubredditBLL>();
+
+            RedditSharp.WebAgent.UserAgent = "SnooNotes (by Meepster23)";
+            RedditSharp.WebAgent.RateLimit.Mode = RedditSharp.RateLimitMode.Burst;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

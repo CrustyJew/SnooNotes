@@ -10,14 +10,15 @@ export const notesReducer = (state = initialState, action) => {
         case GOT_NEW_NOTE:
             return Object.assign({}, state, {[action.payload.appliesToUsername]: (state[action.payload.appliesToUsername] || [] ).concat(action.payload.note)});
         case DELETE_NOTE:{
-            if(action.payload.outOfNotes){
-                return removeProperty(state, action.payload.appliesToUsername);
-            }else{
-                return Object.assign({},state, 
+            
+                let toReturn = Object.assign({},state, 
                     {[action.payload.appliesToUsername]: 
                         state[action.payload.appliesToUsername].filter(note=> note.NoteID != action.payload.noteID)
                     })
+            if(toReturn[action.payload.appliesToUsername].length == 0){
+                toReturn = removeProperty(toReturn, action.payload.appliesToUsername);
             }
+            return toReturn;
         }
         case LOADING_NOTES_FOR_USERS:{
             return Object.assign({}, state, action.payload);

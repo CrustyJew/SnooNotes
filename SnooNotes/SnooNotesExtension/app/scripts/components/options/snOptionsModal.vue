@@ -43,7 +43,7 @@ import SNSubOptions from './snSubOptions.vue';
 import axios from 'axios';
 import {store} from '../../redux/contentScriptStore';
 import {refreshUser} from '../../redux/actions/user';
-import Toasted from 'vue-toasted';
+//import Toasted from 'vue-toasted';
 
 export default {
     components:{'modal': SNModal, 'sn-loading': LoadingSpinner,'sn-sub-options': SNSubOptions},
@@ -95,8 +95,9 @@ export default {
         refresh(){
             store.dispatch(refreshUser(true))
             .then(()=>{
-                this.$toasted.success("Got a new freakin token!!");
+                this.$toasted.success("Getting a new freakin token!!");
                 this.$root.$emit('refresh');
+                this.close();
             });
         }
     },

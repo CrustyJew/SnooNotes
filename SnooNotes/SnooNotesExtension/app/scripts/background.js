@@ -3,7 +3,7 @@ import 'chromereload/devonly';
 
 
 import { userExpired, userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
-import {store} from './redux/store';
+import {store, initUser} from './redux/store';
 import {userManager} from './utilities/userManager';
 import {snUpdate, hubConnection} from './libs/snUpdatesHub';
 //import {hubConnection} from 'signalr-no-jquery';
@@ -11,6 +11,7 @@ import {signalrBaseUrl, apiBaseUrl} from './config';
 import axios from 'axios';
 import {SNAxiosInterceptor} from './utilities/snAxiosInterceptor';
 import {gotNewNote, gotDeleteNote} from './redux/actions/notes';
+import {getModSubs} from './redux/actions/snoonotesInfo';
 
 export const snInterceptor = new SNAxiosInterceptor(store);
 axios.defaults.baseURL = apiBaseUrl;
@@ -35,7 +36,9 @@ console.log('\'Allo \'Allo! Event Page for Browser Action');
 
   // event callback when the access token expired
   const onAccessTokenExpired = () => {
-    store.dispatch(userExpired());
+    
+      store.dispatch(userExpired());
+    
   };
 
   // event callback when the user is logged out
@@ -70,6 +73,9 @@ snUpdate.client.addNewNote = (note) =>{
 }
 snUpdate.client.deleteNote = (user, noteID, outOfNotes) =>{
   store.dispatch(gotDeleteNote(user,noteID, outOfNotes));
+}
+snUpdate.client.refreshNoteTypes = (subnames) =>{
+  store.dispatch(getModSubs());
 }
 store.subscribe(()=>{
   let newToken = store.getState().user.access_token;

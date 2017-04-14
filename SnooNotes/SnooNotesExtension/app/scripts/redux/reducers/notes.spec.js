@@ -92,7 +92,7 @@ describe('Notes Reducer',()=>{
         })
     })
     describe('DELETE_NOTE',()=>{
-        it('Should remove user if outOfNotes is true', ()=>{
+        it('Should remove user if ran out of notes', ()=>{
             deepFreeze(notes);
             expect(
                 notesReducer(notes,{type:DELETE_NOTE,payload:{appliesToUsername:"videosmods",noteID:45778,outOfNotes: true}}))

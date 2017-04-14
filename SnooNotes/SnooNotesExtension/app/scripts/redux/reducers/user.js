@@ -29,9 +29,9 @@ import {
   SILENT_RENEW_ERROR,
   SESSION_TERMINATED,
   LOADING_USER,
-  USER_SIGNED_OUT
+  USER_SIGNED_OUT,
+  REFRESH_USER
 } from '../actions/user';
-
 
 const initialState = {
   access_token: null,
@@ -57,6 +57,8 @@ export default function userReducer(state = initialState, action) {
         });
     case LOADING_USER:
       return Object.assign({}, {...state}, { isLoadingUser: true, last_tab_id: action.payload  });
+    case REFRESH_USER:
+      return Object.assign({},{...state},{isLoadingUser:true});
     default:
       return state;
   }

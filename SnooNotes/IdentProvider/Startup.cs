@@ -79,8 +79,13 @@ namespace IdentProvider {
                         options.MigrationsAssembly( migrationsAssembly ) ) )
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddEndpoint<Controllers.CustomCheckSessionEndpoint>(IdentityServer4.Hosting.EndpointName.CheckSession)
-                .Services.AddTransient<IdentityServer4.ResponseHandling.ITokenResponseGenerator, TokenResponseGenerator>();
-            
+                .Services.AddTransient<IdentityServer4.ResponseHandling.ITokenResponseGenerator, CustomTokenResponseGenerator>()
+                         .AddTransient<IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator,CustomAuthorizeResponseGenerator>();
+
+
+
+            RedditSharp.WebAgent.UserAgent = "SnooNotes IdentityProvider (by Meepster23)";
+            RedditSharp.WebAgent.RateLimit.Mode = RedditSharp.RateLimitMode.Burst;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
