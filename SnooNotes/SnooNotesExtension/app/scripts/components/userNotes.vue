@@ -1,5 +1,5 @@
 <template>
-<span v-if="snInfo.modded_subs.length > 0">
+<span v-if="snInfo.modded_subs.length > 0" @click.stop>
 
     <span @click="show">[SN]</span>
     <transition name="fade">
@@ -80,7 +80,7 @@ import axios from 'axios';
                 newNote:{
                     message: "",
                     newNoteTypeID: null,
-                    newNoteSubIndex: null,
+                    newNoteSubIndex: -1,
                 },
                 submitting: false
             }
@@ -119,10 +119,10 @@ import axios from 'axios';
                 return this.snInfo.modded_subs[this.newNote.newNoteSubIndex].Settings.NoteTypes;
             },
             isModdedSub:function(){
-                if(this.subreddit && !this.modSubs.findIndex(sub=> sub.name == this.subreddit) > -1){
-                    return false;
+                if(this.subreddit && this.modSubs.findIndex(sub=> sub.name == this.subreddit) > -1){
+                    return true;
                 }
-                return true;
+                return false;
             }
         },
         methods:{

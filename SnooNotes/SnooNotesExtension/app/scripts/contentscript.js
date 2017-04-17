@@ -17,6 +17,9 @@ axios.interceptors.request.use((req)=>{return snInterceptor.interceptRequest(req
 
 Vue.use(Toasted,{position:'bottom-right',duration:2500});
 
+let usersWithNotes = [];
+let requestedAuthors = [];
+let newAuthorRequest = [];
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(()=>{
     unsub();
@@ -44,19 +47,26 @@ const unsub = reduxStore.subscribe(()=>{
         }
     })
     const userElem = document.querySelector('#header-bottom-right > .user');
-    userElem.parentNode.insertBefore(options.$el,userElem.nextSibling);
+    if(userElem){
+        userElem.parentNode.insertBefore(options.$el,userElem.nextSibling);
+    }
 
-    let usersWithNotes = state.snoonotes_info.users_with_notes;
-    
-    let authorsReq = InjectIntoThingsClass(usersWithNotes);
-    authorsReq = concatUnique(authorsReq, InjectIntoUserPage(usersWithNotes));
+    usersWithNotes = state.snoonotes_info.users_with_notes;
+    reduxStore.subscribe(()=>{
+        usersWithNotes = reduxStore.getState().snoonotes_info.users_with_notes;
+    });
 
+    let authorsReq = InjectIntoThingsClass();
+    authorsReq = concatUnique(authorsReq, InjectIntoUserPage());
+    window.setTimeout(function(){
+    InjectIntoNewModmail()}
+, 2000)
     if (authorsReq.length > 0){
         getNotesForUsers(reduxStore.dispatch,authorsReq);
     }
 })
 
-const InjectIntoThingsClass = (usersWithNotes) => {
+const InjectIntoThingsClass = () => {
     let things = document.querySelectorAll('.thing');
     let commentRootURL;
 
@@ -79,6 +89,7 @@ const InjectIntoThingsClass = (usersWithNotes) => {
                 if(!commentRootURL) commentRootURL = 'https://reddit.com/r/'+ things[i].attributes['data-subreddit'].value + '/comments/' + things[i].parentElement.id.replace('siteTable_t3_','') + '/.../';
                 url = commentRootURL + things[i].attributes['data-fullname'].value.replace('t1_','');
             }
+            
             let noteElem = document.createElement('user-notes');
             noteElem.setAttribute('username',author);
             noteElem.setAttribute('subreddit',things[i].attributes['data-subreddit'].value);
@@ -90,7 +101,7 @@ const InjectIntoThingsClass = (usersWithNotes) => {
     return authors;
 }
 
-const InjectIntoUserPage = (usersWithNotes) => {
+const InjectIntoUserPage = () => {
     let authors = [];
     let userHeader = document.querySelector('body.profile-page div.side div.titlebox>h1');
     if(userHeader){
@@ -107,6 +118,39 @@ const InjectIntoUserPage = (usersWithNotes) => {
     return authors;
 }
 
+const InjectIntoNewModmail = () => {
+    let authors = [];
+    let target = document.querySelector('div.App');
+    if(target){
+        var observer = new MutationObserver(
+            function(mutations){
+                mutations.forEach(function(mutation){
+                    if(mutation.addedNodes && mutation.addedNodes.length > 0){
+                        let node = mutation.addedNodes[0];
+                        if(node.tagName == "ARTICLE" && !node.classList.contains("SNDone") ){
+                            BindNewModmailUserNoteElement(mutation.addedNodes[0]);
+                        }
+                        if(node.tagName == "DIV"){
+                            node.querySelectorAll('article:not(.SNDone)').forEach((article)=>{
+                                BindNewModmailUserNoteElement(article);
+                            })
+                        }
+                    }
+
+                });
+                NewModmailAuthorRequest();
+            });
+        
+        document.querySelectorAll('article').forEach(function(a){
+            BindNewModmailUserNoteElement(a);
+            NewModmailAuthorRequest();
+        })
+
+        observer.observe(target,{childList:true,subtree:true});
+    }
+    
+}
+
 const concatUnique = (array1, array2 )=>{
     let toReturn = [];
     toReturn = toReturn.concat(array1);
@@ -116,4 +160,35 @@ const concatUnique = (array1, array2 )=>{
         }
     }
     return toReturn;
+}
+
+const BindNewModmailUserNoteElement = (article) =>{
+    let authElems = article.querySelectorAll('a.Message__author,a.ThreadPreview__author');
+    authElems.forEach(function(authElem){
+        let author = authElem.textContent.replace(/u\//,'');
+        if(requestedAuthors.indexOf(author) == -1 && newAuthorRequest.indexOf(author) == -1 && usersWithNotes.indexOf(author) != -1){
+            newAuthorRequest.push(author);
+        }
+        let url = 'https://mod.reddit.com' + article.querySelector('.m-link,a.ThreadPreview__time').attributes['href'].value;
+        let threadCommunity = document.querySelector('a.ThreadTitle__community');
+        let sub = null;
+        if(threadCommunity) sub = threadCommunity.textContent;
+        let noteElem = document.createElement('span');
+            noteElem.setAttribute('username',author);
+            noteElem.setAttribute('subreddit',sub);
+            noteElem.setAttribute('url',url);
+            noteElem.setAttribute('is','user-notes');
+            
+            let vueinst = new Vue({components:{'user-notes':UserNotes}, destroyed:function(){console.warn('vue destroyed')}}).$mount(noteElem);
+            authElem.parentNode.insertBefore(vueinst.$el,authElem.nextSibling);
+    })
+    article.className = article.className + ' SNDone';
+}
+
+const NewModmailAuthorRequest = () =>{
+    let thisReq = [].concat(newAuthorRequest);
+    requestedAuthors = concatUnique(requestedAuthors,thisReq);
+    newAuthorRequest = [];
+    if(thisReq.length <= 0) return;
+    getNotesForUsers(reduxStore.dispatch,thisReq);
 }
