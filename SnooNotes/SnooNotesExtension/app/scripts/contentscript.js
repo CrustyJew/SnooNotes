@@ -9,6 +9,8 @@ import {apiBaseUrl} from './config';
 import Toasted from 'vue-toasted';
 import {reduxStore} from './redux/contentScriptStore';
 import {getNotesForUsers} from './redux/actions/notes';
+import {on} from './utilities/onEventDelegate';
+import {BanNotesModule} from './modules/banNotes';
 
 
 export const snInterceptor = new SNAxiosInterceptor(reduxStore);
@@ -20,11 +22,13 @@ Vue.use(Toasted,{position:'bottom-right',duration:2500});
 let usersWithNotes = [];
 let requestedAuthors = [];
 let newAuthorRequest = [];
+const banNotesModule = new BanNotesModule([]);
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(()=>{
     unsub();
     let state = reduxStore.getState();
 
+    banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     
     const options = new Vue({render: h=>h(SNOptions)}).$mount();
     options.$on('refresh',()=>{
@@ -45,6 +49,17 @@ const unsub = reduxStore.subscribe(()=>{
         if (authorsReq.length > 0){
             getNotesForUsers(reduxStore.dispatch,authorsReq);
         }
+
+        //new modmail
+        requestedAuthors = [];
+        let authElems = article.querySelectorAll('a.Message__author,a.ThreadPreview__author');
+        authElems.forEach(function(authElem){
+            let author = authElem.textContent.replace(/u\//,'');
+            if(requestedAuthors.indexOf(author) == -1 && newAuthorRequest.indexOf(author) == -1 && usersWithNotes.indexOf(author) != -1){
+                newAuthorRequest.push(author);
+            }
+        });
+        NewModmailAuthorRequest();
     })
     const userElem = document.querySelector('#header-bottom-right > .user');
     if(userElem){
@@ -86,7 +101,7 @@ const InjectIntoThingsClass = () => {
                 url = "https://reddit.com/r/" + things[i].attributes['data-subreddit'].value + '/' + things[i].attributes['data-fullname'].value.replace('t3_','');
             }
             else{
-                if(!commentRootURL) commentRootURL = 'https://reddit.com/r/'+ things[i].attributes['data-subreddit'].value + '/comments/' + things[i].parentElement.id.replace('siteTable_t3_','') + '/.../';
+                if(!commentRootURL) commentRootURL = 'https://reddit.com/r/'+ things[i].attributes['data-subreddit'].value + '/comments/' + things[i].closest('.nestedlisting').id.replace('siteTable_t3_','') + '/.../';
                 url = commentRootURL + things[i].attributes['data-fullname'].value.replace('t1_','');
             }
             
