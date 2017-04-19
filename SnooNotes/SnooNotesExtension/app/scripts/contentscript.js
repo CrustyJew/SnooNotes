@@ -151,6 +151,12 @@ const InjectIntoNewModmail = () => {
                             })
                         }
                     }
+                    if(mutation.removedNodes && mutation.removedNodes.length >0){
+                        let node = mutation.removedNodes[0];
+                        node.querySelectorAll('.SNUserNotes').forEach(function(sn){
+                            sn.__vue__.$destroy();
+                        });
+                    }
 
                 });
                 NewModmailAuthorRequest();

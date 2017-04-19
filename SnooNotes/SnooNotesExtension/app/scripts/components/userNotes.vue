@@ -1,5 +1,5 @@
 <template>
-<span v-if="snInfo.modded_subs.length > 0" @click.stop>
+<span v-if="snInfo.modded_subs.length > 0" class="SNUserNotes" @click.stop>
 
     <span @click="show">[SN]</span>
     <transition name="fade">
