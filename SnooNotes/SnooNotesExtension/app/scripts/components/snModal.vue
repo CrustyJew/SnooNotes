@@ -1,37 +1,38 @@
 <template>
-<transition name="modal">
-<div class="modal-mask" v-show="show"  @click="close">
-    <div id="SNModal" class="modal-container" @click.stop>
-      <div class="SNHeader"><a class="SNCloseModal SNClose" @click="close">X</a></div>
+  <transition name="modal">
+    <div class="modal-mask" v-show="show" @click="close">
+      <div id="SNModal" class="modal-container" @click.stop>
+        <div class="SNHeader"><a class="SNCloseModal SNClose" @click="close">X</a></div>
         <slot></slot>
+      </div>
     </div>
-</div>
-</transition>
+  </transition>
 </template>
 <script>
 export default {
-    props: ['show','onClose'],
-    methods:{
-        close(){
-            this.onClose();
-        }
+  props: ['show', 'onClose'],
+  methods: {
+    close() {
+      this.onClose();
     }
+  }
 }
 </script>
 <style lang="scss">
 @import "~styles/_vars.scss";
-.SNCloseModal{
-  display:inline-block;
+.SNCloseModal {
+  display: inline-block;
   cursor: pointer;
-  color:white;
+  color: white;
   background-color: $accent;
-  font-weight:bold;
+  font-weight: bold;
   padding: 2px 10px;
   margin-top: -1px;
-  &:hover{
-        background-image: linear-gradient(to bottom, darken($accent,10%),darken($accent,25%));
-    }
+  &:hover {
+    background-image: linear-gradient(to bottom, darken($accent, 10%), darken($accent, 25%));
+  }
 }
+
 .modal-mask {
   position: fixed;
   z-index: 2147483646;
@@ -57,15 +58,15 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;
   position: fixed;
-    top: 10%;
-    left: 10%;
-    right: 10%;
-    bottom: 10%;
-    padding-top: 10px;
-    z-index: 2147483647 !important;
-    overflow-x: hidden;
-    overflow-y: auto;
-    max-height: 1200px;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  padding-top: 10px;
+  z-index: 2147483647 !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 1200px;
 }
 
 .modal-header h3 {
@@ -95,7 +96,8 @@ export default {
   transform: scale(1.1);
 }
 
-body.res .side .titlebox div[data-res-css]:first, #tb-bottombar{
+body.res .side .titlebox div[data-res-css]:first,
+#tb-bottombar {
   z-index: auto !important;
 }
 </style>

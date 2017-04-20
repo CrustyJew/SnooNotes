@@ -43,9 +43,5 @@
   "rules": {
     "strict": 0,
     "no-console":"off"
-  },
-  "eslint.validate": [ 
-    "javascript", 
-    "javascriptreact"//,"vue" 
-    ]
+  }
 }

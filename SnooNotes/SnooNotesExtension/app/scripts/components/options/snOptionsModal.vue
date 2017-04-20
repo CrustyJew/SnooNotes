@@ -1,14 +1,14 @@
 <template>
     <modal :show.sync="show" :on-close.sync="close">
         <div id="SNOptionsContainer" class="modal-body">
-            
+    
             <div id="SNRefreshContainer">
                 <h1>Has something gone rogue?<br />Change subreddits you moderate?<br />Activate a new sub?</h1>
-                <button type="button" id="SNRestart" class="SNBtnWarn" @click="refresh">Refresh SnooNotes</button>    
+                <button type="button" id="SNRestart" class="SNBtnWarn" @click="refresh">Refresh SnooNotes</button>
                 <br class="clearfix" />
             </div>
             <div id="SNActivateContainer">
-                <div  v-if="!snOptions.loadingInactiveSubs">
+                <div v-if="!snOptions.loadingInactiveSubs">
                     <select id="SNActivateSub" v-model="activateSubName">
                         <option value="-1" disabled>---Activate a new Subreddit---</option>
                         <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
@@ -16,7 +16,7 @@
                     <button type="button" id="SNBtnActivateSub" class="SNBtnSubmit" @click="activateSub">Activate</button>
                     <br class="clearfix" />
                 </div>
-                <div  v-show="snOptions.loadingInactiveSubs">
+                <div v-show="snOptions.loadingInactiveSubs">
                     <sn-loading></sn-loading>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                     <sn-loading></sn-loading>
                 </div>
                 <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
-                    <div class="SNSubSettingsBtnWrapper" >
+                    <div class="SNSubSettingsBtnWrapper">
                         <button type="button" class="SNBtnAction" @click="showSettings(index)" v-for="(sub,index) in snOptions.subSettings">/r/{{sub.SubName}}</button>
                     </div>
                 </div>
@@ -41,14 +41,14 @@ import SNModal from '../snModal.vue';
 import LoadingSpinner from '../loadingSpinner.vue';
 import SNSubOptions from './snSubOptions.vue';
 import axios from 'axios';
-import {store} from '../../redux/contentScriptStore';
-import {refreshUser} from '../../redux/actions/user';
+import { store } from '../../redux/contentScriptStore';
+import { refreshUser } from '../../redux/actions/user';
 //import Toasted from 'vue-toasted';
 
 export default {
-    components:{'modal': SNModal, 'sn-loading': LoadingSpinner,'sn-sub-options': SNSubOptions},
-    props: ['show','onClose'],
-    data(){
+    components: { 'modal': SNModal, 'sn-loading': LoadingSpinner, 'sn-sub-options': SNSubOptions },
+    props: ['show', 'onClose'],
+    data(sdfs) {
         return {
             activateSubName: "-1",
             editingSubIndex: -1,
@@ -58,79 +58,81 @@ export default {
             }
         }
     },
-    methods:{
-        close(){
+    methods: {
+        close() {
             this.editingSubIndex = -1;
             this.activateSubName = "-1";
             this.onClose();
         },
-        activateSub(){
-            if(this.activateSubName && this.activateSubName != "-1"){
-                axios.post('subreddit',{
-                    subName:this.activateSubName
+        activateSub() {
+            if (this.activateSubName && this.activateSubName != "-1") {
+                axios.post('subreddit', {
+                    subName: this.activateSubName
                 });
             }
         },
-        cancelSubOptSave(){
+        cancelSubOptSave() {
             this.editingSubIndex = -1;
         },
-        showSettings(index){
+        showSettings(index) {
             this.editingSubIndex = index;
 
         },
-        getSubSettings(){
+        getSubSettings() {
             this.snOptions.loadingSubSettings = true;
             this.editingSubIndex = -1;
             this.snOptions.subSettings = {};
             axios.get('Subreddit/admin')
-                .then(response => {this.snOptions.subSettings = response.data; this.snOptions.loadingSubSettings = false;});
+                .then(response => { this.snOptions.subSettings = response.data; this.snOptions.loadingSubSettings = false; });
         },
-        getInactiveSubs(){
+        getInactiveSubs() {
             this.activateSubName = "-1";
             this.snOptions.loadingInactiveSubs = true;
             this.snOptions.inactiveSubs = [];
             axios.get('Account/GetInactiveModeratedSubreddits')
-                .then(response => {this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false;});
+                .then(response => { this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false; });
         },
-        refresh(){
+        refresh() {
             store.dispatch(refreshUser(true))
-            .then(()=>{
-                this.$toasted.success("Getting a new freakin token!!");
-                this.$root.$emit('refresh');
-                this.close();
-            });
+                .then(() => {
+                    this.$toasted.success("Getting a new freakin token!!");
+                    this.$root.$emit('refresh');
+                    this.close();
+                });
         }
     },
-    created: function(){
-               this.getSubSettings();
-               this.getInactiveSubs();
+    created: function () {
+        this.getSubSettings();
+        this.getInactiveSubs();
     },
-    name:'sn-options-modal'
+    name: 'sn-options-modal'
 }
 </script>
 <style lang="scss">
-#SNRefreshContainer{
-    width:510px;
-    margin:0 auto;
-    height:74px;
-    text-align:left;
-    h1{
-        float:left;
+#SNRefreshContainer {
+    width: 510px;
+    margin: 0 auto;
+    height: 74px;
+    text-align: left;
+    h1 {
+        float: left;
         font-size: 18px;
         line-height: 18px;
     }
 }
-#SNActivateContainer{
-    margin:0 auto;
-    width:310px;
+
+#SNActivateContainer {
+    margin: 0 auto;
+    width: 310px;
 }
 
-#header{
-  //force header index higher for options modal
+#header {
+    //force header index higher for options modal
     z-index: 2147483646;
 }
-.sn-loading{
-    margin:0 auto;
+
+.sn-loading {
+    margin: 0 auto;
 }
 
 #SNActivateSub {
@@ -141,14 +143,15 @@ export default {
     }
 }
 
-#SNBtnActivateSub{
-    margin-right:0px;
+#SNBtnActivateSub {
+    margin-right: 0px;
 }
 
-#SNRestart{
-    margin-top:20px;
-    margin-left:15px;
+#SNRestart {
+    margin-top: 20px;
+    margin-left: 15px;
 }
+
 #SNOptionsContainer {
     margin-top: -15px;
     padding-top: 5px;
@@ -160,7 +163,7 @@ export default {
     box-sizing: border-box;
 }
 
-.SNSubSettingsBtnWrapper{
+.SNSubSettingsBtnWrapper {
     width: 250px;
     padding: 20px 20px 0px 20px;
     margin: 0 auto;
