@@ -68,7 +68,7 @@ export function silentRenewError(error) {
   };
 }
 
-export function silentRenewSuccess(url){
+export function silentRenewSuccess(url) {
   return {
     type: SILENT_RENEW_SUCCESS,
     payload: url
@@ -109,8 +109,8 @@ export function login() {
   };
 }
 
-export function refreshUser(contentScript = false){
-  if(contentScript){
+export function refreshUser(contentScript = false) {
+  if (contentScript) {
     return {
       type: REFRESH_USER_ALIAS
     }

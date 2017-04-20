@@ -15,91 +15,91 @@
 // window.$ = $;
 // window.jQuery = jQuery;
 import 'expose-loader?jQuery!jquery';
-import {signalrBaseUrl} from '../config';
+import { signalrBaseUrl } from '../config';
 import 'signalr';
 
 var $ = window.jQuery;
-    /// <param name="$" type="jQuery" />
-    "use strict";
-    
-    if (typeof ($.signalR) !== "function") {
-        throw new Error("SignalR: SignalR is not loaded. Please ensure jquery.signalR-x.js is referenced before ~/signalr/js.");
-    }
+/// <param name="$" type="jQuery" />
+"use strict";
 
-    var signalR = $.signalR;
+if (typeof ($.signalR) !== "function") {
+    throw new Error("SignalR: SignalR is not loaded. Please ensure jquery.signalR-x.js is referenced before ~/signalr/js.");
+}
 
-    function makeProxyCallback(hub, callback) {
-        return function () {
-            // Call the client hub method
-            callback.apply(hub, $.makeArray(arguments));
-        };
-    }
+var signalR = $.signalR;
 
-    function registerHubProxies(instance, shouldSubscribe) {
-        var key, hub, memberKey, memberValue, subscriptionMethod;
+function makeProxyCallback(hub, callback) {
+    return function () {
+        // Call the client hub method
+        callback.apply(hub, $.makeArray(arguments));
+    };
+}
 
-        for (key in instance) {
-            if (instance.hasOwnProperty(key)) {
-                hub = instance[key];
+function registerHubProxies(instance, shouldSubscribe) {
+    var key, hub, memberKey, memberValue, subscriptionMethod;
 
-                if (!(hub.hubName)) {
-                    // Not a client hub
-                    continue;
-                }
+    for (key in instance) {
+        if (instance.hasOwnProperty(key)) {
+            hub = instance[key];
 
-                if (shouldSubscribe) {
-                    // We want to subscribe to the hub events
-                    subscriptionMethod = hub.on;
-                } else {
-                    // We want to unsubscribe from the hub events
-                    subscriptionMethod = hub.off;
-                }
+            if (!(hub.hubName)) {
+                // Not a client hub
+                continue;
+            }
 
-                // Loop through all members on the hub and find client hub functions to subscribe/unsubscribe
-                for (memberKey in hub.client) {
-                    if (hub.client.hasOwnProperty(memberKey)) {
-                        memberValue = hub.client[memberKey];
+            if (shouldSubscribe) {
+                // We want to subscribe to the hub events
+                subscriptionMethod = hub.on;
+            } else {
+                // We want to unsubscribe from the hub events
+                subscriptionMethod = hub.off;
+            }
 
-                        if (!$.isFunction(memberValue)) {
-                            // Not a client hub function
-                            continue;
-                        }
+            // Loop through all members on the hub and find client hub functions to subscribe/unsubscribe
+            for (memberKey in hub.client) {
+                if (hub.client.hasOwnProperty(memberKey)) {
+                    memberValue = hub.client[memberKey];
 
-                        subscriptionMethod.call(hub, memberKey, makeProxyCallback(hub, memberValue));
+                    if (!$.isFunction(memberValue)) {
+                        // Not a client hub function
+                        continue;
                     }
+
+                    subscriptionMethod.call(hub, memberKey, makeProxyCallback(hub, memberValue));
                 }
             }
         }
     }
+}
 
-    $.hubConnection.prototype.createHubProxies = function () {
-        var proxies = {};
-        this.starting(function () {
-            // Register the hub proxies as subscribed
-            // (instance, shouldSubscribe)
-            registerHubProxies(proxies, true);
+$.hubConnection.prototype.createHubProxies = function () {
+    var proxies = {};
+    this.starting(function () {
+        // Register the hub proxies as subscribed
+        // (instance, shouldSubscribe)
+        registerHubProxies(proxies, true);
 
-            this._registerSubscribedHubs();
-        }).disconnected(function () {
-            // Unsubscribe all hub proxies when we "disconnect".  This is to ensure that we do not re-add functional call backs.
-            // (instance, shouldSubscribe)
-            registerHubProxies(proxies, false);
-        });
+        this._registerSubscribedHubs();
+    }).disconnected(function () {
+        // Unsubscribe all hub proxies when we "disconnect".  This is to ensure that we do not re-add functional call backs.
+        // (instance, shouldSubscribe)
+        registerHubProxies(proxies, false);
+    });
 
-        proxies['SnooNoteUpdates'] = this.createHubProxy('SnooNoteUpdates');
-        proxies['SnooNoteUpdates'].client = {};
-        proxies['SnooNoteUpdates'].server = {
-            getDateTime: function () {
-                return proxies['SnooNoteUpdates'].invoke.apply(proxies['SnooNoteUpdates'], $.merge(["GetDateTime"], $.makeArray(arguments)));
-            }
-        };
-
-        return proxies;
+    proxies['SnooNoteUpdates'] = this.createHubProxy('SnooNoteUpdates');
+    proxies['SnooNoteUpdates'].client = {};
+    proxies['SnooNoteUpdates'].server = {
+        getDateTime: function () {
+            return proxies['SnooNoteUpdates'].invoke.apply(proxies['SnooNoteUpdates'], $.merge(["GetDateTime"], $.makeArray(arguments)));
+        }
     };
 
-    //signalR.hub = $.hubConnection("http://dev.snoonotes.com/signalr", { useDefaultPath: false });
-    signalR.hub = $.hubConnection(signalrBaseUrl, { useDefaultPath: false });
-    
-    $.extend(signalR, signalR.hub.createHubProxies());
+    return proxies;
+};
+
+//signalR.hub = $.hubConnection("http://dev.snoonotes.com/signalr", { useDefaultPath: false });
+signalR.hub = $.hubConnection(signalrBaseUrl, { useDefaultPath: false });
+
+$.extend(signalR, signalR.hub.createHubProxies());
 export const hubConnection = signalR.hub;
 export const snUpdate = $.connection.SnooNoteUpdates;

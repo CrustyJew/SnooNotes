@@ -17,8 +17,8 @@ export const draggable = {
       document.removeEventListener('mouseup', mouseup);
     }
     let handle = el;
-    if(binding.value) handle = el.querySelector(binding.value);
-    handle.addEventListener('mousedown', function(e) {
+    if (binding.value) handle = el.querySelector(binding.value);
+    handle.addEventListener('mousedown', function (e) {
       startX = el.offsetLeft;
       startY = el.offsetTop;
       initialMouseX = e.clientX;

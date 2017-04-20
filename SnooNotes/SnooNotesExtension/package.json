@@ -18,7 +18,7 @@
   "devDependencies": {
     "babel-cli": "6.x.x",
     "babel-core": "6.x.x",
-    "babel-eslint": "6.x.x",
+    "babel-eslint": "^6.1.2",
     "babel-loader": "6.x.x",
     "babel-plugin-transform-class-properties": "^6.23.0",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -31,7 +31,7 @@
     "debounce": "1.x.x",
     "deep-freeze": "0.0.1",
     "del": "2.x.x",
-    "eslint": "3.x.x",
+    "eslint": "^3.19.0",
     "eslint-loader": "1.x.x",
     "expose-loader": "^0.7.3",
     "file-loader": "^0.10.1",

@@ -1,13 +1,11 @@
 import {reduxStore} from '../redux/contentScriptStore';
-import {redirectSuccess,silentRenewSuccess} from '../redux/actions/user';
-import {UserManager} from 'oidc-client';
+import {redirectSuccess} from '../redux/actions/user';
 
 const unsub = reduxStore.subscribe(()=>{
     unsub();
     if((/silent/i).test(window.location.href)){
-        console.warn("sending " + url);
-         chrome.runtime.sendMessage(url);
-         window.parent.postMessage(url,"*");
+         chrome.runtime.sendMessage(window.location.href);
+         window.parent.postMessage(window.location.href,"*");
     }else{
         reduxStore.dispatch(redirectSuccess(window.location.href));
     }

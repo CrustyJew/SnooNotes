@@ -1,5 +1,4 @@
-﻿import { userManagerConfig, baseUrl } from '../config';
-import moment from 'moment';
+﻿import { userManagerConfig } from '../config';
 import { UserManager } from 'oidc-client';
 
 // class UserManager{

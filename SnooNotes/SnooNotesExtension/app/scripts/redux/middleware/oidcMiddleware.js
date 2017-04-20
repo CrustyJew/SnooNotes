@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import { userExpired, userFound, loadingUser } from '../actions/user';
+import { userExpired } from '../actions/user';
 
 // store the user here to prevent future promise calls to getUser()
 export let storedUser = null;
@@ -42,11 +42,11 @@ export function errorCallback(error) {
 }
 
 export function middlewareHandler(next, action, userManager) {
-    let token = userManager.getAccessToken();
+  let token = userManager.getAccessToken();
   if (!token) {
     next(userExpired());
-    }
-  
+  }
+
   return next(action);
 }
 
@@ -57,7 +57,7 @@ export function createOidcMiddleware(userManager) {
   }
 
   // the middleware
-  return (store) => (next) => (action) => {
+  return () => (next) => (action) => {
     middlewareHandler(next, action, userManager);
   }
-};
+}

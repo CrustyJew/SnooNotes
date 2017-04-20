@@ -1,31 +1,30 @@
-import {CALL_API, getJSON} from 'redux-api-middleware';
-import {apiBaseUrl} from '../../config';
 import axios from 'axios';
 
 export const GET_NOTES_FOR_USERS = "GET_NOTES_FOR_USERS";
-export const ALIAS_GET_NOTES_FOR_USERS = "ALIAS"+ GET_NOTES_FOR_USERS;
+export const ALIAS_GET_NOTES_FOR_USERS = "ALIAS" + GET_NOTES_FOR_USERS;
 export const GOT_NEW_NOTE = "GOT_NEW_NOTE";
 export const DELETE_NOTE = "DELETE_NOTE";
-export const LOADING_NOTES_FOR_USERS = "LOADING_NOTES_FOR_USERS"; 
+export const LOADING_NOTES_FOR_USERS = "LOADING_NOTES_FOR_USERS";
 
-export const getNotesForUsers = (dispatch, usernames) =>{
-    let users = usernames.map((u)=>{return {[u]:{loading:true}}});
-        let loadingPayload = Object.assign({},...users);
-        dispatch({type: LOADING_NOTES_FOR_USERS, payload:loadingPayload});
+export const getNotesForUsers = (dispatch, usernames) => {
+    let users = usernames.map((u) => { return { [u]: { loading: true } } });
+    let loadingPayload = Object.assign({}, ...users);
+    dispatch({ type: LOADING_NOTES_FOR_USERS, payload: loadingPayload });
 
-        axios.post('Note/GetNotes',usernames)
-            .then(res=>{
-                dispatch({type: GET_NOTES_FOR_USERS, payload:res.data
-                });
+    axios.post('Note/GetNotes', usernames)
+        .then(res => {
+            dispatch({
+                type: GET_NOTES_FOR_USERS, payload: res.data
             });
-    
+        });
+
 }
 
-export const gotNewNote = (note) =>{
-    return{
+export const gotNewNote = (note) => {
+    return {
         type: GOT_NEW_NOTE,
-        payload:{
-            appliesToUsername:note.AppliesToUsername,
+        payload: {
+            appliesToUsername: note.AppliesToUsername,
             note: {
                 NoteID: note.NoteID,
                 NoteTypeID: note.NoteTypeID,
@@ -40,12 +39,12 @@ export const gotNewNote = (note) =>{
     }
 }
 
-export const gotDeleteNote = (username,id,outOfNotes) =>{
+export const gotDeleteNote = (username, id, outOfNotes) => {
     return {
         type: DELETE_NOTE,
-        payload:{
+        payload: {
             appliesToUsername: username,
-            noteID:id,
+            noteID: id,
             'outOfNotes': outOfNotes
         }
     }

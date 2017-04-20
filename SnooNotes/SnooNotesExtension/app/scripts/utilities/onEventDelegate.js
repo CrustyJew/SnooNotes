@@ -13,7 +13,8 @@ window.findParent = function(child,filter,root) {
     do {
         if( filter(child)) return child;
         if( root && child == root) return false;
-    } while(child = child.parentNode);
+        child = child.parentNode;
+    } while(child);
     return false;
 };
 // removed window.hasClass in favor of native classList.contains() 

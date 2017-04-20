@@ -7,8 +7,8 @@ const DefaultTimeout = 5000;
 
 export default class CustomIFrameNavigator {
 
-    prepare(params) {
-        let frame = new CustomIFrameWindow(params);
+    prepare() {
+        let frame = new CustomIFrameWindow();
         return Promise.resolve(frame);
     }
 
@@ -27,7 +27,7 @@ export default class CustomIFrameNavigator {
 
 export class CustomIFrameWindow {
 
-    constructor(params) {
+    constructor() {
         Log.debug("IFrameWindow.ctor");
 
         this._promise = new Promise((resolve, reject) => {
