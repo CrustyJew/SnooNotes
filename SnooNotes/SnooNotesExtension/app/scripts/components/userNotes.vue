@@ -62,7 +62,7 @@ import axios from 'axios';
 
     export default {
         name: 'user-notes',
-        props:['username','subreddit','url'],
+        props:['username','subreddit','url','useOffset'],
         directives:{'draggable':draggable},
         mixins:[validationMixin],
         data(){
@@ -143,8 +143,14 @@ import axios from 'axios';
                 return style;
             },
             show:function(e){
-                this.displayStyle.top = e.pageY +'px';
-                this.displayStyle.left = e.pageX + 'px';
+                if(this.useOffset){
+                    this.displayStyle.top = e.offsetY + 15 + 'px';
+                    this.displayStyle.left = e.offsetX + 20 + 'px';
+                }
+                else{
+                    this.displayStyle.top = e.pageY +'px';
+                    this.displayStyle.left = e.pageX + 'px';
+                }
                 this.displayStyle.display = 'block';
                 this.showNotes = true;
                 if(this.subreddit){

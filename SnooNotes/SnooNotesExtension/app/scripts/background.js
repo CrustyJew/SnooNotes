@@ -32,7 +32,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
   // event callback when the access token expired
   const onAccessTokenExpired = () => {
-    
+      userManager.clearStaleState();
       store.dispatch(userExpired());
     
   };

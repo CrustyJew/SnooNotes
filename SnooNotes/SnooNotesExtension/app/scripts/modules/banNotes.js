@@ -32,7 +32,7 @@ export class BanNotesModule {
                 }
                 else if (thing.startsWith('t1_')){
                     //comment
-                    link = 'https://reddit.com/r/'+ sub + document.body.closest('.nestedlisting').id.replace('siteTable_t3_','') + '/.../' + thing.replace('t1_','');
+                    link = 'https://reddit.com/r/'+ sub +'/comments/'+ document.body.querySelector('.nestedlisting').id.replace('siteTable_t3_','') + '/.../' + thing.replace('t1_','');
                 }
                 else if (thing.startsWith('t4_')){
                     link = 'https://reddit.com/message/' + thing.replace('t4_','');

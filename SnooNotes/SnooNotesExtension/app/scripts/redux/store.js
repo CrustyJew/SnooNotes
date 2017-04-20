@@ -81,6 +81,7 @@ userManager.getUser().then((u)=>{
         userManager.signinSilent().then((user)=>{
             initUser(store.dispatch,user);
         },(error)=>{
+            userManager.clearStaleState();
             console.log('user not logged in')
         });
     }
