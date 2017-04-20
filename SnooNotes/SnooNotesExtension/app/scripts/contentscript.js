@@ -8,6 +8,7 @@ import Toasted from 'vue-toasted';
 import { reduxStore } from './redux/contentScriptStore';
 import { getNotesForUsers } from './redux/actions/notes';
 import { BanNotesModule } from './modules/banNotes';
+import { SentinelBanModule } from './modules/sentinelBan';
 
 
 export const snInterceptor = new SNAxiosInterceptor(reduxStore);
@@ -20,6 +21,8 @@ let usersWithNotes = [];
 let requestedAuthors = [];
 let newAuthorRequest = [];
 const banNotesModule = new BanNotesModule([]);
+const sentinelBanModule = new SentinelBanModule();
+
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(() => {
     unsub();
@@ -27,6 +30,9 @@ const unsub = reduxStore.subscribe(() => {
 
     banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     banNotesModule.initModule();
+
+    sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs);
+    sentinelBanModule.initModule();
 
     const options = new Vue({ render: h => h(SNOptions) }).$mount();
     options.$on('refresh', () => {
@@ -129,7 +135,7 @@ const InjectIntoThingsClass = () => {
 
 const BindNewThingsClassUserNotesElement = (thing) => {
     let authElem = thing.querySelector('.thing > .entry > .tagline a.author');
-    if (authElem.classList.contains('moderator')) authElem = null;
+    if (authElem && authElem.classList.contains('moderator')) authElem = null;
     let author = null;
     if (authElem) {
         author = thing.attributes['data-author'];

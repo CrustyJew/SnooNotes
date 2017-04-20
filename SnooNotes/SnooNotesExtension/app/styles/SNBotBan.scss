@@ -1,0 +1,18 @@
+@import "./_vars.scss";
+
+.entry .buttons li.SNSentinelBan{
+    margin: 0 5px 0 5px;
+    background-color: $warning;
+    padding: 2px 4px;
+    border: 1px solid $gray;
+    border-radius:2px;
+    color:$dark-gray !important;
+    a{
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    &>span{
+        font-weight:bold;
+    }
+}
