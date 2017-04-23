@@ -1,11 +1,6 @@
 <template>
     <div class="sn-loading">
-        <div class="sn-pulse sn-pulse1">
-        </div>
-        <div class="sn-pulse sn-pulse2">
-        </div>
-        <div class="sn-pulse sn-pulse3">
-        </div>
+        <div class="sn-pulse sn-pulse1"></div><div class="sn-pulse sn-pulse2"></div><div class="sn-pulse sn-pulse3"></div>
     </div>
 </template>
 <script>

@@ -260,7 +260,6 @@ const BindNewModmailUserNoteElement = (article) => {
         noteElem.setAttribute('username', author);
         noteElem.setAttribute('subreddit', sub);
         noteElem.setAttribute('url', url);
-        noteElem.setAttribute('use-offset', true);
         noteElem.setAttribute('is', 'user-notes');
 
         let vueinst = new Vue({ components: { 'user-notes': UserNotes } }).$mount(noteElem);

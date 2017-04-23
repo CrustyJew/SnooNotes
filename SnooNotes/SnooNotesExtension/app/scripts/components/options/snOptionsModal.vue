@@ -25,8 +25,8 @@
                     <sn-loading></sn-loading>
                 </div>
                 <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
-                    <div class="SNSubSettingsBtnWrapper">
-                        <button type="button" class="SNBtnAction" @click="showSettings(index)" v-for="(sub,index) in snOptions.subSettings">/r/{{sub.SubName}}</button>
+                    <div class="SNSubSettingsBtnWrapper" v-for="(sub,index) in snOptions.subSettings">
+                        <button type="button" class="SNBtnAction" @click="showSettings(index)" >/r/{{sub.SubName}}</button>
                     </div>
                 </div>
                 <div v-if="!snOptions.loadingSubSettings && editingSubIndex > -1">
@@ -124,6 +124,7 @@ export default {
 #SNActivateContainer {
     margin: 0 auto;
     width: 310px;
+    min-height:75px;
 }
 
 #header {

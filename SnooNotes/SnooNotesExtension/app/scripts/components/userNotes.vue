@@ -1,7 +1,7 @@
 <template>
     <span v-if="snInfo.modded_subs.length > 0" class="SNUserNotes" @click.stop>
-    
-        <span @click="show">[SN]</span>
+        
+            <span @click="show">[SN]</span>
     <transition name="fade">
         <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
             <div class="SNHeader"><a class="SNCloseNote SNClose" @click="close">[x]</a></div>
@@ -11,9 +11,9 @@
                         <td class="SNSubName">
                             <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
                             <span v-if="note.ParentSubreddit">
-                            <br />via<br />
-                            <a :href="'https://reddit.com/r/'+note.ParentSubreddit">{{note.ParentSubreddit}}</a>
-                        </span>
+                                <br />via<br />
+                                <a :href="'https://reddit.com/r/'+note.ParentSubreddit">{{note.ParentSubreddit}}</a>
+                            </span>
                         </td>
                         <td class="SNSubmitter">
                             <span>{{note.Submitter}}</span>
@@ -60,7 +60,7 @@ import axios from 'axios';
 
 export default {
     name: 'user-notes',
-    props: ['username', 'subreddit', 'url', 'useOffset'],
+    props: ['username', 'subreddit', 'url'],
     directives: { 'draggable': draggable },
     mixins: [validationMixin],
     data() {
@@ -141,14 +141,9 @@ export default {
             return style;
         },
         show: function (e) {
-            if (this.useOffset) {
-                this.displayStyle.top = e.offsetY + 15 + 'px';
-                this.displayStyle.left = e.offsetX + 20 + 'px';
-            }
-            else {
-                this.displayStyle.top = e.pageY + 'px';
-                this.displayStyle.left = e.pageX + 'px';
-            }
+            this.displayStyle.top = e.target.offsetTop + 15 + 'px';
+            this.displayStyle.left = e.target.offsetLeft + 20 + 'px';
+            
             this.displayStyle.display = 'block';
             this.showNotes = true;
             if (this.subreddit) {
