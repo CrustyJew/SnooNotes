@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-[assembly: UserSecretsId( "aspnet-SnooNotesTests-20170206010343" )]
+//[assembly: UserSecretsId( "aspnet-SnooNotesTests-20170206010343" )]
 namespace SnooNotesTests.Utilities {
 
     public class AuthUtilsTests :IDisposable {

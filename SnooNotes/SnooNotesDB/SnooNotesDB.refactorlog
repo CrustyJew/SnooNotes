@@ -35,4 +35,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Disabled" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b18a3ba3-4c07-4b9f-9e0b-27761a3a5c41" ChangeDateTime="04/25/2017 15:05:57">
+    <Property Name="ElementName" Value="[dbo].[FK_BotBannedUsers_ToTable]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[BotBannedUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_BotBannedUsers_Subreddits]" />
+  </Operation>
 </Operations>

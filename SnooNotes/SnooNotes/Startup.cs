@@ -20,6 +20,8 @@ using Newtonsoft.Json.Serialization;
 using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using IdentityModel.AspNetCore.OAuth2Introspection;
+using System.Data.SqlClient;
+using Npgsql;
 
 namespace SnooNotes {
     public class Startup {
@@ -91,6 +93,10 @@ namespace SnooNotes {
             services.AddTransient<BLL.INotesBLL, BLL.NotesBLL>();
             services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();
             services.AddTransient<BLL.ISubredditBLL, BLL.SubredditBLL>();
+            
+            services.AddTransient<DAL.IBotBanDAL>((x) => { return new DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
+            services.AddTransient<BLL.IBotBanBLL, BLL.BotBanBLL>();
+
 
             RedditSharp.WebAgent.UserAgent = "SnooNotes (by Meepster23)";
             RedditSharp.WebAgent.RateLimit.Mode = RedditSharp.RateLimitMode.Burst;
@@ -139,7 +145,7 @@ namespace SnooNotes {
                 PostLogoutRedirectUri = "/",
 
                 ResponseType = "code id_token",
-                Scope = { "api1", "offline_access" },
+                Scope = { "profile", "offline_access" },
                 GetClaimsFromUserInfoEndpoint = true,
                 TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters {
                     NameClaimType = "name",

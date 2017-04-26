@@ -92,7 +92,7 @@ export class SentinelBanModule {
         userBanElem.setAttribute('sn-bb-sub', sub);
         userBanElem.setAttribute('sn-bb-user', user);
         userBanElem.setAttribute('sn-bb-reason', reason);
-        userBanElem.setAttribute('sn-bb-thingurl', encodeURIComponent(thingURL));
+        userBanElem.setAttribute('sn-bb-thingurl', thingURL);
         userBanElem.textContent = 'User';
         banElem.appendChild(userBanElem);
         if (url) {
@@ -100,8 +100,8 @@ export class SentinelBanModule {
             let chanBanElem = document.createElement('a');
             chanBanElem.setAttribute('sn-bb-sub', sub);
             chanBanElem.setAttribute('sn-bb-reason', reason);
-            chanBanElem.setAttribute('sn-bb-thingurl', encodeURIComponent(thingURL));
-            chanBanElem.setAttribute('sn-bb-channel', encodeURIComponent(url));
+            chanBanElem.setAttribute('sn-bb-thingurl', thingURL);
+            chanBanElem.setAttribute('sn-bb-channel', url);
             chanBanElem.textContent = 'Channel';
             banElem.appendChild(chanBanElem);
         }

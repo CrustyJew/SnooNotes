@@ -67,6 +67,7 @@
     <Build Include="Notes_History.sql" />
     <Build Include="NoteTypes_History.sql" />
     <Build Include="NoteHashes.sql" />
+    <Build Include="BotBannedUsers.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="SnooNotesDB.refactorlog" />

@@ -61,20 +61,20 @@ namespace SnooNotes.Controllers {
             return dirtbag.UpdateBanReason( subname, id, reason, User.Identity.Name );
         }
         
-        [HttpPost( "{subname}/BanList/Channels" )]
-        public Task BanChannel( Models.BannedEntity entity, string subname ) {
-            if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
-                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
-            }
-            return dirtbag.BanChannel( subname, entity.EntityString, entity.BanReason, entity.ThingID, User.Identity.Name );
-        }
+        //[HttpPost( "{subname}/BanList/Channels" )]
+        //public Task BanChannel( Models.BannedEntity entity, string subname ) {
+        //    if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+        //        throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+        //    }
+        //    return dirtbag.BanChannel( subname, entity.EntityString, entity.BanReason, entity.ThingID, User.Identity.Name );
+        //}
         
-        [HttpPost( "{subname}/BanList/Users" )]
-        public Task BanUser( Models.BannedEntity entity, string subname ) {
-            if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
-                throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
-            }
-            return dirtbag.BanUser( subname, entity.EntityString, entity.BanReason, entity.ThingID, User.Identity.Name );
-        }
+        //[HttpPost( "{subname}/BanList/Users" )]
+        //public Task BanUser( Models.BannedEntity entity, string subname ) {
+        //    if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+        //        throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
+        //    }
+        //    return dirtbag.BanUser( subname, entity.EntityString, entity.BanReason, entity.ThingID, User.Identity.Name );
+        //}
     }
 }

@@ -190,18 +190,18 @@ namespace IdentProvider.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null, bool read = false, bool wiki = false)
+        public IActionResult ExternalLogin(string provider, string returnUrl = null, bool config = false, bool wiki = false)
         {
             string scope = "";
             // Request a redirect to the external login provider.
-            if ( wiki && read ) {
-                scope = "identity,mysubreddits,wikiread,read";
+            if ( wiki && config ) {
+                scope = "identity,mysubreddits,wikiread,modconfig";
             }
             else if ( wiki ) {
                 scope = "identity,mysubreddits,wikiread";
             }
-            else if ( read ) {
-                scope = "identity,mysubreddits,read";
+            else if ( config ) {
+                scope = "identity,mysubreddits,modconfig";
             }
             else {
                 scope = "identity,mysubreddits";
@@ -249,7 +249,7 @@ namespace IdentProvider.Controllers
                 string scope = info.Principal.Claims.FirstOrDefault( c => c.Type == "urn:reddit_scope" ).Value;
                 var scopes = scope.Split( ' ' );
                 bool hasWiki = scopes.Contains( "wikiread" );
-                bool hasRead = scopes.Contains( "read" );
+                bool hasConfig = scopes.Contains( "config" );
                 string accessToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "access_token" ).Value;
                 string refreshToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "refresh_token" ).Value;
                 string tokenExpires = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "expires_at" ).Value;
@@ -259,7 +259,7 @@ namespace IdentProvider.Controllers
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
                     TokenExpires = DateTime.Parse(tokenExpires),
-                    HasRead = hasRead,
+                    HasConfig = hasConfig,
                     HasWiki = hasWiki
                 };
                 var signresult = await _userManager.CreateAsync( user );

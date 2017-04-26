@@ -12,7 +12,7 @@ namespace SnooNotes.Models
         public string RefreshToken { get; set; }
         public string AccessToken { get; set; }
         public DateTime TokenExpires { get; set; }
-        public bool HasRead { get; set; }
+        public bool HasConfig { get; set; }
         public bool HasWiki { get; set; }
 
         public DateTime LastUpdatedRoles { get; set; }

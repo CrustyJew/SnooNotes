@@ -53,7 +53,7 @@ namespace SnooNotes.BLL {
             int ireqs = icache.Value;
 
             if ( Math.Max( ureqs, ireqs ) > 5 ) {
-                throw new Exception( "You are doing that too much! Limited to created 5 subreddits per 24 hours, sorry!" );
+                //throw new Exception( "You are doing that too much! Limited to created 5 subreddits per 24 hours, sorry!" );
             }
             var activeSubs = await subDAL.GetActiveSubs();
             if ( activeSubs.Count > 0 && activeSubs.Select( s => s.SubName.ToLower() ).Contains( newSub.SubName.ToLower() ) ) {

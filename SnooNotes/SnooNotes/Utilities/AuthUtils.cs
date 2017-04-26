@@ -51,7 +51,7 @@ namespace SnooNotes.Utilities {
             
             ClaimsIdentity curuser = user.Identity as ClaimsIdentity;
             RedditSharp.WebAgent agent;
-            if ( ident.HasRead ) {
+            if ( ident.HasConfig ) {
                 if ( ident.TokenExpires < DateTime.UtcNow ) {
                     await GetNewTokenAsync( ident );
                     await _userManager.UpdateAsync( ident );

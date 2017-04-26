@@ -22,7 +22,7 @@
                 </ul>
                 <span style="font-weight:bold;font-size:20px;">Optional Permissions: <span style="font-size:12px;">Select check boxes below to allow</span></span>
                 <ul style="margin-bottom:5px; list-style:none;">
-                    <li><label style="font-weight:normal;cursor:pointer"><input name ="read" value="true" id="chkScopeRead" type="checkbox" checked="@ViewBag.Read" class="optScope" /><strong>Read:</strong> Used to read the lists of moderators of subs, also used to import Toolbox notes. This does give access to posts / comments made in private subreddits, but SnooNotes will never access them.</label></li>
+                    <li><label style="font-weight:normal;cursor:pointer"><input name ="config" value="true" id="chkScopeConfig" type="checkbox" checked="@ViewBag.Read" class="optScope" /><strong>Config:</strong> Used to allow automod banning of users through the extension. If not checked, you will not have the option to bot ban users. You will still be able to bot ban channels though.</label></li>
                     <li><label style="font-weight:normal;cursor:pointer"><input name ="wiki" value="true" id="chkScopeWiki" type="checkbox" checked="@ViewBag.Wiki" class="optScope" /><strong>WikiRead:</strong> Used to import Moderator Toolbox Usernotes into SnooNotes.</label></li>
                 </ul>
 

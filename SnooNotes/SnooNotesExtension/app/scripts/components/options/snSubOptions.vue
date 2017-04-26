@@ -334,7 +334,6 @@ export default {
     font-family: verdana;
     color: white;
     text-align: center;
-    margin-left: 8px;
     background: linear-gradient(to bottom, $accent, darken($accent, 15%));
     position: relative;
     border-radius: 50%;

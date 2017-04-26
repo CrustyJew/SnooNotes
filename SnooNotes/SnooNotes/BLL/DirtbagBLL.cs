@@ -77,36 +77,46 @@ namespace SnooNotes.BLL {
             await dirtbag.UpdateBanReason(conn, subName, id, reason, modname );
         }
 
-        public async Task BanChannel( string subName, string url, string reason, string thingID, string bannedBy ) {
-            string ytVidID = Helpers.YouTubeHelpers.ExtractVideoId( url );
-            if ( string.IsNullOrWhiteSpace( ytVidID ) )
-                throw new ArgumentException( $"Couldn't extract YouTube video ID from url: {url}" );
-            string channelID = await ytDAL.GetChannelID( ytVidID );
-            Models.BannedEntity toBan = new Models.BannedEntity() {
-                BanDate = DateTime.UtcNow,
-                BannedBy = bannedBy,
-                BanReason = reason,
-                EntityString = channelID,
-                SubName = subName,
-                ThingID = thingID,
-                Type = Models.BannedEntity.EntityType.Channel
-            };
-            var conn = await GetSettings( subName );
-            await dirtbag.AddToBanList(conn, new List<Models.BannedEntity>() { toBan } );
+        public Task BanChannel(string subName, string url, string reason, string thingID, string bannedBy)
+        {
+            throw new NotImplementedException();
         }
 
-        public async Task BanUser( string subName, string username, string reason, string thingID, string bannedBy ) {
-            Models.BannedEntity toBan = new Models.BannedEntity() {
-                BanDate = DateTime.UtcNow,
-                BannedBy = bannedBy,
-                BanReason = reason,
-                EntityString = username,
-                SubName = subName,
-                ThingID = thingID,
-                Type = Models.BannedEntity.EntityType.User
-            };
-            var conn = await GetSettings( subName );
-            await dirtbag.AddToBanList( conn, new List<Models.BannedEntity>() { toBan } );
+        public Task BanUser(string subName, string username, string reason, string thingID, string bannedBy)
+        {
+            throw new NotImplementedException();
         }
+
+        //public async Task BanChannel( string subName, string url, string reason, string thingID, string bannedBy ) {
+        //    string ytVidID = Helpers.YouTubeHelpers.ExtractVideoId( url );
+        //    if ( string.IsNullOrWhiteSpace( ytVidID ) )
+        //        throw new ArgumentException( $"Couldn't extract YouTube video ID from url: {url}" );
+        //    string channelID = await ytDAL.GetChannelID( ytVidID );
+        //    Models.BannedEntity toBan = new Models.BannedEntity() {
+        //        BanDate = DateTime.UtcNow,
+        //        BannedBy = bannedBy,
+        //        BanReason = reason,
+        //        EntityString = channelID,
+        //        SubName = subName,
+        //        ThingID = thingID,
+        //        Type = Models.BannedEntity.EntityType.Channel
+        //    };
+        //    var conn = await GetSettings( subName );
+        //    await dirtbag.AddToBanList(conn, new List<Models.BannedEntity>() { toBan } );
+        //}
+
+        //public async Task BanUser( string subName, string username, string reason, string thingID, string bannedBy ) {
+        //    Models.BannedEntity toBan = new Models.BannedEntity() {
+        //        BanDate = DateTime.UtcNow,
+        //        BannedBy = bannedBy,
+        //        BanReason = reason,
+        //        EntityString = username,
+        //        SubName = subName,
+        //        ThingID = thingID,
+        //        Type = Models.BannedEntity.EntityType.User
+        //    };
+        //    var conn = await GetSettings( subName );
+        //    await dirtbag.AddToBanList( conn, new List<Models.BannedEntity>() { toBan } );
+        //}
     }
 }
