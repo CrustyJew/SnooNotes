@@ -82,10 +82,13 @@ namespace IdentProvider {
                 .Services.AddTransient<IdentityServer4.ResponseHandling.ITokenResponseGenerator, CustomTokenResponseGenerator>()
                          .AddTransient<IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator,CustomAuthorizeResponseGenerator>();
 
+            var webAgentPool = new RedditSharp.RefreshTokenWebAgentPool(Configuration["RedditClientID"], Configuration["RedditClientSecret"], Configuration["RedditRedirectURI"]);
+            webAgentPool.DefaultRateLimitMode = RedditSharp.RateLimitMode.Burst;
+            webAgentPool.DefaultUserAgent = "SnooNotes (by Meepster23)";
+            services.AddSingleton(webAgentPool);
 
-
-            RedditSharp.WebAgent.UserAgent = "SnooNotes IdentityProvider (by Meepster23)";
-            RedditSharp.WebAgent.RateLimit.Mode = RedditSharp.RateLimitMode.Burst;
+            RedditSharp.WebAgent.DefaultUserAgent = "SnooNotes IdentityProvider (by Meepster23)";
+            RedditSharp.WebAgent.DefaultRateLimiter.Mode = RedditSharp.RateLimitMode.Burst;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

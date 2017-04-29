@@ -99,14 +99,9 @@ namespace SnooNotes.BLL {
                 }
 
                 await subDAL.UpdateSubredditSettings( sub );
-
-                bool updated = await authUtils.UpdateModsForSubAsync( sub, user );
-                if ( updated ) {
-                    return new { error = false, message = "Settings have been saved and moderator list has been updated!" };
-                }
-                else {
+                
                     return new { error = false, message = "Settings have been saved and moderator list will be refreshed within 2 hours!" };
-                }
+                
             }
         }
     }

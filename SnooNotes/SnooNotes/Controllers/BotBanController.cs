@@ -21,7 +21,7 @@ namespace SnooNotes.Controllers
         [HttpPost("{sub}/Channel")]
         public Task BanChannel(string sub, [FromBody]Models.BannedEntity entity) {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
-            if (!ident.HasClaim("urn:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
+            if (!ident.HasClaim("uri:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
             entity.SubName = sub;
             entity.BannedBy = ident.Identity.Name;
             entity.BanDate = DateTime.UtcNow;
@@ -32,7 +32,7 @@ namespace SnooNotes.Controllers
         public Task BanUser(string sub, [FromBody] Models.BannedEntity entity)
         {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
-            if (!ident.HasClaim("urn:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
+            if (!ident.HasClaim("uri:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
             entity.SubName = sub;
             entity.BannedBy = ident.Identity.Name;
             entity.BanDate = DateTime.UtcNow;

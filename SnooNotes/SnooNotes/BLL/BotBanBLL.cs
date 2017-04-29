@@ -18,12 +18,14 @@ namespace SnooNotes.BLL
         private UserManager<ApplicationUser> userManager;
         private Utilities.IAuthUtils authUtils;
         private DAL.IYouTubeDAL ytDAL;
-        public BotBanBLL(DAL.IBotBanDAL botBanDAL, UserManager<ApplicationUser> userManager, Utilities.IAuthUtils authUtils, DAL.IYouTubeDAL youtubeDAL )
+        private RedditSharp.RefreshTokenWebAgentPool agentPool;
+        public BotBanBLL(DAL.IBotBanDAL botBanDAL, UserManager<ApplicationUser> userManager, Utilities.IAuthUtils authUtils, DAL.IYouTubeDAL youtubeDAL, RedditSharp.RefreshTokenWebAgentPool agentPool )
         {
             bbDAL = botBanDAL;
             this.userManager = userManager;
             this.authUtils = authUtils;
             ytDAL = youtubeDAL;
+            this.agentPool = agentPool;
         }
 
         public async Task BanChannel(Models.BannedEntity channel)
@@ -48,16 +50,14 @@ namespace SnooNotes.BLL
 
             RedditSharp.Things.Subreddit subreddit;
             var ident = await userManager.FindByNameAsync(user.BannedBy);
-
-            if (ident.TokenExpires < DateTime.UtcNow)
+            var webAgent = await agentPool.GetOrCreateWebAgentAsync(user.BannedBy, (uname, uagent, rlimit) =>
             {
-                await authUtils.GetNewTokenAsync(ident);
-                await userManager.UpdateAsync(ident);
-            }
+               return Task.FromResult<RedditSharp.RefreshTokenPoolEntry>(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent));
+            });
+            
             if (!ident.HasWiki) { throw new UnauthorizedAccessException("Need Wiki Permissions"); }
-
-            RedditSharp.WebAgent agent = new RedditSharp.WebAgent(ident.AccessToken,new RedditSharp.RateLimitManager());
-            RedditSharp.Reddit rd = new RedditSharp.Reddit(agent, true);
+            if (!ident.HasConfig) { throw new UnauthorizedAccessException("Need Config Permissions"); }
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(webAgent, true);
 
             subreddit = await rd.GetSubredditAsync(user.SubName);
 

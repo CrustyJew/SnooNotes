@@ -29,7 +29,7 @@ namespace SnooNotes.Controllers {
         {
 
             if ( id.ToLower() == "admin" ) {
-                var subs = ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == "urn:snoonotes:admin" ).Select( c => c.Value );
+                var subs = ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == "uri:snoonotes:admin" ).Select( c => c.Value );
                 //subs = subs.Where( s => User.HasClaim( "urn:snoonotes:subreddits:" + s + ":admin", "true" ) );
                 return subBLL.GetSubreddits( subs );
             }
@@ -37,7 +37,7 @@ namespace SnooNotes.Controllers {
             else {
                 List<Models.Subreddit> toReturn = new List<Models.Subreddit>();
                 foreach ( string sub in id.Split( ',' ) ) {
-                    if ( !User.HasClaim( "urn:snoonotes:admin", id.ToLower() ) ) {
+                    if ( !User.HasClaim( "uri:snoonotes:admin", id.ToLower() ) ) {
                         throw new UnauthorizedAccessException( $"You are not a moderator of \"{id}\" , or you don't have full permissions!" );
                     }
                     
@@ -60,7 +60,7 @@ namespace SnooNotes.Controllers {
         public Task<object> Put([FromRoute]string subname, [FromBody]Models.Subreddit sub)
         {
             sub.SubName = subname;
-            if ( User.HasClaim( "urn:snoonotes:admin", sub.SubName.ToLower() ) ) {
+            if ( User.HasClaim( "uri:snoonotes:admin", sub.SubName.ToLower() ) ) {
                 return subBLL.UpdateSubreddit( sub, User );
             }
             else {

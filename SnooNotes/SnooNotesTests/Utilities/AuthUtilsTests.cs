@@ -22,6 +22,7 @@ namespace SnooNotesTests.Utilities {
         private IConfigurationRoot Configuration;
         private IServiceProvider serviceProvider;
         private ApplicationUser testUser;
+        private RedditSharp.RefreshTokenWebAgentPool agentPool;
         public AuthUtilsTests() {
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddUserSecrets<AuthUtilsTests>();
@@ -41,6 +42,12 @@ namespace SnooNotesTests.Utilities {
                 UserName = Configuration["UserName"],
                 RefreshToken = Configuration["UserRefreshToken"],
                 TokenExpires = DateTime.UtcNow.AddMinutes( -5 )
+            };
+
+            agentPool = new RedditSharp.RefreshTokenWebAgentPool(Configuration["RedditClientID"], Configuration["RedditClientSecret"], Configuration["RedditRedirectURI"])
+            {
+                DefaultRateLimitMode = RedditSharp.RateLimitMode.Burst,
+                DefaultUserAgent = "SnooNotes (by Meepster23)"
             };
         }
 
@@ -62,7 +69,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
 
             //act
             await util.UpdateModeratedSubredditsAsync( testUser );
@@ -74,11 +81,9 @@ namespace SnooNotesTests.Utilities {
 
             Assert.Single( endUserRoles );
             Assert.StrictEqual( "gooaway", endUserRoles.SingleOrDefault() );
-            Assert.Single( endUserClaims );
-            var c = new Claim( "urn:snoonotes:admin", "gooaway" );
-            bool x = c.Equals( endUserClaims.SingleOrDefault() );
-            Assert.Equal( c.Type, endUserClaims.SingleOrDefault().Type );
-            Assert.Equal( c.Value, endUserClaims.SingleOrDefault().Value );
+            Assert.Single( endUserClaims, euc=>euc.Type == "uri:snoonotes:admin" && euc.Value == "gooaway");
+            Assert.Single(endUserClaims, euc => euc.Type == "uri:snoonotes:cabal" && euc.Value == "true");
+            Assert.Equal(2, endUserClaims.Count);
 
         }
 
@@ -96,11 +101,11 @@ namespace SnooNotesTests.Utilities {
             await um.CreateAsync( testUser );
 
             await um.AddToRoleAsync( testUser, "notthebesttest" );
-            await um.AddClaimAsync( testUser, new Claim( "urn:snoonotes:admin", "notthebesttest" ) );
+            await um.AddClaimAsync( testUser, new Claim( "uri:snoonotes:admin", "notthebesttest" ) );
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
 
             //act
             await util.UpdateModeratedSubredditsAsync( testUser );
@@ -112,8 +117,9 @@ namespace SnooNotesTests.Utilities {
 
             Assert.Single( endUserRoles );
             Assert.StrictEqual( "notthebesttest", endUserRoles.SingleOrDefault() );
-            Assert.Empty( endUserClaims );
 
+            Assert.Single(endUserClaims);
+            Assert.True(endUserClaims.Single().Type == "uri:snoonotes:cabal" && endUserClaims.Single().Value == "true");
         }
 
         [Fact]
@@ -130,11 +136,11 @@ namespace SnooNotesTests.Utilities {
             await um.CreateAsync( testUser );
 
             await um.AddToRoleAsync( testUser, "asubbie" );
-            await um.AddClaimAsync( testUser, new Claim( "urn:snoonotes:admin", "asubbie" ) );
+            await um.AddClaimAsync( testUser, new Claim( "uri:snoonotes:admin", "asubbie" ) );
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
 
             //act
             await util.UpdateModeratedSubredditsAsync( testUser );
@@ -145,7 +151,8 @@ namespace SnooNotesTests.Utilities {
             var endUserClaims = await um.GetClaimsAsync( endUser );
 
             Assert.Empty( endUserRoles );
-            Assert.Empty( endUserClaims );
+            Assert.Single( endUserClaims );
+            Assert.True(endUserClaims.Single().Type == "uri:snoonotes:cabal" && endUserClaims.Single().Value == "true");
 
         }
         [Fact]
@@ -157,7 +164,7 @@ namespace SnooNotesTests.Utilities {
             } };
             var claimsIdent = new ClaimsIdentity( "mock" );
             claimsIdent.AddClaim( new Claim( claimsIdent.NameClaimType, testUser.UserName ) );
-            claimsIdent.AddClaim( new Claim( "urn:snoonotes:admin", "gooaway" ) );
+            claimsIdent.AddClaim( new Claim( "uri:snoonotes:admin", "gooaway" ) );
 
             var um = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             await serviceProvider.GetRequiredService<RoleManager<IdentityRole>>().CreateAsync( new IdentityRole( "gooaway" ) );
@@ -165,7 +172,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetSubreddits( It.IsAny<IEnumerable<string>>() ) ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object );
+            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
             var userPrincipal = new ClaimsPrincipal( claimsIdent );
 
             await um.AddToRoleAsync( testUser, "gooaway" );
@@ -182,8 +189,8 @@ namespace SnooNotesTests.Utilities {
             await um.CreateAsync( badUser );
             await um.CreateAsync( okUser );
             await um.AddToRoleAsync( badUser, "gooaway" );
-            await um.AddClaimAsync( badUser, new Claim( "urn:snoonotes:admin", "gooaway" ) );
-            await um.AddClaimAsync( okUser, new Claim( "urn:snoonotes:admin", "gooaway" ) );
+            await um.AddClaimAsync( badUser, new Claim( "uri:snoonotes:admin", "gooaway" ) );
+            await um.AddClaimAsync( okUser, new Claim( "uri:snoonotes:admin", "gooaway" ) );
 
             await util.UpdateModsForSubAsync( activeSub.First(), userPrincipal );
 
@@ -200,11 +207,17 @@ namespace SnooNotesTests.Utilities {
 
             Assert.Single( endUserRoles );
             Assert.StrictEqual( "gooaway", endUserRoles.SingleOrDefault() );
-            Assert.Single( endUserClaims );
-            var c = new Claim( "urn:snoonotes:admin", "gooaway" );
-            bool x = c.Equals( endUserClaims.SingleOrDefault() );
-            Assert.Equal( c.Type, endUserClaims.SingleOrDefault().Type );
-            Assert.Equal( c.Value, endUserClaims.SingleOrDefault().Value );
+            Assert.NotEmpty( endUserClaims );
+            var c = new Claim( "uri:snoonotes:admin", "gooaway" );
+            var cabalclaim = new Claim("uri:snoonotes:cabal", "true");
+
+            var euClaimAdmin = endUserClaims.Where(eu => eu.Type == c.Type);
+            var euCabal = endUserClaims.Where(eu => eu.Type == cabalclaim.Type);
+
+            Assert.Single(euClaimAdmin);
+
+            Assert.Equal( c.Type, euClaimAdmin.SingleOrDefault().Type );
+            Assert.Equal( c.Value, euClaimAdmin.SingleOrDefault().Value );
 
             Assert.True( badUserClaims.Count == 0, "Assert admin claims removed from bad user" );
             Assert.True( badUserRoles.Count == 0, "Assert roles removed from bad user" );

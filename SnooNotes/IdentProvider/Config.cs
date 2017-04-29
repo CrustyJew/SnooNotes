@@ -12,7 +12,8 @@ namespace IdentProvider {
             return new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                //new IdentityResources.Profile()
+                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal"}.Concat(new IdentityResources.Profile().UserClaims)){ }
             };
         }
 
@@ -26,8 +27,8 @@ namespace IdentProvider {
             }
             return new List<ApiResource>
             {
-                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "urn:snoonotes:admin" } },
-                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "urn:snoonotes:admin" }}
+                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "uri:snoonotes:admin","uri:snoonotes:cabal" } },
+                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets, UserClaims = {IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "uri:snoonotes:admin","uri:snoonotes:cabal" } }
             };
         }
 
@@ -66,13 +67,13 @@ namespace IdentProvider {
                     ClientName = "SnooNotes Extension",
                     RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
                     PostLogoutRedirectUris = config.GetSection("ID4_Client_LogoutURIs").Get<string[]>() ,
-                    RequireConsent = false,
+                    RequireConsent = false,  
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "dirtbag", "snoonotes"
-                    }, AllowAccessTokensViaBrowser = true
+                        "dirtbag", "snoonotes", "cabal"
+                    }, AllowAccessTokensViaBrowser = true,
                 },
 
                 // OpenID Connect hybrid flow and client credentials client (MVC)
@@ -95,7 +96,7 @@ namespace IdentProvider {
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "dirtbag", "snoonotes"
+                        "dirtbag", "snoonotes", "cabal"
                     },
                     AllowOfflineAccess = true , 
                 }

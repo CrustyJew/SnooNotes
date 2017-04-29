@@ -33,6 +33,7 @@ const onSilentRenewError = (error) => {
 // event callback when the access token expired
 const onAccessTokenExpired = () => {
   userManager.clearStaleState();
+  userManager.removeUser();
   store.dispatch(userExpired());
 
 };

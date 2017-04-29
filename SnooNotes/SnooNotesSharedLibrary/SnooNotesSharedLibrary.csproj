@@ -17,7 +17,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="1.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
     <PackageReference Include="Dapper" Version="1.50.2" />
-    <PackageReference Include="RedditSharp" Version="2.0.0-CI00025" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\RedditSharp\RedditSharp\RedditSharp.csproj" />
   </ItemGroup>
 
 </Project>

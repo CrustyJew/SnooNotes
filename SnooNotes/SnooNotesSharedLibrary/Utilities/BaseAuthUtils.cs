@@ -18,57 +18,35 @@ namespace SnooNotes.Utilities {
         private RoleManager<IdentityRole> _roleManager;
         private ILogger _logger;
         private DAL.ISubredditDAL subDAL;
+        private RedditSharp.RefreshTokenWebAgentPool agentPool;
         public BaseAuthUtils( IConfigurationRoot config,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL ) {
+            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool webAgentPool) {
             _userManager = userManager;
             //_logger = loggerFactory.CreateLogger<AuthUtils>();
             _roleManager = roleManager;
             Configuration = config;
             subDAL = subredditDAL;
+            agentPool = webAgentPool;
         }
-        public virtual async Task GetNewTokenAsync( ApplicationUser ident ) {
-            string ClientId = Configuration["RedditClientID"];
-            string ClientSecret = Configuration["RedditClientSecret"];
-            string RediretURI = Configuration["RedditRedirectURI"];
-
-            RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
-            
-            RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider( ClientId, ClientSecret, RediretURI, agent );
-
-            string newaccesstoken = await ap.GetOAuthTokenAsync( ident.RefreshToken, true );
-            ident.AccessToken = newaccesstoken;
-            ident.TokenExpires = DateTime.UtcNow.AddMinutes( 50 );
-        }
-        public virtual async Task RevokeRefreshTokenAsync( string token ) {
+        
+        public virtual async Task RevokeRefreshTokenAsync( string token, string username ) {
             string ClientId = Configuration["RedditClientID"];
             string ClientSecret = Configuration["RedditClientSecret"];
             string RediretURI = Configuration["RedditRedirectURI"];
             RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
             RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider( ClientId, ClientSecret, RediretURI, agent );
             await ap.RevokeTokenAsync( token, true );
-
-        }
-        public virtual async Task CheckTokenExpirationAsync( ClaimsPrincipal user ) {
-
-            var ident = await _userManager.FindByNameAsync( user.Identity.Name );
-            if ( ident.TokenExpires < DateTime.UtcNow ) {
-                await GetNewTokenAsync( ident );
-            }
+            await agentPool.RemoveWebAgentAsync(username); //TODO revoke here instead
         }
 
-        public virtual async Task CheckTokenExpiration( ApplicationUser ident ) {
-            if ( ident.TokenExpires < DateTime.UtcNow ) {
-                await GetNewTokenAsync( ident );
-            }
-        }
 
         public virtual async Task UpdateModeratedSubredditsAsync( ApplicationUser ident) {
             string cabalSubName = Configuration["CabalSubreddit"].ToLower();
-            if ( ident.TokenExpires < DateTime.UtcNow ) {
-                await GetNewTokenAsync( ident );
-            }
-            RedditSharp.WebAgent agent = new RedditSharp.WebAgent( ident.AccessToken );
+            RedditSharp.IWebAgent agent = await agentPool.GetOrCreateWebAgentAsync(ident.UserName, (uname, uagent, rlimit) =>
+            {
+                return Task.FromResult<RedditSharp.RefreshTokenPoolEntry>(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent));
+            });
             RedditSharp.Reddit rd = new RedditSharp.Reddit( agent, true );
             var modSubs = new List<RedditSharp.Things.Subreddit>();
             await rd.User.GetModeratorSubreddits().ForEachAsync( s => modSubs.Add( s ) );
@@ -102,7 +80,7 @@ namespace SnooNotes.Utilities {
                           modsub.Name.ToLower() == sub.SubName.ToLower()
                           && modsub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All )
                     )
-                ).Select( sub => new Claim( "urn:snoonotes:admin", sub.SubName.ToLower() ) )
+                ).Select( sub => new Claim( "uri:snoonotes:admin", sub.SubName.ToLower() ) )
             );
             //rolesToRemove = set of current roles - roles in rolesToAdd
             rolesToRemove.AddRange(
@@ -113,7 +91,7 @@ namespace SnooNotes.Utilities {
 
             claimsToRemove.AddRange(
                 ident.Claims.Where( curClaim =>
-                     curClaim.ClaimType == "urn:snoonotes:admin" &&
+                     curClaim.ClaimType == "uri:snoonotes:admin" &&
                      !claimsToAdd.Exists( addClaim =>
                           addClaim.Value == curClaim.ClaimValue
                           && addClaim.Type == curClaim.ClaimType
@@ -127,11 +105,10 @@ namespace SnooNotes.Utilities {
             string cabalUsername = Configuration["CabalUsername"];
             ApplicationUser cabalUser = await _userManager.FindByNameAsync( cabalUsername );
             if ( cabalUser != null && !string.IsNullOrWhiteSpace( cabalUsername) && !string.IsNullOrWhiteSpace(cabalSubName)) {
-               
-                if ( cabalUser.TokenExpires >= DateTime.UtcNow.AddMinutes( 5 ) ) {
-                    await GetNewTokenAsync( cabalUser );
-                }
-                RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit( new RedditSharp.WebAgent( ident.AccessToken ), true );
+                RedditSharp.IWebAgent cabalAgent = await agentPool.GetOrCreateWebAgentAsync(cabalUsername, (uname, uagent, rlimit) =>
+                    { return Task.FromResult(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent)); });
+
+                RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit(cabalAgent, true );
                 var cabalSub = await cabalReddit.GetSubredditAsync( cabalSubName );
                 bool hasCabal = await cabalSub.GetContributors().Any( c => c.Name.ToLower() == ident.UserName.ToLower() );
                 if ( hasCabal && !currentClaims.Any( c => c.Type == "uri:snoonotes:cabal" && c.Value == "true" ) ) {
@@ -151,7 +128,8 @@ namespace SnooNotes.Utilities {
             await _userManager.UpdateAsync( ident );
         }
 
-        public virtual Task<bool> UpdateModsForSubAsync( Subreddit sub, ClaimsPrincipal user ) {
+        public virtual Task<bool> UpdateModsForSubAsync(Subreddit sub, ClaimsPrincipal user)
+        {
             throw new NotImplementedException();
         }
     }

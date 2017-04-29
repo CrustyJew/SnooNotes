@@ -45,7 +45,7 @@ namespace SnooNotes.Controllers
         public Task<IEnumerable<Models.NoteType>> Post([FromBody]IEnumerable<Models.NoteType> values)
         {
             foreach ( string subname in values.Select( v => v.SubName ) ) {
-                if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+                if ( !User.HasClaim( "uri:snoonotes:admin", subname.ToLower() ) ) {
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
                 }
             }
@@ -57,7 +57,7 @@ namespace SnooNotes.Controllers
         public Task<IEnumerable<Models.NoteType>> Put([FromBody]Models.NoteType[] values)
         {
             foreach ( string subname in values.Select( v => v.SubName ) ) {
-                if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+                if ( !User.HasClaim( "uri:snoonotes:admin", subname.ToLower() ) ) {
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
                 }
             }
@@ -68,7 +68,7 @@ namespace SnooNotes.Controllers
         public Task<IEnumerable<int>> Delete([FromBody]Models.NoteType[] values)
         {
             foreach ( string subname in values.Select( v => v.SubName ) ) {
-                if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+                if ( !User.HasClaim( "uri:snoonotes:admin", subname.ToLower() ) ) {
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
                 }
             }

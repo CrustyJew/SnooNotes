@@ -47,7 +47,7 @@ namespace SnooNotes.BLL {
             }
             foreach ( NoteType nt in values ) {
 
-                if ( !user.HasClaim("urn:snoonotes:admin", nt.SubName.ToLower()) )
+                if ( !user.HasClaim("uri:snoonotes:admin", nt.SubName.ToLower()) )
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
 
             }

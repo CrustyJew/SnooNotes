@@ -34,7 +34,7 @@ namespace SnooNotes {
 
             if ( env.IsDevelopment() ) {
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets();
+                builder.AddUserSecrets<Startup>();
             }
 
             Configuration = builder.Build();
@@ -88,7 +88,7 @@ namespace SnooNotes {
             services.AddScoped<DAL.INoteTypesDAL, DAL.NoteTypesDAL>();
             services.AddScoped<DAL.ISubredditDAL, DAL.SubredditDAL>();
             services.AddScoped<DAL.IYouTubeDAL, DAL.YouTubeDAL>();
-            services.AddTransient<Utilities.IAuthUtils, Utilities.AuthUtils>();
+            services.AddTransient<Utilities.IAuthUtils, SnooNotes.Utilities.AuthUtils>();
             services.AddTransient<BLL.IDirtbagBLL, BLL.DirtbagBLL>();
             services.AddTransient<BLL.INotesBLL, BLL.NotesBLL>();
             services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();
@@ -97,9 +97,15 @@ namespace SnooNotes {
             services.AddTransient<DAL.IBotBanDAL>((x) => { return new DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
             services.AddTransient<BLL.IBotBanBLL, BLL.BotBanBLL>();
 
+            var webAgentPool = new RedditSharp.RefreshTokenWebAgentPool(Configuration["RedditClientID"], Configuration["RedditClientSecret"], Configuration["RedditRedirectURI"])
+            {
+                DefaultRateLimitMode = RedditSharp.RateLimitMode.Burst,
+                DefaultUserAgent = "SnooNotes (by Meepster23)"
+            };
+            services.AddSingleton(webAgentPool);
 
-            RedditSharp.WebAgent.UserAgent = "SnooNotes (by Meepster23)";
-            RedditSharp.WebAgent.RateLimit.Mode = RedditSharp.RateLimitMode.Burst;
+            RedditSharp.WebAgent.DefaultUserAgent = "SnooNotes (by Meepster23)";
+            RedditSharp.WebAgent.DefaultRateLimiter.Mode = RedditSharp.RateLimitMode.Burst;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
