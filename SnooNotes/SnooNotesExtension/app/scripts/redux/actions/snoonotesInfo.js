@@ -22,3 +22,10 @@ export const getUsersWithNotes = () => {
             })
     }
 }
+
+export const forceRefresh = (dispatch) => {
+    return axios.post('Account/ForceRefresh')
+        .then(() => {
+            dispatch({ type: "FORCED_REFRESH", payload: {} })
+        });
+}

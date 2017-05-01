@@ -30,6 +30,9 @@ namespace IdentProvider.Controllers
         private readonly AccountService _account;
         private readonly IConfigurationRoot _config;
 
+        private RedditSharp.RefreshTokenWebAgentPool _agentPool;
+        private SnooNotes.Utilities.IAuthUtils _authUtils;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -39,7 +42,9 @@ namespace IdentProvider.Controllers
             IIdentityServerInteractionService interaction,
             IHttpContextAccessor httpContext,
             IClientStore clientStore,
-            IConfigurationRoot config)
+            IConfigurationRoot config,
+            RedditSharp.RefreshTokenWebAgentPool agentPool,
+            SnooNotes.Utilities.IAuthUtils authUtils)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -48,6 +53,8 @@ namespace IdentProvider.Controllers
             _logger = loggerFactory.CreateLogger<AccountController>();
             _account = new AccountService( interaction, httpContext, clientStore );
             _config = config;
+            _agentPool = agentPool;
+            _authUtils = authUtils;
         }
 
         //
@@ -195,10 +202,10 @@ namespace IdentProvider.Controllers
             string scope = "";
             // Request a redirect to the external login provider.
             if ( wiki && config ) {
-                scope = "identity,mysubreddits,wikiread,modconfig";
+                scope = "identity,mysubreddits,wikiedit,modconfig,modwiki,read,wikiread";
             }
             else if ( wiki ) {
-                scope = "identity,mysubreddits,wikiread";
+                scope = "identity,mysubreddits,wikiedit";
             }
             else if ( config ) {
                 scope = "identity,mysubreddits,modconfig";
@@ -229,11 +236,38 @@ namespace IdentProvider.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
+            //remove from the webagent pool in case the user exists.
+            await _agentPool.RemoveWebAgentAsync(info.Principal.Identity.Name);
+
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
             if (result.Succeeded)
             {
                 _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
+                string scope = info.Principal.Claims.FirstOrDefault(c => c.Type == "urn:reddit_scope").Value;
+                var scopes = scope.Split(' ');
+                bool hasWiki = scopes.Contains("wikiedit");
+                bool hasConfig = scopes.Contains("modconfig");
+                string accessToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "access_token").Value;
+                string refreshToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "refresh_token").Value;
+                string tokenExpires = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "expires_at").Value;
+
+                var theuser = await _userManager.FindByNameAsync(info.Principal.Identity.Name);
+                string oldRefreshToken = theuser.RefreshToken;
+
+                if (!string.IsNullOrWhiteSpace(oldRefreshToken))
+                {
+                    await _authUtils.RevokeRefreshTokenAsync(oldRefreshToken, info.Principal.Identity.Name);
+                }
+
+                theuser.AccessToken = accessToken;
+                theuser.HasConfig = hasConfig;
+                theuser.HasWiki = hasWiki;
+                theuser.RefreshToken = refreshToken;
+                theuser.TokenExpires = DateTime.Parse(tokenExpires);
+
+                await _userManager.UpdateAsync(theuser);
+
                 return RedirectToLocal(returnUrl);
             }
             //if (result.RequiresTwoFactor)
@@ -248,8 +282,8 @@ namespace IdentProvider.Controllers
             {
                 string scope = info.Principal.Claims.FirstOrDefault( c => c.Type == "urn:reddit_scope" ).Value;
                 var scopes = scope.Split( ' ' );
-                bool hasWiki = scopes.Contains( "wikiread" );
-                bool hasConfig = scopes.Contains( "config" );
+                bool hasWiki = scopes.Contains( "wikiedit" );
+                bool hasConfig = scopes.Contains("modconfig");
                 string accessToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "access_token" ).Value;
                 string refreshToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "refresh_token" ).Value;
                 string tokenExpires = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "expires_at" ).Value;

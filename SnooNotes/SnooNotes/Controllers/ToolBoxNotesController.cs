@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
     [Authorize]
-    //[WikiRead] ///TODO
+    //[wikiedit] ///TODO
 
     [Route( "api/[controller]" )]
     public class ToolBoxNotesController : Controller {

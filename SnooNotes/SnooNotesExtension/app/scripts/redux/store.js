@@ -6,7 +6,7 @@ import { wrapStore, alias } from 'react-chrome-redux';
 import { refreshUser, REFRESH_USER_ALIAS, LOGIN, REDIRECT_SUCCESS, sessionTerminated } from './actions/user';
 import reducer from './reducers/index';
 import { loadingUser, userFound } from './actions/user';
-import { getModSubs, getUsersWithNotes } from './actions/snoonotesInfo';
+import { getModSubs, getUsersWithNotes, forceRefresh } from './actions/snoonotesInfo';
 
 const initialState = { user: { user: null, isLoadingUser: false } };
 
@@ -46,7 +46,9 @@ const bg_aliases = {
             dispatch(refreshUser());
             userManager.signinSilent()
                 .then((user) => {
-                    initUser(dispatch, user);
+                    forceRefresh(dispatch).then(()=>{
+                        initUser(dispatch, user);
+                    })
                 }, () => {
                     console.error('Error getting new token');
                     dispatch(sessionTerminated());

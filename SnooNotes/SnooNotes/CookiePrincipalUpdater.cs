@@ -44,6 +44,8 @@ namespace SnooNotes {
             ILoggerFactory logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
             IMemoryCache cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
             Utilities.IAuthUtils authutils = context.HttpContext.RequestServices.GetRequiredService<Utilities.IAuthUtils>();
+            RedditSharp.RefreshTokenWebAgentPool agentPool = context.HttpContext.RequestServices.GetRequiredService<RedditSharp.RefreshTokenWebAgentPool>();
+            await agentPool.RemoveWebAgentAsync(context.Principal.Identity.Name);
             var user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
             await authutils.UpdateModeratedSubredditsAsync( user );
             user = await userManager.FindByNameAsync( context.Principal.Identity.Name );

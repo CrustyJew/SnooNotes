@@ -52,7 +52,7 @@ namespace SnooNotes.BLL
             var ident = await userManager.FindByNameAsync(user.BannedBy);
             var webAgent = await agentPool.GetOrCreateWebAgentAsync(user.BannedBy, (uname, uagent, rlimit) =>
             {
-               return Task.FromResult<RedditSharp.RefreshTokenPoolEntry>(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent));
+                return Task.FromResult<RedditSharp.RefreshTokenPoolEntry>(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent));
             });
             
             if (!ident.HasWiki) { throw new UnauthorizedAccessException("Need Wiki Permissions"); }
@@ -60,7 +60,7 @@ namespace SnooNotes.BLL
             RedditSharp.Reddit rd = new RedditSharp.Reddit(webAgent, true);
 
             subreddit = await rd.GetSubredditAsync(user.SubName);
-
+            //var wiki = new RedditSharp.WikiPage()
             while (!done && count < 5)
             {
                 try

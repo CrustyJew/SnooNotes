@@ -16,6 +16,7 @@ using AspNet.Security.OAuth.Reddit;
 using System.Reflection;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentProvider {
     public class Startup {
@@ -49,6 +50,8 @@ namespace IdentProvider {
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, CustomUserClaimsPrincipalFactory>();
+
             services.AddCors(opt => opt.AddPolicy("AllowAll", pol => pol.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod().AllowCredentials()));
 
             services.AddMvc();
@@ -65,22 +68,21 @@ namespace IdentProvider {
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<SnooNotes.DAL.ISubredditDAL, SnooNotes.DAL.BaseSubredditDAL>();
             services.AddTransient<SnooNotes.Utilities.IAuthUtils, SnooNotes.Utilities.BaseAuthUtils>();
-            var identServer = services.AddIdentityServer( options =>
-            {
-                options.Cors.CorsPolicyName = "AllowAll";
-            }
-                )
-                .AddTemporarySigningCredential()
-                .AddConfigurationStore( builder =>
-                    builder.UseSqlServer( connectionString, options =>
-                        options.MigrationsAssembly( migrationsAssembly ) ) )
-                .AddOperationalStore( builder =>
-                    builder.UseSqlServer( connectionString, options =>
-                        options.MigrationsAssembly( migrationsAssembly ) ) )
+            var identServer = services.AddIdentityServer(options =>
+           {
+               options.Cors.CorsPolicyName = "AllowAll";
+           }
+                ).AddSigningCredential("CN=SNIdentServer")
+                .AddConfigurationStore(builder =>
+                   builder.UseSqlServer(connectionString, options =>
+                      options.MigrationsAssembly(migrationsAssembly)))
+                .AddOperationalStore(builder =>
+                   builder.UseSqlServer(connectionString, options =>
+                      options.MigrationsAssembly(migrationsAssembly)))
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddEndpoint<Controllers.CustomCheckSessionEndpoint>(IdentityServer4.Hosting.EndpointName.CheckSession)
                 .Services.AddTransient<IdentityServer4.ResponseHandling.ITokenResponseGenerator, CustomTokenResponseGenerator>()
-                         .AddTransient<IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator,CustomAuthorizeResponseGenerator>();
+                         .AddTransient<IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator, CustomAuthorizeResponseGenerator>();
 
             var webAgentPool = new RedditSharp.RefreshTokenWebAgentPool(Configuration["RedditClientID"], Configuration["RedditClientSecret"], Configuration["RedditRedirectURI"]);
             webAgentPool.DefaultRateLimitMode = RedditSharp.RateLimitMode.Burst;
@@ -124,14 +126,7 @@ namespace IdentProvider {
                 ClientSecret = Configuration["RedditClientSecret"],
                 CallbackPath = "/signin-reddit",
                 SaveTokens = true,
-                Scope = { "identity", "mysubreddits" },
-                Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents() {
-                    OnTicketReceived = ( t => {
-                        return Task.FromResult( 0 );
-                    }
-
-                     )
-                }
+                Scope = { "identity", "mysubreddits" }
             } );
 
             app.UseMvc( routes => {

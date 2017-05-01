@@ -47,7 +47,7 @@ namespace SnooNotes.Controllers {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             return new ApplicationUser {
                 HasConfig = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "config" ),
-                HasWiki = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "wikiread" ),
+                HasWiki = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "wikiedit" ),
                 UserName = ident.Name
             };
         }
@@ -83,7 +83,11 @@ namespace SnooNotes.Controllers {
 
         }
 
-
+        [HttpPost("[action]")]
+        public Task ForceRefresh()
+        {
+            return agentPool.RemoveWebAgentAsync(User.Identity.Name);
+        }
 
     }
 }

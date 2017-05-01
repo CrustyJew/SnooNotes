@@ -13,7 +13,7 @@ namespace IdentProvider {
             {
                 new IdentityResources.OpenId(),
                 //new IdentityResources.Profile()
-                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal"}.Concat(new IdentityResources.Profile().UserClaims)){ }
+                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal","uri:snoonotes:haswiki","uri:snoonotes:hasconfig"}.Concat(new IdentityResources.Profile().UserClaims)){ }
             };
         }
 
@@ -27,8 +27,8 @@ namespace IdentProvider {
             }
             return new List<ApiResource>
             {
-                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "uri:snoonotes:admin","uri:snoonotes:cabal" } },
-                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets, UserClaims = {IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "uri:snoonotes:admin","uri:snoonotes:cabal" } }
+                new ApiResource("dirtbag", "Dirtbag API"){ ApiSecrets = secrets, UserClaims = { IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "uri:snoonotes:admin","uri:snoonotes:cabal", "uri:snoonotes:haswiki", "uri:snoonotes:hasconfig" } },
+                new ApiResource("snoonotes","SnooNotes"){ ApiSecrets = secrets, UserClaims = {IdentityModel.JwtClaimTypes.Role, IdentityModel.JwtClaimTypes.Name, "uri:snoonotes:admin","uri:snoonotes:cabal", "uri:snoonotes:haswiki", "uri:snoonotes:hasconfig" } }
             };
         }
 
