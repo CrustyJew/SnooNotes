@@ -8,7 +8,8 @@
 	[BanDate] [datetime] NOT NULL,
 	[ThingUrl] [varchar](max) NULL, 
     CONSTRAINT [FK_BotBannedUsers_Subreddits] FOREIGN KEY (SubredditID) REFERENCES Subreddits([SubredditID]), 
-    CONSTRAINT [PK_BotBannedUsers] PRIMARY KEY ([ID]),
+    CONSTRAINT [PK_BotBannedUsers] PRIMARY KEY ([ID]), 
+    CONSTRAINT [AK_BotBannedUsers_SubredditID_UserName] UNIQUE ([SubredditID],[UserName]) 
 )
 
 GO

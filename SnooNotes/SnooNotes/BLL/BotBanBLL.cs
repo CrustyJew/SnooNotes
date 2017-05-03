@@ -47,8 +47,7 @@ namespace SnooNotes.BLL
 
             bool done = false;
             int count = 1;
-
-            RedditSharp.Things.Subreddit subreddit;
+            
             var ident = await userManager.FindByNameAsync(user.BannedBy);
             var webAgent = await agentPool.GetOrCreateWebAgentAsync(user.BannedBy, (uname, uagent, rlimit) =>
             {
@@ -59,13 +58,13 @@ namespace SnooNotes.BLL
             if (!ident.HasConfig) { throw new UnauthorizedAccessException("Need Config Permissions"); }
             RedditSharp.Reddit rd = new RedditSharp.Reddit(webAgent, true);
 
-            subreddit = await rd.GetSubredditAsync(user.SubName);
+            var wiki = new RedditSharp.Wiki(webAgent, user.SubName);
             //var wiki = new RedditSharp.WikiPage()
             while (!done && count < 5)
             {
                 try
                 {
-                    done = await SaveAutoModConfig(reason, subreddit);
+                    done = await SaveAutoModConfig(reason, wiki);
                 }
                 catch (WebException ex)
                 {
@@ -79,14 +78,14 @@ namespace SnooNotes.BLL
             }
 
         }
-        public async Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Things.Subreddit subreddit)
+        public async Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki)
         {
 
             RedditSharp.WikiPage automodWiki;
             string wikiContent = "";
             try
             {
-                automodWiki = await subreddit.GetWiki.GetPageAsync(AUTOMOD_WIKI_PAGE);
+                automodWiki = await wiki.GetPageAsync(AUTOMOD_WIKI_PAGE);
                 wikiContent = WebUtility.HtmlDecode(automodWiki.MarkdownContent);
             }
             catch (WebException ex)
@@ -123,12 +122,12 @@ namespace SnooNotes.BLL
             botConfigSection = wikiContent.Substring(startBotSection, botSectionLength);
 
 
-            var ents = await bbDAL.GetBannedUsers(subreddit.Name);
+            var ents = await bbDAL.GetBannedUsers(wiki.SubredditName);
             string entsString = string.Join(", ", ents.Select(e => "\"" + e.UserName + "\""));
             updatedWiki = updatedWiki.Remove(startBotSection, botSectionLength);
             updatedWiki = updatedWiki.Insert(startBotSection, String.Format(DefaultBotConfigSection, entsString));
 
-            await subreddit.GetWiki.EditPageAsync(AUTOMOD_WIKI_PAGE, updatedWiki, reason: editReason);
+            await wiki.EditPageAsync(AUTOMOD_WIKI_PAGE, updatedWiki, reason: editReason);
             return true;
 
 

@@ -3,18 +3,27 @@ import axios from 'axios';
 
 export class SentinelBanModule {
     constructor() {
+        this.eventListenerUnbinds = [];
     }
 
     initModule() {
         if (document.body.matches('body.comments-page,body.listing-page')) {
             //only bind on listing and comment pages to avoid extra listeners
-            on(document.body, 'click', '.remove-button .main > a', (e)=>{this.vanillaRemove(e)});
-            on(document.body, 'click', '.SNBotBanPrompt a', (e)=>{this.executeBan(e)});
+            this.eventListenerUnbinds.push(on(document.body, 'click', '.remove-button .main > a', (e)=>{this.vanillaRemove(e)}));
+            this.eventListenerUnbinds.push(on(document.body, 'click', '.SNBotBanPrompt a', (e)=>{this.executeBan(e)}));
         }
     }
 
     refreshModule() {
 
+    }
+
+    unbindModule(){
+        let unbind = this.eventListenerUnbinds.pop();
+        do{
+            unbind();
+            unbind = this.eventListenerUnbinds.pop();
+        } while( unbind)
     }
 
     vanillaRemove(event) {

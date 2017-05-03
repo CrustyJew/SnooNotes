@@ -201,14 +201,11 @@ namespace IdentProvider.Controllers
         {
             string scope = "";
             // Request a redirect to the external login provider.
-            if ( wiki && config ) {
-                scope = "identity,mysubreddits,wikiedit,modconfig,modwiki,read,wikiread";
+            if ( config ) {
+                scope = "identity,mysubreddits,wikiedit,modconfig,wikiread";
             }
             else if ( wiki ) {
-                scope = "identity,mysubreddits,wikiedit";
-            }
-            else if ( config ) {
-                scope = "identity,mysubreddits,modconfig";
+                scope = "identity,mysubreddits,wikiread";
             }
             else {
                 scope = "identity,mysubreddits";

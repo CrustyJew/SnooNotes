@@ -7,7 +7,7 @@ window.addEvent = function(elem,type,callback) {
     }; 
     var cb = function(e) { return evt(e); };
     elem.addEventListener(type,cb,false);
-    return elem;
+    return function(){elem.removeEventListener(type,cb);};
 };
 window.findParent = function(child,filter,root) {
     do {
@@ -22,7 +22,7 @@ window.findParent = function(child,filter,root) {
 
 
 export const on = (bindTo, type, targetSelector, callback) => {
-  window.addEvent(bindTo, type, function(e) {
+  return window.addEvent(bindTo, type, function(e) {
     var s = window.findParent(e.srcElement || e.target, function(elm) {
         return elm.matches(targetSelector);
     },this);

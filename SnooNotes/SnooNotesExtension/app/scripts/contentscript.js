@@ -73,14 +73,15 @@ const unsub = reduxStore.subscribe(() => {
     usersWithNotes = state.snoonotes_info.users_with_notes;
     reduxStore.subscribe(() => {
         usersWithNotes = reduxStore.getState().snoonotes_info.users_with_notes;
+        sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs);
+        banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     });
 
     let authorsReq = InjectIntoThingsClass();
     authorsReq = concatUnique(authorsReq, InjectIntoUserPage());
     window.setTimeout(function () {
         InjectIntoNewModmail()
-    }
-        , 2000)
+    }, 2000)
     if (authorsReq.length > 0) {
         getNotesForUsers(reduxStore.dispatch, authorsReq);
     }

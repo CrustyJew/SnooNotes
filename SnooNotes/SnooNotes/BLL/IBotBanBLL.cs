@@ -8,6 +8,6 @@ namespace SnooNotes.BLL
     {
         Task BanChannel(BannedEntity channel);
         Task BanUser(BannedEntity user);
-        Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Things.Subreddit subreddit);
+        Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki);
     }
 }
