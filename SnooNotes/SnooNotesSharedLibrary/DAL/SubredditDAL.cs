@@ -19,7 +19,7 @@ namespace SnooNotes.DAL {
 
         public virtual async Task<List<Subreddit>> GetActiveSubs() {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, ss.TempBanID, ss.PermBanID from Subreddits s left join " +
+                string query = "select s.SubredditID, s.SubName, s.Active, s.SentinelActive, ss.AccessMask, ss.TempBanID, ss.PermBanID from Subreddits s left join " +
                                "SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
                                "where active = 1";
                 var result = await conn.QueryAsync<Subreddit, SubredditSettings, Subreddit>( query, ( s, ss ) => {

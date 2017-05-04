@@ -55,6 +55,8 @@ export default function userReducer(state = initialState, action) {
                 access_token: action.payload.access_token,
                 name: action.payload.profile.name, //todo move this to action creator, specific logic shouldn't be here
                 isCabal: action.payload.profile['uri:snoonotes:cabal'],
+                hasConfig: action.payload.profile['uri:snoonotes:hasconfig'],
+                hasWiki: action.payload.profile['uri:snoonotes:haswiki'],
                 isLoadingUser: false
             });
         case LOADING_USER:

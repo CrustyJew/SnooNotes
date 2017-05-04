@@ -19,7 +19,7 @@ namespace SnooNotes.Controllers
             bbBLL = botBanBLL;
         }
         [HttpPost("{sub}/Channel")]
-        public Task BanChannel(string sub, [FromBody]Models.BannedEntity entity) {
+        public Task<bool> BanChannel(string sub, [FromBody]Models.BannedEntity entity) {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
             if (!ident.HasClaim("uri:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
             entity.SubName = sub;
@@ -29,7 +29,7 @@ namespace SnooNotes.Controllers
         }
 
         [HttpPost("{sub}/User")]
-        public Task BanUser(string sub, [FromBody] Models.BannedEntity entity)
+        public Task<bool> BanUser(string sub, [FromBody] Models.BannedEntity entity)
         {
             ClaimsPrincipal ident = User as ClaimsPrincipal;
             if (!ident.HasClaim("uri:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using System.Data.SqlClient;
 
 namespace SnooNotes.DAL
 {
@@ -19,15 +20,24 @@ namespace SnooNotes.DAL
             sentinelConn = channelBanConn;
         }
 
-        public async Task BanUser(IEnumerable<Models.BannedEntity> entities)
+        public async Task<bool> BanUser(IEnumerable<Models.BannedEntity> entities)
         {
             string query = @"
 insert into BotBannedUsers (SubredditID, UserName, BannedBy, BanReason, BanDate, ThingUrl)
 select sub.SubredditID,@UserName,@BannedBy,@BanReason,@BanDate,@ThingURL from Subreddits sub where sub.SubName like @SubName
 ;";
-           
+            try
+            {
                 await snConn.ExecuteAsync(query, entities);
-                return;
+            }
+            catch(SqlException ex)
+            {
+                if (ex.Number == 2601 || ex.Number == 2627)
+                    return false;
+
+                throw;
+            }
+            return true;
             
         }
 
@@ -43,15 +53,25 @@ where sub.SubName like @subredditName
             
         }
 
-        public async Task BanChannel(Models.BannedEntity entity, string channelID, string mediaAuthor, Models.VideoProvider vidProvider)
+        public async Task<bool> BanChannel(Models.BannedEntity entity, string channelID, string mediaAuthor, Models.VideoProvider vidProvider)
         {
             string query = @"
-insert into public.sentinel_blacklist(subreddit_id, media_channel_id, media_author, media_playform_id, blacklist_utc, blacklist_by, media_channel_url)
-SELECT subreddit_id, @channelID, @mediaAuthor, @platformID, @BanDate, @BannedBy, @ChannelURL
+insert into public.sentinel_blacklist(subreddit_id, media_channel_id, media_author, media_platform_id, blacklist_utc, blacklist_by, media_channel_url)
+SELECT id, @channelID, @mediaAuthor, @platformID, @BanDate, @BannedBy, @ChannelURL
 from public.subreddit where subreddit_name like @SubName 
 ";
-            await sentinelConn.ExecuteAsync(query, new { channelID, mediaAuthor, platformID = (int)vidProvider, entity.BanDate, entity.BannedBy, entity.ChannelURL, entity.SubName });
-            return;
+            try
+            {
+                await sentinelConn.ExecuteAsync(query, new { channelID, mediaAuthor, platformID = (int)vidProvider, entity.BanDate, entity.BannedBy, entity.ChannelURL, entity.SubName });
+            }
+            catch(Npgsql.PostgresException ex)
+            {
+                if (ex.SqlState == "23505")
+                    return false;
+
+                throw;
+            }
+            return true;
         }
     }
 }

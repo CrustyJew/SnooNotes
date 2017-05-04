@@ -28,16 +28,19 @@ namespace SnooNotes.BLL
             this.agentPool = agentPool;
         }
 
-        public async Task BanChannel(Models.BannedEntity channel)
+        public async Task<bool> BanChannel(Models.BannedEntity channel)
         {
             string vidID = Helpers.YouTubeHelpers.ExtractVideoId(channel.ChannelURL);
             var vidInfo = await ytDAL.GetChannelIDAndName(vidID);
-            await bbDAL.BanChannel(channel, vidInfo.Key, vidInfo.Value, VideoProvider.YouTube); //TODO support more vid providers
+            return await bbDAL.BanChannel(channel, vidInfo.Key, vidInfo.Value, VideoProvider.YouTube); //TODO support more vid providers
         }
 
-        public async Task BanUser(Models.BannedEntity user)
+        public async Task<bool> BanUser(Models.BannedEntity user)
         {
-            await bbDAL.BanUser(new Models.BannedEntity[] { user });
+            var newBan = await bbDAL.BanUser(new Models.BannedEntity[] { user });
+
+            if (!newBan) return false;
+
             var bannedUsers = await bbDAL.GetBannedUsers(user.SubName);
             string reason = $"Banned {user.UserName} : {user.BanReason}";
 
@@ -76,6 +79,8 @@ namespace SnooNotes.BLL
                     await Task.Delay(100);
                 }
             }
+
+            return true;
 
         }
         public async Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki)

@@ -27,7 +27,7 @@ namespace SnooNotes.DAL {
         public override async Task<IEnumerable<Subreddit>> GetSubreddits( IEnumerable<string> subnames ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = @"
-select s.SubredditID, s.SubName, s.Active, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, 
+select s.SubredditID, s.SubName, s.Active, s.SentinelActive, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, 
 ss.AccessMask, ss.TempBanID, ss.PermBanID,
 nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic 
 from Subreddits s 

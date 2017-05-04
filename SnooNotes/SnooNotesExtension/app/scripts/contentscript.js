@@ -31,7 +31,7 @@ const unsub = reduxStore.subscribe(() => {
     banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     banNotesModule.initModule();
 
-    sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs);
+    sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
     sentinelBanModule.initModule();
 
     const options = new Vue({ render: h => h(SNOptions) }).$mount();
@@ -73,7 +73,7 @@ const unsub = reduxStore.subscribe(() => {
     usersWithNotes = state.snoonotes_info.users_with_notes;
     reduxStore.subscribe(() => {
         usersWithNotes = reduxStore.getState().snoonotes_info.users_with_notes;
-        sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs);
+        sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
         banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     });
 

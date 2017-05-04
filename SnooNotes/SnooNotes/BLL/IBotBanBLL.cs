@@ -6,8 +6,8 @@ namespace SnooNotes.BLL
 {
     public interface IBotBanBLL
     {
-        Task BanChannel(BannedEntity channel);
-        Task BanUser(BannedEntity user);
+        Task<bool> BanChannel(BannedEntity channel);
+        Task<bool> BanUser(BannedEntity user);
         Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki);
     }
 }
