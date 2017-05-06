@@ -18,8 +18,7 @@ export class SentinelBanModule {
 
     refreshModule(subs, hasConfig) {
         subs.forEach((sub)=>{
-            if(sub.SentinelActive)
-            this.subreddits.push(sub.SubName);
+            this.subreddits.push({name: sub.SubName, isAdmin: sub.IsAdmin, hasSentinel: sub.SentinelActive});
         })
 
         this.userBanEnabled = hasConfig;
@@ -43,7 +42,7 @@ export class SentinelBanModule {
         let user = thing.attributes['data-author'].value;
         let sub = thing.attributes['data-subreddit'].value;
 
-        if (!this.userBanEnabled && (this.subreddits.length == 0 || this.subreddits.findIndex(sr => sr.toLowerCase() == sub.toLowerCase()) == -1))
+        if (!this.userBanEnabled && (this.subreddits.length == 0 || this.subreddits.findIndex(sr => sr.name.toLowerCase() == sub.name.toLowerCase()) == -1))
             //if no user bans and the sub isn't in sentinel bot, don't render anything.
             return;
 
@@ -111,6 +110,12 @@ export class SentinelBanModule {
         banElem.className = 'SNSentinelBan';
         banElem.appendChild(document.createTextNode('Bot Ban (' + reason + '): '));
         let render = false;
+
+        let index = this.subreddits.findIndex(sr=> sr.name.toLowerCase() == sub.name.toLowerCase());
+        if(index <= -1 || !this.subreddits[index].isAdmin) return null;
+        
+        let subreddit = this.subreddits[index];
+
         if (this.userBanEnabled) {
             render = true;
             let userBanElem = document.createElement('a');
@@ -121,7 +126,7 @@ export class SentinelBanModule {
             userBanElem.textContent = 'User';
             banElem.appendChild(userBanElem);
         }
-        if (url && this.subreddits.findIndex(sr => sr.toLowerCase() == sub.toLowerCase()) > -1) {
+        if (url && subreddit.hasSentinel) {
             render = true;
             banElem.appendChild(document.createTextNode('\u00A0|\u00A0'));
             let chanBanElem = document.createElement('a');

@@ -29,12 +29,36 @@ namespace SnooNotes.BLL {
             this.authUtils = authUtils;
         }
 
-        public Task<IEnumerable<Models.Subreddit>> GetSubreddits(IEnumerable<string> subs ) {
-            return subDAL.GetSubreddits( subs );
+        public async Task<IEnumerable<Models.Subreddit>> GetSubreddits(IEnumerable<string> subnames, ClaimsPrincipal user ) {
+            var subs = await subDAL.GetSubreddits( subnames );
+            foreach (var sub in subs)
+            {
+                if (user.HasClaim("uri:snoonotes:admin", sub.SubName.ToLower()))
+                {
+                    sub.IsAdmin = true;
+                }
+                else
+                {
+                    sub.IsAdmin = false;
+                }
+            }
+            return subs;
         }
 
-        public Task<List<Models.Subreddit>> GetActiveSubs() {
-            return subDAL.GetActiveSubs();
+        public async Task<List<Models.Subreddit>> GetActiveSubs(ClaimsPrincipal user) {
+            var subs = await subDAL.GetActiveSubs();
+            foreach(var sub in subs)
+            {
+                if(user.HasClaim("uri:snoonotes:admin", sub.SubName.ToLower()))
+                {
+                    sub.IsAdmin = true;
+                }
+                else
+                {
+                    sub.IsAdmin = false;
+                }
+            }
+            return subs;
         }
 
         public async Task AddSubreddit(Models.Subreddit newSub, string modname, string ip) {

@@ -9,12 +9,14 @@ import { reduxStore } from './redux/contentScriptStore';
 import { getNotesForUsers } from './redux/actions/notes';
 import { BanNotesModule } from './modules/banNotes';
 import { SentinelBanModule } from './modules/sentinelBan';
-
+var VueMaterial = require('vue-material')
 
 export const snInterceptor = new SNAxiosInterceptor(reduxStore);
 axios.defaults.baseURL = apiBaseUrl;
 axios.interceptors.request.use((req) => { return snInterceptor.interceptRequest(req); });
 
+
+Vue.use(VueMaterial)
 Vue.use(Toasted, { position: 'bottom-right', duration: 2500 });
 
 let usersWithNotes = [];

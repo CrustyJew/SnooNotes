@@ -1,7 +1,7 @@
 <template>
-  <transition name="modal">
-    <div class="modal-mask" v-show="show" @click="close">
-      <div id="SNModal" class="modal-container" @click.stop>
+  <transition name="snmodal">
+    <div class="snmodal-mask" v-show="show" @click="close">
+      <div id="SNModal" class="snmodal-container" @click.stop>
         <div class="SNHeader"><a class="SNCloseModal SNClose" @click="close">X</a></div>
         <slot></slot>
       </div>
@@ -33,7 +33,7 @@ export default {
   }
 }
 
-.modal-mask {
+.snmodal-mask {
   position: fixed;
   z-index: 2147483646;
   top: 0;
@@ -45,14 +45,13 @@ export default {
   transition: opacity .3s ease;
 }
 
-.modal-wrapper {
+.snmodal-wrapper {
   display: table-cell;
   vertical-align: middle;
 }
 
-.modal-container {
+.snmodal-container {
   margin: 0px auto;
-  padding: 20px 30px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
@@ -62,36 +61,35 @@ export default {
   left: 10%;
   right: 10%;
   bottom: 10%;
-  padding-top: 10px;
   z-index: 2147483647 !important;
   overflow-x: hidden;
   overflow-y: auto;
   max-height: 1200px;
 }
 
-.modal-header h3 {
+.snmodal-header h3 {
   margin-top: 0;
   color: #42b983;
 }
 
-.modal-body {
+.snmodal-body {
   margin: 20px 0;
 }
 
-.modal-default-button {
+.snmodal-default-button {
   float: right;
 }
 
-.modal-enter {
+.snmodal-enter {
   opacity: 0;
 }
 
-.modal-leave-active {
+.snmodal-leave-active {
   opacity: 0;
 }
 
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
+.snmodal-enter .snmodal-container,
+.snmodal-leave-active .snmodal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }

@@ -88,6 +88,7 @@
     "revue": "^3.0.0",
     "signalr": "^2.2.1",
     "signalr-no-jquery": "^0.1.6",
+    "vue-material": "^0.7.1",
     "vue-toasted": "^1.0.24",
     "vuedraggable": "^2.9.0",
     "vuelidate": "^0.4.2"

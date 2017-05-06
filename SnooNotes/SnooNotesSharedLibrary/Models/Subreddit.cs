@@ -12,5 +12,7 @@ namespace SnooNotes.Models
 
         public SubredditSettings Settings { get; set; }
 
+        public bool IsAdmin { get; set; }
+
     }
 }

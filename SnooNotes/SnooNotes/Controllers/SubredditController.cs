@@ -21,7 +21,7 @@ namespace SnooNotes.Controllers {
         {
             var subs = (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value);
             //subs = subs.Where(s => User.HasClaim("urn:snoonotes:subreddits:" + s + ":admin", "true"));
-            return subBLL.GetSubreddits(subs);
+            return subBLL.GetSubreddits(subs, User);
         }
         [HttpGet("{id}")]
         // GET: api/Subreddit/videos
@@ -31,7 +31,7 @@ namespace SnooNotes.Controllers {
             if ( id.ToLower() == "admin" ) {
                 var subs = ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == "uri:snoonotes:admin" ).Select( c => c.Value );
                 //subs = subs.Where( s => User.HasClaim( "urn:snoonotes:subreddits:" + s + ":admin", "true" ) );
-                return subBLL.GetSubreddits( subs );
+                return subBLL.GetSubreddits( subs, User );
             }
             //TODO figure out what the hell I was trying to do here
             else {
@@ -42,7 +42,7 @@ namespace SnooNotes.Controllers {
                     }
                     
                 }
-                return subBLL.GetSubreddits( id.Split( ',' ) );
+                return subBLL.GetSubreddits( id.Split( ',' ), User );
             }
         }
         [HttpPost]

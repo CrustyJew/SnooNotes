@@ -32,7 +32,7 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "*://*.reddit.com/*"
       ],
       "exclude_matches":["http://localhost:5001/*","http://localhost:5000/*"],
       "css": [
@@ -55,6 +55,8 @@
   ],
   "permissions": [
     "tabs","identity","storage","unlimitedStorage","cookies",
+    "http://fonts.googleapis.com/",
+    "https://fonts.googleapis.com/",
     "<all_urls>"
   ]
 }

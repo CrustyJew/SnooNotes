@@ -190,6 +190,7 @@ export default {
     .SNHeader {
         margin-left: -10px;
         margin-right: -10px;
+        margin-bottom: 10px;
         .SNClose {
             display: inline-block;
             cursor: pointer;
