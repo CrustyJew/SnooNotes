@@ -8,6 +8,6 @@ namespace SnooNotes.DAL
     {
         Task<bool> BanChannel(BannedEntity entity, string channelID, string mediaAuthor, VideoProvider vidProvider);
         Task<bool> BanUser(IEnumerable<BannedEntity> entities);
-        Task<IEnumerable<BannedEntity>> GetBannedUsers(string subredditName);
+        Task<IEnumerable<string>> GetBannedUserNames(string subredditName);
     }
 }

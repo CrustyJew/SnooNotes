@@ -7,6 +7,7 @@
 	[BanReason] [varchar](255) NULL,
 	[BanDate] [datetime] NOT NULL,
 	[ThingUrl] [varchar](max) NULL, 
+    [AdditionalInfo] NVARCHAR(MAX) NULL, 
     CONSTRAINT [FK_BotBannedUsers_Subreddits] FOREIGN KEY (SubredditID) REFERENCES Subreddits([SubredditID]), 
     CONSTRAINT [PK_BotBannedUsers] PRIMARY KEY ([ID]), 
     CONSTRAINT [AK_BotBannedUsers_SubredditID_UserName] UNIQUE ([SubredditID],[UserName]) 

@@ -41,16 +41,81 @@ select sub.SubredditID,@UserName,@BannedBy,@BanReason,@BanDate,@ThingURL from Su
             
         }
 
-        public async Task<IEnumerable<Models.BannedEntity>> GetBannedUsers(string subredditName)
+        public Task<IEnumerable<string>> GetBannedUserNames(string subredditName)
         {
             string query = @"
-select be.Id, sub.SubName, be.UserName, be.BannedBy, be.BanReason, be.BanDate, be.ThingURL
+select be.UserName
 from BotBannedUsers be
 inner join Subreddits sub on sub.SubredditID = be.SubredditID
 where sub.SubName like @subredditName
 ;";
-            return await snConn.QueryAsync<Models.BannedEntity>(query, new { subredditName });
+            return snConn.QueryAsync<string>(query, new { subredditName });
             
+        }
+
+        public async Task<Models.TableResults<IEnumerable<Models.BannedEntity>>> SearchBannedUsers(IEnumerable<string> subredditNames, int limit, int page, string searchTerm = "", string orderBy = "")
+        {
+            string orderByColumn = "";
+            switch (orderBy.ToLower())
+            {
+                case "username":
+                    orderByColumn = "username"; break;
+                case "bannedby":
+                    orderByColumn = "bannedby"; break;
+                case "date":
+                    orderByColumn = "bandate"; break;
+                case "reason":
+                    orderByColumn = "banreason"; break;
+                default:
+                    orderByColumn = "username"; break;
+            }
+            string query = $@"
+SELECT Count(*)
+FROM BotBannedUsers be
+INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
+where sub.SubName in @subredditNames
+{(string.IsNullOrWhiteSpace(searchTerm) ? "" : @"
+AND (
+    be.UserName like '%' + @searchTerm + '%'
+    OR be.BannedBy like '%' + @searchTerm + '%'
+    OR be.ThingURL like '%' + @searchTerm + '%'
+    OR be.AdditionalInfo like '%' + @searchTerm + '%'
+    OR sub.SubName like '%' + @searchTerm + '%'
+    OR be.BanReason like '%' + @searchTerm + '%'
+)
+")}
+
+SELECT be.Id, sub.SubName, be.UserName, be.BannedBy, be.BanReason, be.BanDate, be.ThingURL, be.AdditionalInfo
+FROM BotBannedUsers be
+INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
+where sub.SubName in @subredditNames
+{(string.IsNullOrWhiteSpace(searchTerm) ? "" : @"
+AND (
+    be.UserName like '%' + @searchTerm + '%'
+    OR be.BannedBy like '%' + @searchTerm + '%'
+    OR be.ThingURL like '%' + @searchTerm + '%'
+    OR be.AdditionalInfo like '%' + @searchTerm + '%'
+    OR sub.SubName like '%' + @searchTerm + '%'
+    OR be.BanReason like '%' + @searchTerm + '%'
+)
+")}
+ORDER BY {orderByColumn} OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+";
+
+            using (var multi = await snConn.QueryMultipleAsync(query, new { searchTerm, offset = (limit * (page - 1)), subredditNames, limit }))
+            {
+                int totalCount = 0;
+                totalCount = await multi.ReadFirstAsync<int>();
+                var results = await multi.ReadAsync<Models.BannedEntity>();
+
+                return new Models.TableResults<IEnumerable<Models.BannedEntity>>
+                {
+                    TotalResults = totalCount,
+                    CurrentPage = page,
+                    ResultsPerPage = limit,
+                    DataTable = results
+                };
+            }
         }
 
         public async Task<bool> BanChannel(Models.BannedEntity entity, string channelID, string mediaAuthor, Models.VideoProvider vidProvider)

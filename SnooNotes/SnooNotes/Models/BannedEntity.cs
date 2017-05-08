@@ -15,6 +15,7 @@ namespace SnooNotes.Models {
         public string BanReason { get; set; }
         public DateTime? BanDate { get; set; }
         public string ThingURL { get; set; }
-        
+        public string AdditionalInfo { get; set; }
+
     }
 }

@@ -40,8 +40,7 @@ namespace SnooNotes.BLL
             var newBan = await bbDAL.BanUser(new Models.BannedEntity[] { user });
 
             if (!newBan) return false;
-
-            var bannedUsers = await bbDAL.GetBannedUsers(user.SubName);
+            
             string reason = $"Banned {user.UserName} : {user.BanReason}";
 
             //only used if changing to allowing banning of multiple users at a time.
@@ -127,8 +126,8 @@ namespace SnooNotes.BLL
             botConfigSection = wikiContent.Substring(startBotSection, botSectionLength);
 
 
-            var ents = await bbDAL.GetBannedUsers(wiki.SubredditName);
-            string entsString = string.Join(", ", ents.Select(e => "\"" + e.UserName + "\""));
+            var ents = await bbDAL.GetBannedUserNames(wiki.SubredditName);
+            string entsString = string.Join(", ", ents.Select(e => "\"" + e + "\""));
             updatedWiki = updatedWiki.Remove(startBotSection, botSectionLength);
             updatedWiki = updatedWiki.Insert(startBotSection, String.Format(DefaultBotConfigSection, entsString));
 
