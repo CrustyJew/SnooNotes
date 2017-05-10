@@ -4,53 +4,55 @@
             <div id="SNOptionsSubOpts" class="SNOptionsCategory" :class="{active: activeTab == 'options'}" @click="activeTab = 'options'" key="options">Subreddits</div>
             <div id="SNOptionsPlaceholder1" class="SNOptionsCategory" :class="{active: activeTab == 'banlist'}" @click="activeTab='banlist'" key="banlist">Bot Ban List</div>
         </div>
-        <transition-group name="fade">
-        <div id="SNOptionsPanel" v-if="activeTab == 'options'" key="optPanel">
-            <div id="SNOptionsContainer">
     
-                <div id="SNRefreshContainer">
-                    <h1>Has something gone rogue?<br />Change subreddits you moderate?<br />Activate a new sub?</h1>
-                    <button type="button" id="SNRestart" class="SNBtnWarn" @click="refresh">Refresh SnooNotes</button>
-                    <br class="clearfix" />
-                </div>
-                <div id="SNActivateContainer">
-                    <div v-if="!snOptions.loadingInactiveSubs">
-                        <select id="SNActivateSub" v-model="activateSubName">
-                            <option value="-1" disabled>---Activate a new Subreddit---</option>
-                            <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
-                        </select>
-                        <button type="button" id="SNBtnActivateSub" class="SNBtnSubmit" @click="activateSub" :disabled="activatingSub">{{activatingSub ? 'Activating...': 'Activate'}}</button>
+        <div id="SNOptionsPanel">
+            <transition-group name="fade">
+                <div id="SNOptionsContainer" v-if="activeTab == 'options'" key="subOptContainer">
+    
+                    <div id="SNRefreshContainer">
+                        <h1>Has something gone rogue?
+                            <br />Change subreddits you moderate?
+                            <br />Activate a new sub?</h1>
+                        <button type="button" id="SNRestart" class="SNBtnWarn" @click="refresh">Refresh SnooNotes</button>
                         <br class="clearfix" />
                     </div>
-                    <div v-show="snOptions.loadingInactiveSubs">
-                        <sn-loading></sn-loading>
-                    </div>
-                </div>
-                <div id="SNModSubs">
-                    <h3>Subreddits you have permissions to submit notes in</h3>
-                    <ul>
-                        <li v-for="sub in snInfo.modded_subs">{{sub.SubName}}</li>
-                    </ul>
-                </div>
-                <div id="SNSubSettingsContainer">
-                    <div v-if="snOptions.loadingSubSettings">
-                        <sn-loading></sn-loading>
-                    </div>
-                    <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
-                        <div class="SNSubSettingsBtnWrapper" v-for="(sub,index) in snOptions.subSettings">
-                            <button type="button" class="SNBtnAction" @click="showSettings(index)">/r/{{sub.SubName}}</button>
+                    <div id="SNActivateContainer">
+                        <div v-if="!snOptions.loadingInactiveSubs">
+                            <select id="SNActivateSub" v-model="activateSubName">
+                                <option value="-1" disabled>---Activate a new Subreddit---</option>
+                                <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
+                            </select>
+                            <button type="button" id="SNBtnActivateSub" class="SNBtnSubmit" @click="activateSub" :disabled="activatingSub">{{activatingSub ? 'Activating...': 'Activate'}}</button>
+                            <br class="clearfix" />
+                        </div>
+                        <div v-show="snOptions.loadingInactiveSubs">
+                            <sn-loading></sn-loading>
                         </div>
                     </div>
-                    <div v-if="!snOptions.loadingSubSettings && editingSubIndex > -1">
-                        <sn-sub-options :sub="snOptions.subSettings[editingSubIndex]" :cancel="cancelSubOptSave" :finish="getSubSettings"></sn-sub-options>
+                    <div id="SNModSubs">
+                        <h3>Subreddits you have permissions to submit notes in</h3>
+                        <ul>
+                            <li v-for="sub in snInfo.modded_subs">{{sub.SubName}}</li>
+                        </ul>
+                    </div>
+                    <div id="SNSubSettingsContainer">
+                        <div v-if="snOptions.loadingSubSettings">
+                            <sn-loading></sn-loading>
+                        </div>
+                        <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
+                            <div class="SNSubSettingsBtnWrapper" v-for="(sub,index) in snOptions.subSettings">
+                                <button type="button" class="SNBtnAction" @click="showSettings(index)">/r/{{sub.SubName}}</button>
+                            </div>
+                        </div>
+                        <div v-if="!snOptions.loadingSubSettings && editingSubIndex > -1">
+                            <sn-sub-options :sub="snOptions.subSettings[editingSubIndex]" :cancel="cancelSubOptSave" :finish="getSubSettings"></sn-sub-options>
+                        </div>
                     </div>
                 </div>
-            </div>
+    
+                <banned-users v-if="activeTab == 'banlist'" key="banContainer"></banned-users>
+            </transition-group>
         </div>
-        <div id="SNBanListPanel"  v-if="activeTab == 'banlist'" key="banPanel">
-            <paginator total="29" rows="25" page="1"></paginator>
-        </div>
-        </transition-group>
     </modal>
 </template>
 <script>
@@ -61,9 +63,10 @@ import axios from 'axios';
 import { store } from '../../redux/contentScriptStore';
 import { refreshUser } from '../../redux/actions/user';
 import Toasted from 'vue-toasted';
+import BannedUsersTable from '../bannedUsersTable.vue';
 
 export default {
-    components: { 'modal': SNModal, 'sn-loading': LoadingSpinner, 'sn-sub-options': SNSubOptions },
+    components: { 'modal': SNModal, 'sn-loading': LoadingSpinner, 'sn-sub-options': SNSubOptions, 'banned-users': BannedUsersTable },
     props: ['show', 'onClose'],
     data() {
         return {
@@ -216,7 +219,7 @@ export default {
 
 
 #SNRefreshContainer {
-    width: 510px;
+    width: 515px;
     margin: 0 auto;
     height: 74px;
     text-align: left;

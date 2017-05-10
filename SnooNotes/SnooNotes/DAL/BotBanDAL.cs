@@ -52,8 +52,17 @@ where sub.SubName like @subredditName
             return snConn.QueryAsync<string>(query, new { subredditName });
             
         }
-
-        public async Task<Models.TableResults<IEnumerable<Models.BannedEntity>>> SearchBannedUsers(IEnumerable<string> subredditNames, int limit, int page, string searchTerm = "", string orderBy = "")
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="subredditNames"></param>
+        /// <param name="limit">limit result rows per papge</param>
+        /// <param name="page">page of results to return</param>
+        /// <param name="searchTerm">serach term to use if any</param>
+        /// <param name="orderBy">"username","bannedby","date","reason", defaults to "username"</param>
+        /// <param name="ascending">true = sort ascending; false = sort descending</param>
+        /// <returns></returns>
+        public async Task<Models.TableResults<Models.BannedEntity>> SearchBannedUsers(IEnumerable<string> subredditNames, int limit, int page, string searchTerm, string orderBy, bool ascending)
         {
             string orderByColumn = "";
             switch (orderBy.ToLower())
@@ -66,8 +75,10 @@ where sub.SubName like @subredditName
                     orderByColumn = "bandate"; break;
                 case "reason":
                     orderByColumn = "banreason"; break;
+                case "subreddit":
+                    orderByColumn = "subname"; break;
                 default:
-                    orderByColumn = "username"; break;
+                    orderByColumn = "bandate"; break;
             }
             string query = $@"
 SELECT Count(*)
@@ -99,7 +110,7 @@ AND (
     OR be.BanReason like '%' + @searchTerm + '%'
 )
 ")}
-ORDER BY {orderByColumn} OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+ORDER BY {orderByColumn} {(ascending ? "asc" : "desc")} OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
 ";
 
             using (var multi = await snConn.QueryMultipleAsync(query, new { searchTerm, offset = (limit * (page - 1)), subredditNames, limit }))
@@ -108,7 +119,7 @@ ORDER BY {orderByColumn} OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
                 totalCount = await multi.ReadFirstAsync<int>();
                 var results = await multi.ReadAsync<Models.BannedEntity>();
 
-                return new Models.TableResults<IEnumerable<Models.BannedEntity>>
+                return new Models.TableResults<Models.BannedEntity>
                 {
                     TotalResults = totalCount,
                     CurrentPage = page,

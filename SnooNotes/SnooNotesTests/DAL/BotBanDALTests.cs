@@ -46,7 +46,7 @@ VALUES
         public async Task BotBanSearchTest_GetAll()
         {
             var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
-            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 10, 1);
+            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 10, 1,null, "date", false);
 
             Assert.NotEmpty(results.DataTable);
             Assert.Equal(3, results.DataTable.Count());
@@ -56,7 +56,7 @@ VALUES
         public async Task BotBanSearchTest_GetBanner1()
         {
             var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
-            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 10, 1, "banner1");
+            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 10, 1, "banner1", "date", false);
 
             Assert.NotEmpty(results.DataTable);
             Assert.Equal(2, results.DataTable.Count());
@@ -66,7 +66,7 @@ VALUES
         public async Task BotBanSearchTest_Page1()
         {
             var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
-            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 1, 1, "ban");
+            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 1, 1, "ban", "date", false);
 
             Assert.NotEmpty(results.DataTable);
             Assert.Equal(1, results.DataTable.Count());
@@ -77,7 +77,7 @@ VALUES
         public async Task BotBanSearchTest_Page2()
         {
             var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
-            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 1, 2, "ban");
+            var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 1, 2, "ban", "date", false);
 
             Assert.NotEmpty(results.DataTable);
             Assert.Equal(1, results.DataTable.Count());

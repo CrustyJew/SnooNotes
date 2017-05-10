@@ -26,9 +26,9 @@
     "page": "pages/options.html",
     "chrome_style": true
   },
-  "sandbox":{
-    "pages":["http://localhost:5000/Auth/connect/checksession"]
-  },"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "web_accessible_resources": [
+    "fonts/*.woff2"
+  ],
   "content_scripts": [
     {
       "matches": [

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using RedditSharp.Things;
 using SnooNotes.Models;
+using System.Collections.Generic;
 
 namespace SnooNotes.BLL
 {
@@ -9,5 +10,6 @@ namespace SnooNotes.BLL
         Task<bool> BanChannel(BannedEntity channel);
         Task<bool> BanUser(BannedEntity user);
         Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki);
+        Task<TableResults<BannedEntity>> SearchBannedUsers(IEnumerable<string> subreddits, int limit, int page, string searchTerm, string orderBy, bool ascending);
     }
 }

@@ -11,6 +11,6 @@ namespace SnooNotes.Models
         public int ResultsPerPage { get; set; }
         public int TotalResults { get; set; }
 
-        public T DataTable { get; set; }
+        public IEnumerable<T> DataTable { get; set; }
     }
 }

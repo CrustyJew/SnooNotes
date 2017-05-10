@@ -11,9 +11,11 @@ namespace SnooNotes.DAL {
     public class BaseSubredditDAL : ISubredditDAL {
         private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
         private IConfigurationRoot Configuration;
+        private string[] excludeSubs;
         public BaseSubredditDAL( IConfigurationRoot config ) {
             Configuration = config;
             connstring = Configuration.GetConnectionString( "DefaultConnection" );
+            excludeSubs = Configuration["ExcludedSubs"].ToLower().Split(',').ToArray();
         }
 
 
@@ -29,7 +31,7 @@ namespace SnooNotes.DAL {
                     s.Settings = ss;
                     return s;
                 }, splitOn: "AccessMask" );
-                return result.ToList();
+                return result.Where(r=>!excludeSubs.Contains(r.SubName.ToLower())).ToList();
             }
         }
 

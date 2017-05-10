@@ -35,6 +35,11 @@ namespace SnooNotes.BLL
             return await bbDAL.BanChannel(channel, vidInfo.Key, vidInfo.Value, VideoProvider.YouTube); //TODO support more vid providers
         }
 
+        public Task<TableResults<BannedEntity>> SearchBannedUsers(IEnumerable<string> subreddits, int limit, int page, string searchTerm, string orderBy, bool ascending)
+        {
+            return bbDAL.SearchBannedUsers(subreddits, limit, page, searchTerm, orderBy, ascending);
+        }
+
         public async Task<bool> BanUser(Models.BannedEntity user)
         {
             var newBan = await bbDAL.BanUser(new Models.BannedEntity[] { user });
