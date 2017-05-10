@@ -8,30 +8,31 @@
         <paginator :rows="rowsPerPage" :page="currentPage" :total="totalRows"></paginator>
         <div class="sn-table-area">
             
-            <table>
-                <thead class="md-table-header">
-                    <tr>
-                        <th class="sn-sortable" :class="{'sn-sorted-desc':sort=='date' && !ascending, 'sn-sorted-asc':sort=='date' && ascending}"><i class="material-icons sn-sort-icon">arrow_downward</i>Date</th>
-                        <th class="sn-sortable" :class="{'sn-sorted-desc':sort=='username' && !ascending, 'sn-sorted-asc':sort=='username' && ascending}">User</th>
-                        <th class="sn-sortable" :class="{'sn-sorted-desc':sort=='subname' && !ascending, 'sn-sorted-asc':sort=='subname' && ascending}">Subreddit</th>
-                        <th class="sn-sortable" :class="{'sn-sorted-desc':sort=='bannedby' && !ascending, 'sn-sorted-asc':sort=='bannedby' && ascending}">Banned By</th>
-                        <th class="sn-sortable" :class="{'sn-sorted-desc':sort=='reason' && !ascending, 'sn-sorted-asc':sort=='reason' && ascending}">Reason</th>
-                        <th>Banned For</th>
-                        <th>Additional Info</th>
-                    </tr>
-                </thead>
-                <tbody v-if="!loadingResults">
-                    <tr v-for="ban in searchResults">
-                        <td>{{ban.BanDate}}</td>
-                        <td>{{ban.UserName}}</td>
-                        <td>{{ban.SubName}}</td>
-                        <td>{{ban.BannedBy}}</td>
-                        <td>{{ban.BanReason}}</td>
-                        <td>{{ban.ThingURL}}</td>
-                        <td>{{ban.AdditionalInfo}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <md-table md-sort="date" md-sort-type="desc">
+                <md-table-header>
+                    <md-table-row>
+                        <md-table-head md-sort-by="date">Date</md-table-head>
+                        <md-table-head md-sort-by="username">User</md-table-head>
+                        <md-table-head md-sort-by="subname">Subreddit</md-table-head>
+                        <md-table-head md-sort-by="bannedby">Banned By</md-table-head>
+                        <md-table-head md-sort-by="reason">Reason</md-table-head>
+                        <md-table-head>Banned For</md-table-head>
+                        <md-table-head>Additional Info</md-table-head>
+                    </md-table-row>
+                </md-table-header>
+                
+                <md-table-body v-if="!loadingResults">
+                    <md-table-row v-for="(ban, banIndex) in searchResults" :md-item="ban" :key="banIndex">
+                        <md-table-cell>{{ban.BanDate}}</md-table-cell>
+                        <md-table-cell>{{ban.UserName}}</md-table-cell>
+                        <md-table-cell>{{ban.SubName}}</md-table-cell>
+                        <md-table-cell>{{ban.BannedBy}}</md-table-cell>
+                        <md-table-cell>{{ban.BanReason}}</md-table-cell>
+                        <md-table-cell>{{ban.ThingURL}}</md-table-cell>
+                        <md-table-cell>{{ban.AdditionalInfo}}</md-table-cell>
+                    </md-table-row>
+                </md-table-body>
+            </md-table>
             <sn-loading v-if="loadingResults"></sn-loading>
         </div>
     </div>
