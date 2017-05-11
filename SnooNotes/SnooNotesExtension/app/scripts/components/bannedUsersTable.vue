@@ -93,6 +93,10 @@ export default {
   created: function(){
       this.toggleAll();
       this.searchBannedUsers();
+      
+  },
+  mounted:function(){
+      document.body.classList.remove('md-theme-default');
   }
 }
 </script>
