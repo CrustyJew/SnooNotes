@@ -16,9 +16,12 @@ axios.defaults.baseURL = apiBaseUrl;
 axios.interceptors.request.use((req) => { return snInterceptor.interceptRequest(req); });
 
 
-Vue.use(VueMaterial.MdCore);
-Vue.use(VueMaterial.MdIcon);
-Vue.use(VueMaterial.MdTable);
+// Vue.use(VueMaterial.MdCore);
+// Vue.use(VueMaterial.MdIcon);
+// Vue.use(VueMaterial.MdTable);
+// Vue.use(VueMaterial.MdSelect);
+// Vue.use(VueMaterial.MdButton);
+Vue.use(VueMaterial);
 Vue.use(Toasted, { position: 'bottom-right', duration: 2500 });
 
 let usersWithNotes = [];

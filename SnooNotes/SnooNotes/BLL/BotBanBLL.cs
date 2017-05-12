@@ -87,6 +87,56 @@ namespace SnooNotes.BLL
             return true;
 
         }
+
+        public async Task<bool> RemoveUserBan(string sub, int id, string unbanby)
+        {
+            var curBan = await bbDAL.GetBanByID(id);
+            if (curBan.SubName.ToLower() != sub.ToLower()) throw new Exception("Subreddit does not match ban");
+
+            var success = await bbDAL.DeleteUserBan(sub, id);
+            if (!success) return false;
+
+            string reason = $"UnBanned {curBan.UserName}";
+
+            //only used if changing to allowing banning of multiple users at a time.
+            //if (reason.Length > 255) reason = $"Banned {string.Join(",", userEntities.Select(e => e.EntityString))} for {string.Join(",", userEntities.Select(e => e.BanReason).Distinct())} by {string.Join(",", userEntities.Select(e => e.BannedBy).Distinct())}";
+            //if (reason.Length > 255) reason = "Banned lots of things and the summary is too long for the description.. RIP";
+
+            bool done = false;
+            int count = 1;
+
+            var ident = await userManager.FindByNameAsync(unbanby);
+            var webAgent = await agentPool.GetOrCreateWebAgentAsync(unbanby, (uname, uagent, rlimit) =>
+            {
+                return Task.FromResult<RedditSharp.RefreshTokenPoolEntry>(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent));
+            });
+
+            if (!ident.HasWiki) { throw new UnauthorizedAccessException("Need Wiki Permissions"); }
+            if (!ident.HasConfig) { throw new UnauthorizedAccessException("Need Config Permissions"); }
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(webAgent, true);
+
+            var wiki = new RedditSharp.Wiki(webAgent, sub);
+            //var wiki = new RedditSharp.WikiPage()
+            while (!done && count < 5)
+            {
+                try
+                {
+                    done = await SaveAutoModConfig(reason, wiki);
+                }
+                catch (WebException ex)
+                {
+                    if ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        throw;
+                    }
+                    else count++;
+                    await Task.Delay(100);
+                }
+            }
+
+            return true;
+        }
+
         public async Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki)
         {
 

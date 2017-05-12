@@ -6,7 +6,7 @@
         </div>
     
         <div id="SNOptionsPanel">
-            <transition-group name="fade">
+            <transition name="fade" mode="out-in">
                 <div id="SNOptionsContainer" v-if="activeTab == 'options'" key="subOptContainer">
     
                     <div id="SNRefreshContainer">
@@ -51,7 +51,7 @@
                 </div>
     
                 <banned-users v-if="activeTab == 'banlist'" key="banContainer"></banned-users>
-            </transition-group>
+            </transition>
         </div>
     </modal>
 </template>

@@ -129,6 +129,27 @@ ORDER BY {orderByColumn} {(ascending ? "asc" : "desc")} OFFSET @offset ROWS FETC
             }
         }
 
+        public async Task<bool> DeleteUserBan(string sub, int id) {
+            string query = @"
+DELETE FROM BotBannedUsers be
+INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
+where be.ID = @id
+AND sub.SubName = @sub
+";
+            return await snConn.ExecuteAsync(query, new { id, sub }) > 0;
+        }
+
+        public Task<Models.BannedEntity> GetBanByID(int id)
+        {
+            string query = @"
+SELECT be.Id, sub.SubName, be.UserName, be.BannedBy, be.BanReason, be.BanDate, be.ThingURL, be.AdditionalInfo
+FROM BotBannedUsers be
+INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
+WHERE be.ID = @id
+";
+            return snConn.QuerySingleOrDefaultAsync<Models.BannedEntity>(query, new { id });
+        }
+
         public async Task<bool> BanChannel(Models.BannedEntity entity, string channelID, string mediaAuthor, Models.VideoProvider vidProvider)
         {
             string query = @"

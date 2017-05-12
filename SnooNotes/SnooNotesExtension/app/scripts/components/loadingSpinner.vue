@@ -24,9 +24,9 @@ export default {
 }
 
 .sn-loading {
-    padding: 2px;
     height: 19px;
     width: 57px;
+    box-sizing: content-box;
 }
 
 @keyframes sn-pulse {

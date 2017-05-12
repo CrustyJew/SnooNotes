@@ -39,6 +39,14 @@ namespace SnooNotes.Controllers
             return bbBLL.BanUser(entity);
         }
 
+        [HttpDelete("{sub}/User/{id}")]
+        public Task<bool> UnbanUser(string sub, int id)
+        {
+            ClaimsPrincipal ident = User as ClaimsPrincipal;
+            if (!ident.HasClaim("uri:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
+            return (bbBLL.RemoveUserBan(sub, id, User.Identity.Name));
+        }
+
         /// <summary>
         /// Searches for bot banned users
         /// </summary>
