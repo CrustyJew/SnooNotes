@@ -150,146 +150,165 @@ export default {
 
 #SNOptions #SNModal {
     min-width: 810px;
-}
+    line-height: 12px;
+    text-transform: none !important;
+    color: initial;
+    font-size: 12px;
 
-#SNOptionsSidebar {
-    width: 125px;
-    background-color: $light-gray;
-    padding-left: 5px;
-    padding-top: 15px;
-    height: calc(100% - 15px);
-    box-sizing: border-box;
-    position: relative;
-    border-right: 1px solid $dark-gray;
-    float: left;
-}
-
-.SNOptionsCategory {
-    width: 113px;
-    height: 25px;
-    background-color: $secondary;
-    padding: 5px;
-    box-sizing: border-box;
-    margin-bottom: 5px;
-    float: right;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px 0 0 5px;
-    border: 1px solid $dark-gray;
-    border-right: none;
-    position: relative;
-    color: white;
-    transition: background-color linear .2s;
-}
-
-.SNOptionsCategory.active {
-    background-color: darken($secondary, 20%);
-}
-
-.SNOptionsCategory.active:after {
-    content: ' ';
-    height: 0;
-    position: absolute;
-    width: 0;
-    border: 10px solid transparent;
-    border-right-width: 25px;
-    border-right-color: white;
-    right: -1px;
-    top: 50%;
-    margin-top: -10px;
-}
-
-#SNOptionsPanel {
-    height: 100%;
-    display: block;
-    margin-left: 125px;
-    padding-left: 20px;
-    padding-top: 10px;
-    padding-right: 20px;
-    overflow: auto;
-    margin-bottom: -25px;
-}
-
-#SNOptionsContents {
-    margin: 0 auto;
-    max-width: 1000px;
-    padding-bottom: 20px;
-    padding-right: 20px;
-}
-
-
-#SNRefreshContainer {
-    width: 515px;
-    margin: 0 auto;
-    height: 74px;
-    text-align: left;
-    h1 {
+    a {
+        color: $secondary;
+    }
+    a.SNCloseModal {
+        display: inline-block;
+        cursor: pointer;
+        color: white;
+        background-color: $accent;
+        font-weight: bold;
+        padding: 2px 10px;
+        margin-top: -1px;
+        &:hover {
+            background-image: linear-gradient(to bottom, darken($accent, 10%), darken($accent, 25%));
+        }
+    }
+    #SNOptionsSidebar {
+        width: 125px;
+        background-color: $light-gray;
+        padding-left: 5px;
+        padding-top: 15px;
+        height: calc(100% - 15px);
+        box-sizing: border-box;
+        position: relative;
+        border-right: 1px solid $dark-gray;
         float: left;
-        font-size: 18px;
-        line-height: 18px;
     }
-}
 
-#SNActivateContainer {
-    margin: 0 auto;
-    width: 310px;
-    min-height: 50px;
-}
-
-#SNModSubs {
-    margin: 0 auto;
-    width: 400px;
-    margin-bottom: 5px;
-    h3 {
-        margin-bottom: 10px;
+    .SNOptionsCategory {
+        width: 113px;
+        height: 25px;
+        background-color: $secondary;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        float: right;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px 0 0 5px;
+        border: 1px solid $dark-gray;
+        border-right: none;
+        position: relative;
+        color: white;
+        transition: background-color linear .2s;
     }
-    ul {
-        columns: 3;
+
+    .SNOptionsCategory.active {
+        background-color: darken($secondary, 20%);
     }
-}
 
-#header {
-    //force header index higher for options modal
-    z-index: 2147483646;
-}
-
-.sn-loading {
-    margin: 0 auto;
-}
-
-#SNActivateSub {
-    height: 32px;
-    border-radius: 5px;
-    option:first-of-type {
-        color: darkgrey;
+    .SNOptionsCategory.active:after {
+        content: ' ';
+        height: 0;
+        position: absolute;
+        width: 0;
+        border: 10px solid transparent;
+        border-right-width: 25px;
+        border-right-color: white;
+        right: -1px;
+        top: 50%;
+        margin-top: -10px;
     }
-}
 
-#SNBtnActivateSub {
-    margin-right: 0px;
-}
+    #SNOptionsPanel {
+        height: 100%;
+        display: block;
+        margin-left: 125px;
+        padding-left: 20px;
+        padding-top: 10px;
+        padding-right: 20px;
+        overflow: auto;
+        margin-bottom: -25px;
+    }
 
-#SNRestart {
-    margin-top: 20px;
-    margin-left: 15px;
-}
+    #SNOptionsContents {
+        margin: 0 auto;
+        max-width: 1000px;
+        padding-bottom: 20px;
+        padding-right: 20px;
+    }
 
-#SNOptionsContainer {
-    margin-top: -15px;
-    padding-top: 5px;
-    min-height: 100px;
-    max-height: 1000px;
-    min-width: 585px;
-    overflow: auto;
-    width: 100%;
-    box-sizing: border-box;
-}
 
-.SNSubSettingsBtnWrapper {
-    width: 250px;
-    padding: 20px 20px 0px 20px;
-    margin: 0 auto;
-    display: inline-block;
-    text-align: center;
+    #SNRefreshContainer {
+        width: 525px;
+        margin: 0 auto;
+        height: 74px;
+        text-align: left;
+        h1 {
+            float: left;
+            font-size: 18px;
+            line-height: 18px;
+        }
+    }
+
+    #SNActivateContainer {
+        margin: 0 auto;
+        width: 310px;
+        min-height: 50px;
+    }
+
+    #SNModSubs {
+        margin: 0 auto;
+        width: 400px;
+        margin-bottom: 5px;
+        h3 {
+            margin-bottom: 10px;
+        }
+        ul {
+            columns: 3;
+        }
+    }
+
+    #header {
+        //force header index higher for options modal
+        z-index: 2147483646;
+    }
+
+    .sn-loading {
+        margin: 0 auto;
+    }
+
+    #SNActivateSub {
+        height: 32px;
+        border-radius: 5px;
+        option:first-of-type {
+            color: darkgrey;
+        }
+    }
+
+    #SNBtnActivateSub {
+        margin-right: 0px;
+    }
+
+    #SNRestart {
+        margin-top: 20px;
+        margin-left: 15px;
+    }
+
+    #SNOptionsContainer {
+        margin-top: -15px;
+        padding-top: 5px;
+        min-height: 100px;
+        max-height: 1000px;
+        min-width: 585px;
+        overflow: auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .SNSubSettingsBtnWrapper {
+        width: 250px;
+        padding: 20px 20px 0px 20px;
+        margin: 0 auto;
+        display: inline-block;
+        text-align: center;
+    }
 }
 </style>

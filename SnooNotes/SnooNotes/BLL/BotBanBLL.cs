@@ -93,7 +93,7 @@ namespace SnooNotes.BLL
             var curBan = await bbDAL.GetBanByID(id);
             if (curBan.SubName.ToLower() != sub.ToLower()) throw new Exception("Subreddit does not match ban");
 
-            var success = await bbDAL.DeleteUserBan(sub, id);
+            var success = await bbDAL.DeleteUserBan(sub, id, unbanby);
             if (!success) return false;
 
             string reason = $"UnBanned {curBan.UserName}";
@@ -135,6 +135,11 @@ namespace SnooNotes.BLL
             }
 
             return true;
+        }
+
+        public Task<bool> UpdateAdditionalInfo(string sub, int id, string additionalInfo, string user)
+        {
+            return bbDAL.UpdateAdditionalInfo(sub, id, additionalInfo, user);
         }
 
         public async Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki)
@@ -191,6 +196,7 @@ namespace SnooNotes.BLL
 
 
         }
+
 
         private const string DefaultBotConfigSection = @"
 ---

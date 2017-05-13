@@ -39,3 +39,14 @@ export default {
     }
 }
 </script>
+<style lang="scss">
+@import "~styles/_vars.scss";
+#sn-show-options{
+    color:$primary;
+    cursor:pointer;
+}
+#sn-login{
+    color:$accent;
+    cursor: pointer;
+}
+</style>

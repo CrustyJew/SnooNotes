@@ -12,5 +12,6 @@ namespace SnooNotes.BLL
         Task<bool> SaveAutoModConfig(string editReason, RedditSharp.Wiki wiki);
         Task<TableResults<BannedEntity>> SearchBannedUsers(IEnumerable<string> subreddits, int limit, int page, string searchTerm, string orderBy, bool ascending);
         Task<bool> RemoveUserBan(string sub, int id, string unbanby);
+        Task<bool> UpdateAdditionalInfo(string sub, int id, string additionalInfo, string user);
     }
 }

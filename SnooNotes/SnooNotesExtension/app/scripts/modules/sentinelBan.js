@@ -87,7 +87,7 @@ export class SentinelBanModule {
             axios.post('BotBan/' + sub + '/Channel', { ChannelURL: channel, BanReason: reason, ThingURL: thingurl })
                 .then((d) => {
                     let el = document.createElement('span');
-                    el.textContent = d.data == "True" ? 'Banned!' : 'Already Banned!';
+                    el.textContent = d.data ? 'Banned!' : 'Already Banned!';
                     target.replaceWith(el);
                 }, () => {
                     target.textContent = 'Error!';
@@ -97,7 +97,7 @@ export class SentinelBanModule {
             axios.post('BotBan/' + sub + '/User', { UserName: user, BanReason: reason, ThingURL: thingurl })
                 .then((d) => {
                    let el = document.createElement('span');
-                    el.textContent = d.data == "True" ? 'Banned!' : 'Already Banned!';
+                    el.textContent = d.data ? 'Banned!' : 'Already Banned!';
                     target.replaceWith(el);
                 }, () => {
                     target.textContent = 'Error!';
@@ -111,7 +111,7 @@ export class SentinelBanModule {
         banElem.appendChild(document.createTextNode('Bot Ban (' + reason + '): '));
         let render = false;
 
-        let index = this.subreddits.findIndex(sr=> sr.name.toLowerCase() == sub.name.toLowerCase());
+        let index = this.subreddits.findIndex(sr=> sr.name.toLowerCase() == sub.toLowerCase());
         if(index <= -1 || !this.subreddits[index].isAdmin) return null;
         
         let subreddit = this.subreddits[index];

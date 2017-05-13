@@ -42,4 +42,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[FK_BotBannedUsers_Subreddits]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="80399973-b7f3-4eb2-8199-824b36e32c26" ChangeDateTime="05/05/2017 01:15:23">
+    <Property Name="ElementName" Value="[dbo].[Subreddits].[SentinelEnabled]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subreddits]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SentinelActive" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e81b12e0-32e0-4ad6-8f19-f134895bd6a8" ChangeDateTime="05/13/2017 14:30:23">
+    <Property Name="ElementName" Value="[dbo].[BotBannedUsers_Audit].[Action]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BotBannedUsers_Audit]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AuditAction" />
+  </Operation>
 </Operations>

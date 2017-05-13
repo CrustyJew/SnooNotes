@@ -129,14 +129,29 @@ ORDER BY {orderByColumn} {(ascending ? "asc" : "desc")} OFFSET @offset ROWS FETC
             }
         }
 
-        public async Task<bool> DeleteUserBan(string sub, int id) {
+        public async Task<bool> DeleteUserBan(string sub, int id, string user) {
             string query = @"
-DELETE FROM BotBannedUsers be
+DELETE be
+OUTPUT DELETED.SubredditID, DELETED.UserName, DELETED.BannedBy, DELETED.BanDate, DELETED.BanReason, DELETED.ThingUrl, DELETED.AdditionalInfo, null, GETUTCDATE(), @user, 'D' into BotBannedUsers_Audit (SubredditID, UserName, BannedBy, BanDate, BanReason, ThingUrl, AdditionalInfoOld, AdditionalInfoNew, ModifiedDate, ModifiedBy, AuditAction)
+FROM BotBannedUsers be
 INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
 where be.ID = @id
 AND sub.SubName = @sub
 ";
-            return await snConn.ExecuteAsync(query, new { id, sub }) > 0;
+            return await snConn.ExecuteAsync(query, new { id, sub, user }) > 0;
+        }
+
+        public async Task<bool> UpdateAdditionalInfo(string sub, int id, string additionalInfo, string user)
+        {
+            string query = @"
+UPDATE be
+SET be.AdditionalInfo = @additionalInfo, modifiedBy = @user, modifiedDate = GETUTCDATE()
+FROM BotBannedUsers be
+INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
+where be.ID = @id
+AND sub.SubName = @sub
+";
+            return await snConn.ExecuteAsync(query, new { sub, id, additionalInfo, user}) > 0;
         }
 
         public Task<Models.BannedEntity> GetBanByID(int id)
