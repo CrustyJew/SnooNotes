@@ -10,6 +10,7 @@ import { getNotesForUsers } from './redux/actions/notes';
 import { BanNotesModule } from './modules/banNotes';
 import { SentinelBanModule } from './modules/sentinelBan';
 import VueMaterial from 'vue-material'
+import userNoteDisplay from './components/userNotesDisplay.vue';
 
 export const snInterceptor = new SNAxiosInterceptor(reduxStore);
 axios.defaults.baseURL = apiBaseUrl;
@@ -41,6 +42,11 @@ const unsub = reduxStore.subscribe(() => {
     sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
     sentinelBanModule.initModule();
 
+    var userNotesDisplay = document.createElement('div');
+    userNotesDisplay.id = "SNNotesDisplay";
+    document.body.appendChild(userNotesDisplay);
+    new Vue(userNoteDisplay).$mount(userNotesDisplay);
+    
     const options = new Vue({ render: h => h(SNOptions) }).$mount();
     options.$on('refresh', () => {
         let authorsReq = [];

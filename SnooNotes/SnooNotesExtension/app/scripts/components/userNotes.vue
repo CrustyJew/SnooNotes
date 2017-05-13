@@ -1,54 +1,7 @@
 <template>
     <span v-if="snInfo.modded_subs.length > 0" class="SNUserNotes" @click.stop>
-        
-            <span @click="show">[SN]</span>
-    <transition name="fade">
-        <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
-            <div class="SNHeader"><a class="SNCloseNote SNClose" @click="close">[x]</a></div>
-            <table v-if="!notes.noNotes && !notes.loading">
-                <tbody is="transition-group" name="fade">
-                    <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)" transition="fade" :key="note.NoteID">
-                        <td class="SNSubName">
-                            <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
-                            <span v-if="note.ParentSubreddit">
-                                <br />via<br />
-                                <a :href="'https://reddit.com/r/'+note.ParentSubreddit">{{note.ParentSubreddit}}</a>
-                            </span>
-                        </td>
-                        <td class="SNSubmitter">
-                            <span>{{note.Submitter}}</span>
-                            <br />
-                            <a :href="note.Url" style="white-space:pre;">{{new Date(note.Timestamp).toLocaleString().replace(', ', '\n')}}</a>
-                        </td>
-                        <td class="SNMessage">
-                            <p>{{note.Message}}</p>
-                            <a class="SNDeleteNote" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.SubName == note.ParentSubreddit) > -1">[x]</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="SNNewNoteContainer">
-                <div class="SNNewNote">
-                    <select class="SNNewNoteSub" v-model="newNote.newNoteSubIndex" :class="{SNError:$v.newNote.newNoteSubIndex.$error }">
-                        <option value="-1" disabled>--Select a Sub--</option>
-                        <option :value="newNote.newNoteSubIndex" v-if="isModdedSub">{{subreddit}}</option>
-                        <option value="-2" v-if="isModdedSub" disabled>---------</option>
-                        <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index">{{sub.name}}</option>
-                    </select>
-                    <textarea placeholder="Add a new note for user..." class="SNNewMessage" v-model="newNote.message" />
-                    <button type="button" class="SNBtnSubmit SNNewNoteSubmit" @click="submit" :disabled="submitting">Submit</button>
-                </div>
-                <div class="SNNoteType" :class="{SNError:$v.newNote.newNoteTypeID.$error }">
-                    <label class="SNTypeRadio" v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)">
-                        <input type="radio" name="SNType" :value="nt.NoteTypeID" v-model="newNote.newNoteTypeID">{{nt.DisplayName}}</label>
-                </div>
-                <div class="SNNewError">
-                    <p v-if="$v.newNote.newNoteTypeID.$error">Shucks! You forgot the note type...</p>
-                    <p v-if="$v.newNote.newNoteSubIndex.$error">Select a subby you fool!</p>
-                </div>
-            </div>
-        </div>
-    </transition>
+    
+        <span @click="show">[SN]</span>
     </span>
 </template>
 <script>
@@ -57,6 +10,7 @@ import { draggable } from './directives/draggable';
 import { validationMixin } from 'vuelidate'
 import { required, between } from 'vuelidate/lib/validators'
 import axios from 'axios';
+import {showNotesHub} from '../showNotesHub';
 
 export default {
     name: 'user-notes',
@@ -141,17 +95,8 @@ export default {
             return style;
         },
         show: function (e) {
-            this.displayStyle.top = e.target.offsetTop + 15 + 'px';
-            this.displayStyle.left = e.target.offsetLeft + 20 + 'px';
             
-            this.displayStyle.display = 'block';
-            this.showNotes = true;
-            if (this.subreddit) {
-                this.newNote.newNoteSubIndex = this.modSubs.findIndex(sub => sub.name == this.subreddit)
-            } else {
-                this.newNote.newNoteSubIndex = -1
-            }
-            document.addEventListener('click', this.clickWatch, true);
+            showNotesHub.$emit('showNotes',{event:e, subreddit:this.subreddit, username:this.username, url:this.url});
         },
         clickWatch: function (e) {
             if (!this.$el.contains(e.target)) this.close();
@@ -237,6 +182,10 @@ export default {
     position: absolute;
     top: 1px;
     right: 5px;
+    cursor: pointer;
+}
+
+.SNUserNotes {
     cursor: pointer;
 }
 </style>
