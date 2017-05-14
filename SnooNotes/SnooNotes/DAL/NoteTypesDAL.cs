@@ -22,8 +22,8 @@ namespace SnooNotes.DAL {
             }
             using ( SqlConnection con = new SqlConnection( constring ) ) {
                 string query = "update NoteTypes set Disabled = 1 " +
-                    " OUTPUT GETUTCDATE() as 'HistTimestamp','U' as 'HistAction',@uname as 'HistUser',INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic,INSERTED.Disabled INTO " +
-                        "NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled) " +
+                    " OUTPUT GETUTCDATE() as 'HistTimestamp','U' as 'HistAction',@uname as 'HistUser',INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic,INSERTED.Disabled,INSERTED.IconString INTO " +
+                        "NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled,IconString) " +
                     " where NoteTypeID = @NoteTypeID";
                 await con.ExecuteAsync( query, ntypeParams );
                 return true;
@@ -32,7 +32,7 @@ namespace SnooNotes.DAL {
 
         public async Task<NoteType> GetNoteType( int id ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
-                string query = "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt "
+                string query = "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic,nt.IconString from NoteTypes nt "
                         + " inner join Subreddits s on s.SubredditID = nt.SubredditID"
                         + " where NoteTypeID = @id";
                 NoteType ntype = ( await con.QueryAsync<NoteType>( query, new { @id } ) ).First();
@@ -43,7 +43,7 @@ namespace SnooNotes.DAL {
         public async Task<IEnumerable<NoteType>> GetNoteTypesForSubs( IEnumerable<string> subredditNames ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
                 string query = @"
-select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic from NoteTypes nt
+select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic,nt.IconString from NoteTypes nt
 inner join Subreddits s on s.SubredditID = nt.SubredditID
 where s.SubName in @subs and nt.Disabled = 0 
 ORDER BY nt.DisplayOrder asc
@@ -55,13 +55,13 @@ ORDER BY nt.DisplayOrder asc
 
         public async Task<IEnumerable<NoteType>> AddMultipleNoteTypes( IEnumerable<NoteType> ntypes, string uname ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
-                string query = "declare @newNote as Table([NoteTypeID] INT, [SubredditID] INT, [DisplayName] NVARCHAR(25), [ColorCode] NVARCHAR(6), [DisplayOrder] INT, [Bold] BIT, [Italic] BIT, [Disabled] BIT) " +
+                string query = "declare @newNote as Table([NoteTypeID] INT, [SubredditID] INT, [DisplayName] NVARCHAR(25), [ColorCode] NVARCHAR(6), [DisplayOrder] INT, [Bold] BIT, [Italic] BIT, [Disabled] BIT, [IconString] VARCHAR(50)) " +
                         "insert into NoteTypes (SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic) " +
-                        "OUTPUT INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic, INSERTED.Disabled INTO @newNote(NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled) " +
-                        "values ( (select SubredditID from Subreddits where SubName = @SubName), @DisplayName, @ColorCode, @DisplayOrder, @Bold, @Italic) " +
-                        "insert into NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic) " +
-                        "select GETUTCDATE() as 'HistTimestamp','C' as 'HistAction',@uname as 'HistUser',NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic from @newNote " +
-                        "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic " +
+                        "OUTPUT INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic, INSERTED.Disabled, INSERTED.IconString INTO @newNote(NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled,IconString) " +
+                        "values ( (select SubredditID from Subreddits where SubName = @SubName), @DisplayName, @ColorCode, @DisplayOrder, @Bold, @Italic, @IconString) " +
+                        "insert into NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,IconString) " +
+                        "select GETUTCDATE() as 'HistTimestamp','C' as 'HistAction',@uname as 'HistUser',NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,IconString from @newNote " +
+                        "select nt.NoteTypeID,s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic,nt.IconString " +
                         "from @newNote nt "
                         + " inner join Subreddits s on s.SubredditID = nt.SubredditID";
                 //+ " where NoteTypeID = cast(SCOPE_IDENTITY() as int)";
@@ -75,12 +75,12 @@ ORDER BY nt.DisplayOrder asc
         public async Task UpdateMultipleNoteTypes( NoteType[] ntypes, string uname ) {
             List<Dictionary<string, object>> ntypeParams = new List<Dictionary<string, object>>();
             foreach ( NoteType nt in ntypes ) {
-                ntypeParams.Add( new Dictionary<string, object>() { { "NoteTypeID", nt.NoteTypeID }, { "SubName", nt.SubName }, { "DisplayName", nt.DisplayName }, { "ColorCode", nt.ColorCode }, { "DisplayOrder", nt.DisplayOrder }, { "Bold", nt.Bold }, { "Italic", nt.Italic }, { "uname", uname } } );
+                ntypeParams.Add( new Dictionary<string, object>() { { "NoteTypeID", nt.NoteTypeID }, { "SubName", nt.SubName }, { "DisplayName", nt.DisplayName }, { "ColorCode", nt.ColorCode }, { "DisplayOrder", nt.DisplayOrder }, { "Bold", nt.Bold }, { "Italic", nt.Italic }, { "uname", uname },{ "IconString", nt.IconString } } );
             }
             using ( SqlConnection con = new SqlConnection( constring ) ) {
-                string query = "update NoteTypes set DisplayName = @DisplayName , ColorCode = @ColorCode , DisplayOrder = @DisplayOrder , Bold = @Bold , Italic = @Italic " +
-                    " OUTPUT GETUTCDATE() as 'HistTimestamp','U' as 'HistAction',@uname as 'HistUser',INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic,INSERTED.Disabled INTO " +
-                        "NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled) " +
+                string query = "update NoteTypes set DisplayName = @DisplayName , ColorCode = @ColorCode , DisplayOrder = @DisplayOrder , Bold = @Bold , Italic = @Italic, IconString = @IconString " +
+                    " OUTPUT GETUTCDATE() as 'HistTimestamp','U' as 'HistAction',@uname as 'HistUser',INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic,INSERTED.Disabled,INSERTED.IconString INTO " +
+                        "NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled,IconString) " +
                     " where NoteTypeID = @NoteTypeID";
                 await con.ExecuteAsync( query, ntypeParams );
             }

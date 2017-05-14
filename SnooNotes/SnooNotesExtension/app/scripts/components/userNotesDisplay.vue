@@ -202,3 +202,61 @@ export default {
     }
 }
 </script>
+<style lang="scss">
+@import "~styles/_vars.scss";
+
+.SNNotesDisplay {
+    .SNHeader {
+        margin-left: -10px;
+        margin-right: -10px;
+        margin-bottom: 10px;
+        .SNClose {
+            display: inline-block;
+            cursor: pointer;
+            color: white;
+            background-color: $accent;
+            font-weight: bold;
+            padding: 2px 10px;
+            margin-top: -1px;
+            &:hover {
+                background-image: linear-gradient(to bottom, darken($accent, 10%), darken($accent, 25%));
+            }
+        }
+    }
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    td {
+        border: solid 1px $gray;
+        border-style: none solid solid none;
+        padding: 10px;
+    }
+    tr:first-child td:first-child {
+        border-top-left-radius: 10px;
+    }
+    tr:first-child td:last-child {
+        border-top-right-radius: 10px;
+    }
+    tr:last-child td:first-child {
+        border-bottom-left-radius: 10px;
+    }
+    tr:last-child td:last-child {
+        border-bottom-right-radius: 10px;
+    }
+    tr:first-child td {
+        border-top-style: solid;
+    }
+    tr td:first-child {
+        border-left-style: solid;
+    }
+}
+
+.SNDeleteNote {
+    position: absolute;
+    top: 1px;
+    right: 5px;
+    cursor: pointer;
+}
+</style>
+

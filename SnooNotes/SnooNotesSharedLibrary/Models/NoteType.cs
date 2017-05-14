@@ -14,6 +14,7 @@ namespace SnooNotes.Models
         public int DisplayOrder { get; set; }
         public bool Bold { get; set; }
         public bool Italic { get; set; }
+        public string IconString { get; set; }
 
         public NoteType()
         {

@@ -12,6 +12,7 @@
     [Bold] BIT NOT NULL, 
     [Italic] BIT NOT NULL, 
     [Disabled] BIT NOT NULL DEFAULT 0, 
+    [IconString] VARCHAR(50) NULL, 
    
    )
 GO

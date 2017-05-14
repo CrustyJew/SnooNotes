@@ -26,24 +26,31 @@
             <div id="SNNoteTypes">
                 <div id="SNNoteTypesDesc">Change just about everything about the Note Types belonging to this subreddit below. If no checkbox is chosen for Perm Ban or Temp Ban, then automatic ban notes will not be generated for that type of ban.
                     <br />
-                    <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Temp&nbsp;|&nbsp;Perm
-                    <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ban&nbsp;&nbsp;|&nbsp;&nbsp;Ban</div>
+                    <br />&nbsp;Temp&nbsp;|&nbsp;Perm
+                    <br />&nbsp;&nbsp;&nbsp;Ban&nbsp;&nbsp;|&nbsp;&nbsp;Ban</div>
                 <draggable element="ul" :list="newSettings.Settings.NoteTypes" :options="dragOptions">
                     <li :sn-notetype-id="nt.NoteTypeID" :sn-notetype-display-order="nt.DisplayOrder" v-for="nt in newSettings.Settings.NoteTypes">
-                        <a class="SNSort"></a>
+                        <div class="sn-drag-handle">
+                            <a class="SNSort"></a>
+                        </div>
                         <input type="checkbox" class="SNChkGrp" :value="nt.NoteTypeID" v-on:change="selectTempBan(nt.NoteTypeID, $event)" v-model.number="tempBanID">
                         <input type="checkbox" class="SNChkGrp" :value="nt.NoteTypeID" v-on:change="selectPermBan(nt.NoteTypeID, $event)" v-model.number="permBanID">
                         <input class="SNNoteTypeDisp" type="text" maxlength="20" v-model="nt.DisplayName"> &nbsp;Color:&nbsp;
                         <input class="SNNoteTypeColor" type="color" :value="nt.ColorCode" v-model="nt.ColorCode">
+                        <input class="SNNoteIcon" type="text" maxlength="50" v-model="nt.IconString">
                         <label>
                             <input type="checkbox" class="SNntBold" v-model="nt.Bold">Bold</label>
                         <label>
                             <input type="checkbox" class="SNntItalic" v-model="nt.Italic">Italic</label>
-                        &nbsp;<span class="SNPreview" :style="getStyle(nt)">{{nt.DisplayName}}</span>
+                        &nbsp;
+                        <span class="SNPreview" :style="getStyle(nt)">
+                            <i class="material-icons">{{nt.IconString && nt.IconString.length > 0 ? nt.IconString : 'comment'}}</i>{{nt.DisplayName}}</span>
                         <a class="SNRemove" @click="removeNoteType(nt)">x</a>
                     </li>
                 </draggable>
-                <div style="text-align:center;" @click="addNoteType"><a class="SNAdd">+</a></div>
+                <div style="text-align:center;" @click="addNoteType">
+                    <a class="SNAdd">+</a>
+                </div>
             </div>
         </div>
         <button type="button" class="SNBtnSubmit" id="SNBtnSubOptsSave" @click="save" :disabled="saving">{{saving ? "Saving..." : "Save"}}</button>
@@ -96,7 +103,8 @@ export default {
                 ColorCode: '#000000',
                 Bold: false,
                 Italic: false,
-                SubName: this.initialSettings.SubName
+                SubName: this.initialSettings.SubName,
+                IconString: 'comment'
             })
         },
         removeNoteType(nt) {
@@ -153,6 +161,10 @@ export default {
                 this.finish();
             }, () => {
                 this.$toasted.error("Failed to save settings!", { duration: null });
+                for (let i = 0; i < this.newSettings.Settings.NoteTypes.length; i++) {
+                    let nt = this.newSettings.Settings.NoteTypes[i];
+                    nt.ColorCode = '#' + nt.ColorCode;
+                }
                 this.saving = false;
             })
         }
@@ -161,7 +173,8 @@ export default {
         dragOptions() {
             return {
                 animation: 150,
-                ghostClass: 'ghost'
+                ghostClass: 'ghost',
+                handle: '.sn-drag-handle'
             }
         }
     },
@@ -191,85 +204,79 @@ export default {
     background: $light-gray;
 }
 
-#SNSubRedditSettings {
-    line-height: 12px;
-    text-align: left;
-}
+#SNOptionsPanel #SNOptionsContainer #SNSubRedditSettings {
+    #SNSubRedditSettings {
+        line-height: 12px;
+        text-align: left;
+    }
 
-.SNSubOptsHeader {
-    float: left;
-    color: $secondary;
-    font-weight: bold;
-    margin: 0px;
-}
+    .SNSubOptsHeader {
+        float: left;
+        color: $secondary;
+        font-weight: bold;
+        margin: 0px;
+    }
 
-.SNOptsHeader {
-    margin-bottom: 10px;
-}
+    .SNOptsHeader {
+        margin-bottom: 10px;
+    }
 
-#SNBtnSubOptsCancel {
-    float: right;
-}
+    #SNBtnSubOptsCancel {
+        float: right;
+    }
 
-#SNBtnSubOptsSave {
-    margin: 0 auto;
-    margin-top: 20px;
-    display: block;
-}
-
-#SNAccessMask {
-    width: 200px;
-    display: inline-block;
-    border: 1px solid transparent;
-    border-radius: 5px;
-    background-color: $light-gray;
-    padding: 5px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    vertical-align: top;
-}
-
-#SNAccessMaskOptions {
-    width: 100px;
-    label {
+    #SNBtnSubOptsSave {
+        margin: 0 auto;
+        margin-top: 20px;
         display: block;
     }
-    input[type=checkbox] {
-        vertical-align: middle;
-        margin: 0px 5px 0px 0px;
+
+    #SNAccessMask {
+        width: 200px;
+        display: inline-block;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        background-color: $light-gray;
+        padding: 5px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        vertical-align: top;
     }
-}
 
-#SNAccessMaskDesc {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+    #SNAccessMaskOptions {
+        width: 100px;
+        label {
+            display: block;
+        }
+        input[type=checkbox] {
+            vertical-align: middle;
+            margin: 0px 5px 0px 0px;
+        }
+    }
 
-#SNNoteTypesDesc {
-    font-weight: bold;
-}
+    #SNAccessMaskDesc {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
 
-#SNNoteTypes {
-    display: inline-block;
-    width: 650px;
-    padding: 5px;
-    border: 1px solid transparent;
-    background-color: $light-gray;
-    border-radius: 5px;
+    #SNNoteTypesDesc {
+        font-weight: bold;
+    }
 
+    #SNNoteTypes {
+        display: inline-block;
+        width: 900px;
+        padding: 5px;
+        border: 1px solid transparent;
+        background-color: $light-gray;
+        border-radius: 5px;
+    }
     li {
-        cursor: grab;
-        cursor: -webkit-grab;
         border: 1px solid darkgrey;
         border-radius: 3px;
         padding: 2px;
         background-color: $light-gray;
         margin: 1px;
-
-        &:active {
-            cursor: grabbing;
-            cursor: -webkit-grabbing;
-        }
     }
 
     input {
@@ -316,47 +323,64 @@ export default {
             width: 0px;
         }
     }
-}
 
-.SNPreview {
-    display: inline-block;
-    min-width: 160px;
-}
+    i.material-icons {
+        font-size: 18px;
+        vertical-align: middle;
+    }
 
-.SNRemove {
-    display: inline-block;
-    vertical-align: middle;
-    height: 16px;
-    width: 16px;
-    font-size: 12px;
-    line-height: 14px;
-    font-weight: bold;
-    font-family: verdana;
-    color: white;
-    text-align: center;
-    background: linear-gradient(to bottom, $accent, darken($accent, 15%));
-    position: relative;
-    border-radius: 50%;
-    border: 1px solid darkgrey;
-    cursor: pointer;
-}
+    .SNPreview {
+        display: inline-block;
+        min-width: 160px;
+    }
+    .sn-drag-handle {
+        float: left;
+        height: 26px;
+        line-height: 26px;
 
-.SNAdd {
-    display: inline-block;
-    vertical-align: middle;
-    height: 16px;
-    width: 16px;
-    font-size: 12px;
-    line-height: 15px;
-    font-weight: bold;
-    font-family: verdana;
-    color: white;
-    text-align: center;
-    margin-left: 8px;
-    background: linear-gradient(to bottom, #74c429, #4ca20b);
-    position: relative;
-    border-radius: 50%;
-    border: 1px solid darkgrey;
-    cursor: pointer;
+        cursor: grab;
+        cursor: -webkit-grab;
+        &:active {
+            cursor: grabbing;
+            cursor: -webkit-grabbing;
+        }
+    }
+    .SNRemove {
+        vertical-align: middle;
+        height: 16px;
+        width: 16px;
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: bold;
+        font-family: verdana;
+        color: white;
+        text-align: center;
+        background: linear-gradient(to bottom, $accent, darken($accent, 15%));
+        position: relative;
+        border-radius: 50%;
+        border: 1px solid darkgrey;
+        cursor: pointer;
+        top: 5px;
+        float: right;
+    }
+
+    .SNAdd {
+        display: inline-block;
+        vertical-align: middle;
+        height: 16px;
+        width: 16px;
+        font-size: 12px;
+        line-height: 15px;
+        font-weight: bold;
+        font-family: verdana;
+        color: white;
+        text-align: center;
+        margin-left: 8px;
+        background: linear-gradient(to bottom, #74c429, #4ca20b);
+        position: relative;
+        border-radius: 50%;
+        border: 1px solid darkgrey;
+        cursor: pointer;
+    }
 }
 </style>

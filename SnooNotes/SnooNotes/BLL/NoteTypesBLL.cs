@@ -18,7 +18,7 @@ namespace SnooNotes.BLL {
             Dictionary<string, IEnumerable<BasicNoteType>> toReturn = new Dictionary<string, IEnumerable<BasicNoteType>>();
             var notetypes = await noteTypesDAL.GetNoteTypesForSubs( subs );
             foreach ( string sub in subs ) {
-                var basicNoteTypesForSub = notetypes.Where( t => t.SubName.ToLower() == sub ).Select( t => new BasicNoteType() { Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder = t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID } ).OrderBy( bt => bt.DisplayOrder );
+                var basicNoteTypesForSub = notetypes.Where( t => t.SubName.ToLower() == sub ).Select( t => new BasicNoteType() { Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder = t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID, IconString = t.IconString } ).OrderBy( bt => bt.DisplayOrder );
                 toReturn.Add( sub, basicNoteTypesForSub );
             }
             return toReturn;

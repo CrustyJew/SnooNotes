@@ -1,7 +1,9 @@
+@import "./vue-material-css/core.scss";
+
 @import "./_vars.scss";
 @import "./SNContainer.scss";
 @import "./SNBotBan.scss";
-@import "node_modules/vue-material/dist/vue-material";
+//@import "node_modules/vue-material/dist/vue-material";
 
 @font-face {
   font-family: 'Material Icons';
@@ -28,7 +30,16 @@
 .md-pagination-select{
     z-index:2147483648;
 }
-
+.md-table-head-container {
+    box-sizing: border-box;
+}
+span.md-tooltip{
+        height: inherit;
+    color: black;
+    background-color: white;
+    border: 1px solid $dark-gray;    
+    transform: translateY(0%) !important;
+}
 .clearfix{
     clear:both;
 }
