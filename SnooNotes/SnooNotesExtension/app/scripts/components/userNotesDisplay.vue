@@ -31,7 +31,7 @@
                 <div class="SNNewNote">
                     <select class="SNNewNoteSub" v-model="newNote.newNoteSubIndex" :class="{SNError:$v.newNote.newNoteSubIndex.$error }">
                         <option value="-1" disabled>--Select a Sub--</option>
-                        <option :value="newNote.newNoteSubIndex" v-if="isModdedSub">{{subreddit}}</option>
+                        <option :value="modSub.index" v-if="isModdedSub">{{modSub.name}}</option>
                         <option value="-2" v-if="isModdedSub" disabled>---------</option>
                         <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index">{{sub.name}}</option>
                     </select>
@@ -112,6 +112,9 @@ export default {
         },
         modSubs: function () {
             return this.snInfo.modded_subs.map((s, i) => { return { name: s.SubName, id: s.SubredditID, index: i } });
+        },
+        modSub: function(){
+            return this.modSubs.filter(sub => sub.name == this.subreddit)[0];
         },
         otherSubs: function () {
             return this.modSubs.filter(sub => sub.name != this.subreddit);
