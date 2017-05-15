@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
     public class NoteTypesDAL : INoteTypesDAL {
-        private string constring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private string constring;
         private IConfigurationRoot Configuration;
         public NoteTypesDAL( IConfigurationRoot config ) {
             Configuration = config;
-            constring = Configuration.GetConnectionString( "DefaultConnection" );
+            constring = Configuration.GetConnectionString("SnooNotes");
         }
 
         public async Task<bool> DeleteMultipleNoteTypes( IEnumerable<NoteType> ntypes, string uname ) {

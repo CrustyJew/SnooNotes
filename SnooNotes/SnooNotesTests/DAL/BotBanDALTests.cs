@@ -36,7 +36,7 @@ VALUES
 (@subid, 'banneduser2', 'banner1', 'banreason3', '2017-01-01','https://reddit.com/r/SnooNotes','Additional Info 3 asdf'),
 (@subid, 'bu3', 'banner2', 'br3', '2017-01-01','https://reddit.com/r/RedditSharpDev','Additional Info 3 zxcv')
 ";
-            using (var conn = new SqlConnection(Configuration.GetConnectionString("DefaultConnection")))
+            using (var conn = new SqlConnection(Configuration.GetConnectionString("SnooNotes")))
             {
                 conn.Execute(query);
             }
@@ -45,7 +45,7 @@ VALUES
         [Fact]
         public async Task BotBanSearchTest_GetAll()
         {
-            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
+            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), null);
             var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 10, 1,null, "date", false);
 
             Assert.NotEmpty(results.DataTable);
@@ -55,7 +55,7 @@ VALUES
         [Fact]
         public async Task BotBanSearchTest_GetBanner1()
         {
-            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
+            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), null);
             var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 10, 1, "banner1", "date", false);
 
             Assert.NotEmpty(results.DataTable);
@@ -65,7 +65,7 @@ VALUES
         [Fact]
         public async Task BotBanSearchTest_Page1()
         {
-            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
+            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), null);
             var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 1, 1, "ban", "date", false);
 
             Assert.NotEmpty(results.DataTable);
@@ -76,7 +76,7 @@ VALUES
         [Fact]
         public async Task BotBanSearchTest_Page2()
         {
-            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), null);
+            var dal = new SnooNotes.DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), null);
             var results = await dal.SearchBannedUsers(new string[] { "SnoonotesTest" }, 1, 2, "ban", "date", false);
 
             Assert.NotEmpty(results.DataTable);

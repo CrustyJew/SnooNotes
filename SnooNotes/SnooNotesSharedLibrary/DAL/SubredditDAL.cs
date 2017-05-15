@@ -9,12 +9,12 @@ using System;
 
 namespace SnooNotes.DAL {
     public class BaseSubredditDAL : ISubredditDAL {
-        private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private string connstring;
         private IConfigurationRoot Configuration;
         private string[] excludeSubs;
         public BaseSubredditDAL( IConfigurationRoot config ) {
             Configuration = config;
-            connstring = Configuration.GetConnectionString( "DefaultConnection" );
+            connstring = Configuration.GetConnectionString("SnooNotes");
             excludeSubs = Configuration["ExcludedSubs"].ToLower().Split(',').ToArray();
         }
 

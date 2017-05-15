@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
     public class SubredditDAL : BaseSubredditDAL {
-        private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+        private string connstring;
         private IConfigurationRoot Configuration;
         public SubredditDAL( IConfigurationRoot config ):base(config) {
             Configuration = config;
-            connstring = Configuration.GetConnectionString( "DefaultConnection" );
+            connstring = Configuration.GetConnectionString("SnooNotes");
         }
         public override async Task<string> AddSubreddit( Subreddit sub ) {
             sub.SubName = sub.SubName;

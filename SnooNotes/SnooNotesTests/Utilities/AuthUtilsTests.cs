@@ -69,7 +69,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool, new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>() );
 
             //act
             await util.UpdateModeratedSubredditsAsync( testUser );
@@ -105,7 +105,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool, new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>());
 
             //act
             await util.UpdateModeratedSubredditsAsync( testUser );
@@ -140,7 +140,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetActiveSubs() ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool, new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>());
 
             //act
             await util.UpdateModeratedSubredditsAsync( testUser );
@@ -172,7 +172,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetSubreddits( It.IsAny<IEnumerable<string>>() ) ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object, agentPool );
+            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object, agentPool, new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>());
             var userPrincipal = new ClaimsPrincipal( claimsIdent );
 
             await um.AddToRoleAsync( testUser, "gooaway" );

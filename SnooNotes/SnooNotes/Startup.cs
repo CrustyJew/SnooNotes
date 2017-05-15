@@ -48,7 +48,7 @@ namespace SnooNotes {
             settings.ContractResolver = new SignalRContractResolver();
 
             services.AddDbContext<ApplicationDbContext>( options =>
-                 options.UseSqlServer( Configuration.GetConnectionString( "DefaultConnection" ) ) );
+                 options.UseSqlServer( Configuration.GetConnectionString("SnooNotes") ) );
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options=>options.Cookies.ApplicationCookie.AuthenticationScheme = "cookie")
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -94,7 +94,7 @@ namespace SnooNotes {
             services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();
             services.AddTransient<BLL.ISubredditBLL, BLL.SubredditBLL>();
             
-            services.AddTransient<DAL.IBotBanDAL>((x) => { return new DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("DefaultConnection")), new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
+            services.AddTransient<DAL.IBotBanDAL>((x) => { return new DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
             services.AddTransient<BLL.IBotBanBLL, BLL.BotBanBLL>();
 
             var webAgentPool = new RedditSharp.RefreshTokenWebAgentPool(Configuration["RedditClientID"], Configuration["RedditClientSecret"], Configuration["RedditRedirectURI"])
