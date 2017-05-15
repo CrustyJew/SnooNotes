@@ -60,7 +60,7 @@ namespace SnooNotes.Controllers {
         
         [HttpPost( "Cabal" )]
         public async Task AddNoteToCabal( int id, int typeid ) {
-            string cabalSub = Configuration["CabalSubreddit"].ToLower();
+            string cabalSub = Configuration["CabalSubreddit"];
             Models.Note note = await notesBLL.GetNoteByID( id );
             if( !User.IsInRole( note.SubName.ToLower() ) ) {
                 throw new UnauthorizedAccessException( "That note ID doesn't belong to you. Go on! GIT!" );

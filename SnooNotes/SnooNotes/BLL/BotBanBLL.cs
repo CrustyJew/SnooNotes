@@ -189,8 +189,11 @@ namespace SnooNotes.BLL
             var ents = await bbDAL.GetBannedUserNames(wiki.SubredditName);
             string entsString = string.Join(", ", ents.Select(e => "\"" + e + "\""));
             updatedWiki = updatedWiki.Remove(startBotSection, botSectionLength);
-            updatedWiki = updatedWiki.Insert(startBotSection, String.Format(DefaultBotConfigSection, entsString));
-
+            if (ents.Count() > 0)
+            {
+                //Writing an empty match set to automod means it removes literally everything...
+                updatedWiki = updatedWiki.Insert(startBotSection, String.Format(DefaultBotConfigSection, entsString));
+            }
             await wiki.EditPageAsync(AUTOMOD_WIKI_PAGE, updatedWiki, reason: editReason);
             return true;
 

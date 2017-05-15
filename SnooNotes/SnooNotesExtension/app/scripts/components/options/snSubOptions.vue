@@ -23,6 +23,15 @@
                         <input type="checkbox" value="32" v-model.number="selectedAccess">wiki</label>
                 </div>
             </div>
+            <div id="SNSubSettingsFAQ">
+                <h2>How do I enable automatic generation of ban notes?</h2>
+                <div class="sn-faq-answer">Check options for both Temp and Perm ban types (checkboxes to the left of the note type name). People may have to refresh their SnooNotes for it to start</div>
+                <h2>What are these Note Type Icons?</h2>
+                <div class="sn-faq-answer">They are to help distinguish note types in the preview you get when mousing over a user's note icon. They can be any icon font string from
+                    <a href="https://material.io/icons/" target="_blank">here</a>, although brand new ones may not work. To get the string, click the icon you want, click "&lt;&gt; ICON FONT" and copy the string in between the &lt;i&gt; tags</div>
+                <h2>Can I set a default note type?</h2>
+                <div class="sn-faq-answer">It's on my to-do list. You can re-order the note types by dragging the arrows on the far left though</div>
+            </div>
             <div id="SNNoteTypes">
                 <div id="SNNoteTypesDesc">Change just about everything about the Note Types belonging to this subreddit below. If no checkbox is chosen for Perm Ban or Temp Ban, then automatic ban notes will not be generated for that type of ban.
                     <br />
@@ -37,7 +46,7 @@
                         <input type="checkbox" class="SNChkGrp" :value="nt.NoteTypeID" v-on:change="selectPermBan(nt.NoteTypeID, $event)" v-model.number="permBanID">
                         <input class="SNNoteTypeDisp" type="text" maxlength="20" v-model="nt.DisplayName"> &nbsp;Color:&nbsp;
                         <input class="SNNoteTypeColor" type="color" :value="nt.ColorCode" v-model="nt.ColorCode">
-                        <input class="SNNoteIcon" type="text" maxlength="50" v-model="nt.IconString">
+                        <input class="SNNoteIcon" type="text" maxlength="50" placeholder="icon string. Default ='comment'" v-model="nt.IconString">
                         <label>
                             <input type="checkbox" class="SNntBold" v-model="nt.Bold">Bold</label>
                         <label>
@@ -258,7 +267,10 @@ export default {
         font-weight: bold;
         margin-bottom: 5px;
     }
-
+    #SNSubSettingsFAQ {
+        width: 675px;
+        display: inline-block;
+    }
     #SNNoteTypesDesc {
         font-weight: bold;
     }

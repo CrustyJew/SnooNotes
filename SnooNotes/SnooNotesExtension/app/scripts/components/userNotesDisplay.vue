@@ -2,7 +2,7 @@
     <transition name="fade">
         <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
             <div class="SNHeader">
-                <a class="SNCloseNote SNClose" @click="close">[x]</a>
+                <a class="SNCloseNote SNClose" @click="close">X</a>
             </div>
             <table v-if="!notes.noNotes && !notes.loading">
                 <tbody is="transition-group" name="fade">
@@ -14,6 +14,10 @@
                                 <br />
                                 <a :href="'https://reddit.com/r/'+note.ParentSubreddit">{{note.ParentSubreddit}}</a>
                             </span>
+                            <span v-else-if="isCabal">
+                                <br />
+                                <cabalify :noteID="note.NoteID"></cabalify>
+                            </span>
                         </td>
                         <td class="SNSubmitter">
                             <span>{{note.Submitter}}</span>
@@ -22,7 +26,7 @@
                         </td>
                         <td class="SNMessage">
                             <p>{{note.Message}}</p>
-                            <a class="SNDeleteNote" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.SubName == note.ParentSubreddit) > -1">[x]</a>
+                            <a class="SNDeleteNote" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.name == note.ParentSubreddit) > -1"><i class="material-icons">delete_forever</i></a>
                         </td>
                     </tr>
                 </tbody>
@@ -47,6 +51,7 @@
                     <p v-if="$v.newNote.newNoteSubIndex.$error">Select a subby you fool!</p>
                 </div>
             </div>
+            
         </div>
     </transition>
 </template>
@@ -56,12 +61,13 @@ import { draggable } from './directives/draggable';
 import { validationMixin } from 'vuelidate'
 import { required, between } from 'vuelidate/lib/validators'
 import axios from 'axios';
-import {showNotesHub} from '../showNotesHub';
-
+import { showNotesHub } from '../showNotesHub';
+import cabalify from './cabalify.vue';
 export default {
     name: 'user-notes',
     //props: ['username', 'subreddit', 'url', 'showNotes'],
     directives: { 'draggable': draggable },
+    components:{'cabalify': cabalify},
     mixins: [validationMixin],
     data() {
         return {
@@ -71,12 +77,12 @@ export default {
             url: "",
             showNotes: false,
             allNotes: this.$select('notes as allNotes'),
+            isCabal: this.$select('user.isCabal as isCabal'),
             displayStyle: {
                 display: 'none',
                 position: 'absolute',
                 top: '0px',
                 right: '0px',
-
             },
             newNote: {
                 message: "",
@@ -100,8 +106,8 @@ export default {
         }
     },
     computed: {
-        
-        userNotes: function(){
+
+        userNotes: function () {
             return this.allNotes[this.username];
         },
         hasNotes: function () {
@@ -113,11 +119,11 @@ export default {
         modSubs: function () {
             return this.snInfo.modded_subs.map((s, i) => { return { name: s.SubName, id: s.SubredditID, index: i } });
         },
-        modSub: function(){
+        modSub: function () {
             return this.modSubs.filter(sub => sub.name == this.subreddit)[0];
         },
         otherSubs: function () {
-            return this.modSubs.filter(sub => sub.name != this.subreddit);
+            return this.modSubs.filter(sub => sub.name != this.subreddit && sub.name != "SpamCabal");
         },
         notes: function () {
             return this.userNotes || { noNotes: true }
@@ -191,8 +197,8 @@ export default {
             this.$v.newNote.$reset();
         }
     },
-    mounted:function(){
-        showNotesHub.$on('showNotes',(e)=>{
+    mounted: function () {
+        showNotesHub.$on('showNotes', (e) => {
             this.username = e.username;
             this.url = e.url;
             this.subreddit = e.subreddit;
@@ -225,6 +231,13 @@ export default {
                 background-image: linear-gradient(to bottom, darken($accent, 10%), darken($accent, 25%));
             }
         }
+    }
+    a{
+        color:$secondary;
+    }
+    a.SNDeleteNote{
+        color:$accent;
+        font-size:18px;
     }
     table {
         border-collapse: separate;

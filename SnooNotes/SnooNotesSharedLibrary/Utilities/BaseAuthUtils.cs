@@ -122,8 +122,21 @@ namespace SnooNotes.Utilities {
             await _userManager.RemoveFromRolesAsync( ident, rolesToRemove );
             await _userManager.RemoveClaimsAsync( ident, claimsToRemove );
             await _userManager.AddClaimsAsync( ident, claimsToAdd );
-            await _userManager.AddToRolesAsync( ident, rolesToAdd );
-
+            try
+            {
+                await _userManager.AddToRolesAsync(ident, rolesToAdd);
+            }
+            catch(InvalidOperationException)
+            {
+                foreach (var role in rolesToAdd)
+                {
+                    if (await _roleManager.FindByNameAsync(role) == null)
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
+                await _userManager.AddToRolesAsync(ident, rolesToAdd);
+            }
             ident.LastUpdatedRoles = DateTime.UtcNow;
             await _userManager.UpdateAsync( ident );
         }

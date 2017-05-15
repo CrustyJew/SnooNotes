@@ -126,27 +126,27 @@ $sizes: (8, 16, 24, 40);
     $size : '-#{$size}';
   }
 
-  .md-flex#{$size} {
-    flex: 1 1;
-  }
+  // .md-flex#{$size} {
+  //   flex: 1 1;
+  // }
 
-  .md-flex#{$size}-33 {
-    min-width: 33.33333%;
-    flex: 0 1 33.33333%;
-  }
+  // .md-flex#{$size}-33 {
+  //   min-width: 33.33333%;
+  //   flex: 0 1 33.33333%;
+  // }
 
-  .md-flex#{$size}-66 {
-    min-width: 33.33333%;
-    flex: 0 1 66.66666%;
-  }
+  // .md-flex#{$size}-66 {
+  //   min-width: 33.33333%;
+  //   flex: 0 1 66.66666%;
+  // }
 
-  .md-flex-offset#{$size}-33 {
-    margin-left: 33.33333%;
-  }
+  // .md-flex-offset#{$size}-33 {
+  //   margin-left: 33.33333%;
+  // }
 
-  .md-flex-offset#{$size}-66 {
-    margin-left: 66.66666%;
-  }
+  // .md-flex-offset#{$size}-66 {
+  //   margin-left: 66.66666%;
+  // }
 
   @for $i from 1 through 20 {
     $counter: $i * 5;

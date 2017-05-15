@@ -218,14 +218,14 @@ export default {
     }
 
     #SNOptionsPanel {
-        height: 100%;
+        height: calc(100% - 15px);
         display: block;
         margin-left: 125px;
         padding-left: 20px;
         padding-top: 10px;
         padding-right: 20px;
         overflow: auto;
-        margin-bottom: -25px;
+        box-sizing: border-box;
     }
 
     #SNOptionsContents {
