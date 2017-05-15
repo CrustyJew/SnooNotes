@@ -32,7 +32,7 @@
                     <div id="SNModSubs">
                         <h3>Subreddits you have permissions to submit notes in</h3>
                         <ul>
-                            <li v-for="sub in snInfo.modded_subs">{{sub.SubName}}</li>
+                            <li v-for="sub in snInfo.modded_subs">{{sub.SubName}}<span v-if="sub.SentinelActive">&nbsp;<i class="material-icons">visibility</i><md-tooltip md-direction="right" md-delay="400">TheSentinelBot Active</md-tooltip></span></li>
                         </ul>
                     </div>
                     <div id="SNSubSettingsContainer">
@@ -263,6 +263,11 @@ export default {
         }
         ul {
             columns: 3;
+        }
+        li i.material-icons{
+            font-size:18px;
+            vertical-align: middle;
+            color:$secondary;
         }
     }
 
