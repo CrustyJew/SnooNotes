@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.Signalr
 {
@@ -16,10 +17,11 @@ namespace SnooNotes.Signalr
         //private readonly SnooNoteUpdates _snUpdates;
         protected static ConcurrentDictionary<string, string> connIDToUsername = new ConcurrentDictionary<string, string>();
         protected static ConcurrentDictionary<string, List<string>> groupToConnIDs = new ConcurrentDictionary<string, List<string>>();
-
-        public SnooNotesHub()//SnooNoteUpdates snUpdates)
+        private IConfigurationRoot Configuration;
+        public SnooNotesHub(IConfigurationRoot config)//SnooNoteUpdates snUpdates)
         {
             //_snUpdates = snUpdates;
+            Configuration = config;
         }
 
         public override Task OnConnected()
@@ -29,8 +31,14 @@ namespace SnooNotes.Signalr
 
             foreach (string role in ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value))
             {
-                Groups.Add(Context.ConnectionId, role);
+                Groups.Add(Context.ConnectionId, role.ToLower());
                 groupToConnIDs.AddOrUpdate(role, new List<string> { Context.ConnectionId }, (key, cur) => { cur.Add(Context.ConnectionId); return cur; });
+            }
+            string cabalSub = Configuration["CabalSubreddit"];
+            if (!string.IsNullOrWhiteSpace(cabalSub) && ident.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                Groups.Add(Context.ConnectionId, cabalSub.ToLower());
+                groupToConnIDs.AddOrUpdate(cabalSub.ToLower(), new List<string> { Context.ConnectionId }, (key, cur) => { cur.Add(Context.ConnectionId); return cur; });
             }
             return base.OnConnected();
         }
@@ -57,8 +65,14 @@ namespace SnooNotes.Signalr
 
             foreach (string role in ident.FindAll((ident.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value))
             {
-                Groups.Add(Context.ConnectionId, role);
+                Groups.Add(Context.ConnectionId, role.ToLower());
                 groupToConnIDs.AddOrUpdate(role, new List<string> { Context.ConnectionId }, (key, cur) => { cur.Add(Context.ConnectionId); return cur; });
+            }
+            string cabalSub = Configuration["CabalSubreddit"];
+            if (!string.IsNullOrWhiteSpace(cabalSub) && ident.HasClaim(c=>c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                Groups.Add(Context.ConnectionId, cabalSub.ToLower());
+                groupToConnIDs.AddOrUpdate(cabalSub, new List<string> { Context.ConnectionId }, (key, cur) => { cur.Add(Context.ConnectionId); return cur; });
             }
             return base.OnReconnected();
         }

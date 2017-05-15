@@ -19,15 +19,17 @@ namespace SnooNotes.Utilities {
         private ILogger _logger;
         private DAL.ISubredditDAL subDAL;
         private RedditSharp.RefreshTokenWebAgentPool agentPool;
+        private RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool;
         public BaseAuthUtils( IConfigurationRoot config,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool webAgentPool) {
+            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool webAgentPool, RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool) {
             _userManager = userManager;
             //_logger = loggerFactory.CreateLogger<AuthUtils>();
             _roleManager = roleManager;
             Configuration = config;
             subDAL = subredditDAL;
             agentPool = webAgentPool;
+            this.serviceAgentPool = serviceAgentPool;
         }
         
         public virtual async Task RevokeRefreshTokenAsync( string token, string username ) {
@@ -103,10 +105,19 @@ namespace SnooNotes.Utilities {
             claimsToAdd = claimsToAdd.Where( aclaim => !currentClaims.Any( cclaim => cclaim.Value == aclaim.Value && cclaim.Type == aclaim.Type ) ).ToList();
 
             string cabalUsername = Configuration["CabalUsername"];
-            ApplicationUser cabalUser = await _userManager.FindByNameAsync( cabalUsername );
-            if ( cabalUser != null && !string.IsNullOrWhiteSpace( cabalUsername) && !string.IsNullOrWhiteSpace(cabalSubName)) {
-                RedditSharp.IWebAgent cabalAgent = await agentPool.GetOrCreateWebAgentAsync(cabalUsername, (uname, uagent, rlimit) =>
-                    { return Task.FromResult(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent)); });
+            if (!string.IsNullOrWhiteSpace( cabalUsername) && !string.IsNullOrWhiteSpace(cabalSubName)) {
+                RedditSharp.IWebAgent cabalAgent = await serviceAgentPool.GetOrCreateAgentAsync(cabalUsername, () =>
+                    {
+                        return Task.FromResult(
+                            new RedditSharp.BotWebAgent(
+                                cabalUsername, 
+                                Configuration["CabalPassword"], 
+                                Configuration["CabalClientID"], 
+                                Configuration["CabalSecret"], 
+                                Configuration["CabalRedirectURI"]
+                                )
+                        );
+                    });
 
                 RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit(cabalAgent, true );
                 var cabalSub = await cabalReddit.GetSubredditAsync( cabalSubName );

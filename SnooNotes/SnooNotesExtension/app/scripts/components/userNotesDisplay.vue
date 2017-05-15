@@ -235,6 +235,9 @@ export default {
     a{
         color:$secondary;
     }
+    p{
+        display:inline;
+    }
     a.SNDeleteNote{
         color:$accent;
         font-size:18px;

@@ -56,7 +56,7 @@ ORDER BY nt.DisplayOrder asc
         public async Task<IEnumerable<NoteType>> AddMultipleNoteTypes( IEnumerable<NoteType> ntypes, string uname ) {
             using ( SqlConnection con = new SqlConnection( constring ) ) {
                 string query = "declare @newNote as Table([NoteTypeID] INT, [SubredditID] INT, [DisplayName] NVARCHAR(25), [ColorCode] NVARCHAR(6), [DisplayOrder] INT, [Bold] BIT, [Italic] BIT, [Disabled] BIT, [IconString] VARCHAR(50)) " +
-                        "insert into NoteTypes (SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic) " +
+                        "insert into NoteTypes (SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,IconString) " +
                         "OUTPUT INSERTED.NoteTypeID,INSERTED.SubredditID,INSERTED.DisplayName,INSERTED.ColorCode,INSERTED.DisplayOrder,INSERTED.Bold,INSERTED.Italic, INSERTED.Disabled, INSERTED.IconString INTO @newNote(NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,Disabled,IconString) " +
                         "values ( (select SubredditID from Subreddits where SubName = @SubName), @DisplayName, @ColorCode, @DisplayOrder, @Bold, @Italic, @IconString) " +
                         "insert into NoteTypes_History(HistTimestamp,HistAction,HistUser,NoteTypeID,SubredditID,DisplayName,ColorCode,DisplayOrder,Bold,Italic,IconString) " +
@@ -67,7 +67,7 @@ ORDER BY nt.DisplayOrder asc
                 //+ " where NoteTypeID = cast(SCOPE_IDENTITY() as int)";
                 List<NoteType> ret = new List<NoteType>();
                 foreach ( NoteType nt in ntypes ) {
-                    ret.Add( ( await con.QueryAsync<NoteType>( query, new { nt.SubName, nt.DisplayName, nt.ColorCode, nt.DisplayOrder, nt.Bold, nt.Italic, uname } ) ).First() );
+                    ret.Add( ( await con.QueryAsync<NoteType>( query, new { nt.SubName, nt.DisplayName, nt.ColorCode, nt.DisplayOrder, nt.Bold, nt.Italic, uname, nt.IconString } ) ).First() );
                 }
                 return ret;
             }
@@ -75,7 +75,7 @@ ORDER BY nt.DisplayOrder asc
         public async Task UpdateMultipleNoteTypes( NoteType[] ntypes, string uname ) {
             List<Dictionary<string, object>> ntypeParams = new List<Dictionary<string, object>>();
             foreach ( NoteType nt in ntypes ) {
-                ntypeParams.Add( new Dictionary<string, object>() { { "NoteTypeID", nt.NoteTypeID }, { "SubName", nt.SubName }, { "DisplayName", nt.DisplayName }, { "ColorCode", nt.ColorCode }, { "DisplayOrder", nt.DisplayOrder }, { "Bold", nt.Bold }, { "Italic", nt.Italic }, { "uname", uname },{ "IconString", nt.IconString ?? "comment" } } );
+                ntypeParams.Add( new Dictionary<string, object>() { { "NoteTypeID", nt.NoteTypeID }, { "SubName", nt.SubName }, { "DisplayName", nt.DisplayName }, { "ColorCode", nt.ColorCode }, { "DisplayOrder", nt.DisplayOrder }, { "Bold", nt.Bold }, { "Italic", nt.Italic }, { "uname", uname },{ "IconString", nt.IconString } } );
             }
             using ( SqlConnection con = new SqlConnection( constring ) ) {
                 string query = "update NoteTypes set DisplayName = @DisplayName , ColorCode = @ColorCode , DisplayOrder = @DisplayOrder , Bold = @Bold , Italic = @Italic, IconString = @IconString " +

@@ -40,6 +40,8 @@ const onAccessTokenExpired = () => {
 
 // event callback when the user is logged out
 const onUserUnloaded = () => {
+  userManager.clearStaleState();
+  userManager.removeUser();
   store.dispatch(sessionTerminated());
 };
 
@@ -50,6 +52,8 @@ const onAccessTokenExpiring = () => {
 
 // event callback when the user is signed out
 const onUserSignedOut = () => {
+  userManager.clearStaleState();
+  userManager.removeUser();
   store.dispatch(userSignedOut());
 }
 
@@ -79,11 +83,17 @@ store.subscribe(() => {
   if (newToken != curToken) {
     hubConnection.qs = { token: newToken };
     curToken = newToken;
-    if (snUpdate.connection.state == 4) { //4 = disconnected
+    if(!curToken) {
+      hubConnection.stop();
+    }
+    else{
+      if (snUpdate.connection.state != 4) { hubConnection.stop(); }
+
       hubConnection.start({ jsonp: false })
         .done(function () { console.log('SignalR connected, connection ID=' + hubConnection.id); })
         .fail(function () { console.log('SignalR could not connect'); });
     }
+    
   }
 });
 hubConnection.disconnected(() => {

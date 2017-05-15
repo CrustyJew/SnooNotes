@@ -95,7 +95,7 @@ h1{
 }
 
 .SNBtnSubmit, .SNNewNoteSubmit {
-    background: linear-gradient(to bottom, $primary, darken($primary,15%) );
+    background-image: linear-gradient(to bottom, $primary, darken($primary,15%) );
     font-weight:bold;
     &:hover{
         background-image: linear-gradient(to bottom, darken($primary,10%),darken($primary,25%));

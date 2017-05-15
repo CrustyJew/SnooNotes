@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +13,20 @@ namespace SnooNotes.Controllers {
     public class SubredditController : Controller
     {
         private BLL.ISubredditBLL subBLL;
-        public SubredditController(BLL.ISubredditBLL subredditBLL) {
+        private string cabalSub;
+        public SubredditController(BLL.ISubredditBLL subredditBLL, IConfigurationRoot config) {
             subBLL = subredditBLL;
+            cabalSub = config["CabalSubreddit"];
         }
         [HttpGet("")]
         // GET: api/Subreddit
         public Task<IEnumerable<Models.Subreddit>> Get()
         {
-            var subs = (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value);
+            var subs = (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == (User.Identity as ClaimsIdentity).RoleClaimType).Select(c => c.Value).ToList();
+            if(User.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                subs.Add(cabalSub);
+            }
             //subs = subs.Where(s => User.HasClaim("urn:snoonotes:subreddits:" + s + ":admin", "true"));
             return subBLL.GetSubreddits(subs, User);
         }

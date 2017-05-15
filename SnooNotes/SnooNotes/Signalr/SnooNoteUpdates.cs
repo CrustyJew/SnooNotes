@@ -6,13 +6,14 @@ using System.Threading;
 using Microsoft.AspNetCore.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.Signalr
 {
     public class SnooNoteUpdates : ISnooNoteUpdates
     {
         private IConnectionManager connManager;
-        public SnooNoteUpdates(IConnectionManager connectionManager ) {
+        public SnooNoteUpdates(IConnectionManager connectionManager, IConfigurationRoot config ) {
             connManager = connectionManager;
         }
 

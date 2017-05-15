@@ -46,7 +46,7 @@
                         <input type="checkbox" class="SNChkGrp" :value="nt.NoteTypeID" v-on:change="selectPermBan(nt.NoteTypeID, $event)" v-model.number="permBanID">
                         <input class="SNNoteTypeDisp" type="text" maxlength="20" v-model="nt.DisplayName"> &nbsp;Color:&nbsp;
                         <input class="SNNoteTypeColor" type="color" :value="nt.ColorCode" v-model="nt.ColorCode">
-                        <input class="SNNoteIcon" type="text" maxlength="50" placeholder="icon string. Default ='comment'" v-model="nt.IconString">
+                        <input class="SNNoteIcon" type="text" maxlength="50" placeholder="Icon. Default ='comment'" v-model="nt.IconString">
                         <label>
                             <input type="checkbox" class="SNntBold" v-model="nt.Bold">Bold</label>
                         <label>

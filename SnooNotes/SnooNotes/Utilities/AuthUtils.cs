@@ -21,7 +21,7 @@ namespace SnooNotes.Utilities {
         private RedditSharp.RefreshTokenWebAgentPool agentPool;
         public AuthUtils(IConfigurationRoot config,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool agentPool) : base(config, userManager, roleManager, loggerFactory, subredditDAL, agentPool)
+            ILoggerFactory loggerFactory, DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool agentPool, RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool) : base(config, userManager, roleManager, loggerFactory, subredditDAL, agentPool, serviceAgentPool)
         {
 
             _userManager = userManager;

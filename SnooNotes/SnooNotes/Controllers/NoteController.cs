@@ -22,26 +22,46 @@ namespace SnooNotes.Controllers {
         
         [HttpGet( "[action]" )]
         public Task<IEnumerable<string>> GetUsernamesWithNotes() {
-            ClaimsPrincipal ident = User;
-            return notesBLL.GetUsersWithNotes( ident.FindAll( ( ident.Identity as ClaimsIdentity ).RoleClaimType ).Select( c => c.Value ) );
+            ClaimsIdentity ident = User.Identity as ClaimsIdentity;
+            var subs = ident.FindAll(ident.RoleClaimType).Select(c => c.Value).ToList();
+            if (ident.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                subs.Add(Configuration["CabalSubreddit"]);
+            }
+            return notesBLL.GetUsersWithNotes( subs );
         }
 
         [HttpGet( "[action]" )]
         public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> InitializeNotes() {
-            ClaimsPrincipal ident = User as ClaimsPrincipal;
-            return notesBLL.GetNotesForSubs( ident.FindAll( ( ident.Identity as ClaimsIdentity ).RoleClaimType ).Select( c => c.Value ) );
+            ClaimsIdentity ident = User.Identity as ClaimsIdentity;
+            var subs = ident.FindAll(ident.RoleClaimType).Select(c => c.Value).ToList();
+            if (ident.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                subs.Add(Configuration["CabalSubreddit"]);
+            }
+            return notesBLL.GetNotesForSubs( subs );
         }
         
         [HttpPost( "[action]" )]
         public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes( [FromBody]IEnumerable<string> users ) {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
-            return notesBLL.GetNotesForSubs( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), users );
+            var subs = ident.FindAll(ident.RoleClaimType).Select(c => c.Value).ToList();
+            if (ident.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                subs.Add(Configuration["CabalSubreddit"]);
+            }
+            return notesBLL.GetNotesForSubs( subs, users );
         }
         
         [HttpGet( "{username}/HasNotes" )]
         public Task<bool> UserHasNotes( string username ) {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
-            return notesBLL.UserHasNotes( ident.FindAll( ident.RoleClaimType ).Select( c => c.Value ), username );
+            var subs = ident.FindAll(ident.RoleClaimType).Select(c => c.Value).ToList();
+            if(ident.HasClaim(c=>c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
+            {
+                subs.Add(Configuration["CabalSubreddit"]);
+            }
+            return notesBLL.UserHasNotes( subs , username );
         }
         [HttpPost]
         // POST: api/Note
@@ -65,7 +85,7 @@ namespace SnooNotes.Controllers {
             if( !User.IsInRole( note.SubName.ToLower() ) ) {
                 throw new UnauthorizedAccessException( "That note ID doesn't belong to you. Go on! GIT!" );
             }
-            if ( User.IsInRole( cabalSub ) ) {
+            if ( User.IsInRole( cabalSub ) || User.HasClaim(c=>c.Type == "uri:snoonotes:cabal" && c.Value == "true") ) {
                 note.Timestamp = DateTime.UtcNow;
                 note.Submitter = User.Identity.Name;
                 note.NoteTypeID = typeid;

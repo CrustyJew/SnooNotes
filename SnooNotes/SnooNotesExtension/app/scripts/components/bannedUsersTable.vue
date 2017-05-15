@@ -62,7 +62,8 @@
             <h2>What's this "Additional Info" business?</h2>
             <div class="sn-faq-answer">It's a custom field that you'll be able to modify in the future from this page. It just isn't done yet.</div>
             <h2>I accidentally unbanned someone I didn't mean to!</h2>
-            <div class="sn-faq-answer">Bummer! If you really can't remember who they were, send a PM to <a href="https://reddit.com/user/Meepster23" target="_blank" class="author">Meepster23</a> and he can probably give you a hand recovering it.</div>
+            <div class="sn-faq-answer">Bummer! If you really can't remember who they were, send a PM to
+                <a href="https://reddit.com/user/Meepster23" target="_blank" class="author">Meepster23</a> and he can probably give you a hand recovering it.</div>
             <h2>I can't figure out how to unban people!!</h2>
             <div class="sn-faq-answer">Hint... Trashcan.. nudge nudge...</div>
         </div>
@@ -182,10 +183,15 @@ export default {
         border: 1px solid $light-gray;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color linear .3s;
+        transition: background linear .3s;
+        color:black;
 
         &.checked {
-            background-color: $primary;
+            color:white;
+            background-image: linear-gradient(to bottom, $primary, darken($primary, 15%));
+            &:hover {
+                background-image: linear-gradient(to bottom, darken($primary, 10%), darken($primary, 25%));
+            }
         }
 
         input[type="checkbox"] {
@@ -194,7 +200,11 @@ export default {
     }
 
     .sn-toggle-all {
-        background-color: $secondary;
+        color: white;
+        background-image: linear-gradient(to bottom, $secondary, darken($secondary, 15%));
+        &:hover {
+            background-image: linear-gradient(to bottom, darken($secondary, 10%), darken($secondary, 25%));
+        }
         padding: 10px;
         border: 1px solid $light-gray;
         border-radius: 5px;

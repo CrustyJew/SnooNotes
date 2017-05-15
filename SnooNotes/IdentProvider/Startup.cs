@@ -89,6 +89,8 @@ namespace IdentProvider {
             webAgentPool.DefaultUserAgent = "SnooNotes (by Meepster23)";
             services.AddSingleton(webAgentPool);
 
+            services.AddSingleton(new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>());
+
             RedditSharp.WebAgent.DefaultUserAgent = "SnooNotes IdentityProvider (by Meepster23)";
             RedditSharp.WebAgent.DefaultRateLimiter.Mode = RedditSharp.RateLimitMode.Burst;
         }

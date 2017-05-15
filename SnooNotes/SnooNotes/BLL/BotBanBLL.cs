@@ -19,7 +19,7 @@ namespace SnooNotes.BLL
         private Utilities.IAuthUtils authUtils;
         private DAL.IYouTubeDAL ytDAL;
         private RedditSharp.RefreshTokenWebAgentPool agentPool;
-        public BotBanBLL(DAL.IBotBanDAL botBanDAL, UserManager<ApplicationUser> userManager, Utilities.IAuthUtils authUtils, DAL.IYouTubeDAL youtubeDAL, RedditSharp.RefreshTokenWebAgentPool agentPool )
+        public BotBanBLL(DAL.IBotBanDAL botBanDAL, UserManager<ApplicationUser> userManager, Utilities.IAuthUtils authUtils, DAL.IYouTubeDAL youtubeDAL, RedditSharp.RefreshTokenWebAgentPool agentPool)
         {
             bbDAL = botBanDAL;
             this.userManager = userManager;
