@@ -9,7 +9,7 @@ import { reduxStore } from './redux/contentScriptStore';
 import { getNotesForUsers } from './redux/actions/notes';
 import { BanNotesModule } from './modules/banNotes';
 import { SentinelBanModule } from './modules/sentinelBan';
-import VueMaterial from 'vue-material'
+import VueMaterial from 'vue-material';
 import userNoteDisplay from './components/userNotesDisplay.vue';
 
 export const snInterceptor = new SNAxiosInterceptor(reduxStore);
@@ -89,7 +89,6 @@ const unsub = reduxStore.subscribe(() => {
         sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
         banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     });
-
     let authorsReq = InjectIntoThingsClass();
     authorsReq = concatUnique(authorsReq, InjectIntoUserPage());
     window.setTimeout(function () {
@@ -101,8 +100,6 @@ const unsub = reduxStore.subscribe(() => {
 })
 
 const InjectIntoThingsClass = () => {
-    let things = document.querySelectorAll('.thing');
-
     let target = document.body.querySelector('#siteTable');
     if (target) {
         let observer = new MutationObserver(
@@ -133,7 +130,8 @@ const InjectIntoThingsClass = () => {
             }
         )
         observer.observe(target, { childList: true, subtree: true });
-
+        
+        let things = document.querySelectorAll('.thing');
         let authors = [];
         for (let i = 0; i < things.length; i++) {
             let author = BindNewThingsClassUserNotesElement(things[i]);
@@ -160,11 +158,15 @@ const BindNewThingsClassUserNotesElement = (thing) => {
             author = author.value;
         }
         let url = "";
-        if (thing.attributes['data-type'].value == 'link' || thing.attributes['data-type'].value == 'message') {
+        if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link' || thing.attributes['data-type'].value == 'message')) {
             url = "https://reddit.com/r/" + thing.attributes['data-subreddit'].value + '/' + thing.attributes['data-fullname'].value.replace('t3_', '');
         }
         else {
-            let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + thing.closest('.nestedlisting').id.replace('siteTable_t3_', '') + '/.../';
+            let childarray = [...thing.children];
+            let entry = childarray.filter((c)=>{return c.classList.contains('entry')})[0];
+            let permlink = entry.querySelector('a.bylink').attributes['data-href-url'].value;
+            let postid = permlink.substr(permlink.indexOf('comments/') + 9 , 6); //post id is after comments/
+            let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + postid + '/.../';
             url = commentRootURL + thing.attributes['data-fullname'].value.replace('t1_', '');
         }
 
@@ -173,7 +175,7 @@ const BindNewThingsClassUserNotesElement = (thing) => {
         noteElem.setAttribute('subreddit', thing.attributes['data-subreddit'].value);
         noteElem.setAttribute('url', url);
         authElem.parentNode.insertBefore(noteElem, authElem.nextSibling);
-        new Vue({ components: { 'user-notes': UserNotes } }).$mount(authElem.parentNode);
+        new Vue({ components: { 'user-notes': UserNotes } }).$mount(noteElem);
 
     }
     thing.className = thing.className + ' SNDone';

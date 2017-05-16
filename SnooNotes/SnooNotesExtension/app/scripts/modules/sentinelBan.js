@@ -11,7 +11,7 @@ export class SentinelBanModule {
     initModule() {
         if (document.body.matches('body.comments-page,body.listing-page')) {
             //only bind on listing and comment pages to avoid extra listeners
-            this.eventListenerUnbinds.push(on(document.body, 'click', '.remove-button .main > a', (e) => { this.vanillaRemove(e) }));
+            this.eventListenerUnbinds.push(on(document.body, 'click', '.remove-button .main > a, .big-mod-buttons a.pretty-button[data-event-action="spam"], .big-mod-buttons a.pretty-button[data-event-action="remove"]', (e) => { this.vanillaRemove(e) }));
             this.eventListenerUnbinds.push(on(document.body, 'click', '.SNBotBanPrompt a', (e) => { this.executeBan(e) }));
         }
     }
@@ -35,7 +35,15 @@ export class SentinelBanModule {
     vanillaRemove(event) {
 
         let target = event.srcElement || event.target;
-        let action = target.closest('form').querySelector('input[name="executed"]').value;
+        let form = target.closest('form');
+        let action = '';
+        if(form){
+            //vanilla button
+            action = target.closest('form').querySelector('input[name="executed"]').value;
+        }else{
+            //fancy button
+            action = target.attributes["data-event-action"].value;
+        }
         let thing = target.closest('.thing');
         let oldElem = target.closest('ul').querySelector('.SNBotBanPrompt.SNBotBan' + action);
         if (oldElem) oldElem.remove();
