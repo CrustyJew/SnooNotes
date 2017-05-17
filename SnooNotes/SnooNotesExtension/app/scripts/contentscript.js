@@ -116,15 +116,15 @@ const InjectIntoThingsClass = () => {
                                 }
                             })
                         }
-                    }
-                    if (mutation.removedNodes && mutation.removedNodes.length > 0) {
-                        let node = mutation.removedNodes[0];
-                        if (node.querySelectorAll) {
-                            node.querySelectorAll('.SNUserNotes').forEach(function (sn) {
-                                sn.__vue__.$destroy();
-                            });
-                        }
-                    }
+                    } //ignore removals because nothing on the "main" page currently gets removed.
+                    // if (mutation.removedNodes && mutation.removedNodes.length > 0) {
+                    //     let node = mutation.removedNodes[0];
+                    //     if (node.querySelectorAll) {
+                    //         node.querySelectorAll('.SNUserNotes').forEach(function (sn) {
+                    //             sn.__vue__.$destroy();
+                    //         });
+                    //     }
+                    // }
                 })
                 GetNotesForAuthors(authors);
             }

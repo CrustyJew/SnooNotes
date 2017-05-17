@@ -31,6 +31,8 @@
                     <a href="https://material.io/icons/" target="_blank">here</a>, although brand new ones may not work. To get the string, click the icon you want, click "&lt;&gt; ICON FONT" and copy the string in between the &lt;i&gt; tags</div>
                 <h2>Can I set a default note type?</h2>
                 <div class="sn-faq-answer">It's on my to-do list. You can re-order the note types by dragging the arrows on the far left though</div>
+                <h2>Why isn't TheSentinelBot being recognized for my sub?</h2>
+                <div class="sn-faq-answer">It should update roughly every hour. If it still hasn't, meepster23 probably broke something. Go poke him.</div>
             </div>
             <div id="SNNoteTypes">
                 <div id="SNNoteTypesDesc">Change just about everything about the Note Types belonging to this subreddit below. If no checkbox is chosen for Perm Ban or Temp Ban, then automatic ban notes will not be generated for that type of ban.
