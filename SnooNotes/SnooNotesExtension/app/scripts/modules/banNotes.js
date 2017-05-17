@@ -11,7 +11,7 @@ export class BanNotesModule {
 
     initModule() {
         on(document.body, 'click', '.mod-popup .save', (e) => {
-            let target = e.srcElement || e.target;
+            let target = e.target;
             let popup = target.closest('div.mod-popup');
             let meta = popup.querySelector('div.meta');
             let sub = meta.querySelector('label.subreddit').textContent;
