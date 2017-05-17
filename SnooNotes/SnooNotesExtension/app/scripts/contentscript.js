@@ -9,6 +9,8 @@ import { reduxStore } from './redux/contentScriptStore';
 import { getNotesForUsers } from './redux/actions/notes';
 import { BanNotesModule } from './modules/banNotes';
 import { SentinelBanModule } from './modules/sentinelBan';
+import { ModActionsModule } from './modules/modActions';
+
 import VueMaterial from 'vue-material';
 import userNoteDisplay from './components/userNotesDisplay.vue';
 
@@ -30,6 +32,7 @@ let requestedAuthors = [];
 let newAuthorRequest = [];
 const banNotesModule = new BanNotesModule([]);
 const sentinelBanModule = new SentinelBanModule();
+const modActionsModules = new ModActionsModule();
 
 //dont start render until store is connected properly
 const unsub = reduxStore.subscribe(() => {
@@ -42,11 +45,14 @@ const unsub = reduxStore.subscribe(() => {
     sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
     sentinelBanModule.initModule();
 
+    modActionsModules.refreshModule(state.snoonotes_info.modded_subs);
+    modActionsModules.initModule();
+
     var userNotesDisplay = document.createElement('div');
     userNotesDisplay.id = "SNNotesDisplay";
     document.body.appendChild(userNotesDisplay);
     new Vue(userNoteDisplay).$mount(userNotesDisplay);
-    
+
     const options = new Vue({ render: h => h(SNOptions) }).$mount();
     options.$on('refresh', () => {
         let authorsReq = [];
@@ -130,7 +136,7 @@ const InjectIntoThingsClass = () => {
             }
         )
         observer.observe(target, { childList: true, subtree: true });
-        
+
         let things = document.querySelectorAll('.thing');
         let authors = [];
         for (let i = 0; i < things.length; i++) {
@@ -163,9 +169,9 @@ const BindNewThingsClassUserNotesElement = (thing) => {
         }
         else {
             let childarray = [...thing.children];
-            let entry = childarray.filter((c)=>{return c.classList.contains('entry')})[0];
+            let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
             let permlink = entry.querySelector('a.bylink').attributes['data-href-url'].value;
-            let postid = permlink.substr(permlink.indexOf('comments/') + 9 , 6); //post id is after comments/
+            let postid = permlink.substr(permlink.indexOf('comments/') + 9, 6); //post id is after comments/
             let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + postid + '/.../';
             url = commentRootURL + thing.attributes['data-fullname'].value.replace('t1_', '');
         }

@@ -13,7 +13,7 @@ namespace SnooNotes.Controllers {
         }
 
         [HttpPost("{subreddit}")]
-        public void ModAction([FromRoute]string subreddit, [FromForm]Models.ModAction act) {
+        public void ModAction([FromRoute]string subreddit, [FromBody]Models.ModAction act) {
             act.Subreddit = subreddit;
             if ( User.IsInRole( subreddit.ToLower() ) ) {
                 act.Mod = User.Identity.Name;

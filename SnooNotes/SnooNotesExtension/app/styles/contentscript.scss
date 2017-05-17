@@ -128,3 +128,18 @@ h1{
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
 }
+
+.sn-mod-action
+{
+  font-family: Verdana;
+  color: black;
+  background-color: $light-gray;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 11px;
+  padding: 4px;
+}
+
+.sn-mod-action-warning{
+    background-color:$warning;
+}

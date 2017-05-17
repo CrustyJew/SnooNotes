@@ -17,8 +17,6 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SnooNotesDB", "SnooNotesDB\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesAddon", "SnooNotesAddon\SnooNotesAddon.csproj", "{3FE301FA-C095-438A-AFA1-DF459B275B2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnooNotesPermissions", "SnooNotesPermissions\SnooNotesPermissions.csproj", "{32C23D32-A453-4AFF-9998-017ADE3A0503}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentProvider", "IdentProvider\IdentProvider.csproj", "{FA52FFC5-CBCF-42FE-832B-2E018B229A23}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnooNotes", "SnooNotes\SnooNotes.csproj", "{8DF09BDD-2B6A-46B9-8FC4-72507312C284}"
@@ -47,10 +45,6 @@ Global
 		{3FE301FA-C095-438A-AFA1-DF459B275B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FE301FA-C095-438A-AFA1-DF459B275B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FE301FA-C095-438A-AFA1-DF459B275B2B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{32C23D32-A453-4AFF-9998-017ADE3A0503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32C23D32-A453-4AFF-9998-017ADE3A0503}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32C23D32-A453-4AFF-9998-017ADE3A0503}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32C23D32-A453-4AFF-9998-017ADE3A0503}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA52FFC5-CBCF-42FE-832B-2E018B229A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA52FFC5-CBCF-42FE-832B-2E018B229A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA52FFC5-CBCF-42FE-832B-2E018B229A23}.Release|Any CPU.ActiveCfg = Release|Any CPU

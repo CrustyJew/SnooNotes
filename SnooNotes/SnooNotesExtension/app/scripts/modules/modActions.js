@@ -7,7 +7,10 @@ export class ModActionsModule {
     }
 
     initModule() {
-        on(document.body, 'click', '.big-mod-buttons > span > .pretty-button', prettyAction)
+        on(document.body, 'click', '.big-mod-buttons > span > .pretty-button', (e)=>{this.prettyAction(e)})
+        chrome.runtime.onMessage.addListener((message)=>{
+            if(message.method == "modAction") this.receiveModAction(message.req);
+        });
     }
 
     refreshModule(subs) {
@@ -70,14 +73,14 @@ export class ModActionsModule {
             thing.classList.toggle('sn-mod-action-warning', true);
         }
 
-        let bigButtons = entry.querySelectorAll('ul.flat-list .big-mod-buttons');
+        let bigButtons = entry.querySelector('ul.flat-list .big-mod-buttons');
         let actionElem = document.createElement('span');
         actionElem.classList.add('sn-mod-action');
         actionElem.textContent = req.action + ' by ' + req.mod;
-        if(bigButtons.length > 0){
+        if (bigButtons) {
             bigButtons.parentNode.insertBefore(actionElem, bigButtons.nextSibling);
         }
-        else{
+        else {
             let lastItem = entry.querySelector('li:last');
             lastItem.parentNode.insertBefore(actionElem, lastItem.nextSibling);
         }

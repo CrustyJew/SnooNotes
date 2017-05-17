@@ -78,6 +78,13 @@ snUpdate.client.deleteNote = (user, noteID, outOfNotes) => {
 snUpdate.client.refreshNoteTypes = () => {
   store.dispatch(getModSubs());
 }
+snUpdate.client.modAction = (thingID, mod, action) => {
+  chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": { "thingID": thingID, "mod": mod, "action": action } });
+        }
+    });
+}
 store.subscribe(() => {
   let newToken = store.getState().user.access_token;
   if (newToken != curToken) {
