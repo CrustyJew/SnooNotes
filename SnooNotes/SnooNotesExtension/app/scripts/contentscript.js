@@ -49,7 +49,7 @@ const unsub = reduxStore.subscribe(() => {
     modActionsModules.initModule();
 
     var userNotesDisplay = document.createElement('div');
-    userNotesDisplay.id = "SNNotesDisplay";
+    userNotesDisplay.id = "sn-notes-display";
     document.body.appendChild(userNotesDisplay);
     new Vue(userNoteDisplay).$mount(userNotesDisplay);
 
@@ -126,7 +126,7 @@ const InjectIntoThingsClass = () => {
                     // if (mutation.removedNodes && mutation.removedNodes.length > 0) {
                     //     let node = mutation.removedNodes[0];
                     //     if (node.querySelectorAll) {
-                    //         node.querySelectorAll('.SNUserNotes').forEach(function (sn) {
+                    //         node.querySelectorAll('.sn-user-notes').forEach(function (sn) {
                     //             sn.__vue__.$destroy();
                     //         });
                     //     }
@@ -184,7 +184,7 @@ const BindNewThingsClassUserNotesElement = (thing) => {
         new Vue({ components: { 'user-notes': UserNotes } }).$mount(noteElem);
 
     }
-    thing.className = thing.className + ' SNDone';
+    thing.className = thing.className + ' sn-done';
     return author;
 }
 
@@ -199,7 +199,7 @@ const InjectIntoUserPage = () => {
         let noteElem = document.createElement('user-notes');
         noteElem.setAttribute('username', userHeader.textContent);
         noteElem.setAttribute('url', 'https://reddit.com/u/' + userHeader.textContent)
-        noteElem.setAttribute('class', 'SNUserpageNote');
+        noteElem.setAttribute('class', 'sn-userpage-note');
         userHeader.parentNode.insertBefore(noteElem, userHeader.nextSibling);
         new Vue({ components: { 'user-notes': UserNotes } }).$mount(userHeader.parentElement);
     }
@@ -215,14 +215,14 @@ const InjectIntoNewModmail = () => {
                 mutations.forEach(function (mutation) {
                     if (mutation.addedNodes && mutation.addedNodes.length > 0) {
                         let node = mutation.addedNodes[0];
-                        if (node.tagName == "ARTICLE" && !node.classList.contains("SNDone")) {
+                        if (node.tagName == "ARTICLE" && !node.classList.contains("sn-done")) {
                             let author = BindNewModmailUserNoteElement(mutation.addedNodes[0]);
                             if (usersWithNotes.indexOf(author) != -1 && requestedAuthors.indexOf(author) == -1 && newAuthorRequest.indexOf(author) == -1) {
                                 newAuthorRequest.push(author);
                             }
                         }
                         if (node.tagName == "DIV") {
-                            node.querySelectorAll('article:not(.SNDone)').forEach((article) => {
+                            node.querySelectorAll('article:not(.sn-done)').forEach((article) => {
                                 let author = BindNewModmailUserNoteElement(article);
                                 if (usersWithNotes.indexOf(author) != -1 && requestedAuthors.indexOf(author) == -1 && newAuthorRequest.indexOf(author) == -1) {
                                     newAuthorRequest.push(author);
@@ -233,7 +233,7 @@ const InjectIntoNewModmail = () => {
                     if (mutation.removedNodes && mutation.removedNodes.length > 0) {
                         let node = mutation.removedNodes[0];
                         if (node.querySelectorAll) {
-                            node.querySelectorAll('.SNUserNotes').forEach(function (sn) {
+                            node.querySelectorAll('.sn-user-notes').forEach(function (sn) {
                                 sn.__vue__.$destroy();
                             });
                         }
@@ -287,7 +287,7 @@ const BindNewModmailUserNoteElement = (article) => {
         let vueinst = new Vue({ components: { 'user-notes': UserNotes } }).$mount(noteElem);
         authElem.parentNode.insertBefore(vueinst.$el, authElem.nextSibling);
     })
-    article.className = article.className + ' SNDone';
+    article.className = article.className + ' sn-done';
     return author;
 }
 

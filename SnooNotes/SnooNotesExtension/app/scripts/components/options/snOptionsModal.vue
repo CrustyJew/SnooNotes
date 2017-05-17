@@ -1,47 +1,47 @@
 <template>
     <modal :show.sync="show" :on-close.sync="close">
-        <div id="SNOptionsSidebar">
-            <div id="SNOptionsSubOpts" class="SNOptionsCategory" :class="{active: activeTab == 'options'}" @click="activeTab = 'options'" key="options">Subreddits</div>
-            <div id="SNOptionsPlaceholder1" class="SNOptionsCategory" :class="{active: activeTab == 'banlist'}" @click="activeTab='banlist'" key="banlist">Bot Ban List</div>
+        <div id="sn-options-sidebar">
+            <div id="sn-options-subopts" class="sn-options-category" :class="{active: activeTab == 'options'}" @click="activeTab = 'options'" key="options">Subreddits</div>
+            <div id="sn-options-banlist" class="sn-options-category" :class="{active: activeTab == 'banlist'}" @click="activeTab='banlist'" key="banlist">Bot Ban List</div>
         </div>
     
-        <div id="SNOptionsPanel">
+        <div id="sn-options-panel">
             <transition name="fade" mode="out-in">
-                <div id="SNOptionsContainer" v-if="activeTab == 'options'" key="subOptContainer">
+                <div id="sn-options-container" v-if="activeTab == 'options'" key="subOptContainer">
     
-                    <div id="SNRefreshContainer">
+                    <div id="sn-refresh-container">
                         <h1>Has something gone rogue?
                             <br />Change subreddits you moderate?
                             <br />Activate a new sub?</h1>
-                        <button type="button" id="SNRestart" class="SNBtnWarn" @click="refresh">Refresh SnooNotes</button>
+                        <button type="button" id="sn-restart" class="sn-btn-warn" @click="refresh">Refresh SnooNotes</button>
                         <br class="clearfix" />
                     </div>
-                    <div id="SNActivateContainer">
+                    <div id="sn-activate-container">
                         <div v-if="!snOptions.loadingInactiveSubs">
-                            <select id="SNActivateSub" v-model="activateSubName">
+                            <select id="sn-activate-sub" v-model="activateSubName">
                                 <option value="-1" disabled>---Activate a new Subreddit---</option>
                                 <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
                             </select>
-                            <button type="button" id="SNBtnActivateSub" class="SNBtnSubmit" @click="activateSub" :disabled="activatingSub">{{activatingSub ? 'Activating...': 'Activate'}}</button>
+                            <button type="button" id="sn-btn-activate-sub" class="sn-btn-submit" @click="activateSub" :disabled="activatingSub">{{activatingSub ? 'Activating...': 'Activate'}}</button>
                             <br class="clearfix" />
                         </div>
                         <div v-show="snOptions.loadingInactiveSubs">
                             <sn-loading></sn-loading>
                         </div>
                     </div>
-                    <div id="SNModSubs">
+                    <div id="sn-mod-subs">
                         <h3>Subreddits you have permissions to submit notes in</h3>
                         <ul>
                             <li v-for="sub in snInfo.modded_subs">{{sub.SubName}}<span v-if="sub.SentinelActive">&nbsp;<i class="material-icons">visibility</i><md-tooltip md-direction="right" md-delay="400">TheSentinelBot Active</md-tooltip></span></li>
                         </ul>
                     </div>
-                    <div id="SNSubSettingsContainer">
+                    <div id="sn-sub-settings-container">
                         <div v-if="snOptions.loadingSubSettings">
                             <sn-loading></sn-loading>
                         </div>
                         <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
-                            <div class="SNSubSettingsBtnWrapper" v-for="(sub,index) in snOptions.subSettings">
-                                <button type="button" class="SNBtnAction" @click="showSettings(index)">/r/{{sub.SubName}}</button>
+                            <div class="sn-sub-settings-btn-wrapper" v-for="(sub,index) in snOptions.subSettings">
+                                <button type="button" class="sn-btn-action" @click="showSettings(index)">/r/{{sub.SubName}}</button>
                             </div>
                         </div>
                         <div v-if="!snOptions.loadingSubSettings && editingSubIndex > -1">
@@ -148,7 +148,7 @@ export default {
 <style lang="scss">
 @import "~styles/_vars.scss";
 
-#SNOptions #SNModal {
+#sn-options #sn-modal {
     min-width: 810px;
     line-height: 12px;
     text-transform: none !important;
@@ -158,7 +158,7 @@ export default {
     a {
         color: $secondary;
     }
-    a.SNCloseModal {
+    a.sn-close-modal {
         display: inline-block;
         cursor: pointer;
         color: white;
@@ -170,7 +170,7 @@ export default {
             background-image: linear-gradient(to bottom, darken($accent, 10%), darken($accent, 25%));
         }
     }
-    #SNOptionsSidebar {
+    #sn-options-sidebar {
         width: 125px;
         background-color: $light-gray;
         padding-left: 5px;
@@ -182,7 +182,7 @@ export default {
         float: left;
     }
 
-    .SNOptionsCategory {
+    .sn-options-category {
         width: 113px;
         height: 25px;
         background-color: $secondary;
@@ -200,11 +200,11 @@ export default {
         transition: background-color linear .2s;
     }
 
-    .SNOptionsCategory.active {
+    .sn-options-category.active {
         background-color: darken($secondary, 20%);
     }
 
-    .SNOptionsCategory.active:after {
+    .sn-options-category.active:after {
         content: ' ';
         height: 0;
         position: absolute;
@@ -217,7 +217,7 @@ export default {
         margin-top: -10px;
     }
 
-    #SNOptionsPanel {
+    #sn-options-panel {
         height: calc(100% - 15px);
         display: block;
         margin-left: 125px;
@@ -228,15 +228,7 @@ export default {
         box-sizing: border-box;
     }
 
-    #SNOptionsContents {
-        margin: 0 auto;
-        max-width: 1000px;
-        padding-bottom: 20px;
-        padding-right: 20px;
-    }
-
-
-    #SNRefreshContainer {
+    #sn-refresh-container {
         width: 525px;
         margin: 0 auto;
         height: 74px;
@@ -248,13 +240,13 @@ export default {
         }
     }
 
-    #SNActivateContainer {
+    #sn-activate-container {
         margin: 0 auto;
         width: 310px;
         min-height: 50px;
     }
 
-    #SNModSubs {
+    #sn-mod-subs {
         margin: 0 auto;
         width: 400px;
         margin-bottom: 5px;
@@ -280,7 +272,7 @@ export default {
         margin: 0 auto;
     }
 
-    #SNActivateSub {
+    #sn-activate-sub {
         height: 32px;
         border-radius: 5px;
         option:first-of-type {
@@ -288,16 +280,16 @@ export default {
         }
     }
 
-    #SNBtnActivateSub {
+    #sn-btn-activate-sub {
         margin-right: 0px;
     }
 
-    #SNRestart {
+    #sn-restart {
         margin-top: 20px;
         margin-left: 15px;
     }
 
-    #SNOptionsContainer {
+    #sn-options-container {
         margin-top: -15px;
         padding-top: 5px;
         min-height: 100px;
@@ -308,7 +300,7 @@ export default {
         box-sizing: border-box;
     }
 
-    .SNSubSettingsBtnWrapper {
+    .sn-sub-settings-btn-wrapper {
         width: 250px;
         padding: 20px 20px 0px 20px;
         margin: 0 auto;

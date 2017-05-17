@@ -1,13 +1,13 @@
 <template>
     <transition name="fade">
-        <div class="SNNotesDisplay" v-if="showNotes" :style="displayStyle" v-draggable="'.SNHeader'">
-            <div class="SNHeader">
-                <a class="SNCloseNote SNClose" @click="close">X</a>
+        <div class="sn-notes-display" v-if="showNotes" :style="displayStyle" v-draggable="'.sn-header'">
+            <div class="sn-header">
+                <a class="sn-close-note sn-close" @click="close">X</a>
             </div>
             <table v-if="!notes.noNotes && !notes.loading">
                 <tbody is="transition-group" name="fade">
-                    <tr v-for="note in notes" :style="noteTypeStyle(note.SubName, note.NoteTypeID)" transition="fade" :key="note.NoteID">
-                        <td class="SNSubName">
+                    <tr v-for="note in notes"  transition="fade" :key="note.NoteID">
+                        <td class="sn-sub-name">
                             <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
                             <span v-if="note.ParentSubreddit">
                                 <br />via
@@ -19,34 +19,34 @@
                                 <cabalify :noteID="note.NoteID"></cabalify>
                             </span>
                         </td>
-                        <td class="SNSubmitter">
+                        <td class="sn-submitter">
                             <span>{{note.Submitter}}</span>
                             <br />
                             <a :href="note.Url" style="white-space:pre;">{{new Date(note.Timestamp).toLocaleString().replace(', ', '\n')}}</a>
                         </td>
-                        <td class="SNMessage">
+                        <td class="sn-message" :style="noteTypeStyle(note.SubName, note.NoteTypeID)">
                             <p>{{note.Message}}</p>
-                            <a class="SNDeleteNote" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.name == note.ParentSubreddit) > -1"><i class="material-icons">delete_forever</i></a>
+                            <a class="sn-delete-note" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.name == note.ParentSubreddit) > -1"><i class="material-icons">delete_forever</i></a>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="SNNewNoteContainer">
-                <div class="SNNewNote">
-                    <select class="SNNewNoteSub" v-model="newNote.newNoteSubIndex" :class="{SNError:$v.newNote.newNoteSubIndex.$error }">
+            <div class="sn-new-note-container">
+                <div class="sn-new-note">
+                    <select class="sn-new-note-sub" v-model="newNote.newNoteSubIndex" :class="{'sn-error':$v.newNote.newNoteSubIndex.$error }">
                         <option value="-1" disabled>--Select a Sub--</option>
                         <option :value="modSub.index" v-if="isModdedSub">{{modSub.name}}</option>
                         <option value="-2" v-if="isModdedSub" disabled>---------</option>
                         <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index">{{sub.name}}</option>
                     </select>
-                    <textarea placeholder="Add a new note for user..." class="SNNewMessage" v-model="newNote.message" />
-                    <button type="button" class="SNBtnSubmit SNNewNoteSubmit" @click="submit" :disabled="submitting">Submit</button>
+                    <textarea placeholder="Add a new note for user..." class="sn-new-message" v-model="newNote.message" />
+                    <button type="button" class="sn-btn-submit sn-new-note-submit" @click="submit" :disabled="submitting">Submit</button>
                 </div>
-                <div class="SNNoteType" :class="{SNError:$v.newNote.newNoteTypeID.$error }">
-                    <label class="SNTypeRadio" v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)">
-                        <input type="radio" name="SNType" :value="nt.NoteTypeID" v-model="newNote.newNoteTypeID">{{nt.DisplayName}}</label>
+                <div class="sn-note-type" :class="{'sn-error':$v.newNote.newNoteTypeID.$error }">
+                    <label v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)">
+                        <input type="radio" :value="nt.NoteTypeID" v-model="newNote.newNoteTypeID">{{nt.DisplayName}}</label>
                 </div>
-                <div class="SNNewError">
+                <div class="sn-new-error">
                     <p v-if="$v.newNote.newNoteTypeID.$error">Shucks! You forgot the note type...</p>
                     <p v-if="$v.newNote.newNoteSubIndex.$error">Select a subby you fool!</p>
                 </div>
@@ -214,12 +214,12 @@ export default {
 <style lang="scss">
 @import "~styles/_vars.scss";
 
-.SNNotesDisplay {
-    .SNHeader {
+.sn-notes-display {
+    .sn-header {
         margin-left: -10px;
         margin-right: -10px;
         margin-bottom: 10px;
-        .SNClose {
+        .sn-close {
             display: inline-block;
             cursor: pointer;
             color: white;
@@ -238,7 +238,7 @@ export default {
     p{
         display:inline;
     }
-    a.SNDeleteNote{
+    a.sn-delete-note{
         color:$accent;
         font-size:18px;
     }
@@ -271,7 +271,7 @@ export default {
     }
 }
 
-.SNDeleteNote {
+.sn-delete-note {
     position: absolute;
     top: 1px;
     right: 5px;

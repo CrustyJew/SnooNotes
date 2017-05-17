@@ -52,11 +52,11 @@ h1{
     font-weight:bold;
 }
 
-#SNModal .SNHeader {
+#sn-modal .sn-header {
         cursor: default;
     }
 
-.SNHeader {
+.sn-header {
     height: 15px;
     background-color: $primary;
     text-align: right;
@@ -64,7 +64,7 @@ h1{
 }
 
 //*** BUTTONS *** //
-.SNBtnCancel, .SNBtnAction, .SNBtnSubmit, .SNBtnWarn {
+.sn-btn-cancel, .sn-btn-action, .sn-btn-submit, .sn-btn-warn {
     border: 1px solid $gray;
     font-family: Verdana,Arial,sans-serif;
     margin: 4px 16px 4px 0;
@@ -79,7 +79,7 @@ h1{
 
 }
 
-.SNBtnWarn {
+.sn-btn-warn {
     background-image: linear-gradient(to bottom, $warning, darken($warning,15%));
     color: #1a1a1a !important;
     &:hover{
@@ -87,14 +87,14 @@ h1{
     }
 }
 
-.SNBtnAction {
+.sn-btn-action {
     background-image: linear-gradient(to bottom, $secondary, darken($secondary,15%));
     &:hover{
         background-image: linear-gradient(to bottom, darken($secondary,10%),darken($secondary,25%));
     }
 }
 
-.SNBtnSubmit, .SNNewNoteSubmit {
+.sn-btn-submit, .sn-new-note-submit {
     background-image: linear-gradient(to bottom, $primary, darken($primary,15%) );
     font-weight:bold;
     &:hover{
@@ -102,11 +102,11 @@ h1{
     }
 }
 
-.SNBtnCancel {
+.sn-btn-cancel {
     background: linear-gradient(to bottom, $gray,darken($gray,15%) );
 }
 
-#toasted-container, .SNToast{
+#toasted-container, .sn-toast{
     z-index: 2147483648 !important;
     .toasted.primary.error{
         background-color:$accent !important;

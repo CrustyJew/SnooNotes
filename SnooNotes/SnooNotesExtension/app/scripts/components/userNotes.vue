@@ -1,5 +1,5 @@
 <template>
-    <span v-if="snInfo.modded_subs.length > 0" class="SNUserNotes" @click.stop>
+    <span v-if="snInfo.modded_subs.length > 0" class="sn-user-notes" @click.stop>
         <span @click="show">
             <i class="material-icons" :class="{'sn-has-notes':hasNotes}">comment</i>
             <md-tooltip md-direction="right" md-delay="400">
@@ -90,7 +90,7 @@ export default {
 @import "~styles/_vars.scss";
 
 
-.SNUserNotes {
+.sn-user-notes {
     cursor: pointer;
 
     i.material-icons {

@@ -2,7 +2,7 @@
     <span class="sn-cabal-container" v-if="isCabal" @click.stop>
         <span class="sn-cabalify-icon" @click="show"> </span>
         <div class="sn-cabalify" v-if="display">
-            <ul class="SNNoteType">
+            <ul class="sn-note-type">
                 <li class="sn-cabal-type" v-for="(nt, index) in cabalNoteTypes" :style="noteTypeStyle(index)" @click="cabalify(nt.NoteTypeID)">
                     <i class="material-icons">{{nt.IconString}}</i>{{nt.DisplayName}}</li>
             </ul>

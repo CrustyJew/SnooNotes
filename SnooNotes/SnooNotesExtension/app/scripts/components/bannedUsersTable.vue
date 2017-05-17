@@ -15,7 +15,6 @@
             <label>Search</label>
             <md-textarea v-model="searchTerm"></md-textarea>
         </md-input-container>
-        <!--<paginator :rows="rowsPerPage" :page="currentPage" :total="totalRows"></paginator>-->
         <div class="sn-table-area">
     
             <md-table md-sort="date" md-sort-type="desc" @sort="sortTable">
@@ -73,13 +72,12 @@
     </div>
 </template>
 <script>
-import Paginator from './paginator.vue';
 import LoadingSpinner from './loadingSpinner.vue';
 import axios from 'axios';
 import _ from 'lodash';
 
 export default {
-    components: { 'paginator': Paginator, 'sn-loading': LoadingSpinner },
+    components: { 'sn-loading': LoadingSpinner },
     data() {
         return {
             rowsPerPage: 25,
@@ -172,7 +170,7 @@ export default {
 <style lang="scss">
 @import "~styles/_vars.scss";
 
-#SNOptionsPanel {
+#sn-options-panel {
     .sn-search-sub-label {
         display: inline-block;
         vertical-align: center;

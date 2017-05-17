@@ -12,7 +12,7 @@ export class SentinelBanModule {
         if (document.body.matches('body.comments-page,body.listing-page') || window.location.pathname == "/r/mod/about/modqueue") {
             //only bind on listing and comment pages to avoid extra listeners
             this.eventListenerUnbinds.push(on(document.body, 'click', '.remove-button .main > a, .big-mod-buttons a.pretty-button[data-event-action="spam"], .big-mod-buttons a.pretty-button[data-event-action="remove"]', (e) => { this.thingRemove(e) }));
-            this.eventListenerUnbinds.push(on(document.body, 'click', '.SNBotBanPrompt a', (e) => { this.executeBan(e) }));
+            this.eventListenerUnbinds.push(on(document.body, 'click', '..sn-bot-ban-prompt a', (e) => { this.executeBan(e) }));
         }
     }
 
@@ -45,7 +45,7 @@ export class SentinelBanModule {
             action = target.attributes["data-event-action"].value;
         }
         let thing = target.closest('.thing');
-        let oldElem = target.closest('ul').querySelector('.SNBotBanPrompt.SNBotBan' + action);
+        let oldElem = target.closest('ul').querySelector('.sn-bot-ban-prompt.sn-bot-ban' + action);
         if (oldElem) oldElem.remove();
         let user = thing.attributes['data-author'].value;
         let sub = thing.attributes['data-subreddit'].value;
@@ -72,7 +72,7 @@ export class SentinelBanModule {
         let banElem = this.getBanElement(sub, user, url, action, thingURL);
         if (banElem) {
             let injectElem = document.createElement('li');
-            injectElem.className = 'SNBotBanPrompt SNBotBan' + action;
+            injectElem.className = '.sn-bot-ban-prompt sn-bot-ban' + action;
             injectElem.appendChild(banElem);
 
             target.closest('ul').appendChild(injectElem);
@@ -115,7 +115,7 @@ export class SentinelBanModule {
 
     getBanElement(sub, user, url, reason, thingURL) {
         let banElem = document.createElement('span');
-        banElem.className = 'SNSentinelBan';
+        banElem.className = 'sn-sentinel-ban';
         banElem.appendChild(document.createTextNode('Bot Ban (' + reason + '): '));
         let render = false;
 

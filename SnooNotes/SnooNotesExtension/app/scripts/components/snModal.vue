@@ -1,8 +1,8 @@
 <template>
   <transition name="snmodal">
     <div class="snmodal-mask" v-show="show" @click="close">
-      <div id="SNModal" class="snmodal-container" @click.stop>
-        <div class="SNHeader"><a class="SNCloseModal SNClose" @click="close">X</a></div>
+      <div id="sn-modal" class="snmodal-container" @click.stop>
+        <div class="sn-header"><a class="sn-close-modal sn-close" @click="close">X</a></div>
         <slot></slot>
       </div>
     </div>
@@ -20,7 +20,7 @@ export default {
 </script>
 <style lang="scss">
 @import "~styles/_vars.scss";
-.SNCloseModal {
+.sn-close-modal {
   display: inline-block;
   cursor: pointer;
   color: white;

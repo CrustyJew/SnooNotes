@@ -1,6 +1,6 @@
 @import "./_vars.scss";
 
-.SNNotesDisplay{
+.sn-notes-display{
     position: absolute;
     z-index: 90000;
     background-color: white;
@@ -26,7 +26,7 @@
         display: table-row;
     }
     
-    .SNNewNoteSubmit{
+    .sn-new-note-submit{
         vertical-align: middle;
         top:50%;
         float:left;
@@ -37,26 +37,26 @@
     }
 }
 
-.SNSubName, .SNSubmitter {
+.sn-sub-name, .sn-submitter {
     text-align: center;
     width: 135px;
     word-wrap: break-word;
 }
 
-.SNMessage {
+.sn-message {
     position:relative;
     white-space:pre-wrap;
 }
 
 
-.SNNewNote {
+.sn-new-note {
     margin-left: -340px;
     padding-left: 50%;
     padding-top: 10px;
     height: 81px;
 }
 
-.SNNewNoteSub{
+.sn-new-note-sub{
     float:left;
     margin-right:15px;
     margin-top:-10px;
@@ -66,7 +66,7 @@
     width:125px;
 }
 
-.SNNewMessage {
+.sn-new-message {
     height: 100%;
     resize: none;
     width: 400px;
@@ -80,7 +80,7 @@
 }
 
 
-.SNNoteType{
+.sn-note-type{
     text-align:center;
     margin-top:5px;
     padding:5px;
@@ -94,13 +94,13 @@
     }
 }
 
-.SNNewError{
+.sn-new-error{
     margin-top:10px;
     font-weight:bold;
     font-size:1.2em;
     color:$accent;
 }
 
-.SNError{
+.sn-error{
     border:3px solid $accent;
 }

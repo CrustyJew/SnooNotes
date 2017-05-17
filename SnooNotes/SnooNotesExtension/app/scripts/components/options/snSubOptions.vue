@@ -1,14 +1,14 @@
 <template>
-    <div id="SNSubRedditSettings">
-        <div class="SNOptsHeader">
-            <h1 class="SNSubOptsHeader">/r/{{initialSettings.SubName}}</h1>
-            <button type="button" class="SNBtnCancel" id="SNBtnSubOptsCancel" @click="cancel">Cancel</button>
+    <div id="sn-sub-reddit-settings">
+        <div class="sn-opts-header">
+            <h1 class="sn-sub-opts-header">/r/{{initialSettings.SubName}}</h1>
+            <button type="button" class="sn-btn-cancel" id="sn-btn-sub-opts-cancel" @click="cancel">Cancel</button>
             <br style="clear:both;">
         </div>
-        <div class="SNContainer">
-            <div id="SNAccessMask">
-                <div id="SNAccessMaskDesc">Choose who can view and add notes below. Anyone with full permissions can always view and add notes as well as edit this page</div>
-                <div id="SNAccessMaskOptions">
+        <div class="sn-container">
+            <div id="sn-access-mask">
+                <div id="sn-access-mask-desc">Choose who can view and add notes below. Anyone with full permissions can always view and add notes as well as edit this page</div>
+                <div id="sn-access-mask-options">
                     <label>
                         <input type="checkbox" value="1" v-model.number="selectedAccess">access</label>
                     <label>
@@ -23,7 +23,7 @@
                         <input type="checkbox" value="32" v-model.number="selectedAccess">wiki</label>
                 </div>
             </div>
-            <div id="SNSubSettingsFAQ">
+            <div id="sn-sub-settings-faq">
                 <h2>How do I enable automatic generation of ban notes?</h2>
                 <div class="sn-faq-answer">Check options for both Temp and Perm ban types (checkboxes to the left of the note type name). People may have to refresh their SnooNotes for it to start</div>
                 <h2>What are these Note Type Icons?</h2>
@@ -34,37 +34,37 @@
                 <h2>Why isn't TheSentinelBot being recognized for my sub?</h2>
                 <div class="sn-faq-answer">It should update roughly every hour. If it still hasn't, meepster23 probably broke something. Go poke him.</div>
             </div>
-            <div id="SNNoteTypes">
-                <div id="SNNoteTypesDesc">Change just about everything about the Note Types belonging to this subreddit below. If no checkbox is chosen for Perm Ban or Temp Ban, then automatic ban notes will not be generated for that type of ban.
+            <div id="sn-note-types">
+                <div id="sn-note-types-desc">Change just about everything about the Note Types belonging to this subreddit below. If no checkbox is chosen for Perm Ban or Temp Ban, then automatic ban notes will not be generated for that type of ban.
                     <br />
                     <br />&nbsp;Temp&nbsp;|&nbsp;Perm
                     <br />&nbsp;&nbsp;&nbsp;Ban&nbsp;&nbsp;|&nbsp;&nbsp;Ban</div>
                 <draggable element="ul" :list="newSettings.Settings.NoteTypes" :options="dragOptions">
                     <li :sn-notetype-id="nt.NoteTypeID" :sn-notetype-display-order="nt.DisplayOrder" v-for="nt in newSettings.Settings.NoteTypes">
                         <div class="sn-drag-handle">
-                            <a class="SNSort"></a>
+                            <a class="sn-sort"></a>
                         </div>
-                        <input type="checkbox" class="SNChkGrp" :value="nt.NoteTypeID" v-on:change="selectTempBan(nt.NoteTypeID, $event)" v-model.number="tempBanID">
-                        <input type="checkbox" class="SNChkGrp" :value="nt.NoteTypeID" v-on:change="selectPermBan(nt.NoteTypeID, $event)" v-model.number="permBanID">
-                        <input class="SNNoteTypeDisp" type="text" maxlength="20" v-model="nt.DisplayName"> &nbsp;Color:&nbsp;
-                        <input class="SNNoteTypeColor" type="color" :value="nt.ColorCode" v-model="nt.ColorCode">
-                        <input class="SNNoteIcon" type="text" maxlength="50" placeholder="Icon. Default ='comment'" v-model="nt.IconString">
+                        <input type="checkbox" :value="nt.NoteTypeID" v-on:change="selectTempBan(nt.NoteTypeID, $event)" v-model.number="tempBanID">
+                        <input type="checkbox" :value="nt.NoteTypeID" v-on:change="selectPermBan(nt.NoteTypeID, $event)" v-model.number="permBanID">
+                        <input type="text" maxlength="20" v-model="nt.DisplayName"> &nbsp;Color:&nbsp;
+                        <input type="color" :value="nt.ColorCode" v-model="nt.ColorCode">
+                        <input type="text" maxlength="50" placeholder="Icon. Default ='comment'" v-model="nt.IconString">
                         <label>
-                            <input type="checkbox" class="SNntBold" v-model="nt.Bold">Bold</label>
+                            <input type="checkbox" v-model="nt.Bold">Bold</label>
                         <label>
-                            <input type="checkbox" class="SNntItalic" v-model="nt.Italic">Italic</label>
+                            <input type="checkbox" v-model="nt.Italic">Italic</label>
                         &nbsp;
-                        <span class="SNPreview" :style="getStyle(nt)">
+                        <span class="sn-preview" :style="getStyle(nt)">
                             <i class="material-icons">{{nt.IconString && nt.IconString.length > 0 ? nt.IconString : 'comment'}}</i>{{nt.DisplayName}}</span>
-                        <a class="SNRemove" @click="removeNoteType(nt)">x</a>
+                        <a class="sn-remove" @click="removeNoteType(nt)">x</a>
                     </li>
                 </draggable>
                 <div style="text-align:center;" @click="addNoteType">
-                    <a class="SNAdd">+</a>
+                    <a class="sn-add">+</a>
                 </div>
             </div>
         </div>
-        <button type="button" class="SNBtnSubmit" id="SNBtnSubOptsSave" @click="save" :disabled="saving">{{saving ? "Saving..." : "Save"}}</button>
+        <button type="button" class="sn-btn-submit" id="sn-btn-subopts-save" @click="save" :disabled="saving">{{saving ? "Saving..." : "Save"}}</button>
     </div>
 </template>
 <script>
@@ -215,34 +215,34 @@ export default {
     background: $light-gray;
 }
 
-#SNOptionsPanel #SNOptionsContainer #SNSubRedditSettings {
-    #SNSubRedditSettings {
+#sn-options-panel #sn-options-container {
+    #sn-sub-reddit-settings {
         line-height: 12px;
         text-align: left;
     }
 
-    .SNSubOptsHeader {
+    .sn-sub-opts-header {
         float: left;
         color: $secondary;
         font-weight: bold;
         margin: 0px;
     }
 
-    .SNOptsHeader {
+    .sn-opts-header {
         margin-bottom: 10px;
     }
 
-    #SNBtnSubOptsCancel {
+    #sn-btn-sub-opts-cancel {
         float: right;
     }
 
-    #SNBtnSubOptsSave {
+    #sn-btn-subopts-save {
         margin: 0 auto;
         margin-top: 20px;
         display: block;
     }
 
-    #SNAccessMask {
+    #sn-access-mask {
         width: 200px;
         display: inline-block;
         border: 1px solid transparent;
@@ -254,7 +254,7 @@ export default {
         vertical-align: top;
     }
 
-    #SNAccessMaskOptions {
+    #sn-access-mask-options {
         width: 100px;
         label {
             display: block;
@@ -265,19 +265,19 @@ export default {
         }
     }
 
-    #SNAccessMaskDesc {
+    #sn-access-mask-desc {
         font-weight: bold;
         margin-bottom: 5px;
     }
-    #SNSubSettingsFAQ {
+    #sn-sub-settings-faq {
         width: 675px;
         display: inline-block;
     }
-    #SNNoteTypesDesc {
+    #sn-note-types-desc {
         font-weight: bold;
     }
 
-    #SNNoteTypes {
+    #sn-note-types {
         display: inline-block;
         width: 900px;
         padding: 5px;
@@ -303,7 +303,7 @@ export default {
         height: 20px;
     }
 
-    a.SNSort {
+    a.sn-sort {
         display: inline-block;
         vertical-align: middle;
         height: 6px;
@@ -343,7 +343,7 @@ export default {
         vertical-align: middle;
     }
 
-    .SNPreview {
+    .sn-preview {
         display: inline-block;
         min-width: 160px;
     }
@@ -359,7 +359,7 @@ export default {
             cursor: -webkit-grabbing;
         }
     }
-    .SNRemove {
+    .sn-remove {
         vertical-align: middle;
         height: 16px;
         width: 16px;
@@ -378,7 +378,7 @@ export default {
         float: right;
     }
 
-    .SNAdd {
+    .sn-add {
         display: inline-block;
         vertical-align: middle;
         height: 16px;
