@@ -15,6 +15,6 @@
         //    templateUrl: "loginModal.html",
         //    controller: 'AuthCtrl'
         //});
-        $window.location.href = "/signin"
+        $window.location.href = "/Signin"
     }
 }

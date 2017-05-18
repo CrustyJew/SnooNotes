@@ -12,7 +12,7 @@ export class SentinelBanModule {
         if (document.body.matches('body.comments-page,body.listing-page') || window.location.pathname == "/r/mod/about/modqueue") {
             //only bind on listing and comment pages to avoid extra listeners
             this.eventListenerUnbinds.push(on(document.body, 'click', '.remove-button .main > a, .big-mod-buttons a.pretty-button[data-event-action="spam"], .big-mod-buttons a.pretty-button[data-event-action="remove"]', (e) => { this.thingRemove(e) }));
-            this.eventListenerUnbinds.push(on(document.body, 'click', '..sn-bot-ban-prompt a', (e) => { this.executeBan(e) }));
+            this.eventListenerUnbinds.push(on(document.body, 'click', '.sn-bot-ban-prompt a', (e) => { this.executeBan(e) }));
         }
     }
 

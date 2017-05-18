@@ -215,11 +215,7 @@ export default {
     background: $light-gray;
 }
 
-#sn-options-panel #sn-options-container {
-    #sn-sub-reddit-settings {
-        line-height: 12px;
-        text-align: left;
-    }
+#sn-options-panel #sn-options-container #sn-sub-reddit-settings {
 
     .sn-sub-opts-header {
         float: left;

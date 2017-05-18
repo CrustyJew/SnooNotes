@@ -1,30 +1,11 @@
-{  "name": "__MSG_appName__",
-  "short_name": "__MSG_appShortName__",
-  "description": "__MSG_appDescription__",
-  "version": "0.0.0",
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm3N67NR8Mxuh/OtYz/yFQzd5kq1iGUfTYvTbWTAAuwIaYYMu2OWvhzRxn3IHvO0mtre1LTjicsAUbamEle8EGBIPxZk+6cuQF3cQNTBN6JTTQ6NVL/tAGN8yDhBcID6lmCC6H3GakS6BdVmPAAzq6GrtCEHOA/a8sQ56Fip/NvqvlGGtHBTVMmNDt0MKzlFTW4PIqMyEePbWD6jTUxcWjyeypAT+Fsu7Qhef3kmqHFPze7HpTOYcgx3uaQEclytGJSuMNljmmd78+dQPFXUp51dA5IpVoMxtJBDYEJE8Gt0n2+J31b/qtxDmITtEL82WZ9ooWI8nc0m1R+R7HswLswIDAQAB",
+{  "name": "SnooNotes",
+  "description": "Usernotes plus a whole lot more!",
+  "version": "2.0.0",
   "manifest_version": 2,
-  "icons": {
-    "16": "images/icon-16.png",
-    "128": "images/icon-128.png"
-  },
   "background": {
     "scripts": [
       "scripts/background.js"
     ]
-  },
-  "browser_action": {
-    "default_icon": {
-      "19": "images/icon-19.png",
-      "38": "images/icon-38.png"
-    },
-    "default_title": "__MSG_browserActionTitle__",
-    "default_popup": "pages/popup.html"
-  },
-  "options_page": "pages/options.html",
-  "options_ui": {
-    "page": "pages/options.html",
-    "chrome_style": true
   },
   "web_accessible_resources": [
     "fonts/*.woff2"
@@ -34,7 +15,6 @@
       "matches": [
         "*://*.reddit.com/*"
       ],
-      "exclude_matches":["http://localhost:5001/*","http://localhost:5000/*"],
       "css": [
         "styles/contentscript.css"
       ],
@@ -46,7 +26,7 @@
     },
     {
       "matches":[
-        "http://localhost:5000/Auth/redux_callback.html", "http://localhost:5000/Auth/redux_silent_renew.html"
+        "http://localhost:5000/Auth/redux_callback.html", "http://localhost:5000/Auth/redux_silent_renew.html", "https://dev.snoonotes.com/Auth/redux*"
       ],
       "js":[
         "scripts/signinCallback.js"
@@ -57,6 +37,7 @@
     "tabs","identity","storage","unlimitedStorage","cookies",
     "http://fonts.googleapis.com/",
     "https://fonts.googleapis.com/",
-    "<all_urls>"
+    "https://*.reddit.com/*",
+    "https://*.snoonotes.com/*"
   ]
 }

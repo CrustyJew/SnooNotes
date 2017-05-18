@@ -56,8 +56,7 @@ var config = {
         resolve: {
             alias: {
                 'vue$': 'vue/dist/vue.esm.js',
-                'styles': path.resolve(__dirname, './app/styles'),
-                'vue-material': 'vue-material/dist/vue-material.debug.js'
+                'styles': path.resolve(__dirname, './app/styles')
             }
         },
       };

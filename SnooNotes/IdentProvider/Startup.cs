@@ -72,7 +72,7 @@ namespace IdentProvider {
            {
                options.Cors.CorsPolicyName = "AllowAll";
            }
-                ).AddSigningCredential("CN=SNIdentServer")
+                ).AddSigningCredential("CN=SNIdentServer", System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser)
                 .AddConfigurationStore(builder =>
                    builder.UseSqlServer(connectionString, options =>
                       options.MigrationsAssembly(migrationsAssembly)))
