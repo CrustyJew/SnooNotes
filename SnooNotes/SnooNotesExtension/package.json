@@ -16,6 +16,8 @@
     "test": "karma start"
   },
   "devDependencies": {
+    
+    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
     "babel-cli": "6.x.x",
     "babel-core": "6.x.x",
     "babel-eslint": "^6.1.2",

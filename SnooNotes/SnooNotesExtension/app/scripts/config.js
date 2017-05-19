@@ -2,9 +2,9 @@
 //import CustomWebStorageStateStore from './utilities/customWebStorageStateStore';
 import CustomIFrameNavigator from './utilities/customIFrameNavigator'; 
 
-export const authBaseUrl = 'https://dev.snoonotes.com/Auth/';
-export const apiBaseUrl = 'https://dev.snoonotes.com/api/';
-export const signalrBaseUrl = 'https://dev.snoonotes.com/signalr';
+export const authBaseUrl = 'https://snoonotes.com/Auth/';
+export const apiBaseUrl = 'https://snoonotes.com/api/';
+export const signalrBaseUrl = 'https://snoonotes.com/signalr';
 const redirectNav = new CustomRedirectManager();
 //const customStore = new CustomWebStorageStateStore();
 const customiframeNavigator = new CustomIFrameNavigator();

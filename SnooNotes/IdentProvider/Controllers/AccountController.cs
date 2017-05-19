@@ -135,7 +135,7 @@ namespace IdentProvider.Controllers
                     //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                     //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _signInManager.SignInAsync(user, isPersistent: true);
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
@@ -237,7 +237,7 @@ namespace IdentProvider.Controllers
             await _agentPool.RemoveWebAgentAsync(info.Principal.Identity.Name);
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
             if (result.Succeeded)
             {
                 _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
@@ -297,7 +297,7 @@ namespace IdentProvider.Controllers
                 if ( signresult.Succeeded ) {
                     signresult = await _userManager.AddLoginAsync( user, info );
                     if ( signresult.Succeeded ) {
-                        await _signInManager.SignInAsync( user, isPersistent: false );
+                        await _signInManager.SignInAsync( user, isPersistent: true );
                         _logger.LogInformation( 6, "User created an account using {Name} provider.", info.LoginProvider );
                         return RedirectToAction( "PopulateClaims",new { ReturnUrl = returnUrl } );
                     }
@@ -340,7 +340,7 @@ namespace IdentProvider.Controllers
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(user, isPersistent: true);
                         _logger.LogInformation(6, "User created an account using {Name} provider.", info.LoginProvider);
                         return RedirectToLocal(returnUrl);
                     }

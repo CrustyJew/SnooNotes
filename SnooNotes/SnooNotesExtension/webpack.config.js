@@ -6,7 +6,7 @@ var path = require("path");
 const ENV = args.production ? 'production' : 'development';
 
 var config = {
-          devtool: args.sourcemaps ? 'inline-source-map': null,
+          devtool: args.sourcemaps ? 'inline-source-map': false,
           watch: args.watch,
           plugins: [
             new webpack.DefinePlugin({

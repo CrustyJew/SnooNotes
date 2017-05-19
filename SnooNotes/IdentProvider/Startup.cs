@@ -59,7 +59,7 @@ namespace IdentProvider {
             services.Configure<IdentityOptions>( options => {
                 options.User.RequireUniqueEmail = false;
                 options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays( 150 );
-                options.Cookies.ApplicationCookie.SlidingExpiration = true;
+                options.Cookies.ApplicationCookie.SlidingExpiration = true; 
             } );
             // Add application services.
 
