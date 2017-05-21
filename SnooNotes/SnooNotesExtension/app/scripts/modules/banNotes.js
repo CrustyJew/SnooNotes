@@ -32,7 +32,13 @@ export class BanNotesModule {
                 }
                 else if (thing.startsWith('t1_')) {
                     //comment
-                    link = 'https://reddit.com/r/' + sub + '/comments/' + document.body.querySelector('.nestedlisting').id.replace('siteTable_t3_', '') + '/.../' + thing.replace('t1_', '');
+                    thing = document.querySelector('#thing_' + thing);
+                    let childarray = [...thing.children];
+                    let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
+                    let permlink = entry.querySelector('a.bylink').attributes['data-href-url'].value;
+                    let postid = permlink.substr(permlink.indexOf('comments/') + 9, 6); //post id is after comments/
+                    let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + postid + '/.../';
+                    link = commentRootURL + thing.attributes['data-fullname'].value.replace('t1_', '');
                 }
                 else if (thing.startsWith('t4_')) {
                     link = 'https://reddit.com/message/' + thing.replace('t4_', '');
