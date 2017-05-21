@@ -130,7 +130,7 @@ export default {
         },
         noteTypes: function () {
             if (this.newNote.newNoteSubIndex == -1) return {}
-            return this.snInfo.modded_subs[this.newNote.newNoteSubIndex].Settings.NoteTypes;
+            return this.snInfo.modded_subs[this.newNote.newNoteSubIndex].Settings.NoteTypes.filter(nt => !nt.Disabled);
         },
         isModdedSub: function () {
             if (this.subreddit && this.modSubs.findIndex(sub => sub.name == this.subreddit) > -1) {

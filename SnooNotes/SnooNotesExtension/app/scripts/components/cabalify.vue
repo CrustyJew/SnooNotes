@@ -30,7 +30,7 @@ export default {
   computed:{
         cabalNoteTypes: function(){
             if(!this.isCabal) return {};
-            return this.snInfo.modded_subs.filter(sub => sub.SubName == "SpamCabal")[0].Settings.NoteTypes;
+            return this.snInfo.modded_subs.filter(sub => sub.SubName == "SpamCabal")[0].Settings.NoteTypes.filter(nt => !nt.Disabled);
         },
   },
   methods:{

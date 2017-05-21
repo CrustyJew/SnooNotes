@@ -1,6 +1,6 @@
 {  "name": "SnooNotes",
   "description": "Usernotes plus a whole lot more!",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "manifest_version": 2,
   "background": {
     "scripts": [
@@ -34,7 +34,7 @@
     }
   ],
   "permissions": [
-    "tabs","identity","storage","unlimitedStorage","cookies",
+    "storage","unlimitedStorage","cookies",
     "http://fonts.googleapis.com/",
     "https://fonts.googleapis.com/",
     "https://*.reddit.com/*",

@@ -29,11 +29,11 @@ namespace SnooNotes.DAL {
                 string query = @"
 select s.SubredditID, s.SubName, s.Active, s.SentinelActive, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, 
 ss.AccessMask, ss.TempBanID, ss.PermBanID,
-nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic,nt.IconString
+nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic,nt.IconString, nt.Disabled
 from Subreddits s 
 left join SubredditSettings ss on ss.SubRedditID = s.SubredditID 
 left join NoteTypes nt on nt.SubredditID = s.SubredditID 
-where s.SubName in @subnames and nt.Disabled = 0
+where s.SubName in @subnames
 ORDER BY nt.DisplayOrder asc
 ";
 

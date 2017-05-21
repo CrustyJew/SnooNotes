@@ -158,7 +158,7 @@ export default {
             let updIds = ntUpdData.map(n => n.NoteTypeID);
             for (let i = 0; i < this.initialSettings.Settings.NoteTypes.length; i++) {
                 let nt = this.initialSettings.Settings.NoteTypes[i];
-                if (updIds.indexOf(nt.NoteTypeID) == -1) {
+                if (updIds.indexOf(nt.NoteTypeID) == -1 && !nt.Disabled) {
                     ntDelData.push(nt);
                 }
             }
@@ -204,6 +204,7 @@ export default {
             }
         }
         this.newSettings = JSON.parse(JSON.stringify(this.sub));
+        this.newSettings.Settings.NoteTypes = this.newSettings.Settings.NoteTypes.filter(nt => !nt.Disabled);
     }
 }
 </script>

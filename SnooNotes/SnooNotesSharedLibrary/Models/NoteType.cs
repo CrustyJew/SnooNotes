@@ -15,7 +15,7 @@ namespace SnooNotes.Models
         public bool Bold { get; set; }
         public bool Italic { get; set; }
         public string IconString { get; set; }
-
+		public bool Disabled { get; set; }
         public NoteType()
         {
             NoteTypeID = -1;

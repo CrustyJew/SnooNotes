@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Authorization;
-
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SnooNotes.Controllers
@@ -15,25 +14,52 @@ namespace SnooNotes.Controllers
     public class HomeController : Controller
     {
         private IConfigurationRoot config;
-        public HomeController(IConfigurationRoot config ) {
+        public HomeController(IConfigurationRoot config)
+        {
             this.config = config;
         }
         // GET: /<controller>/
-        [HttpGet("Signin")][AllowAnonymous]
+        [HttpGet("Signin")]
+        [AllowAnonymous]
         public IActionResult Signin()
         {
-            if ( !User.Identity.IsAuthenticated ) {
-                return new ChallengeResult( "oidc" );
+            if (!User.Identity.IsAuthenticated)
+            {
+                return new ChallengeResult("oidc");
             }
-            else {
-                return Redirect( "/" );
+            else
+            {
+                return Redirect("/");
             }
         }
         [HttpGet("Signout")]
         [AllowAnonymous]
-        public async Task Signout() {
-            await HttpContext.Authentication.SignOutAsync( "cookie" );
-            await HttpContext.Authentication.SignOutAsync( "oidc" );//, new AuthenticationProperties { RedirectUri = "/" } );
+        public async Task Signout()
+        {
+            await HttpContext.Authentication.SignOutAsync("cookie");
+            await HttpContext.Authentication.SignOutAsync("oidc");//, new AuthenticationProperties { RedirectUri = "/" } );
+        }
+        [HttpGet("gettheawesome")]
+        public ActionResult GetTheAwesome()
+        {
+            string userAgent = Request.Headers["User-Agent"];
+            userAgent = userAgent?.ToLower();
+
+
+            if (userAgent.Contains("chrome"))
+            {
+                return Redirect("https://chrome.google.com/webstore/detail/snoonotes/lfoenkalfeojpdlgiccblfbjcjpanneg");
+            }
+            else if (userAgent.Contains("firefox"))
+            {
+                //return File("/Addon/snoonotes.xpi", "application/x-xpinstall");
+                return Redirect("https://addons.mozilla.org/en-US/firefox/addon/snoonotes/");
+            }
+            else
+            {
+                return View("UnrecognizedBrowser");
+
+            }
         }
     }
 }
