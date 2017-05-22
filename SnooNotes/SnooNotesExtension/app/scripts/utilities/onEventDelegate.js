@@ -23,7 +23,7 @@ window.findParent = function(child,filter,root) {
 
 export const on = (bindTo, type, targetSelector, callback) => {
   return window.addEvent(bindTo, type, function(e) {
-    var s = window.findParent(e.srcElement || e.target, function(elm) {
+    var s = e.target.matches(targetSelector) || window.findParent(e.srcElement || e.target, function(elm) {
         return elm.matches(targetSelector);
     },this);
     

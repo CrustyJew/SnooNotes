@@ -1,4 +1,3 @@
-import { on } from '../utilities/onEventDelegate.js';
 import axios from 'axios';
 
 export class BanNotesModule {
@@ -10,7 +9,8 @@ export class BanNotesModule {
     }
 
     initModule() {
-        on(document.body, 'click', '.mod-popup .save', (e) => {
+        document.body.addEventListener('click', (e) => {
+            if(!e.target.matches('.mod-popup .save')) return;
             let target = e.target;
             let popup = target.closest('div.mod-popup');
             let meta = popup.querySelector('div.meta');

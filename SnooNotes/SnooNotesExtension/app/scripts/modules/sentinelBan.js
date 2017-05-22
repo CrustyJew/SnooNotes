@@ -1,22 +1,28 @@
-import { on } from '../utilities/onEventDelegate.js';
+
 import axios from 'axios';
 
 export class SentinelBanModule {
     constructor() {
-        this.eventListenerUnbinds = [];
         this.subreddits = [];
         this.userBanEnabled = false;
     }
 
     initModule() {
-        if (document.body.matches('body.comments-page,body.listing-page') || window.location.pathname == "/r/mod/about/modqueue") {
+        if (document.body.matches('body.comments-page,body.listing-page') || window.location.pathname.indexOf('/about/modqueue') > -1) {
             //only bind on listing and comment pages to avoid extra listeners
-            this.eventListenerUnbinds.push(on(document.body, 'click', '.remove-button .main > a, .big-mod-buttons a.pretty-button[data-event-action="spam"], .big-mod-buttons a.pretty-button[data-event-action="remove"]', (e) => { this.thingRemove(e) }));
-            this.eventListenerUnbinds.push(on(document.body, 'click', '.sn-bot-ban-prompt a', (e) => { this.executeBan(e) }));
+            document.body.addEventListener('click', (e) => {
+                if(!e.target.matches( '.remove-button .main > a, .big-mod-buttons a.pretty-button')) return;
+                this.thingRemove(e); 
+            });
+            document.body.addEventListener('click', (e) => { 
+                if(!e.target.matches('.sn-bot-ban-prompt a')) return;
+                this.executeBan(e);
+            });
         }
     }
 
     refreshModule(subs, hasConfig) {
+        this.subreddits = [];
         subs.forEach((sub)=>{
             this.subreddits.push({name: sub.SubName, isAdmin: sub.IsAdmin, hasSentinel: sub.SentinelActive});
         })
@@ -42,7 +48,16 @@ export class SentinelBanModule {
             action = target.closest('form').querySelector('input[name="executed"]').value;
         }else{
             //fancy button
-            action = target.attributes["data-event-action"].value;
+            let actionAttr = target.attributes["data-event-action"];
+            if(actionAttr){
+                if(actionAttr.value != "remove" && actionAttr.value != "spam") return; //not a remove button
+                action = actionAttr.value;
+            }
+            else{
+                let actionText = target.textContent;
+                if(actionText.toLowerCase() != "remove" && actionText.toLowerCase() != "spam") return; //not a remove button;
+                action = actionText;
+            }
         }
         let thing = target.closest('.thing');
         let oldElem = target.closest('ul').querySelector('.sn-bot-ban-prompt.sn-bot-ban' + action);
@@ -66,13 +81,17 @@ export class SentinelBanModule {
             thingURL = "https://reddit.com/r/" + thing.attributes['data-subreddit'].value + '/' + thing.attributes['data-fullname'].value.replace('t3_', '');
         }
         else {
-            let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + thing.closest('.nestedlisting').id.replace('siteTable_t3_', '') + '/.../';
+            let childarray = [...thing.children];
+            let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
+            let permlink = entry.querySelector('a.bylink').attributes['data-href-url'].value;
+            let postid = permlink.substr(permlink.indexOf('comments/') + 9, 6); //post id is after comments/
+            let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + postid + '/.../';
             thingURL = commentRootURL + thing.attributes['data-fullname'].value.replace('t1_', '');
         }
         let banElem = this.getBanElement(sub, user, url, action, thingURL);
         if (banElem) {
             let injectElem = document.createElement('li');
-            injectElem.className = '.sn-bot-ban-prompt sn-bot-ban' + action;
+            injectElem.className = 'sn-bot-ban-prompt sn-bot-ban' + action;
             injectElem.appendChild(banElem);
 
             target.closest('ul').appendChild(injectElem);

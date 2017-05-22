@@ -1,4 +1,4 @@
-import { on } from '../utilities/onEventDelegate.js';
+
 import axios from 'axios';
 
 export class ModActionsModule {
@@ -7,7 +7,10 @@ export class ModActionsModule {
     }
 
     initModule() {
-        on(document.body, 'click', '.big-mod-buttons > span > .pretty-button', (e)=>{this.prettyAction(e)})
+        document.body.addEventListener('click', (e)=>{
+            if(!e.target.matches('.big-mod-buttons > span > .pretty-button')) return;
+            this.prettyAction(e)
+        });
         chrome.runtime.onMessage.addListener((message)=>{
             if(message.method == "modAction") this.receiveModAction(message.req);
         });
@@ -24,7 +27,13 @@ export class ModActionsModule {
         let thingid = thing.attributes['data-fullname'].value;
         let reason = btn.attributes['data-event-action'];
         if (!reason) {
-            reason = btn.closest('form').querySelector('.option.main a').attr('data-event-action');
+            let form = btn.closest('form');
+            if(form){
+                reason = form.querySelector('.option.main a').attr('data-event-action');
+            }
+            else{
+                reason = btn.textContent;
+            }
         }
         else {
             reason = reason.value;
@@ -41,6 +50,7 @@ export class ModActionsModule {
 
     receiveModAction(req) {
         let thing = document.body.querySelector('.id-' + req.thingID);
+        if(!thing) return; //doesn't see thing on page
         let childarray = [...thing.children];
         let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
         let prevAction = entry.querySelector('.sn-mod-action');
@@ -81,7 +91,8 @@ export class ModActionsModule {
             bigButtons.parentNode.insertBefore(actionElem, bigButtons.nextSibling);
         }
         else {
-            let lastItem = entry.querySelector('li:last');
+            let nodes = entry.querySelector('li:last');
+            let lastItem = nodes[nodes.length - 1]; 
             lastItem.parentNode.insertBefore(actionElem, lastItem.nextSibling);
         }
     }
