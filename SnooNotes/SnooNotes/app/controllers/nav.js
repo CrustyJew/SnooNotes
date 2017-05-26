@@ -1,4 +1,4 @@
-﻿module.exports = /*@ngInject*/ function ($scope, AuthFactory, $uibModal, SubFactory, $location, $stateParams, $state) {
+﻿module.exports = /*@ngInject*/ function ($scope, AuthFactory, $uibModal, SubFactory, $window, $stateParams, $state) {
     $scope.currentUser = AuthFactory.currentUser;
     $scope.curSub = $stateParams.subName;
 
@@ -11,9 +11,10 @@
         AuthFactory.logout();
     }
     $scope.login = function () {
-        var loginModal = $uibModal.open({
-            templateUrl: "loginModal.html",
-            controller: 'AuthCtrl'
-        });
+        //var loginModal = $uibModal.open({
+        //    templateUrl: "loginModal.html",
+        //    controller: 'AuthCtrl'
+        //});
+        $window.location.href = "/Signin"
     }
 }

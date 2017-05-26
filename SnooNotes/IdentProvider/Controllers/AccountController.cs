@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using IdentProvider.Models;
+using SnooNotes.Models;
 using IdentProvider.Models.AccountViewModels;
 using IdentProvider.Services;
+using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.Extensions.Configuration;
 
 namespace IdentProvider.Controllers
 {
@@ -22,19 +27,34 @@ namespace IdentProvider.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly AccountService _account;
+        private readonly IConfigurationRoot _config;
+
+        private RedditSharp.RefreshTokenWebAgentPool _agentPool;
+        private SnooNotes.Utilities.IAuthUtils _authUtils;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IIdentityServerInteractionService interaction,
+            IHttpContextAccessor httpContext,
+            IClientStore clientStore,
+            IConfigurationRoot config,
+            RedditSharp.RefreshTokenWebAgentPool agentPool,
+            SnooNotes.Utilities.IAuthUtils authUtils)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _account = new AccountService( interaction, httpContext, clientStore );
+            _config = config;
+            _agentPool = agentPool;
+            _authUtils = authUtils;
         }
 
         //
@@ -52,14 +72,14 @@ namespace IdentProvider.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginInputModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberLogin, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
@@ -67,7 +87,7 @@ namespace IdentProvider.Controllers
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberLogin } );
                 }
                 if (result.IsLockedOut)
                 {
@@ -115,7 +135,7 @@ namespace IdentProvider.Controllers
                     //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                     //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _signInManager.SignInAsync(user, isPersistent: true);
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
@@ -125,16 +145,51 @@ namespace IdentProvider.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Logout( string logoutId ) {
+            var vm = await _account.BuildLogoutViewModelAsync( logoutId );
 
-        //
-        // POST: /Account/LogOff
+            if ( vm.ShowLogoutPrompt == false ) {
+                // no need to show prompt
+                return await Logout( vm );
+            }
+
+            return View( vm );
+        }
+        /// <summary>
+        /// Handle logout page postback
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOff()
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout(LogoutInputModel model)
         {
+            var vm = await _account.BuildLoggedOutViewModelAsync(model.LogoutId);
+            if (vm.TriggerExternalSignout)
+            {
+                string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+                try
+                {
+                    // hack: try/catch to handle social providers that throw
+                    await HttpContext.Authentication.SignOutAsync(vm.ExternalAuthenticationScheme,
+                        new AuthenticationProperties { RedirectUri = url });
+                }
+                catch (NotSupportedException) // this is for the external providers that don't have signout
+                {
+                }
+                catch (InvalidOperationException) // this is for Windows/Negotiate
+                {
+                }
+            }
+            if(vm.PostLogoutRedirectUri == null ) {
+                vm.PostLogoutRedirectUri = _config.GetSection( "ID4_Client_LogoutURIs" ).Get<string[]>().FirstOrDefault();
+            }
+
+            // delete authentication cookie
             await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+
+            return View("LoggedOut", vm);
         }
 
         //
@@ -142,18 +197,15 @@ namespace IdentProvider.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null, bool read = false, bool wiki = false)
+        public IActionResult ExternalLogin(string provider, string returnUrl = null, bool config = false, bool wiki = false)
         {
             string scope = "";
             // Request a redirect to the external login provider.
-            if ( wiki && read ) {
-                scope = "identity,mysubreddits,wikiread,read";
+            if ( config ) {
+                scope = "identity,mysubreddits,wikiedit,modconfig,wikiread";
             }
             else if ( wiki ) {
                 scope = "identity,mysubreddits,wikiread";
-            }
-            else if ( read ) {
-                scope = "identity,mysubreddits,read";
             }
             else {
                 scope = "identity,mysubreddits";
@@ -181,11 +233,38 @@ namespace IdentProvider.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
+            //remove from the webagent pool in case the user exists.
+            await _agentPool.RemoveWebAgentAsync(info.Principal.Identity.Name);
+
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
             if (result.Succeeded)
             {
                 _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
+                string scope = info.Principal.Claims.FirstOrDefault(c => c.Type == "urn:reddit_scope").Value;
+                var scopes = scope.Split(' ');
+                bool hasWiki = scopes.Contains("wikiedit");
+                bool hasConfig = scopes.Contains("modconfig");
+                string accessToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "access_token").Value;
+                string refreshToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "refresh_token").Value;
+                string tokenExpires = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "expires_at").Value;
+
+                var theuser = await _userManager.FindByNameAsync(info.Principal.Identity.Name);
+                string oldRefreshToken = theuser.RefreshToken;
+
+                if (!string.IsNullOrWhiteSpace(oldRefreshToken))
+                {
+                    await _authUtils.RevokeRefreshTokenAsync(oldRefreshToken, info.Principal.Identity.Name);
+                }
+
+                theuser.AccessToken = accessToken;
+                theuser.HasConfig = hasConfig;
+                theuser.HasWiki = hasWiki;
+                theuser.RefreshToken = refreshToken;
+                theuser.TokenExpires = DateTime.Parse(tokenExpires);
+
+                await _userManager.UpdateAsync(theuser);
+
                 return RedirectToLocal(returnUrl);
             }
             //if (result.RequiresTwoFactor)
@@ -200,8 +279,8 @@ namespace IdentProvider.Controllers
             {
                 string scope = info.Principal.Claims.FirstOrDefault( c => c.Type == "urn:reddit_scope" ).Value;
                 var scopes = scope.Split( ' ' );
-                bool hasWiki = scopes.Contains( "wikiread" );
-                bool hasRead = scopes.Contains( "read" );
+                bool hasWiki = scopes.Contains( "wikiedit" );
+                bool hasConfig = scopes.Contains("modconfig");
                 string accessToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "access_token" ).Value;
                 string refreshToken = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "refresh_token" ).Value;
                 string tokenExpires = info.AuthenticationTokens.FirstOrDefault( t => t.Name == "expires_at" ).Value;
@@ -211,14 +290,14 @@ namespace IdentProvider.Controllers
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
                     TokenExpires = DateTime.Parse(tokenExpires),
-                    HasRead = hasRead,
+                    HasConfig = hasConfig,
                     HasWiki = hasWiki
                 };
                 var signresult = await _userManager.CreateAsync( user );
                 if ( signresult.Succeeded ) {
                     signresult = await _userManager.AddLoginAsync( user, info );
                     if ( signresult.Succeeded ) {
-                        await _signInManager.SignInAsync( user, isPersistent: false );
+                        await _signInManager.SignInAsync( user, isPersistent: true );
                         _logger.LogInformation( 6, "User created an account using {Name} provider.", info.LoginProvider );
                         return RedirectToAction( "PopulateClaims",new { ReturnUrl = returnUrl } );
                     }
@@ -261,7 +340,7 @@ namespace IdentProvider.Controllers
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(user, isPersistent: true);
                         _logger.LogInformation(6, "User created an account using {Name} provider.", info.LoginProvider);
                         return RedirectToLocal(returnUrl);
                     }
@@ -291,96 +370,96 @@ namespace IdentProvider.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        //
-        // GET: /Account/ForgotPassword
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword()
-        {
-            return View();
-        }
+        ////
+        //// GET: /Account/ForgotPassword
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult ForgotPassword()
+        //{
+        //    return View();
+        //}
 
-        //
-        // POST: /Account/ForgotPassword
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await _userManager.FindByNameAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return View("ForgotPasswordConfirmation");
-                }
+        ////
+        //// POST: /Account/ForgotPassword
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = await _userManager.FindByNameAsync(model.Email);
+        //        if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+        //        {
+        //            // Don't reveal that the user does not exist or is not confirmed
+        //            return View("ForgotPasswordConfirmation");
+        //        }
 
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                // Send an email with this link
-                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                //await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                //   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-                //return View("ForgotPasswordConfirmation");
-            }
+        //        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
+        //        // Send an email with this link
+        //        //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+        //        //var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+        //        //await _emailSender.SendEmailAsync(model.Email, "Reset Password",
+        //        //   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+        //        //return View("ForgotPasswordConfirmation");
+        //    }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
+        //    // If we got this far, something failed, redisplay form
+        //    return View(model);
+        //}
 
         //
         // GET: /Account/ForgotPasswordConfirmation
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgotPasswordConfirmation()
-        {
-            return View();
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult ForgotPasswordConfirmation()
+        //{
+        //    return View();
+        //}
 
-        //
-        // GET: /Account/ResetPassword
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
-        {
-            return code == null ? View("Error") : View();
-        }
+        ////
+        //// GET: /Account/ResetPassword
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult ResetPassword(string code = null)
+        //{
+        //    return code == null ? View("Error") : View();
+        //}
 
         //
         // POST: /Account/ResetPassword
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            var user = await _userManager.FindByNameAsync(model.Email);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-            }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-            }
-            AddErrors(result);
-            return View();
-        }
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+        //    var user = await _userManager.FindByNameAsync(model.Email);
+        //    if (user == null)
+        //    {
+        //        // Don't reveal that the user does not exist
+        //        return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+        //    }
+        //    var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+        //    if (result.Succeeded)
+        //    {
+        //        return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+        //    }
+        //    AddErrors(result);
+        //    return View();
+        //}
 
-        //
-        // GET: /Account/ResetPasswordConfirmation
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
+        ////
+        //// GET: /Account/ResetPasswordConfirmation
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult ResetPasswordConfirmation()
+        //{
+        //    return View();
+        //}
 
         //
         // GET: /Account/SendCode

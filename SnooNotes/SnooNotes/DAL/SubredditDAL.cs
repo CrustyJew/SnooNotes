@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
-    public class SubredditDAL {
-        private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+    public class SubredditDAL : BaseSubredditDAL {
+        private string connstring;
         private IConfigurationRoot Configuration;
-        public SubredditDAL( IConfigurationRoot config ) {
+        public SubredditDAL( IConfigurationRoot config ):base(config) {
             Configuration = config;
-            connstring = Configuration.GetConnectionString( "DefaultConnection" );
+            connstring = Configuration.GetConnectionString("SnooNotes");
         }
-        public async Task<string> AddSubreddit( Subreddit sub ) {
+        public override async Task<string> AddSubreddit( Subreddit sub ) {
             sub.SubName = sub.SubName;
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "insert into Subreddits (SubName,Active) values (@SubName,@Active)";
@@ -24,15 +24,18 @@ namespace SnooNotes.DAL {
             }
         }
 
-        public async Task<IEnumerable<Subreddit>> GetSubreddits( IEnumerable<string> subnames ) {
+        public override async Task<IEnumerable<Subreddit>> GetSubreddits( IEnumerable<string> subnames ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select s.SubredditID, s.SubName, s.Active, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, "+
-                               "ss.AccessMask, ss.TempBanID, ss.PermBanID, " +
-                               "nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic " +
-                               "from Subreddits s " +
-                               "left join SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
-                               "left join NoteTypes nt on nt.SubredditID = s.SubredditID " +
-                               "where s.SubName in @subnames and nt.Disabled = 0";
+                string query = @"
+select s.SubredditID, s.SubName, s.Active, s.SentinelActive, s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword, 
+ss.AccessMask, ss.TempBanID, ss.PermBanID,
+nt.NoteTypeID, s.SubName,nt.DisplayName,nt.ColorCode,nt.DisplayOrder,nt.Bold,nt.Italic,nt.IconString, nt.Disabled
+from Subreddits s 
+left join SubredditSettings ss on ss.SubRedditID = s.SubredditID 
+left join NoteTypes nt on nt.SubredditID = s.SubredditID 
+where s.SubName in @subnames
+ORDER BY nt.DisplayOrder asc
+";
 
                 var lookup = new Dictionary<int, Subreddit>();
                 var result = await conn.QueryAsync<Subreddit, DirtbagSettings, SubredditSettings, NoteType, Subreddit>( query, ( s, bs, ss, nt ) => {
@@ -63,7 +66,7 @@ namespace SnooNotes.DAL {
 
         }
 
-        public async Task<bool> UpdateBotSettings(DirtbagSettings settings, string subName) {
+        public override async Task<bool> UpdateBotSettings(DirtbagSettings settings, string subName) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = @"
 update Subreddits
@@ -78,7 +81,7 @@ SubName = @subName
             }
         }
 
-        public async Task<DirtbagSettings> GetBotSettings(string subName ) {
+        public override async Task<DirtbagSettings> GetBotSettings(string subName ) {
             using (SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = @"
 select s.DirtbagUrl, s.DirtbagUsername, s.DirtbagPassword
@@ -89,23 +92,7 @@ WHERE s.SubName = @subName
             }
         }
 
-        public async Task<List<Subreddit>> GetActiveSubs() {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select s.SubredditID, s.SubName, s.Active, ss.AccessMask, ss.TempBanID, ss.PermBanID from Subreddits s left join " +
-                               "SubredditSettings ss on ss.SubRedditID = s.SubredditID " +
-                               "where active = 1";
-                var result = await conn.QueryAsync<Subreddit, SubredditSettings, Subreddit>( query, ( s, ss ) => {
-                    if ( ss == null ) {
-                        ss = new SubredditSettings();
-                    }
-                    s.Settings = ss;
-                    return s;
-                }, splitOn: "AccessMask" );
-                return result.ToList();
-            }
-        }
-
-        public async Task<bool> UpdateSubredditSettings( Subreddit sub ) {
+        public override async Task<bool> UpdateSubredditSettings( Subreddit sub ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = "update ss " +
                                 "set ss.AccessMask = @AccessMask " +

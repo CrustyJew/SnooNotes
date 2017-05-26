@@ -7,18 +7,18 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.BLL {
-    public class NoteTypesBLL {
-        private DAL.NoteTypesDAL noteTypesDAL;
+    public class NoteTypesBLL : INoteTypesBLL {
+        private DAL.INoteTypesDAL noteTypesDAL;
         private Signalr.ISnooNoteUpdates snUpdates;
-        public NoteTypesBLL(IConfigurationRoot config, Signalr.ISnooNoteUpdates snooNoteUpdates ) {
-            noteTypesDAL = new DAL.NoteTypesDAL(config);
+        public NoteTypesBLL(DAL.INoteTypesDAL noteTypesDAL, Signalr.ISnooNoteUpdates snooNoteUpdates ) {
+            this.noteTypesDAL = noteTypesDAL;
             snUpdates = snooNoteUpdates;
         }
         public async Task<Dictionary<string, IEnumerable<BasicNoteType>>> GetNoteTypesForSubs( IEnumerable<string> subs ) {
             Dictionary<string, IEnumerable<BasicNoteType>> toReturn = new Dictionary<string, IEnumerable<BasicNoteType>>();
             var notetypes = await noteTypesDAL.GetNoteTypesForSubs( subs );
             foreach ( string sub in subs ) {
-                var basicNoteTypesForSub = notetypes.Where( t => t.SubName.ToLower() == sub ).Select( t => new BasicNoteType() { Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder = t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID } ).OrderBy( bt => bt.DisplayOrder );
+                var basicNoteTypesForSub = notetypes.Where( t => t.SubName.ToLower() == sub ).Select( t => new BasicNoteType() { Bold = t.Bold, ColorCode = t.ColorCode, DisplayName = t.DisplayName, DisplayOrder = t.DisplayOrder, Italic = t.Italic, NoteTypeID = t.NoteTypeID, IconString = t.IconString } ).OrderBy( bt => bt.DisplayOrder );
                 toReturn.Add( sub, basicNoteTypesForSub );
             }
             return toReturn;
@@ -47,7 +47,7 @@ namespace SnooNotes.BLL {
             }
             foreach ( NoteType nt in values ) {
 
-                if ( !user.HasClaim( $"urn:snoonotes:subreddits:{nt.SubName.ToLower()}:admin", "true" ) )
+                if ( !user.HasClaim("uri:snoonotes:admin", nt.SubName.ToLower()) )
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
 
             }

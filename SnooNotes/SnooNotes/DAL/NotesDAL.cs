@@ -7,12 +7,12 @@ using SnooNotes.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.DAL {
-    public class NotesDAL {
-        private string connstring;// = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+    public class NotesDAL : INotesDAL {
+        private string connstring;
         private IConfigurationRoot Configuration;
         public NotesDAL( IConfigurationRoot config ) {
             Configuration = config;
-            connstring = Configuration.GetConnectionString( "DefaultConnection" );
+            connstring = Configuration.GetConnectionString("SnooNotes");
         }
         public async Task<IEnumerable<Note>> GetNotesForUsers( string subname, IEnumerable<string> usernames ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {

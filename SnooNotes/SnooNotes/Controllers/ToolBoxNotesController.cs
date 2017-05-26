@@ -1,4 +1,4 @@
-﻿using IdentProvider.Models;
+﻿using SnooNotes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,19 +14,20 @@ using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
     [Authorize]
-    //[WikiRead] ///TODO
+    //[wikiedit] ///TODO
 
     [Route( "api/[controller]" )]
     public class ToolBoxNotesController : Controller {
 
         private UserManager<ApplicationUser> userManager;
-        private DAL.NotesDAL notesDAL;
-        private Utilities.AuthUtils authUtils;
-        public ToolBoxNotesController(UserManager<ApplicationUser> userManager, IConfigurationRoot config, 
-            ILoggerFactory loggerFactory, IMemoryCache memCache, RoleManager<IdentityRole> roleManager ) {
+        private DAL.INotesDAL notesDAL;
+        private Utilities.IAuthUtils authUtils;
+        private RedditSharp.RefreshTokenWebAgentPool agentPool;
+        public ToolBoxNotesController(UserManager<ApplicationUser> userManager, DAL.INotesDAL notesDAL, Utilities.IAuthUtils authUtils, RedditSharp.RefreshTokenWebAgentPool agentPool ) {
             this.userManager = userManager;
-            notesDAL = new DAL.NotesDAL( config );
-            authUtils = new Utilities.AuthUtils( config, userManager, roleManager, loggerFactory, memCache );
+            this.notesDAL = notesDAL;
+            this.authUtils = authUtils;
+            this.agentPool = agentPool;
         }
         [HttpGet]
         // GET: api/ToolBoxNotes
@@ -39,16 +40,15 @@ namespace SnooNotes.Controllers {
         [HttpGet("{id}")]
         public async Task<IEnumerable<RedditSharp.TBUserNote>> Get(string id)
         {
-            if ( !User.HasClaim( "urn:snoonotes:admin", id.ToLower() ) ) {
+            if ( !User.HasClaim( "uri:snoonotes:admin", id.ToLower() ) ) {
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             }
-            var user = await userManager.FindByNameAsync( User.Identity.Name);
-            if (user.TokenExpires < DateTime.UtcNow)
+            var agent = await agentPool.GetOrCreateWebAgentAsync(User.Identity.Name, async (uname, uagent, rlimit) =>
             {
-                await authUtils.GetNewTokenAsync(user);
-            }
-            RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
-            agent.AccessToken = user.AccessToken;
+                var ident = await userManager.FindByNameAsync(User.Identity.Name);
+                return new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent);
+            });
+
             var notes = await RedditSharp.ToolBoxUserNotes.GetUserNotesAsync(agent, id);
             return notes;
         }
@@ -56,19 +56,16 @@ namespace SnooNotes.Controllers {
         // POST: api/ToolBoxNotes
         public async Task<int> Post([FromBody]Models.RequestObjects.TBImportMapping value)
         {
-            if ( !User.HasClaim( "urn:snoonotes:admin", value.subName.ToLower() ) ) {
+            if ( !User.HasClaim( "uri:snoonotes:admin", value.subName.ToLower() ) ) {
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             }
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            if (user.TokenExpires < DateTime.UtcNow)
+
+
+            var agent = await agentPool.GetOrCreateWebAgentAsync(User.Identity.Name, async (uname, uagent, rlimit) =>
             {
-                await authUtils.GetNewTokenAsync(user);
-
-                await userManager.UpdateAsync(user);
-            }
-
-
-            RedditSharp.WebAgent agent = new RedditSharp.WebAgent(user.AccessToken);
+                var ident = await userManager.FindByNameAsync(User.Identity.Name);
+                return new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent);
+            });
 
             var notes = await RedditSharp.ToolBoxUserNotes.GetUserNotesAsync(agent, value.subName);
             List<Models.Note> convertedNotes = Utilities.TBNoteUtils.ConvertTBNotesToSnooNotes(value.subName, value.GetNoteTypeMapping(), notes.ToList());

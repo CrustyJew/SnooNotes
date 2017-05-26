@@ -9,7 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 
 namespace SnooNotes.DAL {
-    public class DirtbagDAL {
+    public class DirtbagDAL : IDirtbagDAL {
         private const string TEST_CONNECTION_ENDPOINT = "api/Info/TestConnection?subreddit={0}";
         private const string BAN_LIST_ENDPOINT = "api/AutomodBanned?subname={0}"; //TODO: dear god why can't I name shit consistently
         private const string REMOVE_BAN_ENDPOINT = "api/AutomodBanned?subname={0}&id={1}&modname={2}";

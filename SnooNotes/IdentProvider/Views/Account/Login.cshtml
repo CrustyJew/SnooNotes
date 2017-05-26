@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Authentication
 @model LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<SnooNotes.Models.ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Log in";
@@ -20,11 +20,20 @@
                     <li><strong>Identity:</strong> Public profile info to validate your username</li>
                     <li><strong>MySubreddits:</strong> Used to validate what subreddits you moderate, this is critical to authorization to protect notes</li>
                 </ul>
-                <span style="font-weight:bold;font-size:20px;">Optional Permissions: <span style="font-size:12px;">Select check boxes below to allow</span></span>
+                <span style="font-weight:bold;font-size:20px;">Features That Require Additional Permissions: <span style="font-size:12px;">Select check boxes below to enable</span></span>
                 <ul style="margin-bottom:5px; list-style:none;">
-                    <li><label style="font-weight:normal;cursor:pointer"><input name ="read" value="true" id="chkScopeRead" type="checkbox" checked="@ViewBag.Read" class="optScope" /><strong>Read:</strong> Used to read the lists of moderators of subs, also used to import Toolbox notes. This does give access to posts / comments made in private subreddits, but SnooNotes will never access them.</label></li>
-                    <li><label style="font-weight:normal;cursor:pointer"><input name ="wiki" value="true" id="chkScopeWiki" type="checkbox" checked="@ViewBag.Wiki" class="optScope" /><strong>WikiRead:</strong> Used to import Moderator Toolbox Usernotes into SnooNotes.</label></li>
+                    <li><label style="font-weight:normal;cursor:pointer"><input name ="config" value="true" id="chkScopeConfig" type="checkbox" checked="@ViewBag.Read" class="optScope" onclick="toggleScopes()" /><strong>Automod Ban User:</strong> Requires wikiread, wikiedit, and modconfig scopes. If not checked, you will not have the option to bot ban users. You will still be able to bot ban channels though.</label></li>
+                    <li><label style="font-weight:normal;cursor:pointer"><input name ="wiki" value="true" id="chkScopeWiki" type="checkbox" checked="@ViewBag.Wiki" class="optScope" onclick="toggleScopes()" /><strong>Import Toolbox Notes:</strong> Requires wikiread scope.</label></li>
                 </ul>
+
+                <div id="AdditionalScopes">
+                    <h2>Additional Scopes Requested:</h2>
+                    <ul>
+                        <li class="addScopeConfig addScopeWiki"><strong>WikiRead:</strong> Used to read the existing automod config to prevent overwriting other rules in addition to importing Moderator Toolbox user notes.</li>
+                        <li class="addScopeConfig"><strong>WikiEdit:</strong> Required to update automod config for banned users.</li>
+                        <li class="addScopeConfig"><strong>ModConfig</strong> Reddit requires this permission to update protected wiki pages like automod's.</li>
+                    </ul>
+                </div>
 
                 <p>To see the full list of actions these permissions give SnooNotes, please visit <a href="https://www.reddit.com/dev/api/oauth">Reddit's API Documentation</a> and look them up by the scopes listed above. </p>
                 <button name="provider" value="Reddit" type="submit" class="doLogin" style="background: linear-gradient(to bottom, #74c429, #4ca20b ); font-weight:bold;margin:0px auto;padding: 2px 18px; color:#fff; height:32px; font-size:16px; font-weight:bold;border-radius:2px;border:1px solid darkgrey;display:block;">Login!</button>
@@ -35,4 +44,33 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync( "_ValidationScriptsPartial" ); }
+    <script type="text/javascript">
+        function toggleScopes() {
+            var config = document.querySelector('#chkScopeConfig');
+            var wiki = document.querySelector('#chkScopeWiki');
+
+            if (config.checked || wiki.checked) {
+                document.getElementById('AdditionalScopes').setAttribute('style', 'display:block');
+            }
+            else {
+                document.getElementById('AdditionalScopes').setAttribute('style', 'display:none');
+            }
+
+            if (config.checked) {
+                wiki.setAttribute('disabled', 'true');
+                document.querySelectorAll('.addScopeConfig').forEach(function (li) { li.setAttribute('style', 'display:list-item') });
+            }
+            else if (wiki.checked) {
+                wiki.removeAttribute('disabled');
+                document.querySelectorAll('.addScopeConfig:not(.addScopeWiki)').forEach(function (li) { li.setAttribute('style', 'display:none') });
+                document.querySelectorAll('.addScopeWiki').forEach(function (li) { li.setAttribute('style', 'display:list-item') });
+            }
+            else {
+                wiki.removeAttribute('disabled');
+            }
+        }
+        (function () {
+            toggleScopes();
+        })();
+    </script>
 }

@@ -12,11 +12,12 @@ namespace SnooNotes.Controllers
 {
     [Authorize]
     [Route("restapi/[controller]")]
+    [Route("api/[controller]")]
     public class NoteTypeController : Controller
     {
-        private BLL.NoteTypesBLL noteTypeBLL;
-        public NoteTypeController(IConfigurationRoot config, Signalr.ISnooNoteUpdates snooNoteUpdates) {
-            noteTypeBLL = new BLL.NoteTypesBLL(config, snooNoteUpdates);
+        private BLL.INoteTypesBLL noteTypeBLL;
+        public NoteTypeController(BLL.INoteTypesBLL noteTypesBLL) {
+            noteTypeBLL = noteTypesBLL;
         }
         [HttpGet]
         // GET: api/NoteType
@@ -44,7 +45,7 @@ namespace SnooNotes.Controllers
         public Task<IEnumerable<Models.NoteType>> Post([FromBody]IEnumerable<Models.NoteType> values)
         {
             foreach ( string subname in values.Select( v => v.SubName ) ) {
-                if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+                if ( !User.HasClaim( "uri:snoonotes:admin", subname.ToLower() ) ) {
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
                 }
             }
@@ -56,7 +57,7 @@ namespace SnooNotes.Controllers
         public Task<IEnumerable<Models.NoteType>> Put([FromBody]Models.NoteType[] values)
         {
             foreach ( string subname in values.Select( v => v.SubName ) ) {
-                if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+                if ( !User.HasClaim( "uri:snoonotes:admin", subname.ToLower() ) ) {
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
                 }
             }
@@ -67,7 +68,7 @@ namespace SnooNotes.Controllers
         public Task<IEnumerable<int>> Delete([FromBody]Models.NoteType[] values)
         {
             foreach ( string subname in values.Select( v => v.SubName ) ) {
-                if ( !User.HasClaim( "urn:snoonotes:admin", subname.ToLower() ) ) {
+                if ( !User.HasClaim( "uri:snoonotes:admin", subname.ToLower() ) ) {
                     throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
                 }
             }

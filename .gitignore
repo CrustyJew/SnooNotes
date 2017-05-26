@@ -5,6 +5,8 @@
 *.[Rr]elease.config
 *[Ww]eb.config
 !*/SnooNotesAddon/[Ww]eb.config
+/SnooNotes/SentinelMonitor/appsettings.json
+
 # User-specific files
 *.suo
 *.user
@@ -217,3 +219,4 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+*.jfm

@@ -6,5 +6,6 @@ namespace SnooNotes.Signalr {
         void DeleteNote( Note anote, bool outOfNotes );
         void RefreshNoteTypes( IEnumerable<string> SubNames );
         void SendNewNote( Note anote );
+        void SendModAction( Models.ModAction action );
     }
 }

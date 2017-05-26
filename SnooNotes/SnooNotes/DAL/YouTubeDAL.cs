@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using Google.Apis.YouTube.v3;
 using Google.Apis.Services;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace SnooNotes.DAL {
-    public class YouTubeDAL {
+    public class YouTubeDAL : IYouTubeDAL {
         public string YouTubeAPIKey { get; set; }
 
         public YouTubeDAL(IConfigurationRoot config ) {
@@ -22,6 +23,17 @@ namespace SnooNotes.DAL {
             if ( response.Items.Count == 0 ) throw new Exception( $"Can't find video with id {vidID}" );
 
             return response.Items[0].Snippet.ChannelId;
+        }
+
+        public async Task<KeyValuePair<string, string>> GetChannelIDAndName(string vidID)
+        {
+            var yt = new YouTubeService(new BaseClientService.Initializer { ApiKey = YouTubeAPIKey });
+            var req = yt.Videos.List("snippet");
+            req.Id = vidID;
+            var response = await req.ExecuteAsync();
+            if (response.Items.Count == 0) throw new Exception($"Can't find video with id {vidID}");
+
+            return new KeyValuePair<string,string>(response.Items[0].Snippet.ChannelId,response.Items[0].Snippet.ChannelTitle);
         }
     }
 }

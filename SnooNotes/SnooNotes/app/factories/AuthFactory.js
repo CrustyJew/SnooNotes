@@ -1,4 +1,4 @@
-﻿module.exports = /*@ngInject*/ function AuthFactory($q, $http, $location, localStorageService, $cookies) {
+﻿module.exports = /*@ngInject*/ function AuthFactory($q, $http, $window, localStorageService, $cookies) {
     'use strict';
     var exports = {};
 
@@ -41,26 +41,23 @@
                             deferred.resolve(exports.currentUser);
                         },
                         function () {
-                            exports.logout();
+                            exports.logout(true);
                             deferred.reject('Not logged in');
                         });
             }
         }
         return deferred.promise;
     }
-    exports.logout = function () {
-        $http.post('Auth/Logout').then(
-        function () {
+    exports.logout = function (suppressRedirect) {
+        
             localStorageService.remove('currentUser');
             exports.currentUser.userName = "";
             exports.currentUser.hasRead = false;
             exports.currentUser.hasWikiRead = false;
             exports.currentUser.isAuth = false;
-        },
-        function () {
-            //todo catch dat error
-        })
-
+            if (!suppressRedirect) {
+                $window.location.href = "/Signout";
+            }
 
         //$cookies.remove('bog');
     }

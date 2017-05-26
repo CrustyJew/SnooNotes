@@ -1,0 +1,145 @@
+@import "./vue-material-css/core.scss";
+
+@import "./_vars.scss";
+@import "./SNContainer.scss";
+@import "./SNBotBan.scss";
+//@import "node_modules/vue-material/dist/vue-material";
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url('chrome-extension://__MSG_@@extension_id__/fonts/MaterialIcons-Regular.woff2') format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  vertical-align: middle;
+}
+.md-pagination-select{
+    z-index:2147483648;
+}
+.md-table-head-container {
+    box-sizing: border-box;
+}
+span.md-tooltip{
+        height: inherit;
+    color: black;
+    background-color: white;
+    border: 1px solid $dark-gray;    
+    transform: translateY(0%) !important;
+}
+.clearfix{
+    clear:both;
+}
+
+.reset-all{
+    all:initial;
+}
+h1{
+    font-weight:bold;
+}
+
+#sn-modal .sn-header {
+        cursor: default;
+    }
+
+.sn-header {
+    height: 15px;
+    background-color: $primary;
+    text-align: right;
+    cursor:move;
+}
+
+//*** BUTTONS *** //
+.sn-btn-cancel, .sn-btn-action, .sn-btn-submit, .sn-btn-warn {
+    border: 1px solid $gray;
+    font-family: Verdana,Arial,sans-serif;
+    margin: 4px 16px 4px 0;
+    padding: 2px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.24);
+    color: #fff;
+    text-transform: none;
+    height: 32px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 2px;
+
+}
+
+.sn-btn-warn {
+    background-image: linear-gradient(to bottom, $warning, darken($warning,15%));
+    color: #1a1a1a !important;
+    &:hover{
+        background-image: linear-gradient(to bottom, darken($warning,10%),darken($warning,25%));
+    }
+}
+
+.sn-btn-action {
+    background-image: linear-gradient(to bottom, $secondary, darken($secondary,15%));
+    &:hover{
+        background-image: linear-gradient(to bottom, darken($secondary,10%),darken($secondary,25%));
+    }
+}
+
+.sn-btn-submit, .sn-new-note-submit {
+    background-image: linear-gradient(to bottom, $primary, darken($primary,15%) );
+    font-weight:bold;
+    &:hover{
+        background-image: linear-gradient(to bottom, darken($primary,10%),darken($primary,25%));
+    }
+}
+
+.sn-btn-cancel {
+    background: linear-gradient(to bottom, $gray,darken($gray,15%) );
+}
+
+#toasted-container, .sn-toast{
+    z-index: 2147483648 !important;
+    .toasted.primary.error{
+        background-color:$accent !important;
+    }
+    .toasted.primary.success{
+        background-color:$primary !important;
+    }
+    .toasted.primary.warn{
+        background-color:$warning !important;
+    }
+    .toasted.primary.info{
+        background-color:$secondary !important;
+    }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .4s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0
+}
+
+.sn-mod-action
+{
+  font-family: Verdana;
+  color: black;
+  background-color: $light-gray;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 11px;
+  padding: 4px;
+}
+
+.sn-mod-action-warning{
+    background-color:$warning;
+}

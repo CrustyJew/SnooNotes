@@ -6,13 +6,14 @@ using System.Threading;
 using Microsoft.AspNetCore.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.Signalr
 {
     public class SnooNoteUpdates : ISnooNoteUpdates
     {
         private IConnectionManager connManager;
-        public SnooNoteUpdates(IConnectionManager connectionManager ) {
+        public SnooNoteUpdates(IConnectionManager connectionManager, IConfigurationRoot config ) {
             connManager = connectionManager;
         }
 
@@ -33,7 +34,10 @@ namespace SnooNotes.Signalr
                 connManager.GetHubContext<SnooNotesHub>().Clients.Group(SubName.ToLower()).refreshNoteTypes();
             }
         }
-    
+        public void SendModAction( Models.ModAction action ) {
+            connManager.GetHubContext<SnooNotesHub>().Clients.Group( action.Subreddit.ToLower() ).modAction( action.ThingID, action.Mod, action.Action );
+        }
+
     }
     
 }
