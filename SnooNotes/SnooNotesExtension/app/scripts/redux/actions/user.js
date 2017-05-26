@@ -55,8 +55,15 @@ export function redirectSuccess(url) {
 export function userFound(user) {
   return {
     type: USER_FOUND,
-    payload: user
+    payload: {
+      name: user.profile.name,
+      access_token: user.access_token,
+      isCabal: user.profile['uri:snoonotes:cabal'],
+      hasConfig: user.profile['uri:snoonotes:hasconfig'],
+      hasWiki: user.profile['uri:snoonotes:haswiki'],
+    }
   };
+  
 }
 
 // dispatched when silent renew fails

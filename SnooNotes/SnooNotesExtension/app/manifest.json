@@ -1,6 +1,6 @@
 {  "name": "SnooNotes",
   "description": "Usernotes plus a whole lot more!",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "manifest_version": 2,
   "background": {
     "scripts": [
@@ -32,7 +32,8 @@
         "scripts/signinCallback.js"
       ],"all_frames": true
     }
-  ],
+  ], 
+  "externally_connectable": {"ids":[]},
   "permissions": [
     "storage","unlimitedStorage","cookies",
     "http://fonts.googleapis.com/",

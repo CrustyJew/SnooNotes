@@ -49,7 +49,7 @@ export class ModActionsModule {
     }
 
     receiveModAction(req) {
-        let thing = document.body.querySelector('.id-' + req.thingID);
+        let thing = document.body.querySelector('#thing_' + req.thingID);
         if(!thing) return; //doesn't see thing on page
         let childarray = [...thing.children];
         let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
@@ -91,7 +91,7 @@ export class ModActionsModule {
             bigButtons.parentNode.insertBefore(actionElem, bigButtons.nextSibling);
         }
         else {
-            let nodes = entry.querySelector('li:last');
+            let nodes = entry.querySelector('li');
             let lastItem = nodes[nodes.length - 1]; 
             lastItem.parentNode.insertBefore(actionElem, lastItem.nextSibling);
         }

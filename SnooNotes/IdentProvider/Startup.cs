@@ -147,12 +147,12 @@ namespace IdentProvider {
 
                 serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
 
-                if (env.IsDevelopment()) {
+                //if (env.IsDevelopment()) {
                     context.Clients.RemoveRange(context.Clients);
                     context.ApiResources.RemoveRange(context.ApiResources);
                     context.IdentityResources.RemoveRange(context.IdentityResources);
                     context.SaveChanges();
-                }
+                //}
 
                 if ( !context.Clients.Any() ) {
                     foreach ( var client in Config.GetClients(Configuration) ) {

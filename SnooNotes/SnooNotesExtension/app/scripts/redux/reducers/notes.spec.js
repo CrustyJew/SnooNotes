@@ -1,4 +1,4 @@
-import deepFreeze from 'deep-freeze'; 6
+import deepFreeze from 'deep-freeze';
 import { notesReducer } from './notes';
 import { GET_NOTES_FOR_USERS, GOT_NEW_NOTE, DELETE_NOTE, LOADING_NOTES_FOR_USERS } from '../actions/notes';
 
@@ -116,18 +116,21 @@ describe('Notes Reducer', () => {
     })
     describe('LOADING_NOTES_FOR_USERS', () => {
         it('Should add user with loading status if they do not exist in notes object', () => {
+            let state = {};
+            deepFreeze(state);
             expect(
-                notesReducer({}, { type: LOADING_NOTES_FOR_USERS, payload: { videosmods: { loading: true } } })
+                notesReducer(state, { type: LOADING_NOTES_FOR_USERS, payload: { videosmods: { loading: true } } })
             )
                 .has.property('videosmods')
                 .has.property('loading')
         })
-        if ('Should remove existing notes from loading user') {
+        it('Should remove existing notes from loading user', () => {
+            deepFreeze(notes);
             expect(
                 notesReducer(notes, { type: LOADING_NOTES_FOR_USERS, payload: { videosmods: { loading: true } } })
             )
                 .has.property('videosmods')
                 .has.property('loading');
-        }
+        });
     })
 })

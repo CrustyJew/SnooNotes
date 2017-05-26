@@ -7,12 +7,12 @@ const initialState = {
     users_with_notes: []
 }
 
-export default function snoonotesInfoReducer(state = initialState, action) {
+export const snoonotesInfoReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_MOD_SUBS:
-            return Object.assign({}, { ...state }, { modded_subs: action.payload });
+            return Object.assign({}, state, { 'modded_subs': action.payload });
         case SET_USERS_WITH_NOTES:
-            return Object.assign({}, { ...state }, { users_with_notes: action.payload });
+            return Object.assign({}, state , { users_with_notes: action.payload });
         case GOT_NEW_NOTE: {
             if (state.users_with_notes.indexOf(action.payload.appliesToUsername) == -1) {
                 return Object.assign({}, state, { users_with_notes: state.users_with_notes.concat(action.payload.appliesToUsername) });

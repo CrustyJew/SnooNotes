@@ -17,10 +17,6 @@ export const snInterceptor = new SNAxiosInterceptor(store);
 axios.defaults.baseURL = apiBaseUrl;
 axios.interceptors.request.use((req) => { return snInterceptor.interceptRequest(req); });
 
-chrome.runtime.onInstalled.addListener(function () {
-  //console.log('previousVersion', details.previousVersion);
-});
-
 const onUserLoaded = (user) => {
   store.dispatch(userFound(user));
 };
@@ -32,16 +28,11 @@ const onSilentRenewError = (error) => {
 
 // event callback when the access token expired
 const onAccessTokenExpired = () => {
-  userManager.clearStaleState();
-  userManager.removeUser();
   store.dispatch(userExpired());
-
 };
 
 // event callback when the user is logged out
 const onUserUnloaded = () => {
-  userManager.clearStaleState();
-  userManager.removeUser();
   store.dispatch(sessionTerminated());
 };
 
@@ -52,8 +43,6 @@ const onAccessTokenExpiring = () => {
 
 // event callback when the user is signed out
 const onUserSignedOut = () => {
-  userManager.clearStaleState();
-  userManager.removeUser();
   store.dispatch(userSignedOut());
 }
 
@@ -80,27 +69,27 @@ snUpdate.client.refreshNoteTypes = () => {
 }
 snUpdate.client.modAction = (thingID, mod, action) => {
   chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
-        for (var i = 0; i < tabs.length; i++) {
-            chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": { "thingID": thingID, "mod": mod, "action": action } });
-        }
-    });
+    for (var i = 0; i < tabs.length; i++) {
+      chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": { "thingID": thingID, "mod": mod, "action": action } });
+    }
+  });
 }
 store.subscribe(() => {
   let newToken = store.getState().user.access_token;
   if (newToken != curToken) {
     hubConnection.qs = { token: newToken };
     curToken = newToken;
-    if(!curToken) {
+    if (!curToken) {
       hubConnection.stop();
     }
-    else{
+    else {
       if (snUpdate.connection.state != 4) { hubConnection.stop(); }
 
       hubConnection.start({ jsonp: false })
         .done(function () { console.log('SignalR connected, connection ID=' + hubConnection.id); })
         .fail(function () { console.log('SignalR could not connect'); });
     }
-    
+
   }
 });
 hubConnection.disconnected(() => {
@@ -113,6 +102,16 @@ hubConnection.disconnected(() => {
     }, 5000)
   }
 })
+
+const hubReconnect = () => {
+  if (curToken) {
+    setTimeout(() => {
+      hubConnection.start()
+        .done(function () { console.log('SignalR reconnected, connection ID=' + hubConnection.id); })
+        .fail(function () { console.log('SignalR could not connect'); hubReconnect(); });
+    }, 5000)
+  }
+}
 // snUpdate.start({ jsonp: true })
 // .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
 // .fail(function(){ console.log('SignalR could not connect'); });

@@ -41,22 +41,21 @@ const initialState = {
 
 export default function userReducer(state = initialState, action) {
     switch (action.type) {
-        case USER_EXPIRED:
-            return Object.assign({}, initialState);
         case SILENT_RENEW_ERROR:
             return Object.assign({}, { ...state }, { isLoadingUser: false });
         case SESSION_TERMINATED:
         case USER_SIGNED_OUT:
         case USER_NOT_FOUND:
+        case USER_EXPIRED:
             return Object.assign({}, initialState);
         case REDIRECT_SUCCESS:
         case USER_FOUND:
             return Object.assign({}, {
                 access_token: action.payload.access_token,
-                name: action.payload.profile.name, //todo move this to action creator, specific logic shouldn't be here
-                isCabal: action.payload.profile['uri:snoonotes:cabal'],
-                hasConfig: action.payload.profile['uri:snoonotes:hasconfig'],
-                hasWiki: action.payload.profile['uri:snoonotes:haswiki'],
+                name: action.payload.name, //todo move this to action creator, specific logic shouldn't be here
+                isCabal: action.payload.isCabal,
+                hasConfig: action.payload.hasConfig,
+                hasWiki: action.payload.hasWiki,
                 isLoadingUser: false
             });
         case LOADING_USER:

@@ -1,6 +1,6 @@
 ﻿import { combineReducers } from 'redux';
 import userReducer from './user';
-import snoonotesInfoReducer from './snoonotesInfo';
+import {snoonotesInfoReducer} from './snoonotesInfo';
 import { notesReducer } from './notes';
 
 const reducer = combineReducers({
