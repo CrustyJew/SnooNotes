@@ -2,8 +2,8 @@
 //import 'chromereload/devonly';
 
 
-import { userExpired, userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
-import { store } from './redux/store';
+import { userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
+import { store, loadUser } from './redux/store';
 import { userManager } from './utilities/userManager';
 import { snUpdate, hubConnection } from './libs/snUpdatesHub';
 //import {hubConnection} from 'signalr-no-jquery';
@@ -28,7 +28,7 @@ const onSilentRenewError = (error) => {
 
 // event callback when the access token expired
 const onAccessTokenExpired = () => {
-  store.dispatch(userExpired());
+  loadUser(store.dispatch);
 };
 
 // event callback when the user is logged out
@@ -47,6 +47,7 @@ const onUserSignedOut = () => {
 }
 
 userManager.clearStaleState();
+userManager.removeUser();
 userManager.events.addUserLoaded(onUserLoaded);
 userManager.events.addSilentRenewError(onSilentRenewError);
 userManager.events.addAccessTokenExpired(onAccessTokenExpired);

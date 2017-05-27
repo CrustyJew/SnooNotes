@@ -1,6 +1,10 @@
 {  "name": "SnooNotes",
   "description": "Usernotes plus a whole lot more!",
+<<<<<<< HEAD
   "version": "2.0.8",
+=======
+  "version": "2.0.7",
+>>>>>>> 0f033ed... Fix login bug
   "manifest_version": 2,
   "background": {
     "scripts": [

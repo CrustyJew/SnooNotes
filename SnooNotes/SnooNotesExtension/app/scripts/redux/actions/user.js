@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-export const USER_EXPIRED = 'USER_EXPIRED';
 export const REDIRECT_SUCCESS = 'REDIRECT_SUCCESS';
 export const USER_LOADED = 'USER_LOADED';
 export const SILENT_RENEW_ERROR = 'SILENT_RENEW_ERROR';
@@ -35,13 +34,7 @@ export const LOGIN = "LOGIN";
 export const SILENT_RENEW_SUCCESS = "SILENT_RENEW_SUCCESS";
 export const REFRESH_USER = "REFRESH_USER";
 export const REFRESH_USER_ALIAS = "REFRESH_USER_ALIAS";
-
-// dispatched when the existing user expired
-export function userExpired() {
-  return {
-    type: USER_EXPIRED
-  };
-}
+export const STOP_LOADING_USER = "STOP_LOADING_USER";
 
 // dispatched after a successful redirect callback
 export function redirectSuccess(url) {
@@ -101,6 +94,12 @@ export function loadingUser(tabid = "") {
   return {
     type: LOADING_USER,
     payload: tabid
+  };
+}
+
+export function stopLoadingUser(){
+  return {
+    type: STOP_LOADING_USER
   };
 }
 
