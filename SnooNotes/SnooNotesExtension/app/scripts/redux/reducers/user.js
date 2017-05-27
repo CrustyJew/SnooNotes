@@ -23,14 +23,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 import {
-    USER_EXPIRED,
     REDIRECT_SUCCESS,
     USER_FOUND, USER_NOT_FOUND,
     SILENT_RENEW_ERROR,
     SESSION_TERMINATED,
     LOADING_USER,
     USER_SIGNED_OUT,
-    REFRESH_USER
+    REFRESH_USER, 
+    STOP_LOADING_USER
 } from '../actions/user';
 
 const initialState = {
@@ -46,13 +46,12 @@ export default function userReducer(state = initialState, action) {
         case SESSION_TERMINATED:
         case USER_SIGNED_OUT:
         case USER_NOT_FOUND:
-        case USER_EXPIRED:
-            return Object.assign({}, initialState);
+            return Object.assign({}, initialState, {isLoadingUser: state.isLoadingUser, last_tab_id: state.last_tab_id});
         case REDIRECT_SUCCESS:
         case USER_FOUND:
             return Object.assign({}, {
                 access_token: action.payload.access_token,
-                name: action.payload.name, //todo move this to action creator, specific logic shouldn't be here
+                name: action.payload.name,
                 isCabal: action.payload.isCabal,
                 hasConfig: action.payload.hasConfig,
                 hasWiki: action.payload.hasWiki,
@@ -60,6 +59,8 @@ export default function userReducer(state = initialState, action) {
             });
         case LOADING_USER:
             return Object.assign({}, { ...state }, { isLoadingUser: true, last_tab_id: action.payload });
+        case STOP_LOADING_USER:
+            return Object.assign({}, {...state}, {isLoadingUser: false, last_tab_id: undefined});
         case REFRESH_USER:
             return Object.assign({}, { ...state }, { isLoadingUser: true });
         default:

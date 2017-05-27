@@ -1,6 +1,5 @@
 import deepFreeze from 'deep-freeze';
 import {
-    USER_EXPIRED,
     REDIRECT_SUCCESS,
     USER_FOUND, USER_NOT_FOUND,
     SILENT_RENEW_ERROR,
@@ -20,11 +19,11 @@ describe('User Reducer', () => {
     it('Should return initial state', () => {
         expect(userReducer(undefined, {})).to.eql(initialState);
     })
-    describe('USER_EXPIRED', () => {
+    describe('SESSION_TERMINATED', () => {
         it('Should reset to initial on expire', () => {
             let state = {access_token:'token',name:'testuser',isLoadingUser:false}
             deepFreeze(state);
-            expect(userReducer(state, { type: USER_EXPIRED, payload: {} })).to.eql(initialState);
+            expect(userReducer(state, { type: SESSION_TERMINATED, payload: {} })).to.eql(initialState);
         })
     })
     describe('USER_FOUND', () => {

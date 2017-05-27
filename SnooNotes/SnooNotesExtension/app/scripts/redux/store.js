@@ -5,7 +5,7 @@ import thunk from 'redux-thunk'
 import { wrapStore, alias } from 'react-chrome-redux';
 import { refreshUser, REFRESH_USER_ALIAS, LOGIN, REDIRECT_SUCCESS, sessionTerminated } from './actions/user';
 import reducer from './reducers/index';
-import { loadingUser, userFound } from './actions/user';
+import { loadingUser, stopLoadingUser } from './actions/user';
 import { getModSubs, getUsersWithNotes, forceRefresh } from './actions/snoonotesInfo';
 
 const initialState = { user: { user: null, isLoadingUser: false } };
@@ -14,29 +14,16 @@ const initialState = { user: { user: null, isLoadingUser: false } };
 const bg_aliases = {
     [LOGIN]: (action) => {
         return (dispatch) => {
-            dispatch(loadingUser());
-            return userManager.getUser().then((u) => {
-                if (u) {
-                    initUser(dispatch, u);
-                } else {
-                    userManager.signinSilent().then((user) => {
-                        initUser(dispatch, user);
-                    }, () => {
-                        dispatch(loadingUser(action._sender.tab.id));
-                        userManager.signinRedirect();
-                    })
-                }
-            })
+            loadUser(dispatch, true, action);
         }
     },
     [REDIRECT_SUCCESS]: (req) => {
         return (dispatch) => {
-            userManager.signinRedirectCallback(req.payload).then((user) => {
-                let state = store.getState();
+            let state = store.getState();
+            userManager.signinRedirectCallback(req.payload).then(() => {
                 chrome.tabs.update(state.user.last_tab_id, { active: true }, () => {
                     chrome.tabs.remove(req._sender.tab.id);
                 });
-                dispatch(userFound(user));
                 dispatch(getModSubs());
             }, (err) => { console.warn(err) });
         }
@@ -45,9 +32,9 @@ const bg_aliases = {
         return (dispatch) => {
             dispatch(refreshUser());
             userManager.signinSilent()
-                .then((user) => {
-                    forceRefresh(dispatch).then(()=>{
-                        initUser(dispatch, user);
+                .then(() => {
+                    forceRefresh(dispatch).then(() => {
+                        initUser(dispatch);
                     })
                 }, () => {
                     console.error('Error getting new token');
@@ -59,8 +46,7 @@ const bg_aliases = {
 //const enhancer = applyMiddleware(alias(bg_aliases),thunk, createOidcMiddleware(userManager));
 //const store = createStore(reducer,initialState,enhancer);
 
-export const initUser = (dispatch, user) => {
-    dispatch(userFound(user));
+export const initUser = (dispatch) => {
     dispatch(getModSubs());
     dispatch(getUsersWithNotes());
 }
@@ -72,16 +58,29 @@ export const store = createStore(reducer, initialState, composeWithDevTools(
 
 wrapStore(store, { portName: "SnooNotesExtension" });
 
-userManager.getUser().then((u) => {
-    if (u) {
-        initUser(store.dispatch, u);
-    }
-    else {
-        userManager.signinSilent().then((user) => {
-            initUser(store.dispatch, user);
-        }, () => {
-            userManager.clearStaleState();
-            console.log('user not logged in')
-        });
-    }
-})
+export const loadUser = (dispatch, displayLogin = false, action = {}) => {
+    dispatch(loadingUser());
+    userManager.getUser().then((u) => {
+        if (u && !u.expired) {
+            initUser(dispatch);
+        }
+        else {
+            userManager.removeUser().then(() => {
+                userManager.signinSilent().then(() => {
+                    initUser(dispatch);
+                }, () => {
+                    userManager.clearStaleState();
+                    if(displayLogin){
+                        dispatch(loadingUser(action._sender.tab.id));
+                        userManager.signinRedirect();
+                    }
+                    else{
+                        dispatch(stopLoadingUser())
+                    }
+                });
+            })
+        }
+    })
+}
+
+loadUser(store.dispatch);
