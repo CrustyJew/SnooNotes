@@ -5,6 +5,9 @@ import CustomIFrameNavigator from './utilities/customIFrameNavigator';
 export const authBaseUrl = 'https://snoonotes.com/Auth/';
 export const apiBaseUrl = 'https://snoonotes.com/api/';
 export const signalrBaseUrl = 'https://snoonotes.com/signalr';
+
+export const mediaProviders = ['youtube.com','youtu.be', 'vimeo.com', 'vid.me','twitter.com','twitch.tv', 'soundcloud.com','facebook.com','etsy.com','dailymotion.com', 'dai.ly']
+
 const redirectNav = new CustomRedirectManager();
 //const customStore = new CustomWebStorageStateStore();
 const customiframeNavigator = new CustomIFrameNavigator();

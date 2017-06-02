@@ -1,19 +1,31 @@
 <template>
     <div id="sn-main">
-        <note-display></note-display>
+        <!--<note-display></note-display>-->
         <div style="display:none;">
-            <note-thing v-for="thingid in thingids" :thingid="thingid"></note-thing>
+            <!--<note-thing v-for="thingid in thingIDs" :thingid="thingid"></note-thing>-->
+            <media-analysis v-for="thingid in thingIDs" :thingid="thingid"></media-analysis>
         </div>
     </div>
 </template>
 <script>
-import { getNotesForUsers } from './redux/actions/notes';
+//import { getNotesForUsers } from './redux/actions/notes';
+import mediaAnalysis from './mediaAnalysis.vue';
+import _ from 'lodash';
+
 export default {
-  props:['thingids'],
-  data(){
-      return{
-        
-      }
-  }
+    components: { 'media-analysis': mediaAnalysis },
+    data() {
+        return {
+            thingIDs: []
+        }
+    },
+    mounted: function () {
+        this.$on('AddThings', (e) => {
+            this.thingIDs.push(e.thingIDs);
+        });
+        this.$on('RemoveThings', (e) => {
+            this.thingIDs = _.without(this.thingIDs, e.thingIDs);
+        })
+    }
 }
 </script>
