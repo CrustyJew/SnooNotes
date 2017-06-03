@@ -3,7 +3,7 @@
         <!--<note-display></note-display>-->
         <div style="display:none;">
             <!--<note-thing v-for="thingid in thingIDs" :thingid="thingid"></note-thing>-->
-            <media-analysis v-for="thingid in thingIDs" :thingid="thingid"></media-analysis>
+            <media-analysis v-for="thingid in thingIDs" :thingid="thingid" :key="thingid"></media-analysis>
         </div>
     </div>
 </template>
@@ -21,7 +21,7 @@ export default {
     },
     mounted: function () {
         this.$on('AddThings', (e) => {
-            this.thingIDs.push(e.thingIDs);
+            this.thingIDs = this.thingIDs.concat(e.thingIDs);
         });
         this.$on('RemoveThings', (e) => {
             this.thingIDs = _.without(this.thingIDs, e.thingIDs);

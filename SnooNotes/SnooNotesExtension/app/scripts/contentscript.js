@@ -123,7 +123,7 @@ const InjectIntoThingsClass = () => {
                     if (mutation.addedNodes && mutation.addedNodes.length > 0) {
                         let node = mutation.addedNodes[0];
                         if (node.querySelector) {
-                            snMain.$emit('AddThings',{ThingIDs:node.querySelectorAll('.thing').map((t)=>{return t.attributes['data-fullname'].value;})});
+                            snMain.$emit('AddThings',{thingIDs:Array.from(node.querySelectorAll('.thing')).map((t)=>{return t.attributes['data-fullname'].value;})});
                             node.querySelectorAll('.thing').forEach(function (thing) {
                                 let author = BindNewThingsClassUserNotesElement(thing);
                                 if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
@@ -147,7 +147,7 @@ const InjectIntoThingsClass = () => {
         observer.observe(target, { childList: true, subtree: true });
 
         let things = document.querySelectorAll('.thing');
-        snMain.$emit('AddThings',{ThingIDs:(Array.from(things)).map((t)=>{return t.attributes['data-fullname'].value;})});
+        snMain.$emit('AddThings',{thingIDs:(Array.from(things)).map((t)=>{if(t.attributes['data-fullname']) return t.attributes['data-fullname'].value;}).filter(Boolean)});
         let authors = [];
         for (let i = 0; i < things.length; i++) {
             let author = BindNewThingsClassUserNotesElement(things[i]);
