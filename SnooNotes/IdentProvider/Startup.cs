@@ -17,6 +17,8 @@ using System.Reflection;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace IdentProvider {
     public class Startup {
@@ -101,7 +103,13 @@ namespace IdentProvider {
             
 
             loggerFactory.AddConsole( Configuration.GetSection( "Logging" ) );
-            loggerFactory.AddDebug();
+            if(env.IsDevelopment()) {
+                loggerFactory.AddDebug();
+            }
+            else {
+                loggerFactory.AddNLog();
+                app.AddNLogWeb();
+            }
 
             InitializeDatabase( app, env );
             
