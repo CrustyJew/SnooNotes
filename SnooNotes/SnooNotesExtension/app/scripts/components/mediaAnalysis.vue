@@ -1,16 +1,16 @@
 <template>
-    <span v-if="hasMedia">
-        !!!</span>
+    <span v-if="hasMedia" class="sn-media-analysis" @click.stop>
+        <i class="material-icons" @click="showAnalysis">visibility</i></span>
 </template>
 <script>
 import { mediaProviders } from '../config';
 import _ from 'lodash';
 export default {
-    props: ['thingid'],
+    props: ['thingid','subs'],
     data() {
         return {
             hasMedia: false,
-            subreddit: ''
+            subreddit: '',
         }
     },
     methods: {
@@ -24,6 +24,9 @@ export default {
                     this.hasMedia = true;
                 }
             }, this));
+        },
+        showAnalysis: function(e){
+            this.$emit('showMediaAnalysis',{subreddit: this.subreddit, thingid: this.thingid, event: e});
         }
 
     },
@@ -38,6 +41,10 @@ export default {
         if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link')) {
             //link submission or self post
             this.subreddit = thing.attributes['data-subreddit'].value;
+            if(this.subs.findIndex(s=> s == this.subreddit) == -1){
+                //couldn't find subreddit in sentinel activated subs. Bail out
+                this.hasMedia = false; return;
+            }
             let domain = thing.attributes['data-domain'].value.toLowerCase();
             if (mediaProviders.findIndex(mp => mp == domain) > -1) {
                 this.hasMedia = true;
@@ -73,6 +80,10 @@ export default {
         else if (thing.attributes['data-subreddit']) {
             //comment or message
             this.subreddit = thing.attributes['data-subreddit'].value;
+            if(this.subs.findIndex(s=> s == this.subreddit) == -1){
+                //couldn't find subreddit in sentinel activated subs. Bail out
+                this.hasMedia = false; return;
+            }
             let childarray = [...thing.children];
             let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
             this.checkText(entry.querySelector('.usertext-body'));
@@ -81,3 +92,8 @@ export default {
 }
 
 </script>
+<style lang="scss">
+.sn-media-analysis i {
+    cursor:pointer;
+}
+</style>
