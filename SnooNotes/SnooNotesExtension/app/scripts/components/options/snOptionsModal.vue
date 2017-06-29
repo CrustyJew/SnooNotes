@@ -11,19 +11,19 @@
     
                     <div id="sn-refresh-container">
                         <h1>Has something gone rogue?
-                            <br />Change subreddits you moderate?
-                            <br />Activate a new sub?</h1>
+                            <br>Change subreddits you moderate?
+                            <br>Activate a new sub?</h1>
                         <button type="button" id="sn-restart" class="sn-btn-warn" @click="refresh">Refresh SnooNotes</button>
-                        <br class="clearfix" />
+                        <br class="clearfix" >
                     </div>
                     <div id="sn-activate-container">
                         <div v-if="!snOptions.loadingInactiveSubs">
                             <select id="sn-activate-sub" v-model="activateSubName">
                                 <option value="-1" disabled>---Activate a new Subreddit---</option>
-                                <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub">{{sub}}</option>
+                                <option v-for="sub in snOptions.inactiveSubs" v-bind:value="sub" :key="sub.SubName">{{sub}}</option>
                             </select>
                             <button type="button" id="sn-btn-activate-sub" class="sn-btn-submit" @click="activateSub" :disabled="activatingSub">{{activatingSub ? 'Activating...': 'Activate'}}</button>
-                            <br class="clearfix" />
+                            <br class="clearfix">
                         </div>
                         <div v-show="snOptions.loadingInactiveSubs">
                             <sn-loading></sn-loading>
@@ -32,7 +32,7 @@
                     <div id="sn-mod-subs">
                         <h3>Subreddits you have permissions to submit notes in</h3>
                         <ul>
-                            <li v-for="sub in snInfo.modded_subs">{{sub.SubName}}<span v-if="sub.SentinelActive">&nbsp;<i class="material-icons">visibility</i><md-tooltip md-direction="right" md-delay="400">TheSentinelBot Active</md-tooltip></span></li>
+                            <li v-for="sub in snInfo.modded_subs" :key="sub.SubName">{{sub.SubName}}<span v-if="sub.SentinelActive">&nbsp;<i class="material-icons">visibility</i><md-tooltip md-direction="right" md-delay="400">TheSentinelBot Active</md-tooltip></span></li>
                         </ul>
                     </div>
                     <div id="sn-sub-settings-container">
@@ -40,7 +40,7 @@
                             <sn-loading></sn-loading>
                         </div>
                         <div v-if="!snOptions.loadingSubSettings && editingSubIndex == -1">
-                            <div class="sn-sub-settings-btn-wrapper" v-for="(sub,index) in snOptions.subSettings">
+                            <div class="sn-sub-settings-btn-wrapper" v-for="(sub,index) in snOptions.subSettings" :key="sub.SubName">
                                 <button type="button" class="sn-btn-action" @click="showSettings(index)">/r/{{sub.SubName}}</button>
                             </div>
                         </div>

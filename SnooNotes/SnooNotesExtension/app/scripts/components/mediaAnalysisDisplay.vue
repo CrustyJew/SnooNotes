@@ -12,6 +12,7 @@
             </div>
             <div class="sn-media-analysis-results" v-if="!error && !loadingAnalysis">
                 <h1>/r/{{analysisResponse.subName}}</h1>
+
                 <div v-if="analysisResponse">
                     <h2>Analsyis results for
                         <a :href="analysisResponse.permaLink" target="_blank">{{analysisResponse.thingType}}</a> by
@@ -63,7 +64,8 @@ export default {
         return {
 
             loadingAnalysis: false,
-
+            loadingBanned: false,
+            sentinelBanInfo: {},
             analysisResponse: {},
 
             error: false
@@ -80,7 +82,7 @@ export default {
         loadAnalysis: function () {
             this.error = false;
             this.loadingAnalysis = true;
-
+            this.loadingBanned = true;
             axios.get(dirtbagBaseUrl + 'Analysis/' + this.subreddit, { params: { thingID: this.thingid } })
                 .then((d) => {
                     this.analysisResponse = d.data;
@@ -89,6 +91,16 @@ export default {
                         this.loadingAnalysis = false;
                     })
                 }, (e) => { this.error = true; this.loadingAnalysis = false; })
+
+            axios.get(dirtbagBaseUrl + 'SentinelBan/' + this.subreddit + '/' + this.thingid)
+                .then((d)=>{
+                    this.sentinelBanInfo = d.data;
+                    this.$nextTick(()=>{
+                        this.loadingBanned = false;
+                    });
+                },()=>{
+                    this.loadingBanned = false;
+                });
         }
     },
     computed: {
