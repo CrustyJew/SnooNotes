@@ -16,7 +16,7 @@ export class SentinelBanModule {
             });
             document.body.addEventListener('click', (e) => { 
                 if(!e.target.matches('.sn-bot-ban-prompt a')) return;
-                this.executeBan(e);
+                this.thingRemove(e);
             });
         }
     }
