@@ -1,50 +1,88 @@
 <template>
-    <div class="sn-media-analysis-display" v-if="showAnalysis" :style="displayStyle" v-draggable="'.sn-header'">
-        <div class="sn-header">
-            <a class="sn-close-note sn-close" @click="selfClose">X</a>
-        </div>
-        <div class="sn-media-analysis">
-            <div class="sn-loading" v-if="loadingAnalysis">
-                <sn-loading></sn-loading>
+    <div>
+        <div class="sn-media-analysis-display" v-if="showAnalysis" :style="displayStyle" v-draggable="'.sn-header'">
+            <div class="sn-header">
+                <a class="sn-close-note sn-close" @click="selfClose">X</a>
             </div>
-            <div class="sn-error" v-if="error">There was an error loading the analysis for this thing. Try again later or yell at
-                <a href="https://reddit.com/u/meepster23" target="_blank">/u/meepster23</a>.
-            </div>
-            <div class="sn-media-analysis-results" v-if="!error && !loadingAnalysis">
-                <h1>/r/{{analysisResponse.subName}}</h1>
-
-                <div v-if="analysisResponse">
-                    <h2>Analsyis results for
-                        <a :href="analysisResponse.permaLink" target="_blank">{{analysisResponse.thingType}}</a> by
-                        <a :href="'https://reddit.com/u/'+analysisResponse.author" target="_blank">/u/{{analysisResponse.author}}</a>
-                    </h2>
-    
-                    <div class="sn-thing-details">
-                        {{thingDetailsMessage}}
+            <h1>/r/{{subreddit}}</h1>
+            <div class="sn-media-analysis">
+                <div class="sn-sentinel-ban-info">
+                    <h2>Sentinel Bot Banned Media</h2>
+                    <div class="sn-loading" v-if="loadingBanned">
+                        <sn-loading></sn-loading>
                     </div>
-                    <div v-for="analysis in analysisResponse.analysis" class="sn-analysis-media-results">
-                        <h3>Media Platform: {{analysis.mediaPlatform}} | Media ID: {{analysis.mediaID}} | Channel:
-                            <a :href="'https://layer7.solutions/blacklist/reports/#type=channel&subject='+analysis.mediaChannelID" target="_blank">{{analysis.mediaChannelName}}</a>
-                        </h3>
-                        <table>
+                    <div v-else>
+                        <h3 v-if="sentinelBanInfo.length == 0">No banned media channels detected!</h3>
+                        <table v-else>
                             <thead>
-                                <td class="sn-module">Module Name</td>
-                                <td class="sn-score">Score</td>
-                                <td class="sn-reason">Reason</td>
+                                <tr>
+                                    <td>Channel Name</td>
+                                    <td class="sn-media-platform">Media Platform</td>
+                                    <td class="sn-blacklist-by">Blacklisted By</td>
+                                    <td class="sn-blacklist-on">Blacklisted On</td>
+                                    <td class="sn-global-ban">Global Ban</td>
+                                </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="score in analysis.scores">
-                                    <td class="sn-module">{{score.module}}</td>
-                                    <td class="sn-score">{{score.score}}</td>
-                                    <td class="sn-reason">{{score.reason}}</td>
+                                <tr v-for="ban in sentinelBanInfo" :key="ban.mediaChannelID + '|' + ban.mediaPlatform">
+                                    <td class="sn-media-author">
+                                        <a :href="'https://layer7.solutions/blacklist/reports/#type=channel&subject='+ban.mediaChannelID" target="_blank">{{ban.mediaAuthor}}</a>
+                                    </td>
+                                    <td>{{ban.mediaPlatform}}</td>
+                                    <td>{{ban.blacklistBy}}</td>
+                                    <td class="sn-date">{{new Date(ban.blacklistDateUTC).toLocaleString().replace(', ', '\n')}}</td>
+                                    <td class="sn-global-ban">
+                                        <i class="material-icons" v-if="ban.globalBan">gavel</i>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-            <div class="sn-retry" v-if="!loadingAnalysis">
-                <button type="button" class="sn-btn-action" @click="loadAnalysis">Reload/Retry</button>
+    
+                <div class="sn-loading" v-if="loadingAnalysis">
+                    <sn-loading></sn-loading>
+                </div>
+                <div class="sn-error" v-if="(error || !analysisResponse.subName) && !loadingAnalysis">There was an error loading the analysis for this thing. Try again later or yell at
+                    <a href="https://reddit.com/u/meepster23" target="_blank">/u/meepster23</a>.
+                </div>
+    
+                <div class="sn-media-analysis-results" v-if="!error && !loadingAnalysis && analysisResponse.subName">
+                    <div v-if="analysisResponse">
+                        <h2>Analsyis results for
+                            <a :href="analysisResponse.permaLink" target="_blank">{{analysisResponse.thingType}}</a> by
+                            <a :href="'https://reddit.com/u/'+analysisResponse.author" target="_blank">/u/{{analysisResponse.author}}</a>
+                        </h2>
+    
+                        <div class="sn-thing-details">
+                            {{thingDetailsMessage}}
+                        </div>
+                        <div v-for="analysis in analysisResponse.analysis" class="sn-analysis-media-results" :key="analysis.mediaPlatform + '|' + analysis.mediaID">
+                            <h3>Media Platform: {{analysis.mediaPlatform}} | Media ID: {{analysis.mediaID}} | Channel:
+                                <a :href="'https://layer7.solutions/blacklist/reports/#type=channel&subject='+analysis.mediaChannelID" target="_blank">{{analysis.mediaChannelName}}</a>
+                            </h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td class="sn-module">Module Name</td>
+                                        <td class="sn-score">Score</td>
+                                        <td class="sn-reason">Reason</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="score in analysis.scores" :key="score">
+                                        <td class="sn-module">{{score.module}}</td>
+                                        <td class="sn-score">{{score.score}}</td>
+                                        <td class="sn-reason">{{score.reason}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="sn-retry" v-if="!loadingAnalysis">
+                    <button type="button" class="sn-btn-action" @click="loadAnalysis">Reload/Retry</button>
+                </div>
             </div>
         </div>
     </div>
@@ -65,7 +103,7 @@ export default {
 
             loadingAnalysis: false,
             loadingBanned: false,
-            sentinelBanInfo: {},
+            sentinelBanInfo: [],
             analysisResponse: {},
 
             error: false
@@ -86,19 +124,19 @@ export default {
             axios.get(dirtbagBaseUrl + 'Analysis/' + this.subreddit, { params: { thingID: this.thingid } })
                 .then((d) => {
                     this.analysisResponse = d.data;
-                    this.$nextTick(()=>{
-                        
+                    this.$nextTick(() => {
+
                         this.loadingAnalysis = false;
                     })
                 }, (e) => { this.error = true; this.loadingAnalysis = false; })
 
             axios.get(dirtbagBaseUrl + 'SentinelBan/' + this.subreddit + '/' + this.thingid)
-                .then((d)=>{
+                .then((d) => {
                     this.sentinelBanInfo = d.data;
-                    this.$nextTick(()=>{
+                    this.$nextTick(() => {
                         this.loadingBanned = false;
                     });
-                },()=>{
+                }, () => {
                     this.loadingBanned = false;
                 });
         }
@@ -123,7 +161,7 @@ export default {
     },
     watch: {
         watchChange() {
-            if(this.showAnalysis){
+            if (this.showAnalysis) {
                 this.loadAnalysis()
             }
         },
@@ -163,49 +201,103 @@ export default {
             }
         }
     }
-    .sn-media-analysis-results {
-        h1 {
-            font-size: 24px;
-            font-weight: bold;
-            color: $primary;
-        }
-        h2 {
-            font-size: 18px;
-            color: $secondary;
-            a {
-                color: black;
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: $primary;
+    }
+    h2 {
+        font-size: 18px;
+        color: $secondary;
+        a {
+            color: black;
+
+            &:hover {
+                text-decoration: underline;
             }
         }
+    }
+    h3 {
+        a {
+            color: $secondary;
 
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+    .sn-sentinel-ban-info {
+        margin-bottom: 10px;
+
+        .sn-date {
+            white-space: pre;
+        }
+        .sn-media-author {
+            font-weight: bold;
+        }
+        table {
+            margin-top: 5px;
+
+            thead {
+                font-weight: bold;
+            }
+        }
+        .sn-media-platform {
+            width: 100px;
+        }
+        .sn-blacklist-on {
+            width: 75px;
+        }
+        .sn-global-ban {
+            width: 50px;
+        }
+        td {
+            text-align: center;
+            i {
+                cursor: default;
+                color: $accent;
+            }
+            a {
+                color: $secondary;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    .sn-media-analysis-results {
         .sn-thing-details {
             font-size: 18px;
             margin: 12px 0px;
         }
         .sn-analysis-media-results {
             border: 1px solid $light-gray;
-            border-radius:10px;
-            padding:10px;
+            border-radius: 10px;
+            padding: 10px;
             box-shadow: 2px 2px 5px 0px $dark-gray;
-            h3{
+            h3 {
                 font-size: 12px;
-                margin-bottom:10px;
+                margin-bottom: 10px;
             }
-            thead{
-                font-weight:bold;
+            thead {
+                font-weight: bold;
             }
-            table{
-                .sn-module{
+            table {
+                .sn-module {
                     width: 150px;
                 }
-                .sn-score{
+                .sn-score {
                     width: 150px;
                 }
             }
         }
     }
-    .sn-retry{
-        margin-top:15px;
+    .sn-error {
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .sn-retry {
+        margin-top: 15px;
     }
 }
-
 </style>

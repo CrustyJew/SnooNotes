@@ -1,12 +1,14 @@
 <template>
     <span v-if="hasMedia" class="sn-media-analysis" @click.stop>
-        <i class="material-icons" @click="showAnalysis">visibility</i></span>
+        <i class="material-icons" @click="showAnalysis">visibility</i>
+    </span>
+    <span v-else class="sn-no-media"></span>
 </template>
 <script>
 import { mediaProviders } from '../config';
 import _ from 'lodash';
 export default {
-    props: ['thingid','subs'],
+    props: ['thingid', 'subs'],
     data() {
         return {
             hasMedia: false,
@@ -25,8 +27,8 @@ export default {
                 }
             }, this));
         },
-        showAnalysis: function(e){
-            this.$emit('showMediaAnalysis',{subreddit: this.subreddit, thingid: this.thingid, event: e});
+        showAnalysis: function (e) {
+            this.$emit('showMediaAnalysis', { subreddit: this.subreddit, thingid: this.thingid, event: e });
         }
 
     },
@@ -35,13 +37,18 @@ export default {
         this.$el.parentNode.removeChild(this.$el);
         let thing = window.document.querySelector('#thing_' + this.thingid);
 
-        let authElem = thing.querySelector('.thing > .entry > .tagline a.author');
+        let childarray = [...thing.children];
+        let entries = childarray.filter((c) => { return c.classList.contains('entry') });
+        let entry = entries.length > 0 ? entries[0] : null;
+        let authElem = entry ? entry.querySelector('.tagline a.author') : null;
+        if (authElem && authElem.classList.contains('moderator')) authElem = null;
+        let author = null;
         if (!authElem) return;
         authElem.parentNode.insertBefore(analysisElement, authElem.nextSibling);
         if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link')) {
             //link submission or self post
             this.subreddit = thing.attributes['data-subreddit'].value;
-            if(this.subs.findIndex(s=> s == this.subreddit) == -1){
+            if (this.subs.findIndex(s => s == this.subreddit) == -1) {
                 //couldn't find subreddit in sentinel activated subs. Bail out
                 this.hasMedia = false; return;
             }
@@ -80,7 +87,7 @@ export default {
         else if (thing.attributes['data-subreddit']) {
             //comment or message
             this.subreddit = thing.attributes['data-subreddit'].value;
-            if(this.subs.findIndex(s=> s == this.subreddit) == -1){
+            if (this.subs.findIndex(s => s == this.subreddit) == -1) {
                 //couldn't find subreddit in sentinel activated subs. Bail out
                 this.hasMedia = false; return;
             }
@@ -94,6 +101,6 @@ export default {
 </script>
 <style lang="scss">
 .sn-media-analysis i {
-    cursor:pointer;
+    cursor: pointer;
 }
 </style>
