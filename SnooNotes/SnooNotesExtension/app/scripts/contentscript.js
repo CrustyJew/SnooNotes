@@ -162,7 +162,10 @@ const InjectIntoThingsClass = () => {
 }
 
 const BindNewThingsClassUserNotesElement = (thing) => {
-    let authElem = thing.querySelector('.thing > .entry > .tagline a.author');
+    let childarray = [...thing.children];
+    let entries = childarray.filter((c) => { return c.classList.contains('entry') });
+    let entry = entries.length > 0 ? entries[0] : null;
+    let authElem = entry ? entry.querySelector('.tagline a.author') : null;
     if (authElem && authElem.classList.contains('moderator')) authElem = null;
     let author = null;
     if (authElem) {
@@ -178,8 +181,7 @@ const BindNewThingsClassUserNotesElement = (thing) => {
             url = "https://reddit.com/r/" + thing.attributes['data-subreddit'].value + '/' + thing.attributes['data-fullname'].value.replace('t3_', '');
         }
         else {
-            let childarray = [...thing.children];
-            let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
+
             let permlink = entry.querySelector('a.bylink').attributes['data-href-url'].value;
             let postid = permlink.substr(permlink.indexOf('comments/') + 9, 6); //post id is after comments/
             let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + postid + '/.../';
