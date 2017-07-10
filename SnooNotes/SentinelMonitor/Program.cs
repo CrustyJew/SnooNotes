@@ -16,7 +16,7 @@ namespace SentinelMonitor
         {
             var builder = new ConfigurationBuilder()
             .SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location))
-            .AddJsonFile("appsettings.json").AddEnvironmentVariables();
+            .AddJsonFile("appsettings.json",true).AddEnvironmentVariables();
 
             Config = builder.Build();
 
