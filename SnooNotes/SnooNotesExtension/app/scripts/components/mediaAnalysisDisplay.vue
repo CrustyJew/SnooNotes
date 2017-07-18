@@ -7,11 +7,16 @@
             <h1>/r/{{subreddit}}</h1>
             <div class="sn-media-analysis">
                 <div class="sn-sentinel-ban-info">
-                    <h2>Sentinel Bot Banned Media</h2>
+                    
                     <div class="sn-loading" v-if="loadingBanned">
                         <sn-loading></sn-loading>
                     </div>
+                    <div class="sn-error" v-else-if="bannedChannelError">
+                        There was an error determining if there was a banned channel for this thing. Try again later or yell at
+                    <a href="https://reddit.com/u/meepster23" target="_blank">/u/meepster23</a>.
+                    </div>
                     <div v-else>
+                        <h2>Sentinel Bot Banned Media</h2>
                         <h3 v-if="sentinelBanInfo.length == 0">No banned media channels detected!</h3>
                         <table v-else>
                             <thead>
@@ -43,7 +48,7 @@
                 <div class="sn-loading" v-if="loadingAnalysis">
                     <sn-loading></sn-loading>
                 </div>
-                <div class="sn-error" v-if="(error || !analysisResponse.subName) && !loadingAnalysis">There was an error loading the analysis for this thing. Try again later or yell at
+                <div class="sn-error" v-if="(error) && !loadingAnalysis">There was an error loading the analysis for this thing. Try again later or yell at
                     <a href="https://reddit.com/u/meepster23" target="_blank">/u/meepster23</a>.
                 </div>
     
@@ -80,6 +85,9 @@
                         </div>
                     </div>
                 </div>
+                <div v-else-if="!error">
+                    <h2>No analysis results found for this thing.. Sorry!</h2>
+                </div>
                 <div class="sn-retry" v-if="!loadingAnalysis">
                     <button type="button" class="sn-btn-action" @click="loadAnalysis">Reload/Retry</button>
                 </div>
@@ -106,7 +114,8 @@ export default {
             sentinelBanInfo: [],
             analysisResponse: {},
 
-            error: false
+            error: false,
+            bannedChannelError: false
         }
     },
     methods: {
@@ -121,6 +130,8 @@ export default {
             this.error = false;
             this.loadingAnalysis = true;
             this.loadingBanned = true;
+            this.bannedChannelError = false;
+
             axios.get(dirtbagBaseUrl + 'Analysis/' + this.subreddit, { params: { thingID: this.thingid } })
                 .then((d) => {
                     this.analysisResponse = d.data;
@@ -138,6 +149,7 @@ export default {
                     });
                 }, () => {
                     this.loadingBanned = false;
+                    this.bannedChannelError = true;
                 });
         }
     },
