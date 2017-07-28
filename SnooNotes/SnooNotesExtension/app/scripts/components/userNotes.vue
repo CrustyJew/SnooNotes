@@ -4,9 +4,9 @@
             <i class="material-icons" :class="{'sn-has-notes':hasNotes}">comment</i>
             <md-tooltip md-direction="right" md-delay="400">
                 <span v-if="hasNotes">
-                    <div v-for="(sub, subName) in getToolTip">
+                    <div v-for="(sub, subName) in getToolTip" :key="subName">
                         <h3>{{subName}}</h3>
-                        <span v-for="(count, ntid) in sub" :style="noteTypeStyle(subName, ntid)">
+                        <span v-for="(count, ntid) in sub" :style="noteTypeStyle(subName, ntid)" :key="ntid">
                             <i class="material-icons">{{getIcon(subName, ntid)}}</i> {{count}}</span>
                     </div>
                 </span>
@@ -14,6 +14,7 @@
             </md-tooltip>
         </span>
     </span>
+    <span v-else class="sn-not-logged-in"></span>
 </template>
 <script>
 import { store } from '../redux/contentScriptStore';

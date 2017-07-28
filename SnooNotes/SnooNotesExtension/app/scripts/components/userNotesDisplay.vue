@@ -10,18 +10,18 @@
                         <td class="sn-sub-name">
                             <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
                             <span v-if="note.ParentSubreddit">
-                                <br />via
-                                <br />
+                                <br>via
+                                <br>
                                 <a :href="'https://reddit.com/r/'+note.ParentSubreddit">{{note.ParentSubreddit}}</a>
                             </span>
                             <span v-else-if="isCabal">
-                                <br />
+                                <br>
                                 <cabalify :noteID="note.NoteID"></cabalify>
                             </span>
                         </td>
                         <td class="sn-submitter">
                             <span>{{note.Submitter}}</span>
-                            <br />
+                            <br>
                             <a :href="note.Url" style="white-space:pre;">{{new Date(note.Timestamp).toLocaleString().replace(', ', '\n')}}</a>
                         </td>
                         <td class="sn-message" :style="noteTypeStyle(note.SubName, note.NoteTypeID)">
@@ -37,13 +37,13 @@
                         <option value="-1" disabled>--Select a Sub--</option>
                         <option :value="modSub.index" v-if="isModdedSub">{{modSub.name}}</option>
                         <option value="-2" v-if="isModdedSub" disabled>---------</option>
-                        <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index">{{sub.name}}</option>
+                        <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index" :key="sub.index">{{sub.name}}</option>
                     </select>
-                    <textarea placeholder="Add a new note for user..." class="sn-new-message" v-model="newNote.message" />
+                    <textarea placeholder="Add a new note for user..." class="sn-new-message" v-model="newNote.message" ></textarea>
                     <button type="button" class="sn-btn-submit sn-new-note-submit" @click="submit" :disabled="submitting">Submit</button>
                 </div>
                 <div class="sn-note-type" :class="{'sn-error':$v.newNote.newNoteTypeID.$error }">
-                    <label v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)">
+                    <label v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)" :key="nt.NoteTypeID">
                         <input type="radio" :value="nt.NoteTypeID" v-model="newNote.newNoteTypeID">{{nt.DisplayName}}</label>
                 </div>
                 <div class="sn-new-error">

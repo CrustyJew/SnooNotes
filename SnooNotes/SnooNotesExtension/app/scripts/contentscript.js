@@ -14,6 +14,8 @@ import { ModActionsModule } from './modules/modActions';
 import VueMaterial from 'vue-material';
 import userNoteDisplay from './components/userNotesDisplay.vue';
 
+import SNMain from './components/snMain.vue';
+
 export const snInterceptor = new SNAxiosInterceptor(reduxStore);
 axios.defaults.baseURL = apiBaseUrl;
 axios.interceptors.request.use((req) => { return snInterceptor.interceptRequest(req); });
@@ -30,6 +32,7 @@ Vue.use(Toasted, { position: 'bottom-right', duration: 2500 });
 let usersWithNotes = [];
 let requestedAuthors = [];
 let newAuthorRequest = [];
+let snMain = {};
 const banNotesModule = new BanNotesModule([]);
 const sentinelBanModule = new SentinelBanModule();
 const modActionsModules = new ModActionsModule();
@@ -52,6 +55,11 @@ const unsub = reduxStore.subscribe(() => {
     userNotesDisplay.id = "sn-notes-display";
     document.body.appendChild(userNotesDisplay);
     new Vue(userNoteDisplay).$mount(userNotesDisplay);
+
+    var mainEl = document.createElement('div');
+    mainEl.id = "sn-main";
+    document.body.appendChild(mainEl);
+    snMain = new Vue(SNMain).$mount(mainEl);
 
     const options = new Vue({ render: h => h(SNOptions) }).$mount();
     options.$on('refresh', () => {
@@ -115,6 +123,7 @@ const InjectIntoThingsClass = () => {
                     if (mutation.addedNodes && mutation.addedNodes.length > 0) {
                         let node = mutation.addedNodes[0];
                         if (node.querySelector) {
+                            snMain.$emit('AddThings',{thingIDs:Array.from(node.querySelectorAll('.thing')).map((t)=>{return t.attributes['data-fullname'].value;})});
                             node.querySelectorAll('.thing').forEach(function (thing) {
                                 let author = BindNewThingsClassUserNotesElement(thing);
                                 if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
@@ -138,6 +147,7 @@ const InjectIntoThingsClass = () => {
         observer.observe(target, { childList: true, subtree: true });
 
         let things = document.querySelectorAll('.thing');
+        snMain.$emit('AddThings',{thingIDs:(Array.from(things)).map((t)=>{if(t.attributes['data-fullname']) return t.attributes['data-fullname'].value;}).filter(Boolean)});
         let authors = [];
         for (let i = 0; i < things.length; i++) {
             let author = BindNewThingsClassUserNotesElement(things[i]);
