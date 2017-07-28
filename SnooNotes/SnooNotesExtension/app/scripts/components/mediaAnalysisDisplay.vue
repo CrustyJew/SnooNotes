@@ -7,7 +7,6 @@
             <h1>/r/{{subreddit}}</h1>
             <div class="sn-media-analysis">
                 <div class="sn-sentinel-ban-info">
-                    
                     <div class="sn-loading" v-if="loadingBanned">
                         <sn-loading></sn-loading>
                     </div>
@@ -85,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-else-if="!error">
+                <div v-else-if="!error && !loadingAnalysis">
                     <h2>No analysis results found for this thing.. Sorry!</h2>
                 </div>
                 <div class="sn-retry" v-if="!loadingAnalysis">
