@@ -1,6 +1,6 @@
 {  "name": "SnooNotes",
   "description": "Usernotes plus a whole lot more!",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "manifest_version": 2,
   "background": {
     "scripts": [
@@ -26,7 +26,7 @@
     },
     {
       "matches":[
-        "https://snoonotes.com/Auth/redux*","https://localhost:5000/Auth/redux*"
+        "https://snoonotes.com/Auth/redux*"
       ],
       "js":[
         "scripts/signinCallback.js"
@@ -39,7 +39,6 @@
     "http://fonts.googleapis.com/",
     "https://fonts.googleapis.com/",
     "https://*.reddit.com/*",
-    "https://*.snoonotes.com/*",
-    "<all_urls>"
+    "https://*.snoonotes.com/*"
   ]
 }
