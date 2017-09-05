@@ -46,8 +46,8 @@ namespace SnooNotes.Controllers {
         public ApplicationUser GetCurrentUser() {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             return new ApplicationUser {
-                HasConfig = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "config" ),
-                HasWiki = ident.HasClaim( c => c.Type == "urn:snoonotes:scope" && c.Value == "wikiread" ),
+                HasConfig = ident.HasClaim( c => c.Type == "uri:snoonotes:hasconfig" && c.Value == "true" ),
+                HasWiki = ident.HasClaim( c => c.Type == "uri:snoonotes:haswiki" && c.Value == "true" ),
                 UserName = ident.Name
             };
         }

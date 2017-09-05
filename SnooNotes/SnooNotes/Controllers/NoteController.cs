@@ -96,6 +96,15 @@ namespace SnooNotes.Controllers {
                 throw new UnauthorizedAccessException( "You aren't a part of the cabal! Shoo!" );
             }
         }
+
+        [HttpGet("{subName}/Export")]
+        public Task<Models.Export> ExportNotes([FromRoute]string subName) {
+            if(!User.IsInRole(subName.ToLower())) {
+                throw new UnauthorizedAccessException("You are not a moderator of that subreddit!");
+            }
+            return notesBLL.ExportNotes(subName);
+        }
+
         [HttpDelete,HttpDelete("[action]")]
         // DELETE: api/Note/5
         public async Task Delete( int id ) {

@@ -34,8 +34,8 @@
                         function (u) {
 
                             exports.currentUser.userName = u.data.UserName;
-                            exports.currentUser.hasRead = u.data.HasRead;
-                            exports.currentUser.hasWikiRead = u.data.HasWikiRead;
+                            exports.currentUser.hasConfig = u.data.HasConfig;
+                            exports.currentUser.hasWiki = u.data.HasWiki;
                             exports.currentUser.isAuth = true;
                             localStorageService.set('currentUser', exports.currentUser);
                             deferred.resolve(exports.currentUser);
@@ -52,8 +52,8 @@
         
             localStorageService.remove('currentUser');
             exports.currentUser.userName = "";
-            exports.currentUser.hasRead = false;
-            exports.currentUser.hasWikiRead = false;
+            exports.currentUser.hasConfig = false;
+            exports.currentUser.hasWiki = false;
             exports.currentUser.isAuth = false;
             if (!suppressRedirect) {
                 $window.location.href = "/Signout";
