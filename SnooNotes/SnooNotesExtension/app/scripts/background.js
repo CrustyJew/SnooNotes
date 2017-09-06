@@ -1,5 +1,5 @@
 // Enable chromereload by uncommenting this line:
-import 'chromereload/devonly';
+//import 'chromereload/devonly';
 
 
 import { userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
@@ -47,7 +47,7 @@ const onUserSignedOut = () => {
 }
 
 userManager.clearStaleState();
-userManager.removeUser();
+//userManager.removeUser();
 userManager.events.addUserLoaded(onUserLoaded);
 userManager.events.addSilentRenewError(onSilentRenewError);
 userManager.events.addAccessTokenExpired(onAccessTokenExpired);
@@ -69,7 +69,7 @@ snUpdate.client.refreshNoteTypes = () => {
   store.dispatch(getModSubs());
 }
 snUpdate.client.modAction = (thingID, mod, action) => {
-  chrome.tabs.query({ url: "*://*.reddit.com/*" }, function (tabs) {
+  chrome.tabs.query({}, function (tabs) {
     for (var i = 0; i < tabs.length; i++) {
       chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": { "thingID": thingID, "mod": mod, "action": action } });
     }

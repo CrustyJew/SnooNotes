@@ -40,17 +40,56 @@
 
     exports.initialized = _initialized.promise;
 
-    exports.importTBNotes = function (noteMapping) {
+    exports.importTBNotes = function (noteMapping, subName) {
 
         var deferred = $q.defer();
 
-        $http.post('restapi/ToolBoxNotes', JSON.stringify(noteMapping)).
+        $http.post('api/ToolBoxNotes/' + subName, JSON.stringify(noteMapping)).
             then(function (response) {
                 deferred.resolve(response.data);
             }, function (response) {
                 deferred.reject(response);
             });
 
+        return deferred.promise;
+    }
+
+    exports.checkImportTBNotes = function (subName) {
+        var deferred = $q.defer();
+
+        $http.get('api/ToolBoxNotes/' + subName + '/status').
+            then(function (response) {
+                deferred.resolve(response.data);
+            }, function (response) {
+                deferred.reject(response);
+            });
+
+        return deferred.promise;
+    }
+
+    exports.exportNotes = function (sub) {
+        var deferred = $q.defer();
+
+        $http.get('api/Note/' + sub + '/Export').
+            then(function (response) {
+                deferred.resolve(response.data);
+            }, function (response) {
+                deferred.reject(response);
+            });
+
+        return deferred.promise;
+    }
+
+    exports.getTBWarningKeys = function (sub) {
+        var deferred = $q.defer();
+
+        $http.get('api/ToolBoxNotes/' + sub).
+            then(function (resp) {
+                deferred.resolve(resp.data);
+            },
+            function (resp) {
+                deferred.reject(resp);
+            });
         return deferred.promise;
     }
 

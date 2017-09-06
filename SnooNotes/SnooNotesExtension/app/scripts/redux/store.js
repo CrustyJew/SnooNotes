@@ -3,7 +3,7 @@ import { userManager } from '../utilities/userManager';
 import { composeWithDevTools } from 'remote-redux-devtools'
 import thunk from 'redux-thunk'
 import { wrapStore, alias } from 'react-chrome-redux';
-import { refreshUser, REFRESH_USER_ALIAS, LOGIN, REDIRECT_SUCCESS, sessionTerminated } from './actions/user';
+import { refreshUser, REFRESH_USER_ALIAS, LOGIN, REDIRECT_SUCCESS, sessionTerminated, userFound } from './actions/user';
 import reducer from './reducers/index';
 import { loadingUser, stopLoadingUser } from './actions/user';
 import { getModSubs, getUsersWithNotes, forceRefresh } from './actions/snoonotesInfo';
@@ -62,6 +62,7 @@ export const loadUser = (dispatch, displayLogin = false, action = {}) => {
     dispatch(loadingUser());
     userManager.getUser().then((u) => {
         if (u && !u.expired) {
+            dispatch(userFound(u));
             initUser(dispatch);
         }
         else {

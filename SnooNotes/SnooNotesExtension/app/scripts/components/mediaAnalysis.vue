@@ -1,5 +1,5 @@
 <template>
-    <span v-if="hasMedia" class="sn-media-analysis" @click.stop>
+    <span v-if="hasMedia && activeSub" class="sn-media-analysis" @click.stop>
         <i class="material-icons" @click="showAnalysis">visibility</i>
     </span>
     <span v-else class="sn-no-media"></span>
@@ -32,6 +32,11 @@ export default {
         }
 
     },
+    computed:{
+        activeSub: function(){
+            return this.subs.findIndex(s => s == this.subreddit) > -1;
+        }
+    },
     mounted: function () {
         let analysisElement = this.$el;
         this.$el.parentNode.removeChild(this.$el);
@@ -48,10 +53,7 @@ export default {
         if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link')) {
             //link submission or self post
             this.subreddit = thing.attributes['data-subreddit'].value;
-            if (this.subs.findIndex(s => s == this.subreddit) == -1) {
-                //couldn't find subreddit in sentinel activated subs. Bail out
-                this.hasMedia = false; return;
-            }
+            
             let domain = thing.attributes['data-domain'].value.toLowerCase();
             if (mediaProviders.findIndex(mp => mp == domain) > -1) {
                 this.hasMedia = true;
@@ -87,10 +89,6 @@ export default {
         else if (thing.attributes['data-subreddit']) {
             //comment or message
             this.subreddit = thing.attributes['data-subreddit'].value;
-            if (this.subs.findIndex(s => s == this.subreddit) == -1) {
-                //couldn't find subreddit in sentinel activated subs. Bail out
-                this.hasMedia = false; return;
-            }
             let childarray = [...thing.children];
             let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
             this.checkText(entry.querySelector('.usertext-body'));

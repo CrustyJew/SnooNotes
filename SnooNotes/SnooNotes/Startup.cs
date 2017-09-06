@@ -25,6 +25,7 @@ using Npgsql;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Hangfire;
 
 namespace SnooNotes
 {
@@ -61,6 +62,7 @@ namespace SnooNotes
             services.AddIdentity<ApplicationUser, IdentityRole>(options => options.Cookies.ApplicationCookie.AuthenticationScheme = "cookie")
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            
 
             services.AddMvc().AddJsonOptions(opt =>
            {
@@ -99,11 +101,13 @@ namespace SnooNotes
             services.AddScoped<DAL.INoteTypesDAL, DAL.NoteTypesDAL>();
             services.AddScoped<DAL.ISubredditDAL, DAL.SubredditDAL>();
             services.AddScoped<DAL.IYouTubeDAL, DAL.YouTubeDAL>();
+
             services.AddTransient<Utilities.IAuthUtils, SnooNotes.Utilities.AuthUtils>();
             services.AddTransient<BLL.IDirtbagBLL, BLL.DirtbagBLL>();
             services.AddTransient<BLL.INotesBLL, BLL.NotesBLL>();
             services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();
             services.AddTransient<BLL.ISubredditBLL, BLL.SubredditBLL>();
+            services.AddTransient<BLL.IToolBoxNotesBLL, BLL.ToolBoxNotesBLL>();
 
             services.AddTransient<DAL.IBotBanDAL>((x) => { return new DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
             services.AddTransient<BLL.IBotBanBLL, BLL.BotBanBLL>();
@@ -118,6 +122,9 @@ namespace SnooNotes
 
             RedditSharp.WebAgent.DefaultUserAgent = "SnooNotes (by Meepster23)";
             RedditSharp.WebAgent.DefaultRateLimiter.Mode = RedditSharp.RateLimitMode.Burst;
+
+
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("SnooNotes")).UseActivator(new Hangfire.AspNetCore.AspNetCoreJobActivator((IServiceScopeFactory)services.BuildServiceProvider().GetService(typeof(IServiceScopeFactory)))));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -143,6 +150,9 @@ namespace SnooNotes
                       .AllowAnyOrigin()
                       .AllowAnyMethod()
             );
+
+            app.UseHangfireServer(new BackgroundJobServerOptions() {  });
+            //app.UseHangfireDashboard();
 
             var cookieOptions = new CookieAuthenticationOptions
             {
@@ -177,7 +187,7 @@ namespace SnooNotes
                 PostLogoutRedirectUri = "/",
 
                 ResponseType = "code id_token",
-                Scope = { "profile", "offline_access" },
+                Scope = { "profile", "offline_access", "openid", "snoonotes" ,"dirtbag" },
                 GetClaimsFromUserInfoEndpoint = true,
                 TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {

@@ -12,5 +12,6 @@ namespace SnooNotes.BLL {
         Task<Dictionary<string, IEnumerable<BasicNote>>> GetNotesForSubs( IEnumerable<string> subnames, IEnumerable<string> users );
         Task<IEnumerable<string>> GetUsersWithNotes( IEnumerable<string> subnames );
         Task<bool> UserHasNotes( IEnumerable<string> subnames, string username );
+        Task<Export> ExportNotes(string subname);
     }
 }

@@ -141,10 +141,11 @@ n.AppliesToUsername = @AppliesToUsername and sr.SubName = @subname;
 
         public async Task<int> AddNewToolBoxNotesAsync( List<Note> tbNotes ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, Url, Timestamp) "
-                    + "select @NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp "
-                    //+ "where not exists(select * from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID where s.SubName = @SubName and n.AppliesToUsername = @AppliesToUsername and HASHBYTES('SHA2_256',Lower(s.SubName + n.Submitter + n.AppliesToUsername + CONVERT(VARCHAR,n.Timestamp,120) + n.Url)) = HASHBYTES('SHA2_256',Lower(@SubName + @Submitter + @AppliesToUsername + CONVERT(VARCHAR,@TimeStamp,120) + @Url)))";
-                    + "where not exists (select * from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID where s.SubName = @SubName and n.AppliesToUsername = @AppliesToUsername and n.Submitter = @Submitter and n.Url = @Url and CONVERT(VARCHAR,n.Timestamp,120) = CONVERT(VARCHAR,@TimeStamp,120))";
+                string query = @"
+insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, Url, Timestamp) 
+select @NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp 
+where not exists (select * from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID where s.SubName = @SubName and n.AppliesToUsername = @AppliesToUsername and n.Submitter = @Submitter and n.Url = @Url and CONVERT(VARCHAR,n.Timestamp,120) = CONVERT(VARCHAR,@TimeStamp,120))
+";
                 int rowsEffected = await conn.ExecuteAsync( query, tbNotes );
                 return rowsEffected;
 
