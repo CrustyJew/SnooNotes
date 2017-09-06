@@ -53,4 +53,6 @@ import { UserManager } from 'oidc-client';
 //     }
 // }
 export let userManager = new UserManager(userManagerConfig);
+// Log.logger = console;
+// Log.level = Log.DEBUG;
 //export let oidcClient = new OidcClient(userManagerConfig);

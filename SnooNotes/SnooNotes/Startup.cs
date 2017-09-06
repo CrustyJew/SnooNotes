@@ -152,7 +152,7 @@ namespace SnooNotes
             );
 
             app.UseHangfireServer(new BackgroundJobServerOptions() {  });
-            app.UseHangfireDashboard();
+            //app.UseHangfireDashboard();
 
             var cookieOptions = new CookieAuthenticationOptions
             {
