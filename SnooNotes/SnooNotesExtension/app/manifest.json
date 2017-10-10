@@ -1,6 +1,6 @@
 {  "name": "SnooNotes",
   "description": "Usernotes plus a whole lot more!",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "manifest_version": 2,
   "background": {
     "scripts": [
@@ -39,6 +39,6 @@
     "http://fonts.googleapis.com/",
     "https://fonts.googleapis.com/",
     "https://*.reddit.com/*",
-    "https://*.snoonotes.com/*"
+    "https://*.snoonotes.com/*","<all_urls>"
   ]
 }

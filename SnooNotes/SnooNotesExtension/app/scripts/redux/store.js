@@ -7,6 +7,7 @@ import { refreshUser, REFRESH_USER_ALIAS, LOGIN, REDIRECT_SUCCESS, sessionTermin
 import reducer from './reducers/index';
 import { loadingUser, stopLoadingUser } from './actions/user';
 import { getModSubs, getUsersWithNotes, forceRefresh } from './actions/snoonotesInfo';
+import persistState from 'redux-localstorage'
 
 const initialState = { user: { user: null, isLoadingUser: false } };
 
@@ -52,7 +53,7 @@ export const initUser = (dispatch) => {
 }
 
 export const store = createStore(reducer, initialState, composeWithDevTools(
-    applyMiddleware(alias(bg_aliases), thunk)//, createOidcMiddleware(userManager))
+    applyMiddleware(alias(bg_aliases), thunk),persistState('options')
 )
 )
 

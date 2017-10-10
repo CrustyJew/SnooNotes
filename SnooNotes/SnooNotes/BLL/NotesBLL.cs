@@ -17,20 +17,9 @@ namespace SnooNotes.BLL {
             return notesDAL.GetUsersWithNotes(subnames);
         }
 
-        public async Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotesForSubs(IEnumerable<string> subnames) {
+        public async Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes(IEnumerable<string> subnames, IEnumerable<string> users, bool ascending = true) {
 
-            var notes = (await notesDAL.GetNotesForSubs(subnames)).ToList();
-            Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
-            foreach(string user in notes.Select(n => n.AppliesToUsername).Distinct()) {
-                var unotes = notes.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp });
-                toReturn.Add(user, unotes);
-            }
-            return toReturn;
-        }
-
-        public async Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotesForSubs(IEnumerable<string> subnames, IEnumerable<string> users) {
-
-            var notes = (await notesDAL.GetNotesForSubs(subnames, users)).ToList();
+            var notes = (await notesDAL.GetNotes(subnames, users, ascending)).ToList();
             Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
             foreach(string user in notes.Select(n => n.AppliesToUsername).Distinct()) {
                 var unotes = notes.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp, ParentSubreddit = n.ParentSubreddit });
@@ -62,7 +51,7 @@ namespace SnooNotes.BLL {
         public async Task<Export> ExportNotes(string subname) {
             var toReturn = new Export();
             toReturn.NoteTypes = await noteTypesDAL.GetNoteTypesForSubs(new string[] { subname });
-            toReturn.Notes = await notesDAL.GetNotesForSubs(new string[] { subname });
+            toReturn.Notes = await notesDAL.ExportNotes(new string[] { subname });
             return toReturn;
         }
     }

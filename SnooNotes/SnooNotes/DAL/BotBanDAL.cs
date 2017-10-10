@@ -56,7 +56,7 @@ where sub.SubName like @subredditName
         /// 
         /// </summary>
         /// <param name="subredditNames"></param>
-        /// <param name="limit">limit result rows per papge</param>
+        /// <param name="limit">limit result rows per page</param>
         /// <param name="page">page of results to return</param>
         /// <param name="searchTerm">serach term to use if any</param>
         /// <param name="orderBy">"username","bannedby","date","reason", defaults to "username"</param>

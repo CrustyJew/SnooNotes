@@ -14,83 +14,140 @@ namespace SnooNotes.DAL {
             Configuration = config;
             connstring = Configuration.GetConnectionString("SnooNotes");
         }
-        public async Task<IEnumerable<Note>> GetNotesForUsers( string subname, IEnumerable<string> usernames ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit "
-                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
-                        + " where n.AppliesToUsername in @usernames and s.SubName = @subname";
+        public Task<IEnumerable<Note>> GetNotes( string subname, IEnumerable<string> usernames, bool ascending = true ) {
+            return GetNotes(new string[] { subname }, usernames, ascending);
+        }
+        public async Task<IEnumerable<Note>> GetNotes( IEnumerable<string> subnames, IEnumerable<string> usernames, bool ascending = true ) {
+            using (SqlConnection conn = new SqlConnection(connstring)) {
+                string query = $@"
+select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit 
+from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID 
+where n.AppliesToUsername in @usernames and s.SubName in @subnames
+ORDER BY AppliesToUsername desc, Timestamp {(ascending ? "asc" : "desc")} 
+";
 
-                return await conn.QueryAsync<Note>( query, new { usernames, subname } );
+                return await conn.QueryAsync<Note>(query, new { usernames, subnames });
             }
         }
-        public async Task<IEnumerable<Note>> GetNotesForUsers( IEnumerable<string> subnames, IEnumerable<string> usernames ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit "
-                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
-                        + " where n.AppliesToUsername in @usernames and s.SubName in @subnames";
 
-                return await conn.QueryAsync<Note>( query, new { usernames, subnames } );
-            }
-        }
+
         public async Task<IEnumerable<string>> GetUsersWithNotes( IEnumerable<string> subnames ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
+            using (SqlConnection conn = new SqlConnection(connstring)) {
                 string query = "select distinct n.AppliesToUsername "
                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
                        + " where s.SubName in @subnames";
 
-                return await conn.QueryAsync<string>( query, new { subnames } );
+                return await conn.QueryAsync<string>(query, new { subnames });
             }
         }
-        public async Task<bool> UserHasNotes(IEnumerable<string> subnames, string username ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
+        public async Task<bool> UserHasNotes( IEnumerable<string> subnames, string username ) {
+            using (SqlConnection conn = new SqlConnection(connstring)) {
                 string query = "select count(*) "
                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
                        + " where s.SubName in @subnames and n.AppliesToUsername = @username";
-                int count = (await conn.QueryAsync<int>( query, new { subnames, username } )).FirstOrDefault();
+                int count = (await conn.QueryAsync<int>(query, new { subnames, username })).FirstOrDefault();
                 return count > 0;
             }
         }
-        public async Task<IEnumerable<Note>> GetNotesForSubs( IEnumerable<string> subnames ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit "
-                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
-                        + " where s.SubName in @subnames";
+        public async Task<IEnumerable<Note>> ExportNotes( IEnumerable<string> subnames ) {
+            using (SqlConnection conn = new SqlConnection(connstring)) {
+                string query = @"
+select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit 
+from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID
+where s.SubName in @subnames
+order by AppliesToUsername desc, Timestamp asc
+";
 
-                return await conn.QueryAsync<Note>( query, new { subnames } );
-            }
-        }
-        public async Task<IEnumerable<Note>> GetNotesForSubs( IEnumerable<string> subnames, IEnumerable<string> users ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
-                string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit "
-                        + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
-                        + " where s.SubName in @subnames and n.AppliesToUsername in @users";
-
-                return await conn.QueryAsync<Note>( query, new { subnames, users } );
+                return await conn.QueryAsync<Note>(query, new { subnames });
             }
         }
         public async Task<Note> GetNoteByID( int id ) {
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
+            using (SqlConnection conn = new SqlConnection(connstring)) {
                 string query = "select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit "
                         + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
                         + " where n.NoteID = @noteid";
 
-                return ( await conn.QueryAsync<Note>( query, new { noteid = id } ) ).Single();
+                return (await conn.QueryAsync<Note>(query, new { noteid = id })).Single();
             }
         }
         public async Task<Note> AddNoteForUser( Note anote ) {
             //anote.AppliesToUsername = anote.AppliesToUsername.ToLower();
-            using ( SqlConnection conn = new SqlConnection( connstring ) ) {
+            using (SqlConnection conn = new SqlConnection(connstring)) {
                 string query = "insert into Notes(NoteTypeID,SubredditID,Submitter,Message,AppliesToUsername, n.Url, n.Timestamp) "
                     + " values (@NoteTypeID,(select SubredditID from Subreddits where SubName = @SubName),@Submitter,@Message,@AppliesToUsername, @Url, @Timestamp);"
                     + " select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp "
                         + " from Notes n inner join Subreddits s on s.SubredditID = n.SubredditID "
                         + " where n.NoteID = cast(SCOPE_IDENTITY() as int) ";
-                Note insertedNote = ( await conn.QueryAsync<Note>( query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername, anote.Url, anote.Timestamp } ) ).Single();
+                Note insertedNote = (await conn.QueryAsync<Note>(query, new { anote.NoteTypeID, anote.SubName, anote.Submitter, anote.Message, anote.AppliesToUsername, anote.Url, anote.Timestamp })).Single();
 
                 return insertedNote;
             }
         }
 
+        public async Task<TableResults<Note>> SearchNotes( IEnumerable<string> subredditNames, int limit, int page, string searchTerm, string orderBy, bool ascending ) {
+
+            string orderByColumn = "";
+            switch (orderBy.ToLower()) {
+                case "username":
+                    orderByColumn = "AppliesToUsername"; break;
+                case "submitter":
+                    orderByColumn = "submitter"; break;
+                case "date":
+                    orderByColumn = "timestamp"; break;
+                case "notetype":
+                    orderByColumn = "displayorder"; break;
+                case "subreddit":
+                    orderByColumn = "subname"; break;
+                default:
+                    orderByColumn = "timestamp"; break;
+            }
+            string query = $@"
+SELECT Count(*)
+FROM Notes n
+INNER JOIN Subreddits sub on sub.SubredditID = be.SubredditID
+INNER JOIN NoteTypes nt on nt.NoteTypeID = n.NoteTypeID
+where sub.SubName in @subredditNames
+{(string.IsNullOrWhiteSpace(searchTerm) ? "" : @"
+AND (
+    n.AppliesToUsername like '%' + @searchTerm + '%'
+    OR n.Submitter like '%' + @searchTerm + '%'
+    OR n.Url like '%' + @searchTerm + '%'
+    OR n.Message like '%' + @searchTerm + '%'
+    OR nt.DisplayName like '%' + @searchTerm + '%'
+)
+")}
+
+select n.NoteID, n.NoteTypeID, s.SubName, n.Submitter, n.Message, n.AppliesToUsername, n.Url, n.Timestamp, n.ParentSubreddit 
+FROM Notes n 
+INNER JOIN Subreddits s on s.SubredditID = n.SubredditID
+INNER JOIN NoteTypes nt on nt.NoteTypeID = n.NoteTypeID
+where s.SubName in @subnames and
+{(string.IsNullOrWhiteSpace(searchTerm) ? "" : @"
+AND (
+    n.AppliesToUsername like '%' + @searchTerm + '%'
+    OR n.Submitter like '%' + @searchTerm + '%'
+    OR n.Url like '%' + @searchTerm + '%'
+    OR n.Message like '%' + @searchTerm + '%'
+    OR nt.DisplayName like '%' + @searchTerm + '%'
+)
+")}
+ORDER BY {orderByColumn} {(ascending ? "asc" : "desc")} OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+";
+            using (var snConn = new SqlConnection(connstring))
+            using (var multi = await snConn.QueryMultipleAsync(query, new { searchTerm, offset = (limit * (page - 1)), subredditNames, limit })) {
+                int totalCount = 0;
+                totalCount = await multi.ReadFirstAsync<int>();
+                var results = await multi.ReadAsync<Models.Note>();
+
+                return new Models.TableResults<Models.Note> {
+                    TotalResults = totalCount,
+                    CurrentPage = page,
+                    ResultsPerPage = limit,
+                    DataTable = results
+                };
+            }
+        }
+    
         public async Task<Note> AddNoteToCabal(Note anote, string cabalSub ) {
             using ( SqlConnection conn = new SqlConnection( connstring ) ) {
                 string query = @"

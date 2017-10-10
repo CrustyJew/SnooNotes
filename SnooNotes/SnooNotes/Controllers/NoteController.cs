@@ -30,27 +30,16 @@ namespace SnooNotes.Controllers {
             }
             return notesBLL.GetUsersWithNotes( subs );
         }
-
-        [HttpGet( "[action]" )]
-        public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> InitializeNotes() {
-            ClaimsIdentity ident = User.Identity as ClaimsIdentity;
-            var subs = ident.FindAll(ident.RoleClaimType).Select(c => c.Value).ToList();
-            if (ident.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
-            {
-                subs.Add(Configuration["CabalSubreddit"]);
-            }
-            return notesBLL.GetNotesForSubs( subs );
-        }
         
         [HttpPost( "[action]" )]
-        public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes( [FromBody]IEnumerable<string> users ) {
+        public Task<Dictionary<string, IEnumerable<Models.BasicNote>>> GetNotes( [FromBody]IEnumerable<string> users, [FromQuery]bool ascending = true ) {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
             var subs = ident.FindAll(ident.RoleClaimType).Select(c => c.Value).ToList();
             if (ident.HasClaim(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true"))
             {
                 subs.Add(Configuration["CabalSubreddit"]);
             }
-            return notesBLL.GetNotesForSubs( subs, users );
+            return notesBLL.GetNotes( subs, users, ascending );
         }
         
         [HttpGet( "{username}/HasNotes" )]
