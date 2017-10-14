@@ -4,7 +4,8 @@
             <i class="material-icons" :class="{'sn-has-notes':hasNotes}">comment</i>
             <md-tooltip md-direction="right" md-delay="400">
                 <span v-if="hasNotes">
-                    <div v-for="(sub, subName) in getToolTip" :key="subName">
+                    <div><span :style="noteTypeStyle(getToolTip.mostRecent.SubName,getToolTip.mostRecent.NoteTypeID)">{{getToolTip.mostRecent.Message}}</span></div>
+                    <div v-for="(sub, subName) in getToolTip.subs" :key="subName">
                         <h3>{{subName}}</h3>
                         <span v-for="(count, ntid) in sub" :style="noteTypeStyle(subName, ntid)" :key="ntid">
                             <i class="material-icons">{{getIcon(subName, ntid)}}</i> {{count}}</span>
@@ -54,12 +55,12 @@ export default {
             return this.userNotes && this.userNotes.length > 0;
         },
         getToolTip: function () {
-            let toolTipData = {};
+            let toolTipData = {subs:{}};
             this.userNotes.forEach(function (note) {
-                
-                toolTipData[note.SubName]= toolTipData[note.SubName] || {};
-                if (!toolTipData[note.SubName].hasOwnProperty(note.NoteTypeID)) toolTipData[note.SubName][note.NoteTypeID] = 0;
-                toolTipData[note.SubName][note.NoteTypeID] += 1;
+                if(!toolTipData.mostRecent || toolTipData.mostRecent.Timestamp < note.Timestamp) toolTipData.mostRecent = note;
+                toolTipData.subs[note.SubName]= toolTipData.subs[note.SubName] || {};
+                if (!toolTipData.subs[note.SubName].hasOwnProperty(note.NoteTypeID)) toolTipData.subs[note.SubName][note.NoteTypeID] = 0;
+                toolTipData.subs[note.SubName][note.NoteTypeID] += 1;
             });
             return toolTipData;
         }

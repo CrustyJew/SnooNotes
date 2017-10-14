@@ -39,6 +39,6 @@
     "http://fonts.googleapis.com/",
     "https://fonts.googleapis.com/",
     "https://*.reddit.com/*",
-    "https://*.snoonotes.com/*","<all_urls>"
+    "https://*.snoonotes.com/*"
   ]
 }

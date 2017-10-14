@@ -5,8 +5,15 @@
                 <a class="sn-close-note sn-close" @click="close">X</a>
             </div>
             <table v-if="!notes.noNotes && !notes.loading">
+                <thead>
+                    <tr>
+                        <td>Subreddit</td>
+                        <td class="md-sortable" @click="toggleSort">Submitter / Date <i class="md-icon md-sortable-icon material-icons" :class="{'sorted-descending':!ascending}">arrow_upward</i></td>
+                        <td>Note</td>
+                    </tr>
+                </thead>
                 <tbody is="transition-group" name="fade">
-                    <tr v-for="note in notes"  transition="fade" :key="note.NoteID">
+                    <tr v-for="note in notes" transition="fade" :key="note.NoteID">
                         <td class="sn-sub-name">
                             <a :href="'https://reddit.com/r/'+note.SubName">{{note.SubName}}</a>
                             <span v-if="note.ParentSubreddit">
@@ -26,7 +33,9 @@
                         </td>
                         <td class="sn-message" :style="noteTypeStyle(note.SubName, note.NoteTypeID)">
                             <p>{{note.Message}}</p>
-                            <a class="sn-delete-note" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.name == note.ParentSubreddit) > -1"><i class="material-icons">delete_forever</i></a>
+                            <a class="sn-delete-note" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.name == note.ParentSubreddit) > -1">
+                                <i class="material-icons">delete_forever</i>
+                            </a>
                         </td>
                     </tr>
                 </tbody>
@@ -39,7 +48,7 @@
                         <option value="-2" v-if="isModdedSub" disabled>---------</option>
                         <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index" :key="sub.index">{{sub.name}}</option>
                     </select>
-                    <textarea placeholder="Add a new note for user..." class="sn-new-message" v-model="newNote.message" ></textarea>
+                    <textarea placeholder="Add a new note for user..." class="sn-new-message" v-model="newNote.message"></textarea>
                     <button type="button" class="sn-btn-submit sn-new-note-submit" @click="submit" :disabled="submitting">Submit</button>
                 </div>
                 <div class="sn-note-type" :class="{'sn-error':$v.newNote.newNoteTypeID.$error }">
@@ -51,12 +60,13 @@
                     <p v-if="$v.newNote.newNoteSubIndex.$error">Select a subby you fool!</p>
                 </div>
             </div>
-            
+
         </div>
     </transition>
 </template>
 <script>
 import { store } from '../redux/contentScriptStore';
+import { toggleSort } from '../redux/actions/options';
 import { draggable } from './directives/draggable';
 import { validationMixin } from 'vuelidate'
 import { required, between } from 'vuelidate/lib/validators'
@@ -67,7 +77,7 @@ export default {
     name: 'user-notes',
     //props: ['username', 'subreddit', 'url', 'showNotes'],
     directives: { 'draggable': draggable },
-    components:{'cabalify': cabalify},
+    components: { 'cabalify': cabalify },
     mixins: [validationMixin],
     data() {
         return {
@@ -78,6 +88,7 @@ export default {
             showNotes: false,
             allNotes: this.$select('notes as allNotes'),
             isCabal: this.$select('user.isCabal as isCabal'),
+            ascending: this.$select('options.ascending as ascending'),
             displayStyle: {
                 display: 'none',
                 position: 'absolute',
@@ -96,7 +107,7 @@ export default {
         newNote: {
             newNoteSubIndex: {
                 required,
-                'notNegative': function (value) {
+                'notNegative': function(value) {
                     return value > -1;
                 }
             },
@@ -107,32 +118,45 @@ export default {
     },
     computed: {
 
-        userNotes: function () {
+        userNotes: function() {
             return this.allNotes[this.username];
         },
-        hasNotes: function () {
+        hasNotes: function() {
             return this.usersWithNotes.indexOf(this.username) > -1;
         },
-        usersWithNotes: function () {
+        usersWithNotes: function() {
             return this.snInfo.users_with_notes;
         },
-        modSubs: function () {
+        modSubs: function() {
             return this.snInfo.modded_subs.map((s, i) => { return { name: s.SubName, id: s.SubredditID, index: i } });
         },
-        modSub: function () {
+        modSub: function() {
             return this.modSubs.filter(sub => sub.name == this.subreddit)[0];
         },
-        otherSubs: function () {
+        otherSubs: function() {
             return this.modSubs.filter(sub => sub.name != this.subreddit && sub.name != "SpamCabal");
         },
-        notes: function () {
-            return this.userNotes || { noNotes: true }
+        notes: function() {
+            if(this.userNotes){
+                return this.userNotes.sort((a,b)=>{
+                    var da = new Date(a.Timestamp);
+                    var db = new Date(b.Timestamp);
+                    if((da < db && this.ascending)|| (da > db && !this.ascending)){
+                        return -1
+                    }
+                    if((da > db && this.ascending) || (da < db && !this.ascending)){
+                        return 1
+                    }
+                    return 0;
+                })
+            }
+            return { noNotes: true }
         },
-        noteTypes: function () {
+        noteTypes: function() {
             if (this.newNote.newNoteSubIndex == -1) return {}
             return this.snInfo.modded_subs[this.newNote.newNoteSubIndex].Settings.NoteTypes.filter(nt => !nt.Disabled);
         },
-        isModdedSub: function () {
+        isModdedSub: function() {
             if (this.subreddit && this.modSubs.findIndex(sub => sub.name == this.subreddit) > -1) {
                 return true;
             }
@@ -140,13 +164,13 @@ export default {
         }
     },
     methods: {
-        close: function () {
+        close: function() {
             this.showNotes = false;
             this.newNote.message = "";
             this.newNoteTypeID = -1;
             document.removeEventListener('click', this.clickWatch, true);
         },
-        noteTypeStyle: function (sub, ntID) {
+        noteTypeStyle: function(sub, ntID) {
             let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
             let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
             let style = {
@@ -156,7 +180,7 @@ export default {
             if (nt.Italic) style.fontStyle = "italic";
             return style;
         },
-        show: function (e) {
+        show: function(e) {
             //this.displayStyle.top = e.target.offsetTop + 15 + 'px';
             //this.displayStyle.left = e.target.offsetLeft + 20 + 'px';
             this.displayStyle.top = e.pageY + 5 + 'px';
@@ -171,10 +195,13 @@ export default {
             }
             document.addEventListener('click', this.clickWatch, true);
         },
-        clickWatch: function (e) {
+        clickWatch: function(e) {
             if (!this.$el.contains(e.target)) this.close();
         },
-        submit: function () {
+        toggleSort: function(){
+            store.dispatch(toggleSort());
+        },
+        submit: function() {
             this.$v.newNote.$touch();
             if (this.$v.newNote.$invalid) { return; }
             this.submitting = true;
@@ -187,17 +214,17 @@ export default {
                     this.$toasted.error("Failed to submit new note.");
                 })
         },
-        deleteNote: function (id) {
+        deleteNote: function(id) {
             axios.delete('Note?id=' + id);
         }
     },
     watch: {
-        'newNote.newNoteSubIndex': function (newIndex) {
+        'newNote.newNoteSubIndex': function(newIndex) {
             this.newNote.newNoteTypeID = null;
             this.$v.newNote.$reset();
         }
     },
-    mounted: function () {
+    mounted: function() {
         showNotesHub.$on('showNotes', (e) => {
             this.username = e.username;
             this.url = e.url;
@@ -206,7 +233,7 @@ export default {
             this.show(e.event)
         });
     },
-    beforeDestroy: function () {
+    beforeDestroy: function() {
         document.removeEventListener('click', this.clickWatch, true);
     }
 }
@@ -232,15 +259,15 @@ export default {
             }
         }
     }
-    a{
-        color:$secondary;
+    a {
+        color: $secondary;
     }
-    p{
-        display:inline;
+    p {
+        display: inline;
     }
-    a.sn-delete-note{
-        color:$accent;
-        font-size:18px;
+    a.sn-delete-note {
+        color: $accent;
+        font-size: 18px;
     }
     table {
         border-collapse: separate;
@@ -251,19 +278,34 @@ export default {
         border-style: none solid solid none;
         padding: 10px;
     }
-    tr:first-child td:first-child {
+    thead{
+        .md-sortable{
+            cursor: pointer;
+        }
+    }
+    thead td{
+        text-align: center;
+        font-weight: bold;
+        i{
+            font-size:18px;
+        }
+        i.sorted-descending{
+            transform: translateY(-20%) rotate(180deg);
+        }
+    }
+    thead tr:first-child td:first-child {
         border-top-left-radius: 10px;
     }
-    tr:first-child td:last-child {
+    thead tr:first-child td:last-child {
         border-top-right-radius: 10px;
     }
-    tr:last-child td:first-child {
+    tbody tr:last-child td:first-child {
         border-bottom-left-radius: 10px;
     }
-    tr:last-child td:last-child {
+    tbody tr:last-child td:last-child {
         border-bottom-right-radius: 10px;
     }
-    tr:first-child td {
+    thead tr:first-child td {
         border-top-style: solid;
     }
     tr td:first-child {
