@@ -9,6 +9,8 @@
     <UserSecretsId>aspnet-SnooNotes-20170126010343</UserSecretsId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <ApplicationInsightsResourceId>/subscriptions/a9134f1b-6ecd-4ea2-8d57-8317b343b086/resourcegroups/Default-Web-CentralUS/providers/microsoft.insights/components/SnooNotesApiInsights</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/a9134f1b-6ecd-4ea2-8d57-8317b343b086/resourcegroups/Default-Web-CentralUS/providers/microsoft.insights/components/SnooNotesApiInsights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +35,7 @@
     <PackageReference Include="Hangfire" Version="1.6.16" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.16" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="1.1.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Server" Version="0.2.0-preview2-22683" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
@@ -68,6 +71,10 @@
     <None Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>

@@ -13,6 +13,7 @@ namespace SnooNotes
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
+                .UseApplicationInsights()
                 .UseKestrel()
                 .UseUrls( "http://localhost:5001" )
                 .UseContentRoot(Directory.GetCurrentDirectory())
