@@ -19,6 +19,7 @@ using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace IdentProvider {
     public class Startup {
@@ -57,7 +58,6 @@ namespace IdentProvider {
             services.AddCors(opt => opt.AddPolicy("AllowAll", pol => pol.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod().AllowCredentials()));
 
             services.AddMvc();
-
             services.Configure<IdentityOptions>( options => {
                 options.User.RequireUniqueEmail = false;
                 options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays( 150 );
@@ -122,11 +122,13 @@ namespace IdentProvider {
                 app.UseExceptionHandler( "/Home/Error" );
             }
             app.UseCors(opt=>opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
-            app.UseStaticFiles();
+
 
             app.UseIdentity();
 
             app.UseIdentityServer();
+            app.UseStaticFiles();
+
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 

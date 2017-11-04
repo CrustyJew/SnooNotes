@@ -12,6 +12,7 @@ namespace IdentProvider
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
+                .UseApplicationInsights()
                 .UseKestrel()
                 .UseUrls( "http://localhost:5000/Auth/" )
                 .UseContentRoot(Directory.GetCurrentDirectory())

@@ -26,6 +26,7 @@ using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using Hangfire;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace SnooNotes
 {
@@ -172,6 +173,8 @@ namespace SnooNotes
             app.UseCookieAuthentication(cookieOptions);
 
 
+            var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+            configuration.TelemetryProcessorChainBuilder.Use(( next ) => new TelemetryFilter(next)).Build();
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
