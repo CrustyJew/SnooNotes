@@ -30,7 +30,14 @@ namespace SnooNotes {
                 var user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
                 await authutils.UpdateModeratedSubredditsAsync( user );
                 user = await userManager.FindByNameAsync( context.Principal.Identity.Name );
+
                 var newPrincipal = await signinManager.CreateUserPrincipalAsync( user );
+                if(user.HasWiki) {
+                    ((ClaimsIdentity) newPrincipal.Identity).AddClaim(new Claim("uri:snoonotes:haswiki", "true"));
+                }
+                if(user.HasConfig) {
+                    ((ClaimsIdentity) newPrincipal.Identity).AddClaim(new Claim("uri:snoonotes:hasconfig", "true"));
+                }
                 ( (ClaimsIdentity)newPrincipal.Identity).AddClaim( new Claim( "lastupdated", DateTime.UtcNow.ToString() ) );
                 context.ReplacePrincipal( newPrincipal );
                 context.ShouldRenew = true;
