@@ -52,7 +52,7 @@ namespace SnooNotes.Controllers {
             });
 
             var warningTypes = await RedditSharp.ToolBoxUserNotes.GetWarningKeys(agent, id);
-            return warningTypes.Where(n=>n != null).ToArray();
+            return warningTypes.Select(s=>s ?? "null").ToArray();
         }
         [HttpPost("{subName}")]
         // POST: api/ToolBoxNotes
