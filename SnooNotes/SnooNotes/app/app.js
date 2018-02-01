@@ -64,9 +64,17 @@ require("./directives");
         //    templateUrl: '/Views/subredditSettings.html',
         //    controller: 'SubredditSettingsCtrl'
         //})
-        .state('userguide',{
+        .state('userguide', {
             url: '/userguide',
             templateUrl: '/Views/userguide.html',
+            data: {
+                requireLogin: false
+            }
+        })
+        .state('userkey', {
+            url: '/userkey',
+            templateUrl: '/Views/userkey.html',
+            controller: 'UserKeyCtrl',
             data: {
                 requireLogin: false
             }

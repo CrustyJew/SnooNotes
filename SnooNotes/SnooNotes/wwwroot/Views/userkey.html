@@ -1,0 +1,13 @@
+﻿<h1>User Keys</h1>
+<div class="boxArea">
+    <p>
+        If you are logged in to SnooNotes, you'll be able to request/reset your user key below. This key allows a third party application/bot/script to impersonate
+        you and update SnooNotes on your behalf.
+    </p>
+    <p>By clicking below, your code will be either set up, or reset to a new code and it will be sent via Reddit PM to your username.</p>
+
+    <input type="button" ng-show="loggedIn" ng-click="genKey()" class="snSubmit" value="Send/Reset User Key" ng-hide="generating" />
+    <div ng-show="generating"><h2>Generating Key...</h2></div>
+    <div ng-show="error"><h2 style="color:red;">An error occured. Blame /u/meepster23 ..</h2></div>
+    <div ng-show="done"><h2>Code sent! Check your Reddit mail soon!</h2></div>
+</div>

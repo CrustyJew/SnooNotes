@@ -82,10 +82,23 @@ namespace IdentProvider
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "dirtbag", "snoonotes", "cabal"
+                        "dirtbag", "snoonotes"
                     }, AllowAccessTokensViaBrowser = true,
                 },
-
+                new Client
+                {
+                    ClientId = "bots",
+                    ClientName = "Bots",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    RequireConsent = false,
+                    RequireClientSecret = false, 
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "dirtbag", "snoonotes"
+                    }, 
+                },
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
                 {
@@ -106,7 +119,7 @@ namespace IdentProvider
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "dirtbag", "snoonotes", "cabal"
+                        "dirtbag", "snoonotes"
                     },
                     AllowOfflineAccess = true ,
                 }

@@ -72,7 +72,7 @@ namespace IdentProvider {
             services.AddTransient<SnooNotes.Utilities.IAuthUtils, SnooNotes.Utilities.BaseAuthUtils>();
             var identServer = services.AddIdentityServer(options =>
            {
-               options.Cors.CorsPolicyName = "AllowAll";
+               //options.Cors.CorsPolicyName = "AllowAll";
            }
                 ).AddSigningCredential("CN=SNIdentServer", System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser)
                 .AddConfigurationStore(builder =>
