@@ -18,7 +18,7 @@ export const getUsersWithNotes = () => {
     return (dispatch) => {
         axios.get('Note/GetUsernamesWithNotes')
             .then(response => {
-                dispatch({ type: SET_USERS_WITH_NOTES, payload: response.data });
+                dispatch({ type: SET_USERS_WITH_NOTES, payload: response.data.map(u => u.toLowerCase()) });
             })
     }
 }

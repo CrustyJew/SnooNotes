@@ -119,10 +119,10 @@ export default {
     computed: {
 
         userNotes: function() {
-            return this.allNotes[this.username];
+            return this.allNotes[this.username.toLowerCase()];
         },
         hasNotes: function() {
-            return this.usersWithNotes.indexOf(this.username) > -1;
+            return this.usersWithNotes.indexOf(this.username.toLowerCase()) > -1;
         },
         usersWithNotes: function() {
             return this.snInfo.users_with_notes;

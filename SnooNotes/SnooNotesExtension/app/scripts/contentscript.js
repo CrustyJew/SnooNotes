@@ -72,6 +72,9 @@ const unsub = reduxStore.subscribe(() => {
                 if (!author) {
                     author = authElem.textContent;
                 }
+                if(author){
+                    author = author.toLowerCase();
+                }
                 if (usersWithNotes.indexOf(author) != -1) {
                     authorsReq.push(author);
                 }
@@ -86,6 +89,9 @@ const unsub = reduxStore.subscribe(() => {
         let authElems = document.body.querySelectorAll('a.Message__author,a.ThreadPreview__author');
         authElems.forEach(function (authElem) {
             let author = authElem.textContent.replace(/u\//, '');
+            if(author){
+                author = author.toLowerCase();
+            }
             if (requestedAuthors.indexOf(author) == -1 && newAuthorRequest.indexOf(author) == -1 && usersWithNotes.indexOf(author) != -1) {
                 newAuthorRequest.push(author);
             }
@@ -197,6 +203,9 @@ const BindNewThingsClassUserNotesElement = (thing) => {
 
     }
     thing.className = thing.className + ' sn-done';
+    if(author){
+        author = author.toLowerCase();
+    }
     return author;
 }
 
@@ -205,8 +214,8 @@ const InjectIntoUserPage = () => {
     let authors = [];
     let userHeader = document.querySelector('body.profile-page div.side div.titlebox>h1');
     if (userHeader) {
-        if (usersWithNotes.indexOf(userHeader.textContent) != -1) {
-            authors.push(userHeader.textContent)
+        if (usersWithNotes.indexOf(userHeader.textContent.toLowerCase()) != -1) {
+            authors.push(userHeader.textContent.toLowerCase())
         }
         let noteElem = document.createElement('user-notes');
         noteElem.setAttribute('username', userHeader.textContent);
@@ -300,6 +309,9 @@ const BindNewModmailUserNoteElement = (article) => {
         authElem.parentNode.insertBefore(vueinst.$el, authElem.nextSibling);
     })
     article.className = article.className + ' sn-done';
+    if(author){
+        author = author.toLowerCase();
+    }
     return author;
 }
 

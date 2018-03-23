@@ -13,8 +13,16 @@ export const getNotesForUsers = (dispatch, usernames) => {
 
     axios.post('Note/GetNotes', usernames)
         .then(res => {
+            var obj = res.data;
+            var keys = Object.keys(obj);
+            var n = keys.length;
+            var newobj={};
+            while (n--) {
+                var key = keys[n];
+                newobj[key.toLowerCase()] = obj[key];
+            }
             dispatch({
-                type: GET_NOTES_FOR_USERS, payload: res.data
+                type: GET_NOTES_FOR_USERS, payload: newobj
             });
         });
 
@@ -24,7 +32,7 @@ export const gotNewNote = (note) => {
     return {
         type: GOT_NEW_NOTE,
         payload: {
-            appliesToUsername: note.AppliesToUsername,
+            appliesToUsername: note.AppliesToUsername.toLowerCase(),
             note: {
                 NoteID: note.NoteID,
                 NoteTypeID: note.NoteTypeID,
@@ -43,7 +51,7 @@ export const gotDeleteNote = (username, id, outOfNotes) => {
     return {
         type: DELETE_NOTE,
         payload: {
-            appliesToUsername: username,
+            appliesToUsername: username.toLowerCase(),
             noteID: id,
             'outOfNotes': outOfNotes
         }

@@ -1,7 +1,7 @@
 <template>
     <span v-if="snInfo.modded_subs.length > 0" class="sn-user-notes" @click.stop>
         <span @click="show">
-            <i class="material-icons" :class="{'sn-has-notes':hasNotes}">comment</i>
+            <i class="material-icons" :style="hasNotesStyle()">comment</i>
             <md-tooltip md-direction="right" md-delay="400">
                 <span v-if="hasNotes">
                     <div><span :style="noteTypeStyle(getToolTip.mostRecent.SubName,getToolTip.mostRecent.NoteTypeID)">{{getToolTip.mostRecent.Message}}</span></div>
@@ -33,7 +33,7 @@ export default {
     data() {
         return {
             snInfo: this.$select('snoonotes_info as snInfo'),
-            userNotes: this.$select('notes.' + this.username + ' as userNotes'),
+            userNotes: this.$select('notes.' + this.username.toLowerCase() + ' as userNotes'),
             showNotes: false,
             displayStyle: {
                 display: 'none',
@@ -79,6 +79,16 @@ export default {
             if (nt.Italic) style.fontStyle = "italic";
             return style;
         },
+        hasNotesStyle: function(){
+            let style = {
+                color: '#888'
+            }
+            if(this.hasNotes){
+                let noteStyle = this.noteTypeStyle(this.getToolTip.mostRecent.SubName,this.getToolTip.mostRecent.NoteTypeID);
+                style.color = noteStyle.color;
+            }
+            return style;
+        },
         getIcon: function (sub, ntID) {
             let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
             let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
@@ -98,11 +108,6 @@ export default {
     i.material-icons {
         font-size: 18px;
         vertical-align: middle;
-        color: $primary;
-
-        &.sn-has-notes {
-            color: $accent
-        }
     }
 }
 </style>
