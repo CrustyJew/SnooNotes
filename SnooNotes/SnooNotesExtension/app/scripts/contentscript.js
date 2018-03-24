@@ -183,8 +183,11 @@ const BindNewThingsClassUserNotesElement = (thing) => {
             author = author.value;
         }
         let url = "";
-        if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link' || thing.attributes['data-type'].value == 'message')) {
+        if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link' )) {
             url = "https://reddit.com/r/" + thing.attributes['data-subreddit'].value + '/' + thing.attributes['data-fullname'].value.replace('t3_', '');
+        }
+        else if(thing.attributes['data-type'].value == 'message'){
+            url = "https://reddit.com/message/messages/" + thing.attributes['data-fullname'].value.replace('t4_','');
         }
         else {
 
