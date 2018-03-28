@@ -21,8 +21,8 @@ namespace SnooNotes.BLL {
 
             var notes = (await notesDAL.GetNotes(subnames, users, ascending)).ToList();
             Dictionary<string, IEnumerable<Models.BasicNote>> toReturn = new Dictionary<string, IEnumerable<Models.BasicNote>>();
-            foreach(string user in notes.Select(n => n.AppliesToUsername).Distinct()) {
-                var unotes = notes.Where(u => u.AppliesToUsername == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp, ParentSubreddit = n.ParentSubreddit });
+            foreach(string user in notes.Select(n => n.AppliesToUsername.ToLower()).Distinct()) {
+                var unotes = notes.Where(u => u.AppliesToUsername.ToLower() == user).Select(n => new Models.BasicNote { Message = n.Message, NoteID = n.NoteID, NoteTypeID = n.NoteTypeID, Submitter = n.Submitter, SubName = n.SubName, Url = n.Url, Timestamp = n.Timestamp, ParentSubreddit = n.ParentSubreddit });
                 toReturn.Add(user, unotes);
             }
             return toReturn;
