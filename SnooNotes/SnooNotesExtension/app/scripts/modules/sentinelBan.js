@@ -10,11 +10,11 @@ export class SentinelBanModule {
     initModule() {
         if (document.body.matches('body.comments-page,body.listing-page') || window.location.pathname.indexOf('/about/modqueue') > -1) {
             //only bind on listing and comment pages to avoid extra listeners
-            document.body.addEventListener('click', (e) => {
+            document.body.querySelector('div.content').addEventListener('click', (e) => {
                 if(!e.target.matches( '.remove-button .main > a, .big-mod-buttons a.pretty-button')) return;
                 this.thingRemove(e); 
             });
-            document.body.addEventListener('click', (e) => { 
+            document.body.querySelector('div.content').addEventListener('click', (e) => { 
                 if(!e.target.matches('.sn-bot-ban-prompt a')) return;
                 this.executeBan(e);
             });

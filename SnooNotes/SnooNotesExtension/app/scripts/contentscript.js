@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from 'vue';
 import UserNotes from './components/userNotes.vue';
 import SNOptions from './components/options/snOptions.vue';
 import axios from 'axios';
@@ -10,7 +10,7 @@ import { getNotesForUsers } from './redux/actions/notes';
 import { BanNotesModule } from './modules/banNotes';
 import { SentinelBanModule } from './modules/sentinelBan';
 import { ModActionsModule } from './modules/modActions';
-
+import {jsapiListener} from './SNListener';
 import VueMaterial from 'vue-material';
 import userNoteDisplay from './components/userNotesDisplay.vue';
 
@@ -59,7 +59,7 @@ const unsub = reduxStore.subscribe(() => {
     var mainEl = document.createElement('div');
     mainEl.id = "sn-main";
     document.body.appendChild(mainEl);
-    snMain = new Vue(SNMain).$mount(mainEl);
+    window.snMain = new Vue(SNMain).$mount(mainEl);
 
     const options = new Vue({ render: h => h(SNOptions) }).$mount();
     options.$on('refresh', () => {
@@ -109,13 +109,20 @@ const unsub = reduxStore.subscribe(() => {
         sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
         banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
     });
-    let authorsReq = InjectIntoThingsClass();
-    authorsReq = concatUnique(authorsReq, InjectIntoUserPage());
-    window.setTimeout(function () {
-        InjectIntoNewModmail()
-    }, 2000)
-    if (authorsReq.length > 0) {
-        getNotesForUsers(reduxStore.dispatch, authorsReq);
+    if(document.querySelector('div[data-reactroot]')){
+        //redesign
+        window.setTimeout(function(){
+            jsapiListener.start();
+        },2000);
+    }else{
+        let authorsReq = InjectIntoThingsClass();
+        authorsReq = concatUnique(authorsReq, InjectIntoUserPage());
+        window.setTimeout(function () {
+            InjectIntoNewModmail()
+        }, 2000)
+        if (authorsReq.length > 0) {
+            getNotesForUsers(reduxStore.dispatch, authorsReq);
+        }
     }
 })
 
@@ -129,7 +136,7 @@ const InjectIntoThingsClass = () => {
                     if (mutation.addedNodes && mutation.addedNodes.length > 0) {
                         let node = mutation.addedNodes[0];
                         if (node.querySelector) {
-                            snMain.$emit('AddThings',{thingIDs:Array.from(node.querySelectorAll('.thing')).map((t)=>{return t.attributes['data-fullname'].value;})});
+                            window.snMain.$emit('AddThings',{thingIDs:Array.from(node.querySelectorAll('.thing')).map((t)=>{return t.attributes['data-fullname'].value;})});
                             node.querySelectorAll('.thing').forEach(function (thing) {
                                 let author = BindNewThingsClassUserNotesElement(thing);
                                 if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
@@ -153,7 +160,7 @@ const InjectIntoThingsClass = () => {
         observer.observe(target, { childList: true, subtree: true });
 
         let things = document.querySelectorAll('.thing');
-        snMain.$emit('AddThings',{thingIDs:(Array.from(things)).map((t)=>{if(t.attributes['data-fullname']) return t.attributes['data-fullname'].value;}).filter(Boolean)});
+        window.snMain.$emit('AddThings',{thingIDs:(Array.from(things)).map((t)=>{if(t.attributes['data-fullname']) return t.attributes['data-fullname'].value;}).filter(Boolean)});
         let authors = [];
         for (let i = 0; i < things.length; i++) {
             let author = BindNewThingsClassUserNotesElement(things[i]);

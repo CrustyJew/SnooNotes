@@ -1,0 +1,28 @@
+2018-04-13 22:30:22.0070 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-13 22:30:22.0135 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-13 22:30:22.0400 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-13 22:30:22.0400 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-13 22:31:55.1005 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-13 22:31:55.1070 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-13 22:31:55.1391 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-13 22:31:55.1487 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-14 00:12:53.2437 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-14 00:12:53.2437 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-14 00:12:53.2773 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-14 00:12:53.2773 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-14 00:18:45.8285 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-14 00:18:45.8360 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-14 00:18:45.8782 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-14 00:18:45.8782 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-15 21:41:16.8741 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-15 21:41:16.8841 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-15 21:41:16.9177 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-15 21:41:16.9177 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-16 22:23:11.3503 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-16 22:23:11.3694 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-16 22:23:11.4175 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-16 22:23:11.4175 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-17 19:32:24.8744 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: allfile
+2018-04-17 19:32:24.8885 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: blackhole
+2018-04-17 19:32:24.9346 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.
+2018-04-17 19:32:24.9346 Warn Missing IHttpContextAccessor. Has it been registered before loading NLog Configuration? Consider reloading NLog Configuration after having registered the IHttpContextAccessor.

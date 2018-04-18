@@ -4,7 +4,8 @@
         <div>
             <!--<note-thing v-for="thingid in thingIDs" :thingid="thingid"></note-thing>-->
             <media-analysis v-for="thingid in thingIDs" :thingid="thingid" :subs="mediaAnalysisSubs" :key="thingid" v-on:showMediaAnalysis="showMediaAnalysis"></media-analysis>
-            <media-analysis-display :show-analysis="mediaAnalysis.showAnalysis" :subreddit="mediaAnalysis.subreddit" :thingid="mediaAnalysis.thingid" :display-style="mediaAnalysis.displayStyle" :close.sync="closeMediaAnalysis"></media-analysis-display>
+            <media-analysis-display ref="mediaAnalysisDisplay" :show-analysis="mediaAnalysis.showAnalysis" :subreddit="mediaAnalysis.subreddit" :thingid="mediaAnalysis.thingid" :display-style="mediaAnalysis.displayStyle" :close.sync="closeMediaAnalysis"></media-analysis-display>
+        
         </div>
     </div>
 </template>
