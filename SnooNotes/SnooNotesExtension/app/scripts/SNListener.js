@@ -2,8 +2,6 @@ import _ from 'lodash';
 import {
   reduxStore
 } from './redux/contentScriptStore';
-import Vue from 'vue';
-import UserNotes from './components/userNotes.vue';
 import {
   getNotesForUsers
 } from './redux/actions/notes';
@@ -11,9 +9,9 @@ import {
 class SNListener {
   constructor() {
     this.started = false;
-    this.queue = [];
     this.boundFunc = this.listener.bind(this);
     this.authorsQueue = [];
+    this.snMain = undefined;
   }
   start() {
     if (!this.started) {
@@ -47,18 +45,10 @@ class SNListener {
       });
 
       let url = 'https://reddit.com/r/' + event.detail.data.subreddit.name + '/' + event.detail.data.post.id.replace('t3_', '') + '/' + (eventType == 'commentAuthor' ? ('.../' + event.detail.data.comment.id.replace('t1_', '')) : '');
-      let noteElem = document.createElement('span');
-      noteElem.setAttribute('username', event.detail.data.author);
-      noteElem.setAttribute('subreddit', event.detail.data.subreddit.name);
-      noteElem.setAttribute('url', url);
-      noteElem.setAttribute('is', 'user-notes');
+      let noteElemTarget = document.createElement('span');
+      this.snMain.$refs.noteDisplay.injectNewUserNotesComponent(event.detail.data.author, event.detail.data.subreddit.name, url, noteElemTarget);
 
-      let vueinst = new Vue({
-        components: {
-          'user-notes': UserNotes
-        }
-      }).$mount(noteElem);
-      snTarget.appendChild(vueinst.$el);
+      snTarget.appendChild(noteElemTarget);
 
     }
 

@@ -22,10 +22,7 @@ export class SentinelBanModule {
     }
 
     refreshModule(subs, hasConfig) {
-        this.subreddits = [];
-        subs.forEach((sub)=>{
-            this.subreddits.push({name: sub.SubName, isAdmin: sub.IsAdmin, hasSentinel: sub.SentinelActive});
-        })
+        this.subreddits = subs;
 
         this.userBanEnabled = hasConfig;
     }
@@ -65,9 +62,10 @@ export class SentinelBanModule {
         let user = thing.attributes['data-author'].value;
         let sub = thing.attributes['data-subreddit'].value;
 
-        if (!this.userBanEnabled && (this.subreddits.length == 0 || this.subreddits.findIndex(sr => sr.name.toLowerCase() == sub.name.toLowerCase()) == -1))
+        if (!this.userBanEnabled && (!this.subreddits[sub.toLowerCase()] || !this.subreddits[sub.toLowerCase()].SentinelActive)){
             //if no user bans and the sub isn't in sentinel bot, don't render anything.
             return;
+        }
 
         let domain = thing.attributes['data-domain'];
         domain = domain ? domain.value.toLowerCase() : '';
@@ -138,10 +136,10 @@ export class SentinelBanModule {
         banElem.appendChild(document.createTextNode('Bot Ban (' + reason + '): '));
         let render = false;
 
-        let index = this.subreddits.findIndex(sr=> sr.name.toLowerCase() == sub.toLowerCase());
-        if(index <= -1 || !this.subreddits[index].isAdmin) return null;
+        let subreddit = this.subreddits[sub.toLowerCase()];
+        if(!subreddit || !subreddit.IsAdmin) return null;
         
-        let subreddit = this.subreddits[index];
+        
 
         if (this.userBanEnabled) {
             render = true;
@@ -153,7 +151,7 @@ export class SentinelBanModule {
             userBanElem.textContent = 'User';
             banElem.appendChild(userBanElem);
         }
-        if (url && subreddit.hasSentinel) {
+        if (url && subreddit.SentinelActive) {
             render = true;
             banElem.appendChild(document.createTextNode('\u00A0|\u00A0'));
             let chanBanElem = document.createElement('a');

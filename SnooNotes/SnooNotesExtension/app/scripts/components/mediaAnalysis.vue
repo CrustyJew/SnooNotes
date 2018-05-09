@@ -8,37 +8,26 @@
 import { mediaProviders } from '../config';
 import _ from 'lodash';
 export default {
-    props: ['thingid', 'subs'],
+    props: ['thingid', 'subreddit'],
     data() {
         return {
-            hasMedia: false,
-            subreddit: '',
+            hasMedia: true,
+            curSub: this.$select('snoonotes_info.modded_subs.'+this.subreddit.toLowerCase()+' as curSub')
         }
     },
     methods: {
-        checkText: function (el) {
-            el.querySelectorAll('a').forEach(_.bind((link) => {
-                let hostname = link.hostname.toLowerCase();
-                if (hostname.startsWith('www.')) {
-                    hostname = hostname.substring(4, hostname.length);
-                }
-                if (mediaProviders.findIndex(mp => mp == hostname) > -1) {
-                    this.hasMedia = true;
-                }
-            }, this));
-        },
         showAnalysis: function (e) {
-            this.$emit('showMediaAnalysis', { subreddit: this.subreddit, thingid: this.thingid, event: e });
+            this.$parent.$parent.showMediaAnalysis( { subreddit: this.subreddit, thingid: this.thingid, event: e });
         }
 
     },
     computed:{
         activeSub: function(){
-            return this.subs.findIndex(s => s == this.subreddit) > -1;
+            return this.curSub && this.curSub.SentinelActive;
         }
     },
     mounted: function () {
-        let analysisElement = this.$el;
+        /*let analysisElement = this.$el;
         this.$el.parentNode.removeChild(this.$el);
         let thing = window.document.querySelector('#thing_' + this.thingid);
 
@@ -63,7 +52,10 @@ export default {
                     let childarray = [...thing.children];
                     let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
                     let expando = entry.querySelector('.expando');
-                    if (!expando.classList.contains('expando-unitialized')) {
+                    if(!expando){
+                        //no expando, just a self post with no body, ignore.
+                    }
+                    else if (!expando.classList.contains('expando-unitialized')) {
                         //expando already loaded, process as normal
                         this.checkText(expando.querySelector('.usertext-body'));
                     }
@@ -93,6 +85,7 @@ export default {
             let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
             this.checkText(entry.querySelector('.usertext-body'));
         }
+        */
     }
 }
 

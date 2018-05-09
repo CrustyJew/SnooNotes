@@ -73,11 +73,13 @@ import { required, between } from 'vuelidate/lib/validators'
 import axios from 'axios';
 import { showNotesHub } from '../showNotesHub';
 import cabalify from './cabalify.vue';
+import UserNotes from './userNotes.vue';
+import Vue from 'vue';
 export default {
     name: 'user-notes',
     //props: ['username', 'subreddit', 'url', 'showNotes'],
     directives: { 'draggable': draggable },
-    components: { 'cabalify': cabalify },
+    components: { 'cabalify': cabalify, 'user-notes': UserNotes },
     mixins: [validationMixin],
     data() {
         return {
@@ -181,10 +183,13 @@ export default {
             return style;
         },
         show: function(e) {
+            this.username = e.username;
+            this.url = e.url;
+            this.subreddit = e.subreddit;
             //this.displayStyle.top = e.target.offsetTop + 15 + 'px';
             //this.displayStyle.left = e.target.offsetLeft + 20 + 'px';
-            this.displayStyle.top = e.pageY + 5 + 'px';
-            this.displayStyle.left = e.pageX + 15 + 'px'
+            this.displayStyle.top = e.event.pageY + 5 + 'px';
+            this.displayStyle.left = e.event.pageX + 15 + 'px'
 
             this.displayStyle.display = 'block';
             this.showNotes = true;
@@ -216,6 +221,16 @@ export default {
         },
         deleteNote: function(id) {
             axios.delete('Note?id=' + id);
+        },
+        injectNewUserNotesComponent: function(author, subreddit, url, node){
+            let noteElem = document.createElement('user-notes');
+            noteElem.setAttribute('username', author);
+            noteElem.setAttribute('subreddit', subreddit);
+            noteElem.setAttribute('url', url);
+            //noteElem.setAttribute('v-on:shownotes','show');
+       
+            node.appendChild(noteElem);
+            new Vue({ components: { 'user-notes': UserNotes }, parent: this }).$mount(noteElem);
         }
     },
     watch: {
@@ -225,11 +240,8 @@ export default {
         }
     },
     mounted: function() {
-        showNotesHub.$on('showNotes', (e) => {
-            this.username = e.username;
-            this.url = e.url;
-            this.subreddit = e.subreddit;
-            this.showNotes = true;
+        this.$on('showNotes', (e) => {
+
             this.show(e.event)
         });
     },

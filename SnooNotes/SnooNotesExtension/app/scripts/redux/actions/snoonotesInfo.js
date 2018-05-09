@@ -7,8 +7,9 @@ export const getModSubs = () => {
     return (dispatch) => {
         axios.get('Subreddit')
             .then(response => {
+                var subs = response.data.reduce((map,s)=>(map[s.SubName.toLowerCase()] = s, map),{});
                 dispatch({
-                    type: SET_MOD_SUBS, payload: response.data
+                    type: SET_MOD_SUBS, payload: subs
                 });
             });
     }

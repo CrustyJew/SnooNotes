@@ -2,10 +2,11 @@ import axios from 'axios';
 
 export class BanNotesModule {
     constructor(modsubs) {
-        this.subreddits = modsubs.reduce((acc, sub) => {
+        /*this.subreddits = modsubs.reduce((acc, sub) => {
             acc[sub.SubName] = { PermBanID: sub.Settings.PermBanID, TempBanID: sub.Settings.TempBanID };
             return acc;
-        }, {});
+        }, {});*/
+        this.subreddits = modsubs;
     }
 
     initModule() {
@@ -62,10 +63,7 @@ export class BanNotesModule {
     }
 
     refreshModule(modsubs) {
-        this.subreddits = modsubs.reduce((acc, sub) => {
-            acc[sub.SubName] = { PermBanID: sub.Settings.PermBanID, TempBanID: sub.Settings.TempBanID };
-            return acc;
-        }, {});
+        this.subreddits = modsubs;
     }
 }
 

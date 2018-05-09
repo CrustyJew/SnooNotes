@@ -17,7 +17,7 @@ export class ModActionsModule {
     }
 
     refreshModule(subs) {
-        this.modSubs = subs.map((s) => { return s.SubName });
+        this.modSubs = subs;
     }
 
     prettyAction(e) {
@@ -43,7 +43,7 @@ export class ModActionsModule {
     }
 
     reportAction(sub, thingid, reason) {
-        if (this.modSubs.indexOf(sub) > -1) {
+        if (this.modSubs[sub.toLowerCase()]) {
             axios.post('ModAction/' + sub, { ThingID: thingid, Action: reason });
         }
     }
