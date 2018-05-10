@@ -220,3 +220,4 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 *.jfm
+LogFiles/internal-nlog.txt

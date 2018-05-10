@@ -11,7 +11,7 @@ export const apiBaseUrl = 'http://localhost:5001/api/';
 export const signalrBaseUrl = 'http://localhost:5001/signalr';
 export const dirtbagBaseUrl = 'http://localhost:5002/api/';
 
-export const mediaProviders = ['youtube.com','youtu.be', 'vimeo.com', 'vid.me','twitter.com','twitch.tv', 'soundcloud.com','facebook.com','etsy.com','dailymotion.com', 'dai.ly']
+export const mediaProviders = ['youtube.com','youtu.be','m.youtube.com', 'vimeo.com', 'vid.me','twitter.com','twitch.tv','clips.twitch.tv', 'soundcloud.com','facebook.com','etsy.com','dailymotion.com', 'dai.ly']
 
 const redirectNav = new CustomRedirectManager();
 //const customStore = new CustomWebStorageStateStore();

@@ -7,7 +7,6 @@
     </div>
 </template>
 <script>
-import { mediaProviders } from '../config';
 import mediaAnalysis from "./mediaAnalysis.vue";
 import mediaAnalysisDisplay from "./mediaAnalysisDisplay.vue";
 import userNoteDisplay from "./userNotesDisplay.vue";
@@ -41,83 +40,15 @@ export default {
       this.mediaAnalysis.showAnalysis = false;
     },
     injectNewThing: function(author, subreddit, url, node, thing, event) {
-      this.$refs.noteDisplay.injectNewUserNotesComponent(
+      this.$refs.noteDisplay.processNewThing(
         author,
         subreddit,
         url,
         node
       );
-      this.checkForMedia(author,subreddit,url,node,thing,event);
-      //this.$refs.mediaAnalysisDsiplay.injectNewMediaAnalysisComponent(author, subreddit, url, node);
+      this.$refs.mediaAnalysisDisplay.processNewThing(author, subreddit, url, node, thing, event);
     },
-    checkForMedia: function(author, subreddit, url, node, thing, event) {
-      if (event) {
-        //jsapi event driven / redesign
-      } else {
-        //old reddit
-        let thingid = thing.attributes["data-fullname"].value;
-        if (thing.attributes['data-subreddit'] && (thing.attributes['data-type'].value == 'link')) {
-            //link submission or self post
-            this.subreddit = thing.attributes['data-subreddit'].value;
-            
-            let domain = thing.attributes['data-domain'].value.toLowerCase();
-            if (mediaProviders.findIndex(mp => mp == domain) > -1) {
-                this.$refs.mediaAnalysisDisplay.injectNewMediaAnalysisComponent(author, subreddit, url, node,thing);
-            }
-            else {
-                if (thing.classList.contains('self')) {
-                    let childarray = [...thing.children];
-                    let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
-                    let expando = entry.querySelector('.expando');
-                    if(!expando){
-                        //no expando, just a self post with no body, ignore.
-                        return;
-                    }
-                    else if (!expando.classList.contains('expando-unitialized')) {
-                        //expando already loaded, process as normal
-                        if(this.checkText(expando.querySelector('.usertext-body'))){
-                            this.$refs.mediaAnalysisDsiplay.injectNewMediaAnalysisComponent(author, subreddit, url, node);
-                        }
-                    }
-                    else {
-                        //expando not loaded, observe and wait
-                        var obs = new MutationObserver(_.bind(function (mutations) {
-                            mutations.forEach((mutation) => {
-                                if (!mutation.target.classList.contains('expando-unitialized')) {
-                                    obs.disconnect();
-                                    this.checkText(mutation.target.querySelector('.usertext-body'));
-                                }
-                            })
-                        }, this));
-                        obs.observe(expando, { attributes: true });
-                    }
-                }
-                else {
-                    //not in media providers and not a self post
-                    this.hasMedia = false;
-                }
-            }
-        }
-        else if (thing.attributes['data-subreddit']) {
-            //comment or message
-            this.subreddit = thing.attributes['data-subreddit'].value;
-            let childarray = [...thing.children];
-            let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
-            this.checkText(entry.querySelector('.usertext-body'));
-        }
-      }
-    },
-    checkText: function (el) {
-            el.querySelectorAll('a').forEach(_.bind((link) => {
-                let hostname = link.hostname.toLowerCase();
-                if (hostname.startsWith('www.')) {
-                    hostname = hostname.substring(4, hostname.length);
-                }
-                if (mediaProviders.findIndex(mp => mp == hostname) > -1) {
-                    this.hasMedia = true;
-                }
-            }, this));
-        }
+    
   },
   computed: {
     mediaAnalysisSubs: function() {

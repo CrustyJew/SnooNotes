@@ -96,12 +96,13 @@
 </template>
 
 <script>
+import { mediaProviders } from '../config';
 import LoadingSpinner from "./loadingSpinner.vue";
 import { draggable } from "./directives/draggable";
 import axios from "axios";
 import { dirtbagBaseUrl } from "../config";
 import MediaAnalysis from "./mediaAnalysis.vue";
-import Vue from 'vue';
+import Vue from "vue";
 
 export default {
   directives: { draggable: draggable },
@@ -194,13 +195,128 @@ export default {
       thing
     ) {
       let mediaElem = document.createElement("media-analysis");
-      mediaElem.setAttribute("thingid", thing.attributes['data-fullname'].value);
+      mediaElem.setAttribute(
+        "thingid",
+        thing.attributes["data-fullname"].value
+      );
       mediaElem.setAttribute("subreddit", subreddit);
       node.appendChild(mediaElem);
       new Vue({
         components: { "media-analysis": MediaAnalysis },
         parent: this
       }).$mount(mediaElem);
+    },
+    processNewThing: function(author, subreddit, url, node, thing, event) {
+      if (event) {
+        //jsapi event driven / redesign
+      } else {
+        //old reddit
+        let thingid = thing.attributes["data-fullname"].value;
+        if (
+          thing.attributes["data-subreddit"] &&
+          thing.attributes["data-type"].value == "link"
+        ) {
+          //link submission or self post
+          this.subreddit = thing.attributes["data-subreddit"].value;
+
+          let domain = thing.attributes["data-domain"].value.toLowerCase();
+          if (mediaProviders.findIndex(mp => mp == domain) > -1) {
+            this.injectNewMediaAnalysisComponent(
+              author,
+              subreddit,
+              url,
+              node,
+              thing
+            );
+          } else {
+            if (thing.classList.contains("self")) {
+              let childarray = [...thing.children];
+              let entry = childarray.filter(c => {
+                return c.classList.contains("entry");
+              })[0];
+              let expando = entry.querySelector(".expando");
+              if (!expando) {
+                //no expando, just a self post with no body, ignore.
+                return;
+              } else if (!expando.classList.contains("expando-unitialized")) {
+                //expando already loaded, process as normal
+                if (this.checkText(expando.querySelector(".usertext-body"))) {
+                  this.injectNewMediaAnalysisComponent(
+                    author,
+                    subreddit,
+                    url,
+                    node
+                  );
+                }
+              } else {
+                //expando not loaded, observe and wait
+                var obs = new MutationObserver(
+                  _.bind(function(mutations) {
+                    mutations.forEach(mutation => {
+                      if (
+                        !mutation.target.classList.contains(
+                          "expando-unitialized"
+                        )
+                      ) {
+                        obs.disconnect();
+                        if (
+                          this.checkText(
+                            mutation.target.querySelector(".usertext-body")
+                          )
+                        ) {
+                          this.injectNewMediaAnalysisComponent(
+                            author,
+                            subreddit,
+                            url,
+                            node,
+                            thing,
+                            event
+                          );
+                        }
+                      }
+                    });
+                  }, this)
+                );
+                obs.observe(expando, { attributes: true });
+              }
+            } else {
+              //not in media providers and not a self post
+              this.hasMedia = false;
+            }
+          }
+        } else if (thing.attributes["data-subreddit"]) {
+          //comment or message
+          this.subreddit = thing.attributes["data-subreddit"].value;
+          let childarray = [...thing.children];
+          let entry = childarray.filter(c => {
+            return c.classList.contains("entry");
+          })[0];
+          if (this.checkText(entry.querySelector(".usertext-body"))) {
+            this.injectNewMediaAnalysisComponent(
+              author,
+              subreddit,
+              url,
+              node,
+              thing,
+              event
+            );
+          }
+        }
+      }
+    },
+    checkText: function(el) {
+      el.querySelectorAll("a").forEach(
+        _.bind(link => {
+          let hostname = link.hostname.toLowerCase();
+          if (hostname.startsWith("www.")) {
+            hostname = hostname.substring(4, hostname.length);
+          }
+          if (mediaProviders.findIndex(mp => mp == hostname) > -1) {
+            return true;
+          }
+        }, this)
+      );
+      return false;
     }
   },
   computed: {

@@ -222,7 +222,7 @@ export default {
         deleteNote: function(id) {
             axios.delete('Note?id=' + id);
         },
-        injectNewUserNotesComponent: function(author, subreddit, url, node){
+        processNewThing: function(author, subreddit, url, node){
             let noteElem = document.createElement('user-notes');
             noteElem.setAttribute('username', author);
             noteElem.setAttribute('subreddit', subreddit);
