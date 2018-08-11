@@ -1,8 +1,9 @@
 <template>
     <div id="sn-main">
         <div>
-            <media-analysis-display ref="mediaAnalysisDisplay" :show-analysis="mediaAnalysis.showAnalysis" :subreddit="mediaAnalysis.subreddit" :thingid="mediaAnalysis.thingid" :display-style="mediaAnalysis.displayStyle" :close.sync="closeMediaAnalysis"></media-analysis-display>
+            <media-analysis-display ref="mediaAnalysisDisplay"></media-analysis-display>
             <note-display ref="noteDisplay"></note-display>
+            <action-hist-display ref="actionHistoryDisplay"></action-hist-display>
         </div>
     </div>
 </template>
@@ -10,13 +11,15 @@
 import mediaAnalysis from "./mediaAnalysis.vue";
 import mediaAnalysisDisplay from "./mediaAnalysisDisplay.vue";
 import userNoteDisplay from "./userNotesDisplay.vue";
+import actionHistoryDisplay from "./actionHistoryDisplay.vue";
 import _ from "lodash";
 
 export default {
   components: {
     "media-analysis": mediaAnalysis,
     "media-analysis-display": mediaAnalysisDisplay,
-    "note-display": userNoteDisplay
+    "note-display": userNoteDisplay,
+    "action-hist-display": actionHistoryDisplay
   },
   data() {
     return {
@@ -40,15 +43,24 @@ export default {
       this.mediaAnalysis.showAnalysis = false;
     },
     injectNewThing: function(author, subreddit, url, node, thing, event) {
-      this.$refs.noteDisplay.processNewThing(
+      this.$refs.noteDisplay.processNewThing(author, subreddit, url, node);
+      this.$refs.mediaAnalysisDisplay.processNewThing(
         author,
         subreddit,
         url,
-        node
+        node,
+        thing,
+        event
       );
-      this.$refs.mediaAnalysisDisplay.processNewThing(author, subreddit, url, node, thing, event);
-    },
-    
+      this.$refs.actionHistoryDisplay.processNewThing(
+        author,
+        subreddit,
+        url,
+        node,
+        thing,
+        event
+      );
+    }
   },
   computed: {
     mediaAnalysisSubs: function() {

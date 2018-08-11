@@ -16,7 +16,6 @@
     "test": "karma start"
   },
   "devDependencies": {
-    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
     "babel-cli": "6.x.x",
     "babel-core": "6.x.x",
     "babel-eslint": "^6.1.2",
@@ -50,7 +49,7 @@
     "gulp-less": "3.x.x",
     "gulp-livereload": "3.x.x",
     "gulp-plumber": "1.x.x",
-    "gulp-sass": "2.x.x",
+    "gulp-sass": "^2.3.2",
     "gulp-sequence": "0.x.x",
     "gulp-sourcemaps": "1.x.x",
     "gulp-tag-version": "1.x.x",
@@ -72,9 +71,11 @@
     "require-dir": "0.x.x",
     "sass-loader": "^5.0.1",
     "sinon": "^1.17.7",
+    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
     "vinyl-named": "1.x.x",
     "vue": "^2.2.1",
     "vue-loader": "^11.1.4",
+    "vue-style-loader": "^4.1.1",
     "vue-template-compiler": "^2.2.1",
     "webpack": "2.5.1",
     "webpack-stream": "3.x.x",

@@ -1,9 +1,0 @@
-﻿@{
-    Layout = null;
-}
-<h1>Logging in...</h1>
-
-<script type="text/javascript">
-    window.location.href = "/Auth/ExternalLoginCallback@(!String.IsNullOrEmpty(ViewBag.redirectUrl) ? "?redirectUrl=" + ViewBag.redirectUrl : "")";
-
-</script>

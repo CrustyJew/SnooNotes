@@ -102,6 +102,7 @@ namespace SnooNotes
             services.AddScoped<DAL.INoteTypesDAL, DAL.NoteTypesDAL>();
             services.AddScoped<DAL.ISubredditDAL, DAL.SubredditDAL>();
             services.AddScoped<DAL.IYouTubeDAL, DAL.YouTubeDAL>();
+            
 
             services.AddTransient<Utilities.IAuthUtils, SnooNotes.Utilities.AuthUtils>();
             services.AddTransient<BLL.IDirtbagBLL, BLL.DirtbagBLL>();
@@ -112,6 +113,9 @@ namespace SnooNotes
 
             services.AddTransient<DAL.IBotBanDAL>((x) => { return new DAL.BotBanDAL(new SqlConnection(Configuration.GetConnectionString("SnooNotes")), new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
             services.AddTransient<BLL.IBotBanBLL, BLL.BotBanBLL>();
+
+            services.AddTransient<DAL.IModActionDAL>(( x ) => { return new DAL.ModActionDAL(new NpgsqlConnection(Configuration.GetConnectionString("Sentinel"))); });
+            services.AddTransient<BLL.IModActionBLL, BLL.ModActionBLL>();
 
             var webAgentPool = new RedditSharp.RefreshTokenWebAgentPool(Configuration["RedditClientID"], Configuration["RedditClientSecret"], Configuration["RedditRedirectURI"])
             {

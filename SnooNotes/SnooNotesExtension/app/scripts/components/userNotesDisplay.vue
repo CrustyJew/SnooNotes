@@ -71,12 +71,11 @@ import { draggable } from './directives/draggable';
 import { validationMixin } from 'vuelidate'
 import { required, between } from 'vuelidate/lib/validators'
 import axios from 'axios';
-import { showNotesHub } from '../showNotesHub';
 import cabalify from './cabalify.vue';
 import UserNotes from './userNotes.vue';
 import Vue from 'vue';
 export default {
-    name: 'user-notes',
+    name: 'user-notes-display',
     //props: ['username', 'subreddit', 'url', 'showNotes'],
     directives: { 'draggable': draggable },
     components: { 'cabalify': cabalify, 'user-notes': UserNotes },
