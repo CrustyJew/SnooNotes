@@ -26,7 +26,8 @@
     },
     {
       "matches":[
-        "https://snoonotes.com/Auth/redux*"
+        "https://snoonotes.com/Auth/redux*",
+        "https://localhost:5000/Auth/redux*"
       ],
       "js":[
         "scripts/signinCallback.js"

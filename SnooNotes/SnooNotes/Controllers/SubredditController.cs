@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Snookie,token")]
     [Route("restapi/[controller]")][Route("api/[controller]")]
     public class SubredditController : Controller
     {

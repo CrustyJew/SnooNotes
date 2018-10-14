@@ -67,8 +67,7 @@ namespace IdentProvider
                     ClientSecrets = sentinelSecrets,
                     AllowedScopes = { "dirtbag" },
                     RequireConsent = false,
-                    Claims = new List<System.Security.Claims.Claim>(){new System.Security.Claims.Claim("uri:dirtbag","admin")},
-                    PrefixClientClaims = false
+                    Claims = new List<System.Security.Claims.Claim>(){new System.Security.Claims.Claim("uri:dirtbag","admin")}
                 },
 
                 new Client {
@@ -114,6 +113,7 @@ namespace IdentProvider
                     ClientSecrets = snSecrets,
 
                     RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
+                    AllowedCorsOrigins= {"https://localhost:5001" },
                     PostLogoutRedirectUris = config.GetSection("ID4_Client_LogoutURIs").Get<string[]>() ,
                     AllowedScopes =
                     {

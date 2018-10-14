@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using Hangfire;
 
 namespace SnooNotes.Controllers {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Snookie,token")]
     //[wikiedit] ///TODO
 
     [Route( "api/[controller]" )]

@@ -17,15 +17,15 @@ namespace SnooNotes.Controllers
             isDev = env.IsDevelopment();
         }
 
-        [AllowAnonymous]
-        [HttpGet("")]
-        public async Task<IActionResult> GetTokenOrLogin() {
-            if ( User.Identity.IsAuthenticated ) {
-                string refreshToken = await HttpContext.Authentication.GetTokenAsync( "refresh_token" );
-                Response.Cookies.Append( "SnooNotesExtension", refreshToken, new Microsoft.AspNetCore.Http.CookieOptions { Secure = !isDev, Expires = new DateTimeOffset( DateTime.UtcNow.AddMinutes( 5 ) ) } );
+        //[AllowAnonymous]
+        //[HttpGet("")]
+        //public async Task<IActionResult> GetTokenOrLogin() {
+        //    if ( User.Identity.IsAuthenticated ) {
+        //        string refreshToken = await HttpContext.Authentication.GetTokenAsync( "refresh_token" );
+        //        Response.Cookies.Append( "SnooNotesExtension", refreshToken, new Microsoft.AspNetCore.Http.CookieOptions { Secure = !isDev, Expires = new DateTimeOffset( DateTime.UtcNow.AddMinutes( 5 ) ) } );
                 
-            }
-            return View();
-        }
+        //    }
+        //    return View();
+        //}
     }
 }

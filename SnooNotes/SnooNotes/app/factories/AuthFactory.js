@@ -1,4 +1,4 @@
-﻿module.exports = /*@ngInject*/ function AuthFactory($q, $http, $window, localStorageService, $cookies) {
+﻿module.exports = /*@ngInject*/ function AuthFactory($q, $http, $window, $cookies) {
     'use strict';
     var exports = {};
 
@@ -23,7 +23,10 @@
             deferred.resolve(exports.currentUser);
         }
         else {
-            var curUser = localStorageService.get('currentUser');
+            var curUser = $window.sessionStorage.getItem('currentUser');
+            if (curUser) {
+                curUser = angular.fromJson(curUser);
+            }
             if (curUser && curUser.isAuth) {
                 exports.currentUser = curUser;
                 deferred.resolve(exports.currentUser);
@@ -37,7 +40,7 @@
                             exports.currentUser.hasConfig = u.data.HasConfig;
                             exports.currentUser.hasWiki = u.data.HasWiki;
                             exports.currentUser.isAuth = true;
-                            localStorageService.set('currentUser', exports.currentUser);
+                            $window.sessionStorage.setItem('currentUser', JSON.stringify(exports.currentUser));
                             deferred.resolve(exports.currentUser);
                         },
                         function () {
@@ -50,7 +53,7 @@
     }
     exports.logout = function (suppressRedirect) {
         
-            localStorageService.remove('currentUser');
+        $window.sessionStorage.removeItem('currentUser');
             exports.currentUser.userName = "";
             exports.currentUser.hasConfig = false;
             exports.currentUser.hasWiki = false;

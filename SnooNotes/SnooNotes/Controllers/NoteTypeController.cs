@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Snookie,token")]
     [Route("restapi/[controller]")]
     [Route("api/[controller]")]
     public class NoteTypeController : Controller

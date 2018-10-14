@@ -13,24 +13,24 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace SnooNotes.Controllers {
-    [Authorize]
+    [Authorize(AuthenticationSchemes ="Snookie,token")]
     [Route( "api/[controller]" )]
     public class AccountController : Controller {
         private BLL.ISubredditBLL subBLL;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
         private Utilities.IAuthUtils authUtils;
         private RedditSharp.RefreshTokenWebAgentPool agentPool;
 
         private RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool;
         private IConfigurationRoot Configuration;
-        public AccountController( UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+        public AccountController( UserManager<ApplicationUser> userManager, 
             ILoggerFactory loggerFactory, BLL.ISubredditBLL subredditBLL, Utilities.IAuthUtils authUtils,
             IMemoryCache memoryCache, RoleManager<IdentityRole> roleManager, RedditSharp.RefreshTokenWebAgentPool agentPool, RedditSharp.WebAgentPool<string,RedditSharp.BotWebAgent> serviceAgentPool, IConfigurationRoot configRoot ) {
             subBLL = subredditBLL;
             _userManager = userManager;
-            _signInManager = signInManager;
+            //_signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
             this.authUtils = authUtils;
             this.agentPool = agentPool;
@@ -74,19 +74,19 @@ namespace SnooNotes.Controllers {
             await rd.User.GetModeratorSubreddits().ForEachAsync( s => { if ( s.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !activeSubNames.Contains( s.Name.ToLower() ) ) inactiveSubs.Add( s.Name ); } );
             return inactiveSubs.OrderBy( s => s );
         }
-        [HttpGet( "[action]" )]
-        public async Task<List<string>> UpdateModeratedSubreddits() {
+        //[HttpGet( "[action]" )]
+        //public async Task<List<string>> UpdateModeratedSubreddits() {
 
-            var user = await _userManager.FindByNameAsync( User.Identity.Name );
+        //    var user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-            await authUtils.UpdateModeratedSubredditsAsync( user );
-            //search again for user to make sure it pulls claims correctly especially if using claims attached to a specific Role
-            user = await _userManager.FindByNameAsync( User.Identity.Name );
+        //    await authUtils.UpdateModeratedSubredditsAsync( user );
+        //    //search again for user to make sure it pulls claims correctly especially if using claims attached to a specific Role
+        //    user = await _userManager.FindByNameAsync( User.Identity.Name );
 
-            await _signInManager.SignInAsync( user, true, authenticationMethod: "cookie" );
-            return user.Claims.Where( c => c.ClaimType == ( User.Identity as ClaimsIdentity ).RoleClaimType ).ToList().Select( c => c.ClaimValue ).ToList<string>();
+        //    await _signInManager.SignInAsync( user, true, authenticationMethod: "cookie" );
+        //    return user.Claims.Where( c => c.ClaimType == ( User.Identity as ClaimsIdentity ).RoleClaimType ).ToList().Select( c => c.ClaimValue ).ToList<string>();
 
-        }
+        //}
 
         [HttpPost("[action]")]
         public async Task ResetAuthCode()

@@ -40,14 +40,14 @@
                     <br />&nbsp;Temp&nbsp;|&nbsp;Perm
                     <br />&nbsp;&nbsp;&nbsp;Ban&nbsp;&nbsp;|&nbsp;&nbsp;Ban</div>
                 <draggable element="ul" :list="newSettings.Settings.NoteTypes" :options="dragOptions">
-                    <li :sn-notetype-id="nt.NoteTypeID" :sn-notetype-display-order="nt.DisplayOrder" v-for="nt in newSettings.Settings.NoteTypes">
+                    <li :sn-notetype-id="nt.NoteTypeID" :sn-notetype-display-order="nt.DisplayOrder" v-for="nt in newSettings.Settings.NoteTypes" :key="nt.NoteTypeID">
                         <div class="sn-drag-handle">
                             <a class="sn-sort"></a>
                         </div>
                         <input type="checkbox" :value="nt.NoteTypeID" v-on:change="selectTempBan(nt.NoteTypeID, $event)" v-model.number="tempBanID">
                         <input type="checkbox" :value="nt.NoteTypeID" v-on:change="selectPermBan(nt.NoteTypeID, $event)" v-model.number="permBanID">
                         <input type="text" maxlength="20" v-model="nt.DisplayName"> &nbsp;Color:&nbsp;
-                        <input type="color" :value="nt.ColorCode" v-model="nt.ColorCode">
+                        <input type="color" v-model="nt.ColorCode">
                         <input type="text" maxlength="50" placeholder="Icon. Default ='comment'" v-model="nt.IconString">
                         <label>
                             <input type="checkbox" v-model="nt.Bold">Bold</label>

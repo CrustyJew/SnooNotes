@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace IdentProvider.Controllers
 {
-    public class CustomCheckSessionEndpoint : IEndpoint
+    /*public class CustomCheckSessionEndpoint : IEndpoint
     {
         private readonly ILogger<CustomCheckSessionEndpoint> _logger;
 
@@ -74,4 +74,5 @@ namespace IdentProvider.Controllers
 </html>
 ";
     }
+    */
 }

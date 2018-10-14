@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Snookie,token")]
     [Route("api/ModAction")]
     public class ModActionController : Controller
     {
@@ -17,11 +17,11 @@ namespace SnooNotes.Controllers {
         }
 
         [HttpPost("{subreddit}")]
-        public void ModAction([FromRoute]string subreddit, [FromBody]Models.ModAction act) {
+        public async Task ModAction([FromRoute]string subreddit, [FromBody]Models.ModAction act) {
             act.Subreddit = subreddit;
             if ( User.IsInRole( subreddit.ToLower() ) ) {
                 act.Mod = User.Identity.Name;
-                snooNoteUpdates.SendModAction( act );
+                await snooNoteUpdates.SendModActionAsync( act );
             }
             else {
                 throw new UnauthorizedAccessException( "You are not a moderator of that subreddit!" );

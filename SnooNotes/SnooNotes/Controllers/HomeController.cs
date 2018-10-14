@@ -6,6 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using SnooNotes.Models;
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SnooNotes.Controllers
@@ -14,7 +19,9 @@ namespace SnooNotes.Controllers
     public class HomeController : Controller
     {
         private IConfigurationRoot config;
-        public HomeController(IConfigurationRoot config)
+        
+
+        public HomeController(IConfigurationRoot config )
         {
             this.config = config;
         }
@@ -25,19 +32,20 @@ namespace SnooNotes.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return new ChallengeResult("oidc");
+                return new ChallengeResult("oidc");//, signInManager.ConfigureExternalAuthenticationProperties(OpenIdConnectDefaults.AuthenticationScheme, "/"));
             }
             else
             {
                 return Redirect("/");
             }
+            
         }
         [HttpGet("Signout")]
         [AllowAnonymous]
         public async Task Signout()
         {
-            await HttpContext.Authentication.SignOutAsync("cookie");
-            await HttpContext.Authentication.SignOutAsync("oidc");//, new AuthenticationProperties { RedirectUri = "/" } );
+            await HttpContext.SignOutAsync("Snookie");
+            await HttpContext.SignOutAsync("oidc");//, new AuthenticationProperties { RedirectUri = "/" } );
         }
         [HttpGet("gettheawesome")]
         public ActionResult GetTheAwesome()

@@ -14,7 +14,7 @@ using SnooNotes.Models;
 
 namespace IdentProvider.Services
 {
-    public class CustomTokenResponseGenerator : IdentityServer4.ResponseHandling.ITokenResponseGenerator {
+    /*public class CustomTokenResponseGenerator : IdentityServer4.ResponseHandling.ITokenResponseGenerator {
         private UserManager<ApplicationUser> _userManager;
         private SnooNotes.Utilities.IAuthUtils _authUtils;
         private IdentityServer4.ResponseHandling.TokenResponseGenerator _defaultGenerator;
@@ -41,5 +41,5 @@ namespace IdentProvider.Services
 
             return await _defaultGenerator.ProcessAsync( validationResult );
         }
-    }
+    } */
 }

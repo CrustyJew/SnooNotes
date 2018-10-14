@@ -80,7 +80,8 @@ require("./directives");
             }
         })
     ;
-    $httpProvider.defaults.withCredentials = true;
+        $httpProvider.defaults.withCredentials = true;
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 })
 .run(function ($rootScope, AuthFactory, SubFactory, $uibModal, $state) {
