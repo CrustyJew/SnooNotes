@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SnooNotes.Controllers {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
 
     [Route( "api/[controller]" )]
     public class ValuesController : Controller {

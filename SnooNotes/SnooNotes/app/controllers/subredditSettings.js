@@ -45,7 +45,9 @@
         $scope.importing = true;
         SubFactory.importTBNotes(noteMapping, $scope.sub.SubName).then(
             function () {
-                $scope.checkTBImport();
+                $scope.importing = true;
+                $scope.importingStatus = 'Starting Import...';
+                window.setTimeout($scope.checkTBImport, 2000);
                 //$scope.imported = true; $scope.importing = false;
 
         }, function () { $scope.error = true; $scope.importing = false; });
@@ -90,43 +92,6 @@
                     a.dispatchEvent(e);
                 }
             }, function (error) { $scope.exporting = false });
-    }
-
-    $scope.updateSub = function () {
-        $scope.updating = true;
-        $scope.dirtbagMessage = "";
-        DirtbagFactory.saveSettings($scope.sub.BotSettings, $scope.sub.SubName).
-            then(function (d) {
-                $scope.updating = false;
-                $scope.sub.BotSettings = angular.copy(d);
-                $scope.sub.oldBotSettings = angular.copy(d);
-                $scope.frmBotIntegration.$setPristine();
-                $scope.dirtbagMessage = "Saved settings!";
-                $scope.successMessage = true;
-            }, function (e) {
-                $scope.updating = false;
-                $scope.dirtbagMessage = e;
-                $scope.successMessage = false;
-            });
-
-    }
-
-    $scope.reset = function () {
-        $scope.sub.BotSettings = angular.copy($scope.sub.oldBotSettings);
-        $scope.frmBotIntegration.$setPristine();
-    }
-
-    $scope.testDirtbag = function () {
-        DirtbagFactory.testConnection($scope.sub.BotSettings, $scope.sub.SubName)
-            .then(function (success) {
-                $scope.successMessage = true; $scope.dirtbagMessage = "Test Succeeded!"
-            }, function (e) {
-                $scope.successMessage = false; $scope.dirtbagMessage = e;
-            })
-    }
-
-    $scope.urlChanged= function(){
-        return $scope.sub.BotSettings.DirtbagUrl != $scope.sub.oldBotSettings.DirtbagUrl;
     }
     
     //$scope.selChange = function () {

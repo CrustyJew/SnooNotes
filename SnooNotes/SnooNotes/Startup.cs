@@ -1,32 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Http;
 using SnooNotes.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
-using IdentityServer4;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using System.Data.SqlClient;
 using Npgsql;
-using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using Hangfire;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using SnooNotesSharedLibrary;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SnooNotes {
     public class Startup {
@@ -101,6 +91,38 @@ namespace SnooNotes {
                     NameClaimType = "name",
                     RoleClaimType = "role"
                 };
+                options.ClaimActions.MapJsonKey("uri:snoonotes:haswiki", "uri:snoonotes:haswiki");
+                options.ClaimActions.MapJsonKey("uri:snoonotes:hasconfig", "uri:snoonotes:hasconfig");
+                /*options.Events = new OpenIdConnectEvents() {
+                    OnUserInformationReceived = async context => {
+                        // IDS4 returns multiple claim values as JSON arrays, which break the authentication handler
+                        if (context.User.TryGetValue(JwtClaimTypes.Role, out JToken role)) {
+                            var claims = new List<Claim>();
+                            if (role.Type != JTokenType.Array) {
+                                claims.Add(new Claim(JwtClaimTypes.Role, (string) role));
+                            }
+                            else {
+                                foreach (var r in role)
+                                    claims.Add(new Claim(JwtClaimTypes.Role, (string) r));
+                            }
+                            var id = context.Principal.Identity as ClaimsIdentity;
+                            id.AddClaims(claims);
+                        }
+
+                        if (context.User.TryGetValue("uri:snoonotes:admin", out JToken snadmin)) {
+                            var claims = new List<Claim>();
+                            if (snadmin.Type != JTokenType.Array) {
+                                claims.Add(new Claim(JwtClaimTypes.Role, (string) role));
+                            }
+                            else {
+                                foreach (var r in snadmin)
+                                    claims.Add(new Claim("uri:snoonotes:admin", (string) r));
+                            }
+                            var id = context.Principal.Identity as ClaimsIdentity;
+                            id.AddClaims(claims);
+                        }
+                    }
+                };*/
                 //options.SaveTokens = true;
             })
             .AddIdentityServerAuthentication("token",options => {
@@ -146,7 +168,7 @@ namespace SnooNotes {
             services.AddScoped<DAL.IYouTubeDAL, DAL.YouTubeDAL>();
 
 
-            services.AddTransient<Utilities.IAuthUtils, SnooNotes.Utilities.AuthUtils>();
+            services.AddTransient<Utilities.IAuthUtils, SnooNotes.Utilities.BaseAuthUtils>();
             services.AddTransient<BLL.IDirtbagBLL, BLL.DirtbagBLL>();
             services.AddTransient<BLL.INotesBLL, BLL.NotesBLL>();
             services.AddTransient<BLL.INoteTypesBLL, BLL.NoteTypesBLL>();

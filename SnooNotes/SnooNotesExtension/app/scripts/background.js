@@ -100,14 +100,14 @@ store.subscribe(() => {
 
   }
 });
-snUpdate.HubConnection.onClosed(() => {
+snUpdate.connection.onclose(() => {
   console.warn('Socket disconnected');
   if (curToken) {
     setTimeout(() => {
       snUpdate.start()
         .done(function () { console.log('SignalR reconnected, connection ID=' + hubConnection.id); })
         .fail(function () { console.log('SignalR could not connect'); });
-    }, 5000)
+    }, 2500 + (10 * Math.Floor(Math.random() * 100)))
   }
 })
 

@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
     [Route("api/[controller]")]
     public class NoteController : Controller {
         private BLL.INotesBLL notesBLL;

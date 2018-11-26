@@ -12,9 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace SnooNotes.Controllers {
-    [Authorize(AuthenticationSchemes ="token")]
-    [Route( "api/[controller]" )]
+namespace SnooNotes.Controllers.Site {
+    [Authorize(AuthenticationSchemes ="Snookie")]
+    [Route( "site/[controller]" )]
     public class AccountController : Controller {
         private BLL.ISubredditBLL subBLL;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -43,45 +43,24 @@ namespace SnooNotes.Controllers {
             return true;
         }
         [HttpGet( "[action]" )]
-        public List<string> GetModeratedSubreddits() {
-            return ( User.Identity as ClaimsIdentity ).Claims.Where( c => c.Type == ( User.Identity as ClaimsIdentity ).RoleClaimType ).Select( c => c.Value ).ToList<string>();
+        public async Task<IEnumerable<Models.Subreddit>> GetFullModeratedSubreddits() {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var claims = await _userManager.GetClaimsAsync(user);
+            var subs = claims.Where(c => c.Type == "uri:snoonotes:admin").Select(c => c.Value);
+            return await subBLL.GetSubreddits(subs, User);
         }
 
         [HttpGet( "[action]" )]
-        public ApplicationUser GetCurrentUser() {
+        public async Task<ApplicationUser> GetCurrentUser() {
             ClaimsIdentity ident = User.Identity as ClaimsIdentity;
+            var user = await _userManager.FindByNameAsync(ident.Name);
             return new ApplicationUser {
-                HasConfig = ident.HasClaim( c => c.Type == "uri:snoonotes:hasconfig" && c.Value == "true" ),
-                HasWiki = ident.HasClaim( c => c.Type == "uri:snoonotes:haswiki" && c.Value == "true" ),
+                HasConfig = user.HasConfig,
+                HasWiki = user.HasWiki,
                 UserName = ident.Name
             };
         }
-
-        [HttpGet( "[action]" )]
-        public async Task<IEnumerable<string>> GetInactiveModeratedSubreddits() {
-
-            var agent = await agentPool.GetOrCreateWebAgentAsync(User.Identity.Name, async (uname, uagent, rlimit) =>
-            {
-                var ident = await _userManager.FindByNameAsync(User.Identity.Name);
-                return new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent);
-            });
-
-            RedditSharp.Reddit rd = new RedditSharp.Reddit( agent, true );
-
-            List<Models.Subreddit> activeSubs = await subBLL.GetActiveSubs(User);
-            List<string> activeSubNames = activeSubs.Select( s => s.SubName.ToLower() ).ToList();
-            List<string> inactiveSubs = new List<string>();
-            await rd.User.GetModeratorSubreddits().ForEachAsync( s => { if ( s.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) && !activeSubNames.Contains( s.Name.ToLower() ) ) inactiveSubs.Add( s.Name ); } );
-            return inactiveSubs.OrderBy( s => s );
-        }
-        [HttpPost("[action]")]
-        public async Task UpdateModeratedSubreddits() {
-
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-
-            await authUtils.UpdateModeratedSubredditsAsync(user);
-        }
-
+        
         [HttpPost("[action]")]
         public async Task ResetAuthCode()
         {
@@ -114,13 +93,7 @@ If you did not request this, panic, then hit up /u/meepster23 to help sort it ou
 ", User.Identity.Name);
 
         }
-
-        [HttpPost("[action]")]
-        public Task ForceRefresh()
-        {
-            return agentPool.RemoveWebAgentAsync(User.Identity.Name);
-        }
-
+        
         /// <summary>
         /// Generates a Random Password
         /// respecting the given strength requirements.

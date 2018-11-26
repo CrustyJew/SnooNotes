@@ -238,7 +238,7 @@ export default {
               if (!expando) {
                 //no expando, just a self post with no body, ignore.
                 return;
-              } else if (!expando.classList.contains("expando-unitialized")) {
+              } else if (!expando.classList.contains("expando-uninitialized")) {
                 //expando already loaded, process as normal
                 if (this.checkText(expando.querySelector(".usertext-body"))) {
                   this.injectNewMediaAnalysisComponent(
@@ -291,7 +291,7 @@ export default {
           let entry = childarray.filter(c => {
             return c.classList.contains("entry");
           })[0];
-          if (this.checkText(entry.querySelector(".usertext-body"))) {
+          if (entry && this.checkText(entry.querySelector(".usertext-body"))) {
             this.injectNewMediaAnalysisComponent(
               author,
               subreddit,
@@ -305,6 +305,9 @@ export default {
       }
     },
     checkText: function(el) {
+      if(!el){
+        return false;
+      }
       el.querySelectorAll("a").forEach(
         _.bind(link => {
           let hostname = link.hostname.toLowerCase();

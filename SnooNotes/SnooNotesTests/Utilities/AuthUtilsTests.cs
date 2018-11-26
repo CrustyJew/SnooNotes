@@ -14,6 +14,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using SnooNotesSharedLibrary;
 
 //[assembly: UserSecretsId( "aspnet-SnooNotesTests-20170206010343" )]
 namespace SnooNotesTests.Utilities {
@@ -172,7 +173,7 @@ namespace SnooNotesTests.Utilities {
 
             var subDAL = new Mock<SnooNotes.DAL.ISubredditDAL>();
             subDAL.Setup( s => s.GetSubreddits( It.IsAny<IEnumerable<string>>() ) ).Returns( Task.FromResult( activeSub ) );
-            var util = new SnooNotes.Utilities.AuthUtils( Configuration, um, null, null, subDAL.Object, agentPool, new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>());
+            var util = new SnooNotes.Utilities.BaseAuthUtils( Configuration, um, null, null, subDAL.Object, agentPool, new RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent>());
             var userPrincipal = new ClaimsPrincipal( claimsIdent );
 
             await um.AddToRoleAsync( testUser, "gooaway" );
@@ -192,7 +193,7 @@ namespace SnooNotesTests.Utilities {
             await um.AddClaimAsync( badUser, new Claim( "uri:snoonotes:admin", "gooaway" ) );
             await um.AddClaimAsync( okUser, new Claim( "uri:snoonotes:admin", "gooaway" ) );
 
-            await util.UpdateModsForSubAsync( activeSub.First(), userPrincipal );
+            await util.UpdateModsForSubAsync( activeSub.First());
 
             var endUser = await um.FindByNameAsync( testUser.UserName );
             var endUserRoles = await um.GetRolesAsync( endUser );

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SnooNotes.Signalr
 {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
     public class SnooNotesHub : Hub
     {
         //private readonly SnooNoteUpdates _snUpdates;

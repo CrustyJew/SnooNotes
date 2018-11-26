@@ -48,11 +48,11 @@ namespace IdentProvider {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices( IServiceCollection services ) {
             string connectionString = Configuration.GetConnectionString("SnooNotes");
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var migrationsAssembly = "IdentProvider";//typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString, b=> b.MigrationsAssembly(migrationsAssembly)));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

@@ -71,7 +71,7 @@
     "require-dir": "0.x.x",
     "sass-loader": "^5.0.1",
     "sinon": "^1.17.7",
-    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
+    "uglify-js": "https://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
     "vinyl-named": "1.x.x",
     "vue": "^2.2.1",
     "vue-loader": "^11.1.4",
@@ -82,7 +82,7 @@
     "yargs": "5.x.x"
   },
   "dependencies": {
-    "@aspnet/signalr": "^1.0.3",
+    "@aspnet/signalr": "^1.0.4",
     "axios": "^0.15.3",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
@@ -93,8 +93,6 @@
     "redux-localstorage": "^0.4.1",
     "redux-thunk": "^2.2.0",
     "revue": "^3.0.0",
-    "signalr": "^2.2.2",
-    "signalr-no-jquery": "^0.1.8",
     "tslib": "^1.9.3",
     "vue-material": "^0.7.4",
     "vue-toasted": "^1.0.24",

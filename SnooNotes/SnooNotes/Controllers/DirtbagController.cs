@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SnooNotes.Controllers {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
     [Route( "api/Dirtbag" )]
     public class DirtbagController : Controller {
 

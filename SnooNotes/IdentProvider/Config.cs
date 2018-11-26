@@ -16,7 +16,7 @@ namespace IdentProvider
             {
                 new IdentityResources.OpenId(),
                 //new IdentityResources.Profile()
-                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal","uri:snoonotes:haswiki","uri:snoonotes:hasconfig"}.Concat(new IdentityResources.Profile().UserClaims)){ }
+                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal","uri:snoonotes:haswiki","uri:snoonotes:hasconfig","role","uri:snoonotes:admin"}.Concat(new IdentityResources.Profile().UserClaims)){ }
             };
         }
 

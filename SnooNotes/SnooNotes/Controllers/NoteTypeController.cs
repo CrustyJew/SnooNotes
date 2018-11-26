@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace SnooNotes.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
     [Route("restapi/[controller]")]
     [Route("api/[controller]")]
     public class NoteTypeController : Controller

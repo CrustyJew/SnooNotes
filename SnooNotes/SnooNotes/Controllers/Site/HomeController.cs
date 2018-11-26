@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using SnooNotes.Models;
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace SnooNotes.Controllers
+namespace SnooNotes.Controllers.Site
 {
     [Route("")]
     public class HomeController : Controller

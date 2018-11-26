@@ -8,15 +8,17 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
     [Route("restapi/[controller]")][Route("api/[controller]")]
     public class SubredditController : Controller
     {
         private BLL.ISubredditBLL subBLL;
         private string cabalSub;
-        public SubredditController(BLL.ISubredditBLL subredditBLL, IConfigurationRoot config) {
+        private Utilities.IAuthUtils authUtils;
+        public SubredditController(BLL.ISubredditBLL subredditBLL, IConfigurationRoot config, Utilities.IAuthUtils authUtils) {
             subBLL = subredditBLL;
             cabalSub = config["CabalSubreddit"];
+            this.authUtils = authUtils;
         }
         [HttpGet("")]
         // GET: api/Subreddit
@@ -54,13 +56,14 @@ namespace SnooNotes.Controllers {
         }
         [HttpPost]
         // POST: api/Subreddit
-        public Task Post([FromBody]Models.Subreddit newSub)
+        public async Task Post([FromBody]Models.Subreddit newSub)
         {
             string name = User.Identity.Name;
             //var ip = HttpContext.Current.GetOwinContext().Request.RemoteIpAddress;
             
             string ip = HttpContext.Connection.RemoteIpAddress.ToString();
-            return subBLL.AddSubreddit( newSub, name, ip );
+            await subBLL.AddSubreddit( newSub, name, ip );
+            await authUtils.UpdateModsForSubAsync(newSub);
         }
         [HttpPut("{subname}")]
         // PUT: api/Subreddit/5

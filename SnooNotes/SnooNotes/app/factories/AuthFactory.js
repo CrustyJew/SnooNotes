@@ -4,7 +4,7 @@
 
     exports.isLoggedIn = function () {
         var deferred = $q.defer();
-        $http.get('api/Account/IsLoggedIn')
+        $http.get('site/Account/IsLoggedIn')
             .then(
                 function () {
                     //return true;
@@ -32,7 +32,7 @@
                 deferred.resolve(exports.currentUser);
             }
             else {
-                $http.get('api/Account/GetCurrentUser')
+                $http.get('site/Account/GetCurrentUser')
                     .then(
                         function (u) {
 

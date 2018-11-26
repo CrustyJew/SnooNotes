@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
-    [Authorize(AuthenticationSchemes = "Snookie,token")]
+    [Authorize(AuthenticationSchemes = "token")]
     [Route("api/ModAction")]
     public class ModActionController : Controller
     {

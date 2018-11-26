@@ -7,7 +7,7 @@
     $scope.genKey = function () {
         $scope.generating = true;
         $scope.error = false;
-        $http.post('api/Account/ResetAuthCode').then(function () {
+        $http.post('site/Account/ResetAuthCode').then(function () {
             $scope.generating = false;
             $scope.error = false;
             $scope.done = true;

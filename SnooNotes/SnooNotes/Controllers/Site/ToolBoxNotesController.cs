@@ -13,11 +13,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Hangfire;
 
-namespace SnooNotes.Controllers {
+namespace SnooNotes.Controllers.Site {
     [Authorize(AuthenticationSchemes = "Snookie,token")]
     //[wikiedit] ///TODO
 
-    [Route( "api/[controller]" )]
+    [Route( "site/[controller]" )]
     public class ToolBoxNotesController : Controller {
         private UserManager<ApplicationUser> userManager;
         private DAL.INoteTypesDAL noteTypesDAL;
@@ -31,42 +31,38 @@ namespace SnooNotes.Controllers {
             this.noteTypesDAL = noteTypesDAL;
             this.tbNotesBLL = tbNotesBLL;
         }
-        [HttpGet]
-        // GET: api/ToolBoxNotes
-        public IEnumerable<string> Get()
-        {
-            return new string[2] { "a", "b" };
-        }
 
         // GET: api/ToolBoxNotes/5
-        [HttpGet("{id}")]
-        public async Task<string[]> Get(string id)
+        [HttpGet("{subName}")]
+        public async Task<string[]> Get(string subName)
         {
-            if ( !User.HasClaim( "uri:snoonotes:admin", id.ToLower() ) ) {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var claims = await userManager.GetClaimsAsync(user);
+            if (claims.Count(c => c.Type == "uri:snoonotes:admin" && c.Value.ToLower() == subName.ToLower()) == 0) {
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             }
             var agent = await agentPool.GetOrCreateWebAgentAsync(User.Identity.Name, async (uname, uagent, rlimit) =>
             {
-                var ident = await userManager.FindByNameAsync(User.Identity.Name);
-                return new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent);
+                return new RedditSharp.RefreshTokenPoolEntry(uname, user.RefreshToken, rlimit, uagent);
             });
 
-            var warningTypes = await RedditSharp.ToolBoxUserNotes.GetWarningKeys(agent, id);
+            var warningTypes = await RedditSharp.ToolBoxUserNotes.GetWarningKeys(agent, subName);
             return warningTypes.Select(s=>s ?? "null").ToArray();
         }
         [HttpPost("{subName}")]
         // POST: api/ToolBoxNotes
         public async Task<int> Post([FromRoute]string subName,[FromBody]Dictionary<string,int> mapping)
         {
-            if ( !User.HasClaim( "uri:snoonotes:admin", subName.ToLower() ) ) {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var claims = await userManager.GetClaimsAsync(user);
+            if (claims.Count(c => c.Type == "uri:snoonotes:admin" && c.Value.ToLower() == subName.ToLower()) == 0) {
                 throw new UnauthorizedAccessException( "You are not an admin of this subreddit!" );
             }
 
 
             var agent = await agentPool.GetOrCreateWebAgentAsync(User.Identity.Name, async (uname, uagent, rlimit) =>
             {
-                var ident = await userManager.FindByNameAsync(User.Identity.Name);
-                return new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent);
+                return new RedditSharp.RefreshTokenPoolEntry(uname, user.RefreshToken, rlimit, uagent);
             });
 
             var notes = await RedditSharp.ToolBoxUserNotes.GetUserNotesAsync(agent, subName);
@@ -80,8 +76,10 @@ namespace SnooNotes.Controllers {
             return -1;
         }
         [HttpGet("{subName}/status")]
-        public object GetStatus([FromRoute]string subName) {
-            if(!User.HasClaim("uri:snoonotes:admin", subName.ToLower())) {
+        public async Task<object> GetStatus([FromRoute]string subName) {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var claims = await userManager.GetClaimsAsync(user);
+            if (claims.Count(c => c.Type == "uri:snoonotes:admin" && c.Value.ToLower() == subName.ToLower()) == 0) {
                 throw new UnauthorizedAccessException("You are not an admin of this subreddit!");
             }
             string status = null;
