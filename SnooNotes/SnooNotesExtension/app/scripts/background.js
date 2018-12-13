@@ -1,5 +1,5 @@
 // Enable chromereload by uncommenting this line:
-import 'chromereload/devonly';
+//import 'chromereload/devonly';
 
 
 import { userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';

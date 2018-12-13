@@ -17,6 +17,9 @@ export default {
     },
     methods: {
         checkText: function (el) {
+            if(!el){
+                return false;
+            }
             el.querySelectorAll('a').forEach(_.bind((link) => {
                 let hostname = link.hostname.toLowerCase();
                 if (hostname.startsWith('www.')) {
