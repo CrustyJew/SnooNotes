@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using SnooNotes.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SnooNotes.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 //using Microsoft.Extensions.Caching.Memory;
 
 namespace SnooNotes.Utilities {
@@ -20,7 +19,7 @@ namespace SnooNotes.Utilities {
         private RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool;
         public BaseAuthUtils( IConfigurationRoot config,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool webAgentPool, RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool) {
+            DAL.ISubredditDAL subredditDAL, RedditSharp.RefreshTokenWebAgentPool webAgentPool, RedditSharp.WebAgentPool<string, RedditSharp.BotWebAgent> serviceAgentPool ) {
             _userManager = userManager;
             _roleManager = roleManager;
             Configuration = config;
@@ -28,35 +27,34 @@ namespace SnooNotes.Utilities {
             agentPool = webAgentPool;
             this.serviceAgentPool = serviceAgentPool;
         }
-        
+
         public virtual async Task RevokeRefreshTokenAsync( string token, string username ) {
             string ClientId = Configuration["RedditClientID"];
             string ClientSecret = Configuration["RedditClientSecret"];
             string RediretURI = Configuration["RedditRedirectURI"];
             RedditSharp.WebAgent agent = new RedditSharp.WebAgent();
-            RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider( ClientId, ClientSecret, RediretURI, agent );
-            await ap.RevokeTokenAsync( token, true );
+            RedditSharp.AuthProvider ap = new RedditSharp.AuthProvider(ClientId, ClientSecret, RediretURI, agent);
+            await ap.RevokeTokenAsync(token, true);
             await agentPool.RemoveWebAgentAsync(username); //TODO revoke here instead
         }
 
 
-        public virtual async Task UpdateModeratedSubredditsAsync( ApplicationUser ident) {
+        public virtual async Task UpdateModeratedSubredditsAsync( ApplicationUser ident ) {
             string cabalSubName = Configuration["CabalSubreddit"].ToLower();
-            RedditSharp.IWebAgent agent = await agentPool.GetOrCreateWebAgentAsync(ident.UserName, (uname, uagent, rlimit) =>
-            {
+            RedditSharp.IWebAgent agent = await agentPool.GetOrCreateWebAgentAsync(ident.UserName, ( uname, uagent, rlimit ) => {
                 return Task.FromResult<RedditSharp.RefreshTokenPoolEntry>(new RedditSharp.RefreshTokenPoolEntry(uname, ident.RefreshToken, rlimit, uagent));
             });
-            RedditSharp.Reddit rd = new RedditSharp.Reddit( agent, true );
+            RedditSharp.Reddit rd = new RedditSharp.Reddit(agent, true);
             var modSubs = new List<RedditSharp.Things.Subreddit>();
-            await rd.User.GetModeratorSubreddits().ForEachAsync( s => modSubs.Add( s ) );
+            await rd.User.GetModeratorSubreddits().ForEachAsync(s => modSubs.Add(s));
 
-            List<string> currentRoles = ( await _userManager.GetRolesAsync( ident ) ).ToList();
-            List<Claim> currentClaims = ( await _userManager.GetClaimsAsync( ident ) ).ToList();
+            List<string> currentRoles = (await _userManager.GetRolesAsync(ident)).ToList();
+            List<Claim> currentClaims = (await _userManager.GetClaimsAsync(ident)).ToList();
             List<Models.Subreddit> activeSubs = await subDAL.GetActiveSubs();
             //remove subs from the activeSubs list that user isn't a mod of.
-            activeSubs = activeSubs.Where( sub => modSubs.Exists( modsub => modsub.Name.ToLower() == sub.SubName.ToLower() ) ).ToList();
+            activeSubs = activeSubs.Where(sub => modSubs.Exists(modsub => modsub.Name.ToLower() == sub.SubName.ToLower())).ToList();
 
-            List<string> activeSubNames = activeSubs.Select( s => s.SubName.ToLower() ).ToList();
+            List<string> activeSubNames = activeSubs.Select(s => s.SubName.ToLower()).ToList();
             //List<IdentityRole> allRoles = _roleManager.Roles.ToList();
 
             //List<IdentityUserClaim<string>> currentAdminRoles = ident.Claims.Where( c => c.ClaimType == ident. ).ToList();
@@ -66,99 +64,94 @@ namespace SnooNotes.Utilities {
             List<Claim> claimsToRemove = new List<Claim>();
 
             rolesToAdd.AddRange(
-                activeSubs.Where( sub =>
-                    modSubs.Exists( modsub =>
-                          modsub.Name.ToLower() == sub.SubName.ToLower()
-                          && ( modsub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All ) || ( (int) modsub.ModPermissions & sub.Settings.AccessMask ) > 0 )
-                    )
-                ).Select( sub => sub.SubName.ToLower() )
+                activeSubs.Where(sub =>
+                   modSubs.Exists(modsub =>
+                        modsub.Name.ToLower() == sub.SubName.ToLower()
+                        && (modsub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.SuperUser) || ((int) modsub.ModPermissions & sub.Settings.AccessMask) > 0)
+                   )
+                ).Select(sub => sub.SubName.ToLower())
             );
             claimsToAdd.AddRange(
-                activeSubs.Where( sub =>
-                    modSubs.Exists( modsub =>
-                          modsub.Name.ToLower() == sub.SubName.ToLower()
-                          && modsub.ModPermissions.HasFlag( RedditSharp.ModeratorPermission.All )
-                    )
-                ).Select( sub => new Claim( "uri:snoonotes:admin", sub.SubName.ToLower() ) )
+                activeSubs.Where(sub =>
+                   modSubs.Exists(modsub =>
+                        modsub.Name.ToLower() == sub.SubName.ToLower()
+                        && modsub.ModPermissions.HasFlag(RedditSharp.ModeratorPermission.All)
+                   )
+                ).Select(sub => new Claim("uri:snoonotes:admin", sub.SubName.ToLower()))
             );
             //rolesToRemove = set of current roles - roles in rolesToAdd
             rolesToRemove.AddRange(
-                currentRoles.Where( curRole =>
-                     !rolesToAdd.Contains( curRole )
+                currentRoles.Where(curRole =>
+                    !rolesToAdd.Contains(curRole)
                 )
             );
 
             claimsToRemove.AddRange(
-                ident.Claims.Where( curClaim =>
-                     curClaim.ClaimType == "uri:snoonotes:admin" &&
-                     !claimsToAdd.Exists( addClaim =>
-                          addClaim.Value == curClaim.ClaimValue
-                          && addClaim.Type == curClaim.ClaimType
-                     )
-                ).Select( c => new Claim( c.ClaimType, c.ClaimValue ) )
+                ident.Claims.Where(curClaim =>
+                    curClaim.ClaimType == "uri:snoonotes:admin" &&
+                    !claimsToAdd.Exists(addClaim =>
+                        addClaim.Value == curClaim.ClaimValue
+                        && addClaim.Type == curClaim.ClaimType
+                    )
+                ).Select(c => new Claim(c.ClaimType, c.ClaimValue))
             );
             //clean out roles that the user already has
-            rolesToAdd = rolesToAdd.Where( rta => !currentRoles.Contains( rta ) ).ToList();
-            claimsToAdd = claimsToAdd.Where( aclaim => !currentClaims.Any( cclaim => cclaim.Value == aclaim.Value && cclaim.Type == aclaim.Type ) ).ToList();
+            rolesToAdd = rolesToAdd.Where(rta => !currentRoles.Contains(rta)).ToList();
+            claimsToAdd = claimsToAdd.Where(aclaim => !currentClaims.Any(cclaim => cclaim.Value == aclaim.Value && cclaim.Type == aclaim.Type)).ToList();
 
             string cabalUsername = Configuration["CabalUsername"];
-            if (!string.IsNullOrWhiteSpace( cabalUsername) && !string.IsNullOrWhiteSpace(cabalSubName)) {
-                RedditSharp.IWebAgent cabalAgent = await serviceAgentPool.GetOrCreateAgentAsync(cabalUsername, () =>
-                    {
-                        return Task.FromResult(
-                            new RedditSharp.BotWebAgent(
-                                cabalUsername, 
-                                Configuration["CabalPassword"], 
-                                Configuration["CabalClientID"], 
-                                Configuration["CabalSecret"], 
-                                Configuration["CabalRedirectURI"]
-                                )
-                        );
-                    });
+            if (!string.IsNullOrWhiteSpace(cabalUsername) && !string.IsNullOrWhiteSpace(cabalSubName)) {
+                RedditSharp.IWebAgent cabalAgent = await serviceAgentPool.GetOrCreateAgentAsync(cabalUsername, () => {
+                    return Task.FromResult(
+                        new RedditSharp.BotWebAgent(
+                            cabalUsername,
+                            Configuration["CabalPassword"],
+                            Configuration["CabalClientID"],
+                            Configuration["CabalSecret"],
+                            Configuration["CabalRedirectURI"]
+                            )
+                    );
+                });
 
-                RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit(cabalAgent, true );
-                var cabalSub = await cabalReddit.GetSubredditAsync( cabalSubName );
-                bool hasCabal = await cabalSub.GetContributors().Any( c => c.Name.ToLower() == ident.UserName.ToLower() );
-                if ( hasCabal && !currentClaims.Any( c => c.Type == "uri:snoonotes:cabal" && c.Value == "true" ) ) {
-                    claimsToAdd.Add( new Claim( "uri:snoonotes:cabal", "true" ) );
+                RedditSharp.Reddit cabalReddit = new RedditSharp.Reddit(cabalAgent, true);
+                var cabalSub = await cabalReddit.GetSubredditAsync(cabalSubName);
+                bool hasCabal = await cabalSub.GetContributors().Any(c => c.Name.ToLower() == ident.UserName.ToLower());
+                if (hasCabal && !currentClaims.Any(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true")) {
+                    claimsToAdd.Add(new Claim("uri:snoonotes:cabal", "true"));
                 }
-                else if ( !hasCabal && !currentClaims.Any( c => c.Type == "uri:snoonotes:cabal" && c.Value == "true" ) ) {
-                    claimsToRemove.Add( new Claim( "uri:snoonotes:cabal", "true" ) );
+                else if (!hasCabal && !currentClaims.Any(c => c.Type == "uri:snoonotes:cabal" && c.Value == "true")) {
+                    claimsToRemove.Add(new Claim("uri:snoonotes:cabal", "true"));
                 }
             }
-            
-            await _userManager.RemoveFromRolesAsync( ident, rolesToRemove );
-            await _userManager.RemoveClaimsAsync( ident, claimsToRemove );
-            await _userManager.AddClaimsAsync( ident, claimsToAdd );
-            try
-            {
+
+            await _userManager.RemoveFromRolesAsync(ident, rolesToRemove);
+            await _userManager.RemoveClaimsAsync(ident, claimsToRemove);
+            await _userManager.AddClaimsAsync(ident, claimsToAdd);
+            try {
                 await _userManager.AddToRolesAsync(ident, rolesToAdd);
             }
-            catch(InvalidOperationException)
-            {
-                foreach (var role in rolesToAdd)
-                {
-                    if (await _roleManager.FindByNameAsync(role) == null)
-                    {
+            catch (InvalidOperationException) {
+                foreach (var role in rolesToAdd) {
+                    if (await _roleManager.FindByNameAsync(role) == null) {
                         await _roleManager.CreateAsync(new IdentityRole(role));
                     }
                 }
                 await _userManager.AddToRolesAsync(ident, rolesToAdd);
             }
             ident.LastUpdatedRoles = DateTime.UtcNow;
-            await _userManager.UpdateAsync( ident );
+            await _userManager.UpdateAsync(ident);
         }
 
-        public virtual async Task<bool> UpdateModsForSubAsync(Subreddit sub, IEnumerable<string> activeUsers = null)
-        {
+        public virtual async Task<bool> UpdateModsForSubAsync( Subreddit sub, Dictionary<string, ApplicationUser> activeUsers = null ) {
             if (sub.SubName.ToLower() == Configuration["CabalSubreddit"].ToLower()) return false;
 
-            if(activeUsers == null) {
-                activeUsers = _userManager.Users.Select(u => u.UserName);
+            if (activeUsers == null) {
+                activeUsers = (await _userManager.Users.ToListAsync()).ToDictionary(k => k.UserName.ToLower(), v => v);
             }
 
             string subName = sub.SubName.ToLower();
-            var usersWithAccess = await _userManager.GetUsersInRoleAsync(subName);
+            var usersWithAccess = (await _userManager.GetUsersInRoleAsync(subName)).ToDictionary(k => k.UserName.ToLower(), v => v);
+            var usersWithAdminAccess = (await _userManager.GetUsersForClaimAsync(new Claim("uri:snoonotes:admin", subName))).ToDictionary(k => k.UserName.ToLower(), v => v);
 
             RedditSharp.IWebAgent agent = new RedditSharp.WebAgent();
 
@@ -170,57 +163,49 @@ namespace SnooNotes.Utilities {
             catch {
                 return false;
             }
-            var modsWithAccess = (await subinfo.GetModeratorsAsync()).Where(m => m.Permissions == RedditSharp.ModeratorPermission.All ||((int) m.Permissions & sub.Settings.AccessMask) > 0);
+            var modsWithAccess = (await subinfo.GetModeratorsAsync()).Where(m => m.Permissions == RedditSharp.ModeratorPermission.SuperUser || ((int) m.Permissions & sub.Settings.AccessMask) > 0);
             // get list of users to remove perms from
-            var usersToRemove = usersWithAccess.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower())).ToList();
+            var usersToRemove = usersWithAccess.Values.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower()));
             foreach (var appuser in usersToRemove) {
                 await _userManager.RemoveFromRoleAsync(appuser, subName);
-                //if ( appuser.Claims.Where( c => c.ClaimType == "uri:snoonotes:admin" && c.ClaimValue == subName ).Count() > 0 ) {
-                await _userManager.RemoveClaimAsync(appuser, new Claim("uri:snoonotes:admin", subName));
 
-                //}
             }
 
-            var usersToAdd = modsWithAccess.Where(m => (!usersWithAccess.Select(u => u.UserName.ToLower()).Contains(m.Name.ToLower())));
+            //get list of users to remove admin claim from
+            var userAdminsToRemove = usersWithAdminAccess.Values.Where(u => !modsWithAccess.Any(m => m.Name.ToLower() == u.UserName.ToLower() && m.Permissions == RedditSharp.ModeratorPermission.SuperUser));
+            foreach(var appuser in userAdminsToRemove) {
+                await _userManager.RemoveClaimAsync(appuser, new Claim("uri:snoonotes:admin", subName));
+            }
+            
+            //get list of  users to add basic access to
+            var usersToAdd = modsWithAccess.Where(m => activeUsers.ContainsKey(m.Name.ToLower()) && !usersWithAccess.ContainsKey(m.Name.ToLower()));
 
             foreach (var appuser in usersToAdd) {
                 try {
-                    var u = await _userManager.FindByNameAsync(appuser.Name);
-                    if (u != null) {
-
-
-                        //assume it won't be adding a duplicate *holds breath*
-                        if (appuser.Permissions.HasFlag(RedditSharp.ModeratorPermission.All)) {
-                            await _userManager.AddToRoleAsync(u, subName);
-                            await _userManager.AddClaimAsync(u, new Claim("uri:snoonotes:admin:", subName));
-                        }
-                        else if (((int) appuser.Permissions & sub.Settings.AccessMask) > 0) {
-                            await _userManager.AddToRoleAsync(u, subName);
-                        }
-                    }
+                    var u = activeUsers[appuser.Name.ToLower()];
+                    await _userManager.AddToRoleAsync(u, subName);
+                    
                 }
                 catch {
                     //TODO something, mighta caught a non registered user?
                 }
             }
 
+            //active users with super user permissions that don't already have the admin claim
+            var userAdminsToAdd = modsWithAccess.Where(m => activeUsers.ContainsKey(m.Name.ToLower()) && m.Permissions == RedditSharp.ModeratorPermission.SuperUser && !usersWithAdminAccess.ContainsKey(m.Name.ToLower()));
 
-            usersWithAccess = usersWithAccess.Union(await _userManager.GetUsersForClaimAsync(new Claim("uri:snoonotes:admin", subName))).ToList();
-
-            var usersToCheckUpdates = usersWithAccess.Where(u => modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower())).ToList();
-            foreach (var appuser in usersToCheckUpdates) {
-                var access = modsWithAccess.Where(m => m.Name.ToLower() == appuser.UserName.ToLower()).Single().Permissions;
-                if (access == RedditSharp.ModeratorPermission.All) {
-                    if (!appuser.Claims.Any(c => c.ClaimType == "uri:snoonotes:admin" && c.ClaimValue == subName)) {
-                        await _userManager.AddClaimAsync(appuser, new Claim("uri:snoonotes:admin", subName));
-                    }
+            foreach (var appuser in userAdminsToAdd) {
+                try {
+                    var u = activeUsers[appuser.Name.ToLower()];
+                    await _userManager.AddClaimAsync(u, new Claim("uri:snoonotes:admin", subName));
                 }
-                else {
-                    await _userManager.RemoveClaimAsync(appuser, new Claim("uri:snoonotes:admin", subName));
+                catch {
+                    //TODO something, mighta caught a non registered user?
                 }
             }
+            
             return true;
         }
     }
-    
+
 }

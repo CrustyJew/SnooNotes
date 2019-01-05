@@ -6,6 +6,6 @@ namespace SnooNotes.Utilities {
     public interface IAuthUtils {
         Task RevokeRefreshTokenAsync( string token, string username );
         Task UpdateModeratedSubredditsAsync( ApplicationUser ident );
-        Task<bool> UpdateModsForSubAsync( Subreddit sub, IEnumerable<string> activeUsers );
+        Task<bool> UpdateModsForSubAsync( Subreddit sub, Dictionary<string,ApplicationUser> activeUsers = null );
     }
 }
