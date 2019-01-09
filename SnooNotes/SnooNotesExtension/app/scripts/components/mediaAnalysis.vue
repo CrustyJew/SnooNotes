@@ -66,7 +66,7 @@ export default {
                     let childarray = [...thing.children];
                     let entry = childarray.filter((c) => { return c.classList.contains('entry') })[0];
                     let expando = entry.querySelector('.expando');
-                    if (!expando.classList.contains('expando-unitialized')) {
+                    if (expando && !expando.classList.contains('expando-unitialized')) {
                         //expando already loaded, process as normal
                         this.checkText(expando.querySelector('.usertext-body'));
                     }
