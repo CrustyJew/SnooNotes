@@ -83,6 +83,8 @@ namespace IdentProvider
                         IdentityServerConstants.StandardScopes.Profile,
                         "dirtbag", "snoonotes"
                     }, AllowAccessTokensViaBrowser = true,
+
+                    UpdateAccessTokenClaimsOnRefresh = true,
                 },
                 new Client
                 {
@@ -96,7 +98,9 @@ namespace IdentProvider
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "dirtbag", "snoonotes"
-                    }, 
+                    },
+
+                    UpdateAccessTokenClaimsOnRefresh = true,
                 },
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client

@@ -236,7 +236,7 @@ const BindNewThingsClassUserNotesElement = (thing) => {
       url = "https://reddit.com/message/messages/" + thing.attributes['data-fullname'].value.replace('t4_', '');
     } else {
 
-      let permlink = entry.querySelector('a.bylink').attributes['data-href-url'].value;
+      let permlink = entry.querySelector('a.bylink').attributes['href'].value;
       let postid = permlink.substr(permlink.indexOf('comments/') + 9, 6); //post id is after comments/
       let commentRootURL = 'https://reddit.com/r/' + thing.attributes['data-subreddit'].value + '/comments/' + postid + '/.../';
       url = commentRootURL + thing.attributes['data-fullname'].value.replace('t1_', '');
