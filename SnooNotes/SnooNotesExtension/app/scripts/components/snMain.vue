@@ -64,13 +64,14 @@ export default {
   },
   computed: {
     mediaAnalysisSubs: function() {
-      return this.modSubs
-        .filter(s => {
-          return s.SentinelActive;
-        })
-        .map(s => {
-          return s.SubName;
-        });
+      return Object.keys(this.modSubs).filter((key) => this.subreddits[key].SentinelActive)
+      // return this.modSubs
+      //   .filter(s => {
+      //     return s.SentinelActive;
+      //   })
+      //   .map(s => {
+      //     return s.SubName;
+      //   });
     }
   },
   mounted: function() {

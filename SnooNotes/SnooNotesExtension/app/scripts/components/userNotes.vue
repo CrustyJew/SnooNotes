@@ -71,8 +71,8 @@ export default {
             this.$parent.$parent.show({ event: e, subreddit: this.subreddit, username: this.username, url: this.url });
         },
         noteTypeStyle: function (sub, ntID) {
-            let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
-            let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
+            //let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
+            let nt = this.snInfo.modded_subs[sub.toLowerCase()].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
             let style = {
                 color: '#' + nt.ColorCode
             }
@@ -91,8 +91,8 @@ export default {
             return style;
         },
         getIcon: function (sub, ntID) {
-            let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
-            let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
+            //let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
+            let nt = this.snInfo.modded_subs[sub.toLowerCase()].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
 
             return nt.IconString || "comment";
         }

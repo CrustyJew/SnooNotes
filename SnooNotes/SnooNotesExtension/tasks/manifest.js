@@ -16,5 +16,5 @@ gulp.task('manifest', () => {
       )
     )
     .pipe(gulp.dest(`dist/${args.vendor}`))
-    .pipe(gulpif(args.watch, livereload()));
+    //.pipe(gulpif(args.watch, gulp.series(livereload())));
 });

@@ -29,8 +29,8 @@ export default {
   },
   computed:{
         cabalNoteTypes: function(){
-            if(!this.isCabal) return {};
-            return this.snInfo.modded_subs.filter(sub => sub.SubName == "SpamCabal")[0].Settings.NoteTypes.filter(nt => !nt.Disabled);
+            if(!this.isCabal || this.snInfo.modded_subs["spamcabal"]) return {};
+            return this.snInfo.modded_subs["spamcabal"].Settings.NoteTypes.filter(nt => !nt.Disabled);
         },
   },
   methods:{

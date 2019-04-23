@@ -158,7 +158,7 @@ namespace SnooNotes {
             services.AddSingleton<IConfigurationRoot>(Configuration);
             services.AddSignalR(options => {
                 options.EnableDetailedErrors = true;
-            });
+            }).AddJsonProtocol(options => options.PayloadSerializerSettings.ContractResolver = new DefaultContractResolver());
 
             services.AddSingleton<Signalr.ISnooNoteUpdates, Signalr.SnooNoteUpdates>();
             services.AddScoped<DAL.IDirtbagDAL, DAL.DirtbagDAL>();

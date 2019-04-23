@@ -1,5 +1,5 @@
 // Enable chromereload by uncommenting this line:
-import 'chromereload/devonly';
+//import 'chromereload/devonly';
 
 
 import { userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
@@ -90,12 +90,12 @@ store.subscribe(() => {
     }
     else {
       //if (snUpdate.connection.state != 4) { hubConnection.stop(); }
-      if(snUpdate.connection.state == 4){
+      //if(snUpdate.connection.state == 4){
         snUpdate.start()
-          .done(function () { console.log('SignalR connected, connection ID=' + snUpdate.connection.id); })
-          .fail(function () { console.log('SignalR could not connect')})
+          .then(function () { console.log('SignalR connected, connection ID=' + snUpdate.connection.id); },
+          function () { console.log('SignalR could not connect')})
 
-    }
+    //}
   }
 
   }
@@ -105,13 +105,13 @@ snUpdate.connection.onclose(() => {
   if (curToken) {
     setTimeout(() => {
       snUpdate.start()
-        .done(function () { console.log('SignalR reconnected, connection ID=' + snUpdate.connection.id); })
-        .fail(function () { console.log('SignalR could not connect'); });
+        .then(function () { console.log('SignalR reconnected, connection ID=' + snUpdate.connection.id); },
+        function () { console.log('SignalR could not connect'); });
     }, 2500 + (10 * Math.Floor(Math.random() * 100)))
   }
 })
 
-
+snUpdate.start();
 // snUpdate.start({ jsonp: true })
 // .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
 // .fail(function(){ console.log('SignalR could not connect'); });

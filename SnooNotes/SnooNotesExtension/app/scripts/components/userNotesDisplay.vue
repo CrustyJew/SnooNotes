@@ -42,22 +42,22 @@
             </table>
             <div class="sn-new-note-container">
                 <div class="sn-new-note">
-                    <select class="sn-new-note-sub" v-model="newNote.newNoteSubIndex" :class="{'sn-error':$v.newNote.newNoteSubIndex.$error }">
+                    <select class="sn-new-note-sub" v-model="newNote.newNoteSubName" :class="{'sn-error':$v.newNote.newNoteSubName.$error }">
                         <option value="-1" disabled>--Select a Sub--</option>
-                        <option :value="modSub.index" v-if="isModdedSub">{{modSub.name}}</option>
+                        <option :value="modSub.SubName" v-if="isModdedSub">{{modSub.SubName}}</option>
                         <option value="-2" v-if="isModdedSub" disabled>---------</option>
-                        <option v-for="sub in otherSubs" v-if="otherSubs.length >0" :value="sub.index" :key="sub.index">{{sub.name}}</option>
+                        <option v-for="(sub,prop) in otherSubs" :value="prop" :key="prop">{{sub.SubName}}</option>
                     </select>
                     <textarea placeholder="Add a new note for user..." class="sn-new-message" v-model="newNote.message"></textarea>
                     <button type="button" class="sn-btn-submit sn-new-note-submit" @click="submit" :disabled="submitting">Submit</button>
                 </div>
                 <div class="sn-note-type" :class="{'sn-error':$v.newNote.newNoteTypeID.$error }">
-                    <label v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubIndex,nt.NoteTypeID)" :key="nt.NoteTypeID">
+                    <label v-for="nt in noteTypes" :style="noteTypeStyle(newNote.newNoteSubName,nt.NoteTypeID)" :key="nt.NoteTypeID">
                         <input type="radio" :value="nt.NoteTypeID" v-model="newNote.newNoteTypeID">{{nt.DisplayName}}</label>
                 </div>
                 <div class="sn-new-error">
                     <p v-if="$v.newNote.newNoteTypeID.$error">Shucks! You forgot the note type...</p>
-                    <p v-if="$v.newNote.newNoteSubIndex.$error">Select a subby you fool!</p>
+                    <p v-if="$v.newNote.newNoteSubName.$error">Select a subby you fool!</p>
                 </div>
             </div>
 
@@ -99,17 +99,17 @@ export default {
             newNote: {
                 message: "",
                 newNoteTypeID: null,
-                newNoteSubIndex: -1,
+                newNoteSubName: null,
             },
             submitting: false
         }
     },
     validations: {
         newNote: {
-            newNoteSubIndex: {
+            newNoteSubName: {
                 required,
                 'notNegative': function(value) {
-                    return value > -1;
+                    return value != -1 && value != -2;
                 }
             },
             newNoteTypeID: {
@@ -129,13 +129,16 @@ export default {
             return this.snInfo.users_with_notes;
         },
         modSubs: function() {
-            return this.snInfo.modded_subs.map((s, i) => { return { name: s.SubName, id: s.SubredditID, index: i } });
+            //return Object.keys(this.snInfo.modded_subs).map((s, i) => { return { name: s.SubName, id: s.SubredditID, index: i } });
+            return this.snInfo.modded_subs;
         },
         modSub: function() {
-            return this.modSubs.filter(sub => sub.name == this.subreddit)[0];
+            return this.modSubs[this.subreddit];
         },
         otherSubs: function() {
-            return this.modSubs.filter(sub => sub.name != this.subreddit && sub.name != "SpamCabal");
+            //return this.modSubs.filter(sub => sub.name != this.subreddit && sub.name != "SpamCabal");
+            const {[this.subreddit]: value, spamcabal, ...others} = this.modSubs;
+            return others;
         },
         notes: function() {
             if(this.userNotes){
@@ -154,11 +157,11 @@ export default {
             return { noNotes: true }
         },
         noteTypes: function() {
-            if (this.newNote.newNoteSubIndex == -1) return {}
-            return this.snInfo.modded_subs[this.newNote.newNoteSubIndex].Settings.NoteTypes.filter(nt => !nt.Disabled);
+            if (!this.newNote.newNoteSubName == -1) return {}
+            return this.snInfo.modded_subs[this.newNote.newNoteSubName.toLowerCase()].Settings.NoteTypes.filter(nt => !nt.Disabled);
         },
         isModdedSub: function() {
-            if (this.subreddit && this.modSubs.findIndex(sub => sub.name == this.subreddit) > -1) {
+            if (this.subreddit && this.modSubs[this.subreddit]) {
                 return true;
             }
             return false;
@@ -172,8 +175,8 @@ export default {
             document.removeEventListener('click', this.clickWatch, true);
         },
         noteTypeStyle: function(sub, ntID) {
-            let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
-            let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
+            //let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
+            let nt = this.snInfo.modded_subs[sub.toLowerCase()].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
             let style = {
                 color: '#' + nt.ColorCode
             }
@@ -184,7 +187,7 @@ export default {
         show: function(e) {
             this.username = e.username;
             this.url = e.url;
-            this.subreddit = e.subreddit;
+            this.subreddit = e.subreddit.toLowerCase();
             //this.displayStyle.top = e.target.offsetTop + 15 + 'px';
             //this.displayStyle.left = e.target.offsetLeft + 20 + 'px';
             this.displayStyle.top = e.event.pageY + 5 + 'px';
@@ -193,9 +196,9 @@ export default {
             this.displayStyle.display = 'block';
             this.showNotes = true;
             if (this.subreddit) {
-                this.newNote.newNoteSubIndex = this.modSubs.findIndex(sub => sub.name == this.subreddit)
+                this.newNote.newNoteSubName = this.modSubs[this.subreddit] ? this.subreddit : null;
             } else {
-                this.newNote.newNoteSubIndex = -1
+                this.newNote.newNoteSubName = null;
             }
             document.addEventListener('click', this.clickWatch, true);
         },
@@ -209,7 +212,7 @@ export default {
             this.$v.newNote.$touch();
             if (this.$v.newNote.$invalid) { return; }
             this.submitting = true;
-            axios.post('Note', { NoteTypeID: this.newNote.newNoteTypeID, SubName: this.modSubs[this.newNote.newNoteSubIndex].name, Message: this.newNote.message, AppliesToUsername: this.username, Url: this.url })
+            axios.post('Note', { NoteTypeID: this.newNote.newNoteTypeID, SubName: this.newNote.newNoteSubName, Message: this.newNote.message, AppliesToUsername: this.username, Url: this.url })
                 .then(() => {
                     this.submitting = false;
                     this.newNote.message = "";
@@ -233,7 +236,7 @@ export default {
         }
     },
     watch: {
-        'newNote.newNoteSubIndex': function(newIndex) {
+        'newNote.newNoteSubName': function(newIndex) {
             this.newNote.newNoteTypeID = null;
             this.$v.newNote.$reset();
         }

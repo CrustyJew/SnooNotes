@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export class SentinelBanModule {
     constructor() {
-        this.subreddits = [];
+        this.subreddits = {};
         this.userBanEnabled = false;
     }
 

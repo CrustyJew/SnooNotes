@@ -15,7 +15,7 @@ export class BanNotesModule {
             let target = e.target;
             let popup = target.closest('div.mod-popup');
             let meta = popup.querySelector('div.meta');
-            let sub = meta.querySelector('label.subreddit').textContent;
+            let sub = meta.querySelector('label.subreddit').textContent.toLowerCase();
             let action = popup.querySelector('select.mod-action').value;
 
             if (action == "ban" && this.subreddits[sub]) {
