@@ -134,7 +134,7 @@ const unsub = reduxStore.subscribe(() => {
     sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
     banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
   });
-  if (document.querySelector('div[data-reactroot]')) {
+  if (document.querySelector('div[data-reactroot]') && window.location.hostname.toLowerCase() != "mod.reddit.com") {
     //redesign
     window.setTimeout(function () {
       if (!jsapiListener.snMain) {
@@ -270,7 +270,8 @@ const InjectIntoUserPage = () => {
     }
     let noteElemTarget = document.createElement('span');
     userHeader.parentNode.insertBefore(noteElemTarget, userHeader.nextSibling);
-    snMain.$refs.noteDisplay.injectNewUserNotesComponent(userHeader.textContent, '', 'https://reddit.com/u/' + userHeader.textContent, noteElemTarget);
+    
+    snMain.injectNewThing(userHeader.textContent, '', 'https://reddit.com/u/' + userHeader.textContent, noteElemTarget, null, true);
   }
   return authors;
 }
@@ -353,7 +354,8 @@ const BindNewModmailUserNoteElement = (article) => {
     let noteElemTarget = document.createElement('span');
 
     authElem.parentNode.insertBefore(noteElemTarget, authElem.nextSibling);
-    snMain.$refs.noteDisplay.injectNewUserNotesComponent(author, sub, url, noteElemTarget);
+    
+    snMain.injectNewThing(author, sub, url, noteElemTarget, null, true);
   })
   article.className = article.className + ' sn-done';
   if (author) {

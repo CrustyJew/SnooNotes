@@ -85,33 +85,27 @@ store.subscribe(() => {
   if (newToken != curToken) {
    
     curToken = newToken;
-    if (!curToken) {
-      snUpdate.stop();
+    snUpdate.stop();
+    if(curToken) {
+
+      snUpdate.start({ jsonp: false })
+        .then(function () { console.log('SignalR connected, connection ID=' + hubConnection.id); },
+        function () { console.log('SignalR could not connect'); });
     }
-    else {
-      //if (snUpdate.connection.state != 4) { hubConnection.stop(); }
-      //if(snUpdate.connection.state == 4){
-        snUpdate.start()
-          .then(function () { console.log('SignalR connected, connection ID=' + snUpdate.connection.id); },
-          function () { console.log('SignalR could not connect')})
-
-    //}
-  }
-
   }
 });
-snUpdate.connection.onclose(() => {
-  console.warn('Socket disconnected');
-  if (curToken) {
-    setTimeout(() => {
-      snUpdate.start()
-        .then(function () { console.log('SignalR reconnected, connection ID=' + snUpdate.connection.id); },
-        function () { console.log('SignalR could not connect'); });
-    }, 2500 + (10 * Math.Floor(Math.random() * 100)))
-  }
-})
+// snUpdate.connection.onclose(() => {
+//   console.warn('Socket disconnected');
+//   if (curToken) {
+//     setTimeout(() => {
+//       snUpdate.start()
+//         .then(function () { console.log('SignalR reconnected, connection ID=' + snUpdate.connection.id); },
+//         function () { console.log('SignalR could not connect'); });
+//     }, 2500 + (10 * Math.Floor(Math.random() * 100)))
+//   }
+// })
 
-snUpdate.start();
+//snUpdate.start();
 // snUpdate.start({ jsonp: true })
 // .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
 // .fail(function(){ console.log('SignalR could not connect'); });

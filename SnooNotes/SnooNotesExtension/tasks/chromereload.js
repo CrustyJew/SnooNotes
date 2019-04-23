@@ -1,6 +1,5 @@
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import gulpSequence from 'gulp-sequence';
 import livereload from 'gulp-livereload';
 import args from './lib/args';
 

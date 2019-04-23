@@ -157,7 +157,7 @@ export default {
             return { noNotes: true }
         },
         noteTypes: function() {
-            if (!this.newNote.newNoteSubName == -1) return {}
+            if (!this.newNote.newNoteSubName || this.newNote.newNoteSubName == -1 || this.newNote.newNoteSubName == -2) return {}
             return this.snInfo.modded_subs[this.newNote.newNoteSubName.toLowerCase()].Settings.NoteTypes.filter(nt => !nt.Disabled);
         },
         isModdedSub: function() {
@@ -196,9 +196,9 @@ export default {
             this.displayStyle.display = 'block';
             this.showNotes = true;
             if (this.subreddit) {
-                this.newNote.newNoteSubName = this.modSubs[this.subreddit] ? this.subreddit : null;
+                this.newNote.newNoteSubName = this.modSubs[this.subreddit] ? this.subreddit : -2;
             } else {
-                this.newNote.newNoteSubName = null;
+                this.newNote.newNoteSubName = -2;
             }
             document.addEventListener('click', this.clickWatch, true);
         },
