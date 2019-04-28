@@ -39,6 +39,7 @@ let bodyobvs = new MutationObserver(function(){
   if(document.body.classList.contains("md-theme-default")){
       document.body.classList.remove('md-theme-default');
   }
+
 })
 bodyobvs.observe(document.body,{ attributes:true});
 // Vue.use(VueMaterial.MdCore);
