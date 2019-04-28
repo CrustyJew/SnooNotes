@@ -2,10 +2,11 @@ import axios from 'axios';
 
 export class BanNotesModule {
     constructor(modsubs) {
-        this.subreddits = modsubs.reduce((acc, sub) => {
+        /*this.subreddits = modsubs.reduce((acc, sub) => {
             acc[sub.SubName] = { PermBanID: sub.Settings.PermBanID, TempBanID: sub.Settings.TempBanID };
             return acc;
-        }, {});
+        }, {});*/
+        this.subreddits = modsubs;
     }
 
     initModule() {
@@ -14,12 +15,12 @@ export class BanNotesModule {
             let target = e.target;
             let popup = target.closest('div.mod-popup');
             let meta = popup.querySelector('div.meta');
-            let sub = meta.querySelector('label.subreddit').textContent;
+            let sub = meta.querySelector('label.subreddit').textContent.toLowerCase();
             let action = popup.querySelector('select.mod-action').value;
 
             if (action == "ban" && this.subreddits[sub]) {
                 let dur = popup.querySelector('input.ban-duration').value;
-                let type = dur ? this.subreddits[sub].TempBanID : this.subreddits[sub].PermBanID;
+                let type = dur ? this.subreddits[sub].Settings.TempBanID : this.subreddits[sub].Settings.PermBanID;
 
                 if (!type || type < 0) return;
 
@@ -62,10 +63,7 @@ export class BanNotesModule {
     }
 
     refreshModule(modsubs) {
-        this.subreddits = modsubs.reduce((acc, sub) => {
-            acc[sub.SubName] = { PermBanID: sub.Settings.PermBanID, TempBanID: sub.Settings.TempBanID };
-            return acc;
-        }, {});
+        this.subreddits = modsubs;
     }
 }
 

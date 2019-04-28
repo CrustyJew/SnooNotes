@@ -1,8 +1,9 @@
 
 export class SNAxiosInterceptor{
-    accessToken = "";
+    
     
     constructor(store){
+        this.accessToken = "";
         store.subscribe(()=>{
             let user = store.getState().user;
             if(user && user.access_token != this.accessToken){

@@ -1,5 +1,5 @@
 <template>
-    <span v-if="snInfo.modded_subs.length > 0" class="sn-user-notes" @click.stop>
+    <span v-if="Object.keys(snInfo.modded_subs).length > 0" class="sn-user-notes" @click.stop>
         <span @click="show">
             <i class="material-icons" :style="hasNotesStyle()">comment</i>
             <md-tooltip md-direction="right" md-delay="400">
@@ -67,11 +67,12 @@ export default {
     },
     methods: {
         show: function (e) {
-            showNotesHub.$emit('showNotes', { event: e, subreddit: this.subreddit, username: this.username, url: this.url });
+            //hacky but fuckoff it works
+            this.$parent.$parent.show({ event: e, subreddit: this.subreddit, username: this.username, url: this.url });
         },
         noteTypeStyle: function (sub, ntID) {
-            let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
-            let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
+            //let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
+            let nt = this.snInfo.modded_subs[sub.toLowerCase()].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
             let style = {
                 color: '#' + nt.ColorCode
             }
@@ -90,8 +91,8 @@ export default {
             return style;
         },
         getIcon: function (sub, ntID) {
-            let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
-            let nt = this.snInfo.modded_subs[subIndex].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
+            //let subIndex = isNaN(sub) ? this.snInfo.modded_subs.findIndex(subreddit => subreddit.SubName == sub) : sub;
+            let nt = this.snInfo.modded_subs[sub.toLowerCase()].Settings.NoteTypes.filter(nt => nt.NoteTypeID == ntID)[0]
 
             return nt.IconString || "comment";
         }

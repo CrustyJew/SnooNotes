@@ -4,25 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore;
 using Microsoft.ApplicationInsights.AspNetCore;
 
-namespace SnooNotes
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var host = new WebHostBuilder()
-                .UseApplicationInsights()
-                .UseKestrel()
-                .UseUrls( "http://localhost:5001" )
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
+namespace SnooNotes {
+    public class Program {
+        public static void Main( string[] args ) {
+            CreateWebHostBuilder(args).Build().Run();
+        }
+        public static IWebHostBuilder CreateWebHostBuilder( string[] args ) {
+            return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
+                .UseApplicationInsights();
         }
     }
 }

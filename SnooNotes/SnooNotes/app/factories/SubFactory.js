@@ -6,7 +6,7 @@
     exports.getSubsWithAdmin = function () {
         var deferred = $q.defer();
 
-        $http.get('restapi/Subreddit?id=admin').then(
+        $http.get('site/Account/GetFullModeratedSubreddits').then(
             function (d) {
                 _adminSubs = d.data;
                 _adminSubNames = _adminSubs.map(function (sub) {
@@ -44,7 +44,7 @@
 
         var deferred = $q.defer();
 
-        $http.post('api/ToolBoxNotes/' + subName, JSON.stringify(noteMapping)).
+        $http.post('site/ToolBoxNotes/' + subName, JSON.stringify(noteMapping)).
             then(function (response) {
                 deferred.resolve(response.data);
             }, function (response) {
@@ -57,7 +57,7 @@
     exports.checkImportTBNotes = function (subName) {
         var deferred = $q.defer();
 
-        $http.get('api/ToolBoxNotes/' + subName + '/status').
+        $http.get('site/ToolBoxNotes/' + subName + '/status').
             then(function (response) {
                 deferred.resolve(response.data);
             }, function (response) {
@@ -70,7 +70,7 @@
     exports.exportNotes = function (sub) {
         var deferred = $q.defer();
 
-        $http.get('api/Note/' + sub + '/Export').
+        $http.get('site/Note/' + sub + '/Export').
             then(function (response) {
                 deferred.resolve(response.data);
             }, function (response) {
@@ -83,26 +83,13 @@
     exports.getTBWarningKeys = function (sub) {
         var deferred = $q.defer();
 
-        $http.get('api/ToolBoxNotes/' + sub).
+        $http.get('site/ToolBoxNotes/' + sub).
             then(function (resp) {
                 deferred.resolve(resp.data);
             },
             function (resp) {
                 deferred.reject(resp);
             });
-        return deferred.promise;
-    }
-
-    exports.updateSub = function (sub) {
-        var deferred = $q.defer();
-
-        $http.put('restapi/Subreddit/' + sub.SubName, JSON.stringify(sub)).
-            then(function (r) {
-                deferred.resolve(r.data);
-            }, function (e) {
-                deferred.reject(e);
-            });
-
         return deferred.promise;
     }
     return exports;

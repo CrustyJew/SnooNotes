@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentProvider.Services
 {
-    public class CustomAuthorizeResponseGenerator : IAuthorizeResponseGenerator
+    /*public class CustomAuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         private AuthorizeResponseGenerator _defaultGenerator;
         private IAuthUtils _authUtils;
@@ -55,4 +55,5 @@ namespace IdentProvider.Services
             return await _defaultGenerator.CreateResponseAsync(request);
         }
     }
+    */
 }

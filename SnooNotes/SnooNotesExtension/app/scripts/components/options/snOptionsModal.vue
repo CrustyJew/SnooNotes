@@ -13,8 +13,14 @@
                         <h1>Has something gone rogue?
                             <br>Change subreddits you moderate?
                             <br>Activate a new sub?</h1>
-                        <button type="button" id="sn-restart" class="sn-btn-warn" @click="refresh">Refresh SnooNotes</button>
+                        <button type="button" id="sn-restart" :disabled="refreshing" class="sn-btn-warn" @click="refresh">Refresh SnooNotes</button>
+                        
+                        
                         <br class="clearfix" >
+                    </div>
+                    <div class="sn-refresh-error" v-if="refreshError">
+                            <h3>There was an issue refreshing your permissions!</h3>
+                            <span>{{refreshError}}</span>
                     </div>
                     <div id="sn-activate-container">
                         <div v-if="!snOptions.loadingInactiveSubs">
@@ -79,7 +85,9 @@ export default {
             activatingSub: false,
             user: this.$select('user'),
             snInfo: this.$select('snoonotes_info as snInfo'),
-            activeTab: 'options'
+            activeTab: 'options',
+            refreshing: false,
+            refreshError: ''
         }
     },
     methods: {
@@ -120,12 +128,23 @@ export default {
                 .then(response => { this.snOptions.inactiveSubs = response.data; this.snOptions.loadingInactiveSubs = false; });
         },
         refresh() {
-            store.dispatch(refreshUser(true))
-                .then(() => {
-                    this.$toasted.success("Getting a new freakin token!!");
-                    this.$root.$emit('refresh');
-                    this.close();
+            this.refreshing = true;
+            this.refreshError = '';
+            this.loadingInactiveSubs = true;
+            this.snOptions.loadingSubSettings = true;
+
+            axios.post('Account/UpdateModeratedSubreddits')
+                .then(response => { this.refreshing = false; })
+                .catch(err => {this.refreshing = false; this.refreshError = err.response.status + " : " + err.response.data})
+                .then(()=> {
+                    store.dispatch(refreshUser(true))
+                        .then(() => {
+                            this.$toasted.success("Getting a new freakin token!!");
+                            this.$root.$emit('refresh');
+                            //this.close();
+                        })
                 });
+            
         }
     },
     watch: {

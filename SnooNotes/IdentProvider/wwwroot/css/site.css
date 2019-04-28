@@ -196,3 +196,45 @@ div.success {
   color: red;
   font-weight: bold; }
 
+
+.snloginPage p{
+    padding-top: 5px;
+}
+
+.snloginPage .scopeExplanation {
+    margin-top: -5px;
+    margin-bottom: 0px;
+}
+
+.snloginPage .scopeAdditionalExplain {
+    font-weight: bold;
+    font-size: 20px;
+}
+    .snloginPage .scopeAdditionalExplain span {
+        font-size: 12px;
+    }
+
+.snloginPage ul.scopes {
+    margin-bottom: 5px;
+    list-style: none;
+}
+    .snloginPage ul.scopes li label {
+        font-weight: normal;
+        cursor: pointer
+    }
+.snloginPage .doLogin {
+    background: linear-gradient(to bottom, #74c429, #4ca20b );
+    font-weight: bold;
+    margin: 0px auto;
+    padding: 2px 18px;
+    color: #fff;
+    height: 32px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 2px;
+    border: 1px solid darkgrey;
+    display: block;
+}
+.snloginPage .addScopeConfig.hidden, #AdditionalScopes.hidden {
+    display: none
+}

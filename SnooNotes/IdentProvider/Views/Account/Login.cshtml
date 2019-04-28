@@ -9,21 +9,22 @@
 }
 
 <h2>@ViewData["Title"].</h2>
-<div class="row">
+<div class="row snloginPage">
     <div class="col-md-8">
-            <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                <p style="padding-top:5px;">You need to authorize SnooNotes to access your Reddit info. Otherwise it's kinda useless...</p>
+            <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="get" class="form-horizontal">
+                <input type="hidden" name="returnURL" value="@ViewData["ReturnUrl"]" />
+                <p>You need to authorize SnooNotes to access your Reddit info. Otherwise it's kinda useless...</p>
                 <p>
                     SnooNotes requests the following Reddit "scopes" to work, but will never use or publish any info except in the course of its designed functions.
                 </p>
-                <ul style="margin-top:-5px;margin-bottom:0px;">
+                <ul class="scopeExplanation">
                     <li><strong>Identity:</strong> Public profile info to validate your username</li>
                     <li><strong>MySubreddits:</strong> Used to validate what subreddits you moderate, this is critical to authorization to protect notes</li>
                 </ul>
-                <span style="font-weight:bold;font-size:20px;">Features That Require Additional Permissions: <span style="font-size:12px;">Select check boxes below to enable</span></span>
-                <ul style="margin-bottom:5px; list-style:none;">
-                    <li><label style="font-weight:normal;cursor:pointer"><input name ="config" value="true" id="chkScopeConfig" type="checkbox" checked="@ViewBag.Read" class="optScope" onclick="toggleScopes()" /><strong>Automod Ban User:</strong> Requires wikiread, wikiedit, and modconfig scopes. If not checked, you will not have the option to bot ban users. You will still be able to bot ban channels though.</label></li>
-                    <li><label style="font-weight:normal;cursor:pointer"><input name ="wiki" value="true" id="chkScopeWiki" type="checkbox" checked="@ViewBag.Wiki" class="optScope" onclick="toggleScopes()" /><strong>Import Toolbox Notes:</strong> Requires wikiread scope.</label></li>
+                <span class="scopeAdditionalExplain">Features That Require Additional Permissions: <span >Select check boxes below to enable</span></span>
+                <ul class="scopes" >
+                    <li><label><input name ="config" value="true" id="chkScopeConfig" type="checkbox" checked="@ViewBag.Read" class="optScope" /><strong>Automod Ban User:</strong> Requires wikiread, wikiedit, and modconfig scopes. If not checked, you will not have the option to bot ban users. You will still be able to bot ban channels though.</label></li>
+                    <li><label><input name ="wiki" value="true" id="chkScopeWiki" type="checkbox" checked="@ViewBag.Wiki" class="optScope" /><strong>Import Toolbox Notes:</strong> Requires wikiread scope.</label></li>
                 </ul>
 
                 <div id="AdditionalScopes">
@@ -36,7 +37,7 @@
                 </div>
 
                 <p>To see the full list of actions these permissions give SnooNotes, please visit <a href="https://www.reddit.com/dev/api/oauth">Reddit's API Documentation</a> and look them up by the scopes listed above. </p>
-                <button name="provider" value="Reddit" type="submit" class="doLogin" style="background: linear-gradient(to bottom, #74c429, #4ca20b ); font-weight:bold;margin:0px auto;padding: 2px 18px; color:#fff; height:32px; font-size:16px; font-weight:bold;border-radius:2px;border:1px solid darkgrey;display:block;">Login!</button>
+                <button name="provider" value="Reddit" type="submit" class="doLogin">Login!</button>
             </form>
         
     </div>
@@ -44,33 +45,5 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync( "_ValidationScriptsPartial" ); }
-    <script type="text/javascript">
-        function toggleScopes() {
-            var config = document.querySelector('#chkScopeConfig');
-            var wiki = document.querySelector('#chkScopeWiki');
-
-            if (config.checked || wiki.checked) {
-                document.getElementById('AdditionalScopes').setAttribute('style', 'display:block');
-            }
-            else {
-                document.getElementById('AdditionalScopes').setAttribute('style', 'display:none');
-            }
-
-            if (config.checked) {
-                wiki.setAttribute('disabled', 'true');
-                document.querySelectorAll('.addScopeConfig').forEach(function (li) { li.setAttribute('style', 'display:list-item') });
-            }
-            else if (wiki.checked) {
-                wiki.removeAttribute('disabled');
-                document.querySelectorAll('.addScopeConfig:not(.addScopeWiki)').forEach(function (li) { li.setAttribute('style', 'display:none') });
-                document.querySelectorAll('.addScopeWiki').forEach(function (li) { li.setAttribute('style', 'display:list-item') });
-            }
-            else {
-                wiki.removeAttribute('disabled');
-            }
-        }
-        (function () {
-            toggleScopes();
-        })();
-    </script>
+    <script src="~/js/LoginPage.js"></script>
 }

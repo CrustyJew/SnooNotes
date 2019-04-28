@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SnooNotes.Models;
 
 namespace SnooNotes.Signalr {
     public interface ISnooNoteUpdates {
-        void DeleteNote( Note anote, bool outOfNotes );
-        void RefreshNoteTypes( IEnumerable<string> SubNames );
-        void SendNewNote( Note anote );
-        void SendModAction( Models.ModAction action );
+        Task DeleteNoteAsync( Note anote, bool outOfNotes );
+        Task RefreshNoteTypesAsync( IEnumerable<string> SubNames );
+        Task SendNewNoteAsync( Note anote );
+        Task SendModActionAsync( Models.ModAction action );
     }
 }

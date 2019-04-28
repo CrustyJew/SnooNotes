@@ -1,5 +1,5 @@
 ﻿import { userManagerConfig } from '../config';
-import { UserManager } from 'oidc-client';
+import { UserManager, Log } from 'oidc-client';
 
 // class UserManager{
 
@@ -52,7 +52,8 @@ import { UserManager } from 'oidc-client';
 //         });
 //     }
 // }
-export let userManager = new UserManager(userManagerConfig);
 // Log.logger = console;
 // Log.level = Log.DEBUG;
+export let userManager = new UserManager(userManagerConfig);
+
 //export let oidcClient = new OidcClient(userManagerConfig);

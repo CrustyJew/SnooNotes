@@ -96,219 +96,383 @@
 </template>
 
 <script>
-import LoadingSpinner from './loadingSpinner.vue';
-import { draggable } from './directives/draggable';
-import axios from 'axios';
-import { dirtbagBaseUrl } from '../config';
+import { mediaProviders } from '../config';
+import LoadingSpinner from "./loadingSpinner.vue";
+import { draggable } from "./directives/draggable";
+import axios from "axios";
+import { dirtbagBaseUrl } from "../config";
+import MediaAnalysis from "./mediaAnalysis.vue";
+import Vue from "vue";
 
 export default {
-    directives: { 'draggable': draggable },
-    components: { 'sn-loading': LoadingSpinner },
-    props: ['showAnalysis', 'subreddit', 'thingid', 'displayStyle', 'close'],
-    data: function () {
-        return {
+  directives: { draggable: draggable },
+  components: { "sn-loading": LoadingSpinner },
+  props: [],
+  data: function() {
+    return {
+      showAnalysis: false,
+      subreddit: "",
+      thingid: "",
+      displayStyle: {
+        display: "none",
+        position: "absolute",
+        top: "0px",
+        right: "0px"
+      },
+      loadingAnalysis: false,
+      loadingBanned: false,
+      sentinelBanInfo: [],
+      analysisResponse: {},
 
-            loadingAnalysis: false,
-            loadingBanned: false,
-            sentinelBanInfo: [],
-            analysisResponse: {},
-
-            error: false,
-            bannedChannelError: false
-        }
+      error: false,
+      bannedChannelError: false
+    };
+  },
+  methods: {
+    selfClose: function() {
+      document.removeEventListener("click", this.clickWatch, true);
+      this.showAnalysis = false;
     },
-    methods: {
-        selfClose: function () {
-            document.removeEventListener('click', this.clickWatch, true);
-            this.close();
-        },
-        clickWatch: function (e) {
-            if (!this.$el.contains(e.target)) this.selfClose();
-        },
-        loadAnalysis: function () {
-            this.error = false;
-            this.loadingAnalysis = true;
-            this.loadingBanned = true;
-            this.bannedChannelError = false;
+    showMediaAnalysis: function(args) {
+      this.subreddit = args.subreddit;
+      this.thingid = args.thingid;
+      this.displayStyle.top = args.event.pageY + 5 + "px";
+      this.displayStyle.left = args.event.pageX + 15 + "px";
 
-            axios.get(dirtbagBaseUrl + 'Analysis/' + this.subreddit, { params: { thingID: this.thingid } })
-                .then((d) => {
-                    this.analysisResponse = d.data;
-                    this.$nextTick(() => {
+      this.displayStyle.display = "block";
+      this.showAnalysis = true;
+      document.addEventListener("click", this.clickWatch, true);
+      this.loadAnalysis();
+    },
+    clickWatch: function(e) {
+      if (!this.$el.contains(e.target)) this.selfClose();
+    },
+    loadAnalysis: function() {
+      this.error = false;
+      this.loadingAnalysis = true;
+      this.loadingBanned = true;
+      this.bannedChannelError = false;
 
-                        this.loadingAnalysis = false;
-                    })
-                }, (e) => { this.error = true; this.loadingAnalysis = false; })
+      axios
+        .get(dirtbagBaseUrl + "Analysis/" + this.subreddit, {
+          params: { thingID: this.thingid }
+        })
+        .then(
+          d => {
+            this.analysisResponse = d.data;
+            this.$nextTick(() => {
+              this.loadingAnalysis = false;
+            });
+          },
+          e => {
+            this.error = true;
+            this.loadingAnalysis = false;
+          }
+        );
 
-            axios.get(dirtbagBaseUrl + 'SentinelBan/' + this.subreddit + '/' + this.thingid)
-                .then((d) => {
-                    this.sentinelBanInfo = d.data;
-                    this.$nextTick(() => {
-                        this.loadingBanned = false;
+      axios
+        .get(
+          dirtbagBaseUrl + "SentinelBan/" + this.subreddit + "/" + this.thingid
+        )
+        .then(
+          d => {
+            this.sentinelBanInfo = d.data;
+            this.$nextTick(() => {
+              this.loadingBanned = false;
+            });
+          },
+          () => {
+            this.loadingBanned = false;
+            this.bannedChannelError = true;
+          }
+        );
+    },
+    injectNewMediaAnalysisComponent: function(
+      author,
+      subreddit,
+      url,
+      node,
+      thing
+    ) {
+      let mediaElem = document.createElement("media-analysis");
+      mediaElem.setAttribute(
+        "thingid",
+        thing.attributes["data-fullname"].value
+      );
+      mediaElem.setAttribute("subreddit", subreddit);
+      node.appendChild(mediaElem);
+      new Vue({
+        components: { "media-analysis": MediaAnalysis },
+        parent: this
+      }).$mount(mediaElem);
+    },
+    processNewThing: function(author, subreddit, url, node, thing, event) {
+      if (event) {
+        //jsapi event driven / redesign
+      } else {
+        //old reddit
+        let thingid = thing.attributes["data-fullname"].value;
+        if (
+          thing.attributes["data-subreddit"] &&
+          thing.attributes["data-type"].value == "link"
+        ) {
+          //link submission or self post
+          this.subreddit = thing.attributes["data-subreddit"].value;
+
+          let domain = thing.attributes["data-domain"].value.toLowerCase();
+          if (mediaProviders.findIndex(mp => mp == domain) > -1) {
+            this.injectNewMediaAnalysisComponent(
+              author,
+              subreddit,
+              url,
+              node,
+              thing
+            );
+          } else {
+            if (thing.classList.contains("self")) {
+              let childarray = [...thing.children];
+              let entry = childarray.filter(c => {
+                return c.classList.contains("entry");
+              })[0];
+              let expando = entry.querySelector(".expando");
+              if (!expando) {
+                //no expando, just a self post with no body, ignore.
+                return;
+              } else if (!expando.classList.contains("expando-uninitialized")) {
+                //expando already loaded, process as normal
+                if (this.checkText(expando.querySelector(".usertext-body"))) {
+                  this.injectNewMediaAnalysisComponent(
+                    author,
+                    subreddit,
+                    url,
+                    node
+                  );
+                }
+              } else {
+                //expando not loaded, observe and wait
+                var obs = new MutationObserver(
+                  _.bind(function(mutations) {
+                    mutations.forEach(mutation => {
+                      if (
+                        !mutation.target.classList.contains(
+                          "expando-unitialized"
+                        )
+                      ) {
+                        obs.disconnect();
+                        if (
+                          this.checkText(
+                            mutation.target.querySelector(".usertext-body")
+                          )
+                        ) {
+                          this.injectNewMediaAnalysisComponent(
+                            author,
+                            subreddit,
+                            url,
+                            node,
+                            thing,
+                            event
+                          );
+                        }
+                      }
                     });
-                }, () => {
-                    this.loadingBanned = false;
-                    this.bannedChannelError = true;
-                });
+                  }, this)
+                );
+                obs.observe(expando, { attributes: true });
+              }
+            } else {
+              //not in media providers and not a self post
+              this.hasMedia = false;
+            }
+          }
+        } else if (thing.attributes["data-subreddit"]) {
+          //comment or message
+          this.subreddit = thing.attributes["data-subreddit"].value;
+          let childarray = [...thing.children];
+          let entry = childarray.filter(c => {
+            return c.classList.contains("entry");
+          })[0];
+          if (entry && this.checkText(entry.querySelector(".usertext-body"))) {
+            this.injectNewMediaAnalysisComponent(
+              author,
+              subreddit,
+              url,
+              node,
+              thing,
+              event
+            );
+          }
         }
+      }
     },
-    computed: {
-        watchChange: function () {
-            return this.subreddit, this.thingid, this.showAnalysis, Date.now();
-        },
-        thingDetailsMessage: function () {
-            let msg = "";
-            if (!this.analysisResponse) return msg;
-            if (this.analysisResponse.action == "None") {
-                msg += "No action was taken on this " + this.analysisResponse.thingType;
-
-            }
-            else {
-                msg += "This " + this.analysisResponse.thingType + " was " + (this.analysisResponse.action == "Remove" ? "REMOVED" : "REPORTED");
-            }
-            msg += " with a " + (this.analysisResponse.thingType == "Comment" ? "high " : "") + "score of " + this.analysisResponse.highScore;
-            return msg;
-        }
-    },
-    watch: {
-        watchChange() {
-            if (this.showAnalysis) {
-                this.loadAnalysis()
-            }
-        },
-        showAnalysis: function (val, oldVal) {
-            if (!oldVal && val) {
-                document.addEventListener('click', this.clickWatch, true);
-            }
-            else if (oldVal && !val) {
-                document.removeEventListener('click', this.clickWatch, true);
-            }
-        }
-
-    },
-    beforeDestroy: function () {
-        document.removeEventListener('click', this.clickWatch, true);
+    checkText: function(el) {
+      if(!el){
+        return false;
+      }
+      el.querySelectorAll("a").forEach(
+        _.bind(link => {
+          let hostname = link.hostname.toLowerCase();
+          if (hostname.startsWith("www.")) {
+            hostname = hostname.substring(4, hostname.length);
+          }
+          if (mediaProviders.findIndex(mp => mp == hostname) > -1) {
+            return true;
+          }
+        }, this)
+      );
+      return false;
     }
-}
+  },
+  computed: {
+    watchChange: function() {
+      return this.subreddit, this.thingid, this.showAnalysis, Date.now();
+    },
+    thingDetailsMessage: function() {
+      let msg = "";
+      if (!this.analysisResponse) return msg;
+      if (this.analysisResponse.action == "None") {
+        msg += "No action was taken on this " + this.analysisResponse.thingType;
+      } else {
+        msg +=
+          "This " +
+          this.analysisResponse.thingType +
+          " was " +
+          (this.analysisResponse.action == "Remove" ? "REMOVED" : "REPORTED");
+      }
+      msg +=
+        " with a " +
+        (this.analysisResponse.thingType == "Comment" ? "high " : "") +
+        "score of " +
+        this.analysisResponse.highScore;
+      return msg;
+    }
+  },
+  beforeDestroy: function() {
+    document.removeEventListener("click", this.clickWatch, true);
+  }
+};
 </script>
 
 <style lang="scss">
 @import "~styles/_vars.scss";
 .sn-media-analysis-display {
-    .sn-header {
-        margin-left: -10px;
-        margin-right: -10px;
-        margin-bottom: 10px;
-        .sn-close {
-            display: inline-block;
-            cursor: pointer;
-            color: white;
-            background-color: $accent;
-            font-weight: bold;
-            padding: 2px 10px;
-            margin-top: -1px;
-            &:hover {
-                background-image: linear-gradient(to bottom, darken($accent, 10%), darken($accent, 25%));
-            }
-        }
+  .sn-header {
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-bottom: 10px;
+    .sn-close {
+      display: inline-block;
+      cursor: pointer;
+      color: white;
+      background-color: $accent;
+      font-weight: bold;
+      padding: 2px 10px;
+      margin-top: -1px;
+      &:hover {
+        background-image: linear-gradient(
+          to bottom,
+          darken($accent, 10%),
+          darken($accent, 25%)
+        );
+      }
     }
-    h1 {
-        font-size: 24px;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: $primary;
+  }
+  h2 {
+    font-size: 18px;
+    color: $secondary;
+    a {
+      color: black;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  h3 {
+    a {
+      color: $secondary;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .sn-sentinel-ban-info {
+    margin-bottom: 10px;
+
+    .sn-date {
+      white-space: pre;
+    }
+    .sn-media-author {
+      font-weight: bold;
+    }
+    table {
+      margin-top: 5px;
+
+      thead {
         font-weight: bold;
-        color: $primary;
+      }
     }
-    h2 {
-        font-size: 18px;
+    .sn-media-platform {
+      width: 100px;
+    }
+    .sn-blacklist-on {
+      width: 75px;
+    }
+    .sn-global-ban {
+      width: 50px;
+    }
+    td {
+      text-align: center;
+      i {
+        cursor: default;
+        color: $accent;
+      }
+      a {
         color: $secondary;
-        a {
-            color: black;
-
-            &:hover {
-                text-decoration: underline;
-            }
+        &:hover {
+          text-decoration: underline;
         }
+      }
     }
-    h3 {
-        a {
-            color: $secondary;
-
-            &:hover {
-                text-decoration: underline;
-            }
-        }
+  }
+  .sn-media-analysis-results {
+    .sn-thing-details {
+      font-size: 18px;
+      margin: 12px 0px;
     }
-    .sn-sentinel-ban-info {
+    .sn-analysis-media-results {
+      border: 1px solid $light-gray;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 2px 2px 5px 0px $dark-gray;
+      h3 {
+        font-size: 12px;
         margin-bottom: 10px;
-
-        .sn-date {
-            white-space: pre;
+      }
+      thead {
+        font-weight: bold;
+      }
+      table {
+        .sn-module {
+          width: 150px;
         }
-        .sn-media-author {
-            font-weight: bold;
+        .sn-score {
+          width: 150px;
         }
-        table {
-            margin-top: 5px;
-
-            thead {
-                font-weight: bold;
-            }
-        }
-        .sn-media-platform {
-            width: 100px;
-        }
-        .sn-blacklist-on {
-            width: 75px;
-        }
-        .sn-global-ban {
-            width: 50px;
-        }
-        td {
-            text-align: center;
-            i {
-                cursor: default;
-                color: $accent;
-            }
-            a {
-                color: $secondary;
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
+      }
     }
-    .sn-media-analysis-results {
-        .sn-thing-details {
-            font-size: 18px;
-            margin: 12px 0px;
-        }
-        .sn-analysis-media-results {
-            border: 1px solid $light-gray;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 2px 2px 5px 0px $dark-gray;
-            h3 {
-                font-size: 12px;
-                margin-bottom: 10px;
-            }
-            thead {
-                font-weight: bold;
-            }
-            table {
-                .sn-module {
-                    width: 150px;
-                }
-                .sn-score {
-                    width: 150px;
-                }
-            }
-        }
-    }
-    .sn-error {
-        padding: 5px;
-        border-radius: 5px;
-    }
-    .sn-retry {
-        margin-top: 15px;
-    }
+  }
+  .sn-error {
+    padding: 5px;
+    border-radius: 5px;
+  }
+  .sn-retry {
+    margin-top: 15px;
+  }
 }
 </style>

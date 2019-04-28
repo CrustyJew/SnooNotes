@@ -5,13 +5,15 @@
 import { userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
 import { store, loadUser } from './redux/store';
 import { userManager } from './utilities/userManager';
-import { snUpdate, hubConnection } from './libs/snUpdatesHub';
+//import { snUpdate, hubConnection } from './libs/snUpdatesHub';
 //import {hubConnection} from 'signalr-no-jquery';
-import { apiBaseUrl } from './config';
+import { apiBaseUrl, signalrBaseUrl } from './config';
 import axios from 'axios';
 import { SNAxiosInterceptor } from './utilities/snAxiosInterceptor';
 import { gotNewNote, gotDeleteNote } from './redux/actions/notes';
 import { getModSubs } from './redux/actions/snoonotesInfo';
+import * as signalR from '@aspnet/signalr';
+
 
 export const snInterceptor = new SNAxiosInterceptor(store);
 axios.defaults.baseURL = apiBaseUrl;
@@ -59,60 +61,51 @@ userManager.events.addUserSignedOut(onUserSignedOut);
 // const hubConn = hubConnection(signalrBaseUrl, { useDefaultPath: false });
 // const snUpdate = hubConn.createHubProxy('SnooNoteUpdates');
 var curToken = "";
-snUpdate.client.addNewNote = (note) => {
+
+const snUpdate = new signalR.HubConnectionBuilder().withUrl(signalrBaseUrl,{accessTokenFactory: ()=> curToken}).build();
+
+snUpdate.on('addNewNote', (note) => {
   store.dispatch(gotNewNote(note));
-}
-snUpdate.client.deleteNote = (user, noteID, outOfNotes) => {
+})
+snUpdate.on('deleteNote', (user, noteID, outOfNotes) => {
   store.dispatch(gotDeleteNote(user, noteID, outOfNotes));
-}
-snUpdate.client.refreshNoteTypes = () => {
+})
+snUpdate.on('refreshNoteTypes', () => {
   store.dispatch(getModSubs());
-}
-snUpdate.client.modAction = (thingID, mod, action) => {
+});
+snUpdate.on('modAction', (thingID, mod, action) => {
   chrome.tabs.query({}, function (tabs) {
     for (var i = 0; i < tabs.length; i++) {
       chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": { "thingID": thingID, "mod": mod, "action": action } });
     }
   });
-}
+})
 store.subscribe(() => {
   let newToken = store.getState().user.access_token;
   if (newToken != curToken) {
-    hubConnection.qs = { token: newToken };
+   
     curToken = newToken;
-    if (!curToken) {
-      hubConnection.stop();
-    }
-    else {
-      if (snUpdate.connection.state != 4) { hubConnection.stop(); }
+    snUpdate.stop();
+    if(curToken) {
 
-      hubConnection.start({ jsonp: false })
-        .done(function () { console.log('SignalR connected, connection ID=' + hubConnection.id); })
-        .fail(function () { console.log('SignalR could not connect'); });
+      snUpdate.start({ jsonp: false })
+        .then(function () { console.log('SignalR connected, connection ID=' + hubConnection.id); },
+        function () { console.log('SignalR could not connect'); });
     }
-
   }
 });
-hubConnection.disconnected(() => {
-  console.warn('Socket disconnected');
-  if (curToken) {
-    setTimeout(() => {
-      hubConnection.start()
-        .done(function () { console.log('SignalR reconnected, connection ID=' + hubConnection.id); })
-        .fail(function () { console.log('SignalR could not connect'); });
-    }, 5000)
-  }
-})
+// snUpdate.connection.onclose(() => {
+//   console.warn('Socket disconnected');
+//   if (curToken) {
+//     setTimeout(() => {
+//       snUpdate.start()
+//         .then(function () { console.log('SignalR reconnected, connection ID=' + snUpdate.connection.id); },
+//         function () { console.log('SignalR could not connect'); });
+//     }, 2500 + (10 * Math.Floor(Math.random() * 100)))
+//   }
+// })
 
-const hubReconnect = () => {
-  if (curToken) {
-    setTimeout(() => {
-      hubConnection.start()
-        .done(function () { console.log('SignalR reconnected, connection ID=' + hubConnection.id); })
-        .fail(function () { console.log('SignalR could not connect'); hubReconnect(); });
-    }, 5000)
-  }
-}
+//snUpdate.start();
 // snUpdate.start({ jsonp: true })
 // .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
 // .fail(function(){ console.log('SignalR could not connect'); });

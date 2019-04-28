@@ -5,8 +5,8 @@
     
         <div>
             <button @click="toggleAll" class="sn-toggle-all">Select/Unselect all</button>
-            <label v-for="sub in adminSubs" class="sn-search-sub-label" :class="{checked: searchSubs.indexOf(sub.SubName) > -1}">
-                <input type="checkbox" :value="sub.SubName" v-model="searchSubs" /> {{sub.SubName}}
+            <label v-for="sub in adminSubs" class="sn-search-sub-label" :class="{checked: searchSubs.indexOf(sub) > -1}" :key="sub">
+                <input type="checkbox" :value="sub" v-model="searchSubs" /> {{sub}}
             </label>
         </div>
     
@@ -94,7 +94,7 @@ export default {
     },
     computed: {
         adminSubs: function () {
-            return this.subreddits.filter((s) => { return s.IsAdmin })
+            return Object.keys(this.subreddits).filter((key) => this.subreddits[key].IsAdmin)
         }
     },
     methods: {
@@ -103,7 +103,7 @@ export default {
                 this.searchSubs = [];
             }
             else {
-                this.searchSubs = this.adminSubs.map((s) => { return s.SubName });
+                this.searchSubs = this.adminSubs;//.map((s) => { return s.SubName });
             }
         },
         searchBannedUsers: _.debounce(function () {

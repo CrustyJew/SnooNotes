@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnooNotesSharedLibrary", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedditSharp", "..\..\RedditSharp\RedditSharp\RedditSharp.csproj", "{3D21C616-3F4E-4550-890B-AB81574B6FA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SentinelMonitor", "SentinelMonitor\SentinelMonitor.csproj", "{5D2A3705-5341-4715-9E7E-8C12DAD5C810}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PermissionMonitor", "SentinelMonitor\PermissionMonitor.csproj", "{5D2A3705-5341-4715-9E7E-8C12DAD5C810}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

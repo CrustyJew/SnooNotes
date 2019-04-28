@@ -4,14 +4,14 @@ import CustomIFrameNavigator from './utilities/customIFrameNavigator';
 
 export const authBaseUrl = 'https://snoonotes.com/Auth/';
 export const apiBaseUrl = 'https://snoonotes.com/api/';
-export const signalrBaseUrl = 'https://snoonotes.com/signalr';
+export const signalrBaseUrl = 'https://snoonotes.com/SnooNotesHub';
 export const dirtbagBaseUrl = 'https://dirtbag.snoonotes.com/api/';
-// export const authBaseUrl = 'http://localhost:5000/Auth/';
-// export const apiBaseUrl = 'http://localhost:5001/api/';
-// export const signalrBaseUrl = 'http://localhost:5001/signalr';
-// export const dirtbagBaseUrl = 'http://localhost:5002/api/';
+// export const authBaseUrl = 'https://localhost:5000/Auth/';
+// export const apiBaseUrl = 'https://localhost:5001/api/';
+// export const signalrBaseUrl = 'https://localhost:5001/SnooNotesHub';
+// export const dirtbagBaseUrl = 'https://localhost:5002/api/';
 
-export const mediaProviders = ['youtube.com','youtu.be', 'vimeo.com', 'vid.me','twitter.com','twitch.tv', 'soundcloud.com','facebook.com','etsy.com','dailymotion.com', 'dai.ly']
+export const mediaProviders = ['youtube.com','youtu.be','m.youtube.com', 'vimeo.com', 'vid.me','twitter.com','twitch.tv','clips.twitch.tv', 'soundcloud.com','facebook.com','etsy.com','dailymotion.com', 'dai.ly']
 
 const redirectNav = new CustomRedirectManager();
 //const customStore = new CustomWebStorageStateStore();
@@ -28,7 +28,7 @@ export const userManagerConfig = {
   filterProtocolClaims: true,
   loadUserInfo: true,
   redirectNavigator: redirectNav,
-  monitorSession: true,
+  monitorSession: false,
   silentRequestTimeout: 15000,
   checkSessionInterval: 15000,
   iframeNavigator: customiframeNavigator

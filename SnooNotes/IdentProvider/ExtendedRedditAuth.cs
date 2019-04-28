@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using AspNet.Security.OAuth.Reddit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,81 +14,79 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using System.Security.Claims;
 
-namespace IdentProvider {
-    public class ExtendedRedditAuthenticationMiddleware : OAuthMiddleware<RedditAuthenticationOptions> {
-        public ExtendedRedditAuthenticationMiddleware(
-            RequestDelegate next,
-            IDataProtectionProvider dataProtectionProvider,
-            ILoggerFactory loggerFactory,
-            UrlEncoder encoder,
-            IOptions<SharedAuthenticationOptions> sharedOptions,
-            IOptions<RedditAuthenticationOptions> options )
-            : base( next, dataProtectionProvider, loggerFactory, encoder, sharedOptions, options ) {
-        }
-
-        protected override AuthenticationHandler<RedditAuthenticationOptions> CreateHandler() {
-            return new ExtendedRedditAuthHandler( Backchannel );
-        }
-    }
+namespace Microsoft.Extensions.DependencyInjection {
     public static class ExtendedRedditAuthenticationExtensions {
         /// <summary>
-        /// Adds the <see cref="RedditAuthenticationMiddleware"/> middleware to the specified
-        /// <see cref="IApplicationBuilder"/>, which enables Reddit authentication capabilities.
+        /// Adds <see cref="RedditAuthenticationHandler"/> to the specified
+        /// <see cref="AuthenticationBuilder"/>, which enables Reddit authentication capabilities.
         /// </summary>
-        /// <param name="app">The <see cref="IApplicationBuilder"/> to add the middleware to.</param>
-        /// <param name="options">A <see cref="RedditAuthenticationOptions"/> that specifies options for the middleware.</param>        
+        /// <param name="builder">The authentication builder.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseExtendedRedditAuthentication(
-            this IApplicationBuilder app,
-            RedditAuthenticationOptions options ) {
-            if ( app == null ) {
-                throw new ArgumentNullException( nameof( app ) );
-            }
-
-            if ( options == null ) {
-                throw new ArgumentNullException( nameof( options ) );
-            }
-
-            return app.UseMiddleware<ExtendedRedditAuthenticationMiddleware>( Options.Create( options ) );
+        public static AuthenticationBuilder AddExtendedReddit( this AuthenticationBuilder builder ) {
+            return builder.AddExtendedReddit(RedditAuthenticationDefaults.AuthenticationScheme, options => { });
         }
 
         /// <summary>
-        /// Adds the <see cref="ExtendedRedditAuthenticationMiddleware"/> middleware to the specified
-        /// <see cref="IApplicationBuilder"/>, which enables Reddit authentication capabilities.
+        /// Adds <see cref="RedditAuthenticationHandler"/> to the specified
+        /// <see cref="AuthenticationBuilder"/>, which enables Reddit authentication capabilities.
         /// </summary>
-        /// <param name="app">The <see cref="IApplicationBuilder"/> to add the middleware to.</param>
-        /// <param name="configuration">An action delegate to configure the provided <see cref="RedditAuthenticationOptions"/>.</param>
+        /// <param name="builder">The authentication builder.</param>
+        /// <param name="configuration">The delegate used to configure the OpenID 2.0 options.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseRedditAuthentication(
-            this IApplicationBuilder app,
-            Action<RedditAuthenticationOptions> configuration ) {
-            if ( app == null ) {
-                throw new ArgumentNullException( nameof( app ) );
-            }
+        public static AuthenticationBuilder AddExtendedReddit(
+             this AuthenticationBuilder builder,
+             Action<RedditAuthenticationOptions> configuration ) {
+            return builder.AddExtendedReddit(RedditAuthenticationDefaults.AuthenticationScheme, configuration);
+        }
 
-            if ( configuration == null ) {
-                throw new ArgumentNullException( nameof( configuration ) );
-            }
+        /// <summary>
+        /// Adds <see cref="RedditAuthenticationHandler"/> to the specified
+        /// <see cref="AuthenticationBuilder"/>, which enables Reddit authentication capabilities.
+        /// </summary>
+        /// <param name="builder">The authentication builder.</param>
+        /// <param name="scheme">The authentication scheme associated with this instance.</param>
+        /// <param name="configuration">The delegate used to configure the Reddit options.</param>
+        /// <returns>The <see cref="AuthenticationBuilder"/>.</returns>
+        public static AuthenticationBuilder AddExtendedReddit(
+             this AuthenticationBuilder builder, string scheme,
+             Action<RedditAuthenticationOptions> configuration ) {
+            return builder.AddExtendedReddit(scheme, RedditAuthenticationDefaults.DisplayName, configuration);
+        }
 
-            var options = new RedditAuthenticationOptions();
-            configuration( options );
-
-            return app.UseMiddleware<ExtendedRedditAuthenticationMiddleware>( Options.Create( options ) );
+        /// <summary>
+        /// Adds <see cref="RedditAuthenticationHandler"/> to the specified
+        /// <see cref="AuthenticationBuilder"/>, which enables Reddit authentication capabilities.
+        /// </summary>
+        /// <param name="builder">The authentication builder.</param>
+        /// <param name="scheme">The authentication scheme associated with this instance.</param>
+        /// <param name="caption">The optional display name associated with this instance.</param>
+        /// <param name="configuration">The delegate used to configure the Reddit options.</param>
+        /// <returns>The <see cref="AuthenticationBuilder"/>.</returns>
+        public static AuthenticationBuilder AddExtendedReddit(
+             this AuthenticationBuilder builder,
+             string scheme, string caption,
+             Action<RedditAuthenticationOptions> configuration ) {
+            return builder.AddOAuth<RedditAuthenticationOptions, IdentProvider.ExtendedRedditAuthenticationHandler>(scheme, caption, configuration);
         }
     }
-    public class ExtendedRedditAuthHandler : AspNet.Security.OAuth.Reddit.RedditAuthenticationHandler {
+}
+namespace IdentProvider {
+    public class ExtendedRedditAuthenticationHandler : RedditAuthenticationHandler {
         private const string TokenEndpoint = "https://ssl.reddit.com/api/v1/access_token";
-        public ExtendedRedditAuthHandler( HttpClient client ) : base( client ) {
+        public ExtendedRedditAuthenticationHandler( IOptionsMonitor<RedditAuthenticationOptions> options,
+             ILoggerFactory logger,
+             UrlEncoder encoder,
+             ISystemClock clock ): base(options, logger, encoder, clock) {
         }
         protected override string BuildChallengeUrl( AuthenticationProperties properties, string redirectUri ) {
             string scope;
-            if ( properties.Items.ContainsKey( "Scope" ) ) {
+            if (properties.Items.ContainsKey("Scope")) {
                 scope = properties.Items["Scope"];
             }
             else {
-                scope = string.Join( ",", Options.Scope );
+                scope = string.Join(",", Options.Scope);
             }
-            var state = Options.StateDataFormat.Protect( properties );
+            var state = Options.StateDataFormat.Protect(properties);
             var parameters = new Dictionary<string, string>
             {
                 { "client_id", Options.ClientId },
@@ -100,32 +96,12 @@ namespace IdentProvider {
                 { "state", state },
                 { "duration", "permanent" }
             };
-            return QueryHelpers.AddQueryString( Options.AuthorizationEndpoint, parameters );
+            return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, parameters);
         }
         protected override Task<AuthenticationTicket> CreateTicketAsync( ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens ) {
-            identity.AddClaim( new Claim( "urn:reddit_scope", tokens.Response.Value<string>( "scope" ) ) );
-            return base.CreateTicketAsync( identity, properties, tokens );
+            identity.AddClaim(new Claim("urn:reddit_scope", tokens.Response.Value<string>("scope")));
+            return base.CreateTicketAsync(identity, properties, tokens);
 
-        }
-        private static void AddQueryString(
-            IDictionary<string, string> queryStrings,
-            AuthenticationProperties properties,
-            string name,
-            string defaultValue = null ) {
-            string value;
-            if ( !properties.Items.TryGetValue( name, out value ) ) {
-                value = defaultValue;
-            }
-            else {
-                // Remove the parameter from AuthenticationProperties so it won't be serialized to state parameter
-                properties.Items.Remove( name );
-            }
-
-            if ( value == null ) {
-                return;
-            }
-
-            queryStrings[name] = value;
         }
     }
 }

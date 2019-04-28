@@ -36,7 +36,7 @@ namespace SnooNotes.BLL {
             }
 
             var ret = await noteTypesDAL.AddMultipleNoteTypes( values, name );
-            snUpdates.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
+            await snUpdates.RefreshNoteTypesAsync( values.Select( nt => nt.SubName ).Distinct() );
             return ret;
         }
 
@@ -52,7 +52,7 @@ namespace SnooNotes.BLL {
 
             }
             await noteTypesDAL.DeleteMultipleNoteTypes( values, name );
-            snUpdates.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
+            await snUpdates.RefreshNoteTypesAsync( values.Select( nt => nt.SubName ).Distinct() );
             return values.Select( nt => nt.NoteTypeID );
         }
 
@@ -64,7 +64,7 @@ namespace SnooNotes.BLL {
 
             }
             await noteTypesDAL.UpdateMultipleNoteTypes( values, name );
-            snUpdates.RefreshNoteTypes( values.Select( nt => nt.SubName ).Distinct() );
+            await snUpdates.RefreshNoteTypesAsync( values.Select( nt => nt.SubName ).Distinct() );
             return values;
         }
 

@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SnooNotes.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = "token")]
     public class BotBanController : Controller
     {
         private BLL.IBotBanBLL bbBLL;
@@ -75,9 +77,10 @@ namespace SnooNotes.Controllers
             else
             {
                 subsToSearch = subreddits.Split(',');
-                foreach(string sub in subsToSearch)
-                {
-                    if(!User.HasClaim("uri:snoonotes:admin",sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
+                foreach (string sub in subsToSearch) {
+                    if (!string.IsNullOrWhiteSpace(sub)) {
+                        if (!User.HasClaim("uri:snoonotes:admin", sub.ToLower())) throw new UnauthorizedAccessException("Not an admin of that sub");
+                    }
                 }
             }
 

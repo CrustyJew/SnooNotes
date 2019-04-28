@@ -16,7 +16,7 @@ namespace IdentProvider
             {
                 new IdentityResources.OpenId(),
                 //new IdentityResources.Profile()
-                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal","uri:snoonotes:haswiki","uri:snoonotes:hasconfig"}.Concat(new IdentityResources.Profile().UserClaims)){ }
+                new IdentityResource(IdentityServerConstants.StandardScopes.Profile,"Profile",new List<string>{"uri:snoonotes:cabal","uri:snoonotes:haswiki","uri:snoonotes:hasconfig","role","uri:snoonotes:admin"}.Concat(new IdentityResources.Profile().UserClaims)){ }
             };
         }
 
@@ -67,8 +67,7 @@ namespace IdentProvider
                     ClientSecrets = sentinelSecrets,
                     AllowedScopes = { "dirtbag" },
                     RequireConsent = false,
-                    Claims = new List<System.Security.Claims.Claim>(){new System.Security.Claims.Claim("uri:dirtbag","admin")},
-                    PrefixClientClaims = false
+                    Claims = new List<System.Security.Claims.Claim>(){new System.Security.Claims.Claim("uri:dirtbag","admin")}
                 },
 
                 new Client {
@@ -84,6 +83,8 @@ namespace IdentProvider
                         IdentityServerConstants.StandardScopes.Profile,
                         "dirtbag", "snoonotes"
                     }, AllowAccessTokensViaBrowser = true,
+
+                    UpdateAccessTokenClaimsOnRefresh = true,
                 },
                 new Client
                 {
@@ -97,7 +98,9 @@ namespace IdentProvider
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "dirtbag", "snoonotes"
-                    }, 
+                    },
+
+                    UpdateAccessTokenClaimsOnRefresh = true,
                 },
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
@@ -114,6 +117,7 @@ namespace IdentProvider
                     ClientSecrets = snSecrets,
 
                     RedirectUris = config.GetSection("ID4_Client_RedirectURIs").Get<string[]>(),// { "http://localhost:44322/signin-oidc","http://localhost:5001/signin-oidc" },
+                    AllowedCorsOrigins= {"https://localhost:5001" },
                     PostLogoutRedirectUris = config.GetSection("ID4_Client_LogoutURIs").Get<string[]>() ,
                     AllowedScopes =
                     {

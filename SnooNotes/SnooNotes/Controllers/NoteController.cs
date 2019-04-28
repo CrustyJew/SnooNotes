@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SnooNotes.Controllers {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "token")]
     [Route("api/[controller]")]
     public class NoteController : Controller {
         private BLL.INotesBLL notesBLL;
@@ -60,7 +60,7 @@ namespace SnooNotes.Controllers {
                 value.Timestamp = DateTime.UtcNow;
                 Models.Note insertedNote = await notesBLL.AddNoteForUser( value );
 
-                snUpdates.SendNewNote( insertedNote );
+                await snUpdates.SendNewNoteAsync( insertedNote );
             }
             else {
                 throw new UnauthorizedAccessException( "You are not a moderator of that subreddit!" );
@@ -79,7 +79,7 @@ namespace SnooNotes.Controllers {
                 note.Submitter = User.Identity.Name;
                 note.NoteTypeID = typeid;
                 var insertedNote = await notesBLL.AddNoteToCabal( note, cabalSub );
-                snUpdates.SendNewNote( insertedNote );
+                await snUpdates.SendNewNoteAsync( insertedNote );
             }
             else {
                 throw new UnauthorizedAccessException( "You aren't a part of the cabal! Shoo!" );
@@ -100,7 +100,7 @@ namespace SnooNotes.Controllers {
             Models.Note note = await notesBLL.GetNoteByID( id );
             if ( User.IsInRole( note.SubName.ToLower() ) || ( !string.IsNullOrWhiteSpace( note.ParentSubreddit ) && User.IsInRole( note.ParentSubreddit.ToLower() ) ) ) {
                 bool outOfNotes = await notesBLL.DeleteNoteForUser( note, User.Identity.Name );
-                snUpdates.DeleteNote( note, outOfNotes );
+                await snUpdates.DeleteNoteAsync( note, outOfNotes );
             }
             else {
                 throw new UnauthorizedAccessException( "You are not a moderator of that subreddit!" );
