@@ -44,7 +44,7 @@
                 <div class="sn-new-note">
                     <select class="sn-new-note-sub" v-model="newNote.newNoteSubName" :class="{'sn-error':$v.newNote.newNoteSubName.$error }">
                         <option value="-1" disabled>--Select a Sub--</option>
-                        <option :value="modSub.SubName" v-if="isModdedSub">{{modSub.SubName}}</option>
+                        <option :value="modSub.SubName.toLowerCase()" v-if="isModdedSub">{{modSub.SubName}}</option>
                         <option value="-2" v-if="isModdedSub" disabled>---------</option>
                         <option v-for="(sub,prop) in otherSubs" :value="prop" :key="prop">{{sub.SubName}}</option>
                     </select>

@@ -20,7 +20,7 @@ export class BanNotesModule {
 
             if (action == "ban" && this.subreddits[sub]) {
                 let dur = popup.querySelector('input.ban-duration').value;
-                let type = dur ? this.subreddits[sub].TempBanID : this.subreddits[sub].PermBanID;
+                let type = dur ? this.subreddits[sub].Settings.TempBanID : this.subreddits[sub].Settings.PermBanID;
 
                 if (!type || type < 0) return;
 
