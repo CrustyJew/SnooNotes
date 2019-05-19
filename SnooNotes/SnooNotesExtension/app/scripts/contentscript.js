@@ -35,13 +35,15 @@ axios.interceptors.request.use((req) => {
   return snInterceptor.interceptRequest(req);
 });
 
-let bodyobvs = new MutationObserver(function(){
-  if(document.body.classList.contains("md-theme-default")){
-      document.body.classList.remove('md-theme-default');
+let bodyobvs = new MutationObserver(function () {
+  if (document.body.classList.contains("md-theme-default")) {
+    document.body.classList.remove('md-theme-default');
   }
 
 })
-bodyobvs.observe(document.body,{ attributes:true});
+bodyobvs.observe(document.body, {
+  attributes: true
+});
 // Vue.use(VueMaterial.MdCore);
 // Vue.use(VueMaterial.MdIcon);
 // Vue.use(VueMaterial.MdTable);
@@ -163,24 +165,26 @@ const InjectIntoThingsClass = () => {
         let authors = [];
         mutations.forEach(function (mutation) {
           if (mutation.addedNodes && mutation.addedNodes.length > 0) {
-            let node = mutation.addedNodes[0];
-            if (node.querySelector) {
-              if (node.classList.contains('thing')) {
-                if (!node.classList.contains('sn-done')) {
-                  let author = BindNewThingsClassUserNotesElement(node);
-                  if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
-                    authors.push(author);
+            for (var i = 0; i < mutation.addedNodes.length; i++) {
+              let node = mutation.addedNodes[i];
+              if (node.querySelector) {
+                if (node.classList.contains('thing')) {
+                  if (!node.classList.contains('sn-done')) {
+                    let author = BindNewThingsClassUserNotesElement(node);
+                    if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
+                      authors.push(author);
+                    }
                   }
                 }
+                node.querySelectorAll('.thing').forEach(function (thing) {
+                  if (!thing.classList.contains('sn-done')) {
+                    let author = BindNewThingsClassUserNotesElement(thing);
+                    if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
+                      authors.push(author);
+                    }
+                  }
+                })
               }
-              node.querySelectorAll('.thing').forEach(function (thing) {
-                if (!thing.classList.contains('sn-done')) {
-                  let author = BindNewThingsClassUserNotesElement(thing);
-                  if (usersWithNotes.indexOf(author) != -1 && authors.indexOf(author) == -1 && requestedAuthors.indexOf(author) == -1) {
-                    authors.push(author);
-                  }
-                }
-              })
             }
           } //ignore removals because nothing on the "main" page currently gets removed.
           // if (mutation.removedNodes && mutation.removedNodes.length > 0) {
@@ -271,7 +275,7 @@ const InjectIntoUserPage = () => {
     }
     let noteElemTarget = document.createElement('span');
     userHeader.parentNode.insertBefore(noteElemTarget, userHeader.nextSibling);
-    
+
     snMain.injectNewThing(userHeader.textContent, '', 'https://reddit.com/u/' + userHeader.textContent, noteElemTarget, null, true);
   }
   return authors;
@@ -355,7 +359,7 @@ const BindNewModmailUserNoteElement = (article) => {
     let noteElemTarget = document.createElement('span');
 
     authElem.parentNode.insertBefore(noteElemTarget, authElem.nextSibling);
-    
+
     snMain.injectNewThing(author, sub, url, noteElemTarget, null, true);
   })
   article.className = article.className + ' sn-done';

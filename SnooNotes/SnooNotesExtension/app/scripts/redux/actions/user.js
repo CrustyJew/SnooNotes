@@ -28,6 +28,7 @@ export const SILENT_RENEW_ERROR = 'SILENT_RENEW_ERROR';
 export const SESSION_TERMINATED = 'SESSION_TERMINATED';
 export const USER_EXPIRING = 'USER_EXPIRING';
 export const USER_FOUND = 'USER_FOUND';
+export const USER_NOT_FOUND = 'USER_NOT_FOUND';
 export const LOADING_USER = 'LOADING_USER';
 export const USER_SIGNED_OUT = 'USER_SIGNED_OUT';
 export const LOGIN = "LOGIN";
