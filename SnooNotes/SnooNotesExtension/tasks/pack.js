@@ -18,6 +18,13 @@ gulp.task('pack', () => {
   let version = packageDetails.version;
   let filetype = getPackFileType();
   let filename = `${name}-${version}-${args.vendor}${filetype}`;
+  if(args.vendor == 'firefox'){
+    gulp.src(['**','!node_modules/**','!dist/**','!packages/**'])
+    .pipe(zip('snoonotes.zip'))
+    .pipe(gulp.dest('./packages')).on('end', () => {
+      log(`Packed source to ${colors.magenta('snoonotes.zip')}`);
+    });
+  }
   return gulp.src(`dist/${args.vendor}/**/*`)
     .pipe(zip(filename))
     .pipe(gulp.dest('./packages'))
