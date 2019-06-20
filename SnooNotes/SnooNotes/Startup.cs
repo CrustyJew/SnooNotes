@@ -127,11 +127,11 @@ namespace SnooNotes {
             })
             .AddIdentityServerAuthentication("token",options => {
                 options.Authority = Configuration["OIDC_Authority"];
-                options.RequireHttpsMetadata = false;
+                options.RequireHttpsMetadata = true;
                 options.TokenRetriever = ( context ) => {
                     string token = TokenRetrieval.FromAuthorizationHeader()(context);
                     if (string.IsNullOrWhiteSpace(token)) {
-                        return context.Query["token"];
+                        return context.Query["access_token"];
                     }
                     return token;
                 };
