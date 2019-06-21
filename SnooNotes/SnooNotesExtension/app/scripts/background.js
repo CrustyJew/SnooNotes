@@ -12,7 +12,7 @@ import axios from 'axios';
 import { SNAxiosInterceptor } from './utilities/snAxiosInterceptor';
 import { gotNewNote, gotDeleteNote } from './redux/actions/notes';
 import { getModSubs } from './redux/actions/snoonotesInfo';
-import * as signalR from '@aspnet/signalr';
+import {HubConnectionBuilder, HubConnectionState} from '@aspnet/signalr';
 
 
 export const snInterceptor = new SNAxiosInterceptor(store);
@@ -62,7 +62,7 @@ userManager.events.addUserSignedOut(onUserSignedOut);
 // const snUpdate = hubConn.createHubProxy('SnooNoteUpdates');
 var curToken = "";
 
-const snUpdate = new signalR.HubConnectionBuilder().withUrl(signalrBaseUrl,{accessTokenFactory: ()=> curToken}).build();
+const snUpdate = new HubConnectionBuilder().withUrl(signalrBaseUrl,{accessTokenFactory: ()=> curToken}).build();
 
 snUpdate.on('addNewNote', (note) => {
   store.dispatch(gotNewNote(note));
@@ -80,20 +80,32 @@ snUpdate.on('modAction', (thingID, mod, action) => {
     }
   });
 })
+
+snUpdate.onclose(function(e){
+  console.log('SignalR hub closed');
+  if(curToken){
+    console.log('Still have a token, reconnecting SignalR');
+    hubConnect();
+  }
+});
+
 store.subscribe(() => {
   let newToken = store.getState().user.access_token;
   if (newToken != curToken) {
    
     curToken = newToken;
-    snUpdate.stop();
-    if(curToken) {
-
-      snUpdate.start({ jsonp: false })
-        .then(function () { console.log('SignalR connected, connection ID=' + hubConnection.id); },
-        function () { console.log('SignalR could not connect'); });
+    if(curToken && snUpdate.connectionState == HubConnectionState.Disconnected) {
+      hubConnect();
     }
   }
 });
+
+function hubConnect(){
+  snUpdate.start().catch(e =>{
+    console.warn(e);
+    setTimeout(hubConnect,5000);
+  })
+}
 // snUpdate.connection.onclose(() => {
 //   console.warn('Socket disconnected');
 //   if (curToken) {
