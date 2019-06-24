@@ -2,22 +2,48 @@
 //import 'chromereload/devonly';
 
 
-import { userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './redux/actions/user';
-import { store, loadUser } from './redux/store';
-import { userManager } from './utilities/userManager';
+import {
+  userFound,
+  silentRenewError,
+  sessionTerminated,
+  userExpiring,
+  userSignedOut
+} from './redux/actions/user';
+import {
+  store,
+  loadUser
+} from './redux/store';
+import {
+  userManager
+} from './utilities/userManager';
 //import { snUpdate, hubConnection } from './libs/snUpdatesHub';
 //import {hubConnection} from 'signalr-no-jquery';
-import { apiBaseUrl, signalrBaseUrl } from './config';
+import {
+  apiBaseUrl,
+  signalrBaseUrl
+} from './config';
 import axios from 'axios';
-import { SNAxiosInterceptor } from './utilities/snAxiosInterceptor';
-import { gotNewNote, gotDeleteNote } from './redux/actions/notes';
-import { getModSubs } from './redux/actions/snoonotesInfo';
-import {HubConnectionBuilder, HubConnectionState} from '@aspnet/signalr';
+import {
+  SNAxiosInterceptor
+} from './utilities/snAxiosInterceptor';
+import {
+  gotNewNote,
+  gotDeleteNote
+} from './redux/actions/notes';
+import {
+  getModSubs
+} from './redux/actions/snoonotesInfo';
+import {
+  HubConnectionBuilder,
+  HubConnectionState
+} from '@aspnet/signalr';
 
 
 export const snInterceptor = new SNAxiosInterceptor(store);
 axios.defaults.baseURL = apiBaseUrl;
-axios.interceptors.request.use((req) => { return snInterceptor.interceptRequest(req); });
+axios.interceptors.request.use((req) => {
+  return snInterceptor.interceptRequest(req);
+});
 
 const onUserLoaded = (user) => {
   store.dispatch(userFound(user));
@@ -62,7 +88,9 @@ userManager.events.addUserSignedOut(onUserSignedOut);
 // const snUpdate = hubConn.createHubProxy('SnooNoteUpdates');
 var curToken = "";
 
-const snUpdate = new HubConnectionBuilder().withUrl(signalrBaseUrl,{accessTokenFactory: ()=> curToken}).build();
+const snUpdate = new HubConnectionBuilder().withUrl(signalrBaseUrl, {
+  accessTokenFactory: () => curToken
+}).build();
 
 snUpdate.on('addNewNote', (note) => {
   store.dispatch(gotNewNote(note));
@@ -76,35 +104,45 @@ snUpdate.on('refreshNoteTypes', () => {
 snUpdate.on('modAction', (thingID, mod, action) => {
   chrome.tabs.query({}, function (tabs) {
     for (var i = 0; i < tabs.length; i++) {
-      chrome.tabs.sendMessage(tabs[i].id, { "method": "modAction", "req": { "thingID": thingID, "mod": mod, "action": action } });
+      chrome.tabs.sendMessage(tabs[i].id, {
+        "method": "modAction",
+        "req": {
+          "thingID": thingID,
+          "mod": mod,
+          "action": action
+        }
+      });
     }
   });
 })
 
-snUpdate.onclose(function(e){
+snUpdate.onclose(function (e) {
   console.log('SignalR hub closed');
-  if(curToken){
+  if (curToken) {
     console.log('Still have a token, reconnecting SignalR');
-    hubConnect();
+    setTimeout(hubConnect, 250);
   }
 });
 
 store.subscribe(() => {
   let newToken = store.getState().user.access_token;
   if (newToken != curToken) {
-   
+
     curToken = newToken;
-    if(curToken && snUpdate.connectionState == HubConnectionState.Disconnected) {
+    if (curToken && snUpdate.connectionState === HubConnectionState.Disconnected) {
       hubConnect();
     }
   }
 });
 
-function hubConnect(){
-  snUpdate.start().catch(e =>{
-    console.warn(e);
-    setTimeout(hubConnect,5000);
-  })
+function hubConnect() {
+  console.log('hubConnect called: Current state == ' + snUpdate.connectionState)
+  if (snUpdate.connectionState === HubConnectionState.Disconnected) {
+    snUpdate.start().catch(e => {
+      console.warn(e);
+      setTimeout(hubConnect, 5000);
+    })
+  }
 }
 // snUpdate.connection.onclose(() => {
 //   console.warn('Socket disconnected');
@@ -121,4 +159,4 @@ function hubConnect(){
 // snUpdate.start({ jsonp: true })
 // .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
 // .fail(function(){ console.log('SignalR could not connect'); });
-    //$.connection.hub.start().then(function () { console.log('Connected socket'); }, function (e) { console.log(e.toString()) });
+//$.connection.hub.start().then(function () { console.log('Connected socket'); }, function (e) { console.log(e.toString()) });
