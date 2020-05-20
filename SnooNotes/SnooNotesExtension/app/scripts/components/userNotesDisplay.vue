@@ -33,7 +33,7 @@
                         </td>
                         <td class="sn-message" :style="noteTypeStyle(note.SubName, note.NoteTypeID)">
                             <p>{{note.Message}}</p>
-                            <a class="sn-delete-note" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs.findIndex(s=>s.name == note.ParentSubreddit) > -1">
+                            <a class="sn-delete-note" @click="deleteNote(note.NoteID)" v-if="!note.ParentSubreddit || modSubs[note.ParentSubreddit]">
                                 <i class="material-icons">delete_forever</i>
                             </a>
                         </td>

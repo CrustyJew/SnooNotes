@@ -15,14 +15,20 @@ class SNListener {
   }
   start() {
     if (!this.started) {
+      const meta = document.createElement('meta');
+      meta.name = 'jsapi.consumer';
+      meta.content = 'snoonotes';
+      document.head.appendChild(meta);
+
+      const readyEvent = new CustomEvent('reddit.ready');
+
       document.addEventListener('reddit', this.boundFunc, true);
-      document.dispatchEvent(new CustomEvent('reddit.ready', {
-        detail: {
-          name: 'snoonotes'
-        }
-      }));
+
+      meta.dispatchEvent(readyEvent);
       this.started = true;
     }
+
+    
   }
   listener(event) {
     const eventType = event.detail.type;
@@ -46,8 +52,9 @@ class SNListener {
 
       let url = 'https://reddit.com/r/' + event.detail.data.subreddit.name + '/' + event.detail.data.post.id.replace('t3_', '') + '/' + (eventType == 'commentAuthor' ? ('.../' + event.detail.data.comment.id.replace('t1_', '')) : '');
       let noteElemTarget = document.createElement('span');
-      this.snMain.$refs.noteDisplay.injectNewUserNotesComponent(event.detail.data.author, event.detail.data.subreddit.name, url, noteElemTarget);
-
+      this.snMain.injectNewThing(event.detail.data.author, event.detail.data.subreddit.name, url, noteElemTarget, null, event);
+      
+  
       snTarget.appendChild(noteElemTarget);
 
     }

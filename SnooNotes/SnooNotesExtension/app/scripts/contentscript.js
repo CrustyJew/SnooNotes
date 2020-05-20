@@ -137,7 +137,7 @@ const unsub = reduxStore.subscribe(() => {
     sentinelBanModule.refreshModule(state.snoonotes_info.modded_subs, state.user.hasConfig);
     banNotesModule.refreshModule(state.snoonotes_info.modded_subs);
   });
-  if (document.querySelector('div[data-reactroot]') && window.location.hostname.toLowerCase() != "mod.reddit.com") {
+  if (!document.querySelector('#header') && window.location.hostname.toLowerCase() != "mod.reddit.com") {
     //redesign
     window.setTimeout(function () {
       if (!jsapiListener.snMain) {

@@ -75,6 +75,7 @@
 import LoadingSpinner from './loadingSpinner.vue';
 import axios from 'axios';
 import _ from 'lodash';
+var browser = require("webextension-polyfill");
 
 export default {
     components: { 'sn-loading': LoadingSpinner },
@@ -108,16 +109,11 @@ export default {
         },
         searchBannedUsers: _.debounce(function () {
             this.loadingResults = true;
-            let queryString = "";
-            if (this.searchSubs.length != this.adminSubs.length) {
-                queryString += "subreddits=" + this.searchSubs.join() + "&";
-            }
-            if (this.searchTerm && this.searchTerm.length > 0) {
-                queryString += "searchterm=" + this.searchTerm + "&";
-            }
-            queryString += "limit=" + this.rowsPerPage + "&page=" + this.currentPage + "&orderby=" + this.sort + "&ascending=" + this.ascending;
-            //TODO other params
-            axios.get('BotBan/Search/User?' + queryString).then((response) => {
+
+
+            browser.runtime.sendMessage({query:"search-user-banlist",searchTerm : this.searchTerm, subreddits : (this.searchSubs.length != this.adminSubs.length ? this.searchSubs : null), currentPage : this.currentPage, rowsPerPage : this.rowsPerPage, sort : this.sort, ascending : this.ascending})
+            .then(response=>{
+            //axios.get('BotBan/Search/User?' + queryString).then((response) => {
                 this.loadingResults = false;
                 this.searchResults = []; //just in case errors
                 let results = response.data;
@@ -125,7 +121,7 @@ export default {
                 this.rowsPerPage = results.ResultsPerPage;
                 this.totalRows = results.TotalResults;
                 this.searchResults = results.DataTable;
-            }, (err) => { this.searchResults = []; this.loadingResults = false; })
+            }).catch( (err) => { this.searchResults = []; this.loadingResults = false; })
         }, 500),
         sortTable(e) {
             this.currentPage = 1;

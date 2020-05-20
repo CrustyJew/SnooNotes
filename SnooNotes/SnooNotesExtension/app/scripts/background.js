@@ -1,6 +1,6 @@
 // Enable chromereload by uncommenting this line:
 //import 'chromereload/devonly';
-
+var browser = require("webextension-polyfill");
 
 import {
   userFound,
@@ -160,3 +160,21 @@ function hubConnect() {
 // .done(function(){ console.log('SignalR connected, connection ID=' + connection.id); })
 // .fail(function(){ console.log('SignalR could not connect'); });
 //$.connection.hub.start().then(function () { console.log('Connected socket'); }, function (e) { console.log(e.toString()) });
+
+browser.runtime.onMessage.addListener(msg => {
+  if(!msg.query){
+    return;
+  }
+  if (msg.query == "search-user-banlist") {
+    let queryString = "";
+    if (msg.subreddits) {
+        queryString += "subreddits=" + msg.subreddits.join() + "&";
+    }
+    if (msg.searchTerm && msg.searchTerm.length > 0) {
+        queryString += "searchterm=" + msg.searchTerm + "&";
+    }
+    queryString += "limit=" + msg.rowsPerPage + "&page=" + msg.currentPage + "&orderby=" + msg.sort + "&ascending=" + msg.ascending;
+    //TODO other params
+    return axios.get('BotBan/Search/User?' + queryString);
+  }
+});
