@@ -163,7 +163,14 @@ namespace SnooNotes.Utilities {
             catch {
                 return false;
             }
-            var modsWithAccess = (await subinfo.GetModeratorsAsync()).Where(m => m.Permissions == RedditSharp.ModeratorPermission.SuperUser || ((int) m.Permissions & sub.Settings.AccessMask) > 0);
+            if(subinfo == null) {
+                return false;
+            }
+            IEnumerable<RedditSharp.ModeratorUser> modsWithAccess;
+            try { modsWithAccess = (await subinfo.GetModeratorsAsync()).Where(m => m.Permissions == RedditSharp.ModeratorPermission.SuperUser || ((int) m.Permissions & sub.Settings.AccessMask) > 0); }
+            catch {
+                return false;
+            }
             // get list of users to remove perms from
             var usersToRemove = usersWithAccess.Values.Where(u => !modsWithAccess.Select(m => m.Name.ToLower()).Contains(u.UserName.ToLower()));
             foreach (var appuser in usersToRemove) {
